@@ -112,7 +112,9 @@ gtiz_settings.cfg = [{
     icon : '',
     placeholder : gtiz_locales.current.label_to_highlight,
     default : undefined,
-    get_default : '',
+    get_default : () => {
+      return gtiz_tree.label_to_highlight;
+    },
     function : (value) => {
       gtiz_tree.highlightLabels(value);
     }
@@ -399,138 +401,7 @@ gtiz_settings.cfg = [{
       gtiz_tree.setRenderingStaticSelecion(value);
     }
   }]
-}, /* {
-  card: 'map',
-  expanded: false,
-  visible: false,
-  menu: [{
-    type : 'toggle',
-    id : 'map-aggregation-toggle',
-    options : [{
-        label : gtiz_locales.current.join_by_coordinates,
-        value : 'geographical',
-        icon : 'iconic-pin'
-      }, {
-        label : gtiz_locales.current.join_by_metadata,
-        value : 'metadata',
-        icon : 'iconic-file-text'
-    }],
-    selected : () => {
-      return  gtiz_map.default_delta_type;
-    },
-    function : (value) => {
-      gtiz_map.toggleAggregationMode(value);
-    }
-  }, {
-    type : 'select',
-    id : 'map-delta-select',
-    label : gtiz_locales.current.set_value,
-    icon : '',
-    options : () => {
-      let values = gtiz_map.getMapDeltaSelectOptions();
-      return values;
-    },
-    default : undefined,
-    get_default : () => {
-      let value = gtiz_map.getMapDeltaSelectDefault();
-      return value;
-    },
-    function : (value) => {
-      gtiz_map.setMapDelta(value);
-    }
-  }, {
-    type : 'button',
-    id : 'map-reset-delta',
-    label : gtiz_locales.current.reset_default,
-    icon : 'iconic-refresh',
-    function : () => {
-      gtiz_map.resetMapDelta();
-    }
-  }, {
-    type : 'separator'
-  }, {
-    type : 'number',
-    id : 'map-point-min-radius',
-    label : gtiz_locales.current.min_marker_radius,
-    icon : '',
-    min: 0,
-    max: undefined,
-    default : undefined,
-    get_default : () => {
-      let value = gtiz_map.getMinMarkerValues();
-      return value;
-    },
-    function : (value) => {
-      gtiz_map.setMinMarkerValue(value);
-    }
-  }, {
-    type : 'number',
-    id : 'map-point-max-radius',
-    label : gtiz_locales.current.max_marker_radius,
-    icon : '',
-    min: 0,
-    max: undefined,
-    default : undefined,
-    get_default : () => {
-      let value = gtiz_map.getMaxMarkerValues();
-      return value;
-    },
-    function : (value) => {
-      gtiz_map.setMaxMarkerValue(value);
-    }
-  }, {
-    type : 'button',
-    id : 'map-reset-max-min-radius',
-    label : gtiz_locales.current.reset_default,
-    icon : 'iconic-refresh',
-    function : () => {
-      gtiz_map.resetMinMaxMarkerValues();
-    }
-  }, {
-    type : 'separator'
-  }, {
-    type : 'toggle',
-    id : 'map-marker-mode-toggle',
-    options : [{
-        label : gtiz_locales.current.pie_chart_mode,
-        value : 'piechart',
-        icon : 'iconic-pie-chart'
-      }, {
-        label : gtiz_locales.current.heat_map_mode,
-        value : 'heatmap',
-        icon : 'iconic-sun'
-    }],
-    selected : () => {
-      return  gtiz_map.markers_type;
-    },
-    function : (value) => {
-      gtiz_map.toggleMarkerType(value);
-    }
-  }],
-  message: true,
-  message_contents: gtiz_locales.current.no_geo_info_message
-}, {
-  card: 'input-output',
-  expanded: false,
-  visible: true,
-  menu: [{
-    type : 'button',
-    label : gtiz_locales.current.save_grapetree,
-    icon : 'iconic-folder',
-    function : () => {
-      let mode = 'save';
-      gtiz_settings.openFileHandlerModal(mode);
-    }
-  }, {
-    type : 'button',
-    label : gtiz_locales.current.load_grapetree,
-    icon : 'iconic-file-plus',
-    function : () => {
-      let mode = 'load';
-      gtiz_settings.openFileHandlerModal(mode);
-    }
-  }]
-} */];
+}];
 
 gtiz_settings.body = document.querySelector('body');
 gtiz_settings.container = document.querySelector('.settings');
@@ -941,6 +812,14 @@ gtiz_settings.buildForm = function(form, menu) {
             options = item.options();
           }
         }
+        let selected;
+        if (typeof item.selected === 'string') {
+          selected = item.selected;
+        } else {
+          if (typeof item.selected === 'function') {
+            selected = item.selected();
+          }
+        }
         if (options) {
           options.forEach(option => {
             let row = document.createElement('div');
@@ -954,15 +833,7 @@ gtiz_settings.buildForm = function(form, menu) {
             label.setAttribute('class', 'list-value');
             label.innerHTML = option.label;
             row.append(label);
-            let selected;
-            if (typeof item.selected === 'string') {
-              selected = item.selected == option.value ? true : false;
-            } else {
-              if (typeof item.selected === 'function') {
-                selected = item.selected() == option.value ? true : false;
-              }
-            }
-            if (selected) {
+            if (option.value == selected) {
               row.classList.add('selected');
               icon.innerHTML = '<i class="iconic iconic-check-circle"></i>';
             }

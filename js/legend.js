@@ -99,7 +99,8 @@ gtiz_legend.context_menu = [{
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeMaxGroupNumber(value);
+    let category = gtiz_tree.tree.display_category;
+    gtiz_legend.changeMaxGroupNumber(value, category, true);
   }
 }, {
   type : 'number',
@@ -116,7 +117,8 @@ gtiz_legend.context_menu = [{
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeMinGroupSize(value);
+    let category = gtiz_tree.tree.display_category;
+    gtiz_legend.changeMinGroupSize(value, category, true);
   }
 }, {
   type : 'separator'
@@ -144,7 +146,8 @@ gtiz_legend.context_menu = [{
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeDataCategory(value);
+    let category = gtiz_tree.tree.display_category;
+    gtiz_legend.changeDataCategory(value, category, true);
   }
 }, {
   type : 'select',
@@ -180,7 +183,8 @@ gtiz_legend.context_menu = [{
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeGroupOrder(value);
+    let category = gtiz_tree.tree.display_category;
+    gtiz_legend.changeGroupOrder(value, category, true);
   }
 }, , {
   type : 'select',
@@ -229,7 +233,8 @@ gtiz_legend.context_menu = [{
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeColorScheme(value);
+    let category = gtiz_tree.tree.display_category;
+    gtiz_legend.changeColorScheme(value, category, true);
   }
 }, {
   type : 'separator'
@@ -404,15 +409,20 @@ gtiz_legend.getMaxGroupNumberValue = function() {
  * Change max number of groups (categories, items) in legend list (category_num)
  * 
  * @param {String} value Value from input
+ * @param {String} cat Category to change
+ * @param {Boolean} change If `true`, call `changeCategory`
+ * 
  */
-gtiz_legend.changeMaxGroupNumber = function(value) {
+gtiz_legend.changeMaxGroupNumber = function(value, cat, change) {
   let tree = gtiz_tree.tree;
-  let category = tree.display_category;
+  let category = cat ? cat : tree.display_category;
   let number = parseInt(value);
 	let category_info = tree.metadata_info[category];
   if (number !== category_info.category_num) {
 		category_info.category_num = number;
-		tree.changeCategory(category);
+    if(change) {
+      tree.changeCategory(category);
+    }
     // gtiz_layout.setLegendHeight(300);
 	}
 }
@@ -435,15 +445,20 @@ gtiz_legend.getMinGroupSizeValue = function() {
  * Change max number of groups (categories, items) in legend list
  * 
  * @param {String} value Value from input
+ * @param {String} cat Category to change
+ * @param {Boolean} change If `true`, call `changeCategory`
+ * 
  */
-gtiz_legend.changeMinGroupSize = function(value) {
+gtiz_legend.changeMinGroupSize = function(value, cat, change) {
   let tree = gtiz_tree.tree;
-  let category = tree.display_category;
+  let category = cat ? cat : tree.display_category;
   let number = parseInt(value);
 	let category_info = tree.metadata_info[category];
   if (number !== category_info.minnum) {
 		category_info.minnum = number;
-		tree.changeCategory(category);
+		if(change) {
+      tree.changeCategory(category);
+    }
     // gtiz_layout.setLegendHeight(300);
 	}
 }
@@ -466,15 +481,19 @@ gtiz_legend.getDataCategory = function() {
  * Change data category (coltype).
  * 
  * @param {String} value `'character'` || `'numeric'`
- *  
+ * @param {String} cat Category to change
+ * @param {Boolean} change If `true`, call `changeCategory`
+ * 
  */
-gtiz_legend.changeDataCategory = function(value) {
+gtiz_legend.changeDataCategory = function(value, cat, change) {
   let tree = gtiz_tree.tree;
-  let category = tree.display_category;
+  let category = cat ? cat : tree.display_category;
   let category_info = tree.metadata_info[category];
   if (value !== category_info.coltype) {
     category_info.coltype = value;
-    tree.changeCategory(category);
+    if(change) {
+      tree.changeCategory(category);
+    }
   }
 }
 
@@ -484,7 +503,7 @@ gtiz_legend.changeDataCategory = function(value) {
  * @returns String
  */
 gtiz_legend.getGroupOrder = function() {
-  let tree = gtiz_tree.tree;
+  /* let tree = gtiz_tree.tree;
   let category = tree.display_category;
   let info = tree.metadata_info[category];
   let value = info.grouptype;
@@ -492,7 +511,9 @@ gtiz_legend.getGroupOrder = function() {
     value = 'size-desc';
   } else {
     value = 'alphabetic-asc';
-  }
+  } */
+  let value = gtiz_legend.group_order.type + '-' + gtiz_legend.group_order.sort;
+
   return value;
 }
 
@@ -500,9 +521,11 @@ gtiz_legend.getGroupOrder = function() {
  * Change group order (grouptype). Natively grapetree allow to use only size descendant or alphabetic ascendant,  we extend this by using `-asc` and `-desc` and saving the choice in the gtiz_legend object in order to invert order in `base_tree.js`.
  * 
  * @param {String} value `'size-asc'` || `'size-desc'` || `'alphabetic-asc'` || `'alphabetic-desc'`
+ * @param {String} cat Category to change
+ * @param {Boolean} change If `true`, call `changeCategory`
  *  
  */
-gtiz_legend.changeGroupOrder = function(value) {
+gtiz_legend.changeGroupOrder = function(value, cat, change) {
   let delimiter = '-';
   let index = value.indexOf(delimiter);
   let type = value.substring(0, index);
@@ -512,11 +535,13 @@ gtiz_legend.changeGroupOrder = function(value) {
     sort : sort
   }
   let tree = gtiz_tree.tree;
-  let category = tree.display_category;
+  let category = cat ? cat : tree.display_category;
   let category_info = tree.metadata_info[category];
   gtiz_legend.group_order = obj;
   category_info.grouptype = type;
-  tree.changeCategory(category);
+  if(change) {
+    tree.changeCategory(category);
+  }
 }
 
 /**
@@ -537,15 +562,19 @@ gtiz_legend.getColorScheme = function() {
  * Change color schema (colorscheme).
  * 
  * @param {String} value See context legend menu configuration for allowed values
- *  
+ * @param {String} cat Category to change
+ * @param {Boolean} change If `true`, call `changeCategory`
+ * 
  */
-gtiz_legend.changeColorScheme = function(value) {
+gtiz_legend.changeColorScheme = function(value, cat, change) {
   let tree = gtiz_tree.tree;
-  let category = tree.display_category;
+  let category = cat ? cat : tree.display_category;
   let category_info = tree.metadata_info[category];
   if (value !== category_info.colorscheme) {
     category_info.colorscheme = value;
-    tree.changeCategory(category);
+    if(change) {
+      tree.changeCategory(category);
+    }
   }
 }
 
@@ -578,8 +607,10 @@ gtiz_legend.quickGradient = function() {
   gradient_select.value = 'gradient_cool';
   let order_select = document.querySelector('#legend-menu-group-order');
   order_select.value = 'alphabetic-desc';
-  gtiz_legend.changeGroupOrder(order);
-  gtiz_legend.changeColorScheme(gradient);
+  let category = gtiz_tree.tree.display_category;
+  gtiz_legend.changeGroupOrder(order, category, false);
+  gtiz_legend.changeColorScheme(gradient, category, false);
+  gtiz_tree.tree.changeCategory(category);
 }
 
 /**
@@ -597,9 +628,11 @@ gtiz_legend.nodeSelection = function(obj, tree) {
   let metadata = Object.values(tree.metadata);
   let node_ids = {};
   let items = document.querySelectorAll('.card-legend .list-row');
+  let selected = [];
   tree.clearSelection();
   items.forEach(item => {
     if (item.classList.contains('selected')) {
+      selected.push(item);
       let group = item.getAttribute('data-real-group-izsam');
       // Filter the metadata values based on the condition `d[category] === group`
       let filtered = metadata.filter(function(d) {
@@ -883,6 +916,7 @@ gtiz_legend.init = function() {
   gtiz_legend.toggleViewMode(gtiz_legend.view_mode);
   gtiz_legend.setVisualSelectionToggle(gtiz_legend.selection_mode);
   let order = gtiz_legend.group_order.type + '-' + gtiz_legend.group_order.sort;
-  gtiz_legend.changeGroupOrder(order);
+  let category = gtiz_tree.tree.display_category;
+  gtiz_legend.changeGroupOrder(order, category, false);
   gtiz_legend.setSelection();
 }

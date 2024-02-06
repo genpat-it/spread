@@ -534,6 +534,66 @@
   margin-right: auto;
 }
 
+.dashboard-grapetree .tree-container .tree-card-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color: rgba(255,255,255,0.95);
+  backdrop-filter: blur(0.2rem); */
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2.4rem;
+  padding: 2.1rem;
+}
+
+.dashboard-grapetree .tree-container .tree-card-message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--secondary-light);
+  backdrop-filter: blur(0.2rem);
+  opacity: 0.95;
+  z-index: 100;
+  border-radius: 2.4rem;
+}
+
+.dashboard-grapetree .tree-container .tree-card-message-body {
+  color: var(--secondary-darker);
+  font-size: 1.4rem;
+  position: relative;
+  z-index: 102;
+  text-align: center;
+}
+
+.dashboard-grapetree .tree-container .tree-card-message .icon {
+  font-size: 1.8rem;
+  font-weight: 300;
+  margin-bottom: 1.1rem;
+  color: var(--secondary-darker);
+}
+
+.dashboard-grapetree .tree-container .tree-card-message-actions {
+  margin-right: 0.8rem;
+  position: relative;
+  z-index: 102;
+}
+
+.dashboard-grapetree .tree-container .tree-card-message button {
+  margin-right: 0.8rem;
+}
+
+.dashboard-grapetree .tree-container .tree-card-message button:last-child {
+  margin-right: 0;
+}
+
 .dashboard-grapetree .map {
   position: absolute;
   display: none;
@@ -710,7 +770,7 @@
   display: block;
 }
 
-.dashboard-grapetree .map-container .card-context-menu-trigger {
+.dashboard-grapetree .map-container .card-context-trigger i {
   background-color: var(--white);
 }
 
@@ -898,6 +958,12 @@
   }
 }
 
+.dashboard-grapetree .metadata-container.metadata-loading {
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
 .dashboard-grapetree .metadata-container .card-form {
   padding-top: 0.8rem;
   padding-bottom: 1.3rem;
@@ -905,14 +971,26 @@
   width: 100%;
 }
 
+.dashboard-grapetree .metadata-container.metadata-loading .card-form {
+  display: none;
+}
+
 .dashboard-grapetree .metadata-container .button-box {
   display: inline-block;
   margin-right: 0.5rem;
 }
 
+.dashboard-grapetree .metadata-container.metadata-loading .button-box {
+  display: none;
+}
+
 .dashboard-grapetree .metadata-container #metadata-grid {
   width: 100%;
   height: 100%;
+}
+
+.dashboard-grapetree .metadata-container.metadata-loading #metadata-grid {
+  display: none;
 }
 
 .dashboard-grapetree .legend {
@@ -1156,33 +1234,82 @@
 }
 
 .dashboard-grapetree .card-context-tools {
-  top: 2.2rem;
+  top: 1.7rem;
 }
 
-.dashboard-grapetree.tree-not-defined .card-context-tools,
-.dashboard-grapetree .tree-loading .card-context-tools {
+.dashboard-grapetree.tree-not-defined .tree .card-context-tools,
+.dashboard-grapetree .tree-loading .tree .card-context-tools {
   display: none;
 }
- 
+
+.dashboard-grapetree .tree .card-context-tools {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .dashboard-grapetree .card-expandable .card-context-tools {
   top: 4.2rem;
 }
 
-.dashboard-grapetree .card-context-tools .card-info-trigger {
-  margin-top: 0.8rem;
+.dashboard-grapetree .card-context-trigger {
+  line-height: 2.1rem;
+  margin-right: 0.8rem;
 }
 
-.dashboard-grapetree .card-context-menu-trigger {
+.dashboard-grapetree .card-context-trigger:last-child {
+  margin-right: 0;
+}
+
+.dashboard-grapetree .tree .card-context-trigger.card-context-utility-trigger {
+  color: var(--accent);
+}
+
+.dashboard-grapetree .card-context-trigger[data-menu-type="zooms"] {
+  display: none;
+}
+
+.dashboard-grapetree .zoom-available .card-context-trigger[data-menu-type="zooms"] {
+  display: block;
+}
+.dashboard-grapetree .card-context-trigger span {
+  display: inline-block;
+  line-height: 2.1rem;
+  margin-left: 0.3rem;
+}
+
+.dashboard-grapetree .card-context-trigger.card-context-utility-trigger span {
+  color: var(--accent);
+}
+
+.dashboard-grapetree .card-context-trigger i {
+  display: inline-block;
   background-color: var(--secondary-light);
   border-radius: 50%;
-  -webkit-transform: scale(1.3);
-  transform: scale(1.3);
+  font-size: 1rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  line-height: 2.1rem;
+  text-align: center;
+  margin-left: 0.3rem;
 }
 
-.dashboard-grapetree .card-context-menu-trigger i {
-  display: inline-block;
-  -webkit-transform: scale(0.8);
-  transform: scale(0.8);
+.dashboard-grapetree .card-context-trigger.card-context-utility-trigger i {
+  background-color: transparent;
+  margin-left: 0rem;
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+
+.dashboard-grapetree .card-context-trigger i.iconic-dots-vertical {
+  font-size: 1.4rem;
+}
+
+.dashboard-grapetree .card-context-menu .card-context-tools div {
+  margin-bottom: 0.5rem;
 }
 
 .dashboard-grapetree .card a.card-action {
@@ -1230,6 +1357,17 @@
 .dashboard-grapetree .input-box,
 .dashboard-grapetree .search-box {
   margin-bottom: 0.5rem;
+}
+
+.dashboard-grapetree .select-box.disabled,
+.dashboard-grapetree .input-box.disabled,
+.dashboard-grapetree .search-box.disabled,
+.dashboard-grapetree .tip-box.disabled,
+.dashboard-grapetree .list-box.disabled,
+.dashboard-grapetree .button-box.disabled,
+.dashboard-grapetree .slider-box.disabled,
+.dashboard-grapetree .tools.disabled {
+  opacity: 0.7;
 }
 
 .dashboard-grapetree select,
@@ -1473,6 +1611,77 @@
   transform: translateY(-0.15rem);
 }
 
+
+/* NOTIFIER */
+.notifier.component-notifier::before {
+  display: none;
+}
+
+.notifier.component-notifier::after {
+  display: none;
+}
+
+.notifier.component-notifier {
+  position: absolute;
+  z-index: -1;
+  visibility: hidden;
+  top: auto;
+  left: auto;
+  right: 0;
+  width: auto;
+  bottom: 5.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-content: flex-end;
+  align-items: flex-end;
+  flex-direction: column;
+}
+
+.show-component-notifier .notifier.component-notifier {
+  z-index: 89;
+  visibility: visible;
+}
+
+.component-notifier .notifier-contents {
+  border-radius: 2.4rem;
+  z-index: 90;
+  width: 24rem;
+  background-color: var(--secondary-ultra-light);
+  -webkit-box-shadow: 1px 0px 21px 0px rgba(0,0,0,0);
+  box-shadow: 1px 0px 21px 0px rgba(0,0,0,0);
+}
+
+.component-notifier .notifier-contents {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  -webkit-transition: opacity 0.3s ease 0.3s, transform 0.3s ease 0.3s;
+  transition: opacity 0.3s ease 0.3s, transform 0.3s ease 0.3s;
+}
+
+.component-notifier .notifier-close {
+  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  font-size: 1.3rem;
+  color: var(--main);
+}
+
+.component-notifier .notifier-contents p,
+.component-notifier .notifier-contents ul,
+.component-notifier .notifier-contents ol {
+  font-size: 1.4rem;
+}
+
+.component-notifier .notifier-contents a {
+  color: var(--main);
+  text-decoration: none;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.component-notifier .notifier-feedback p {
+  font-size: 1.1rem;
+}
+
 .dashboard-grapetree.show-modal .modal {
   z-index: 9999;
 }
@@ -1526,6 +1735,10 @@
 .dashboard-grapetree .modal-contents ul,
 .dashboard-grapetree .modal-contents ol {
   margin-bottom: 0;
+  margin-top: 1.3rem;
+}
+
+.dashboard-grapetree .modal-contents button {
   margin-top: 1.3rem;
 }
 

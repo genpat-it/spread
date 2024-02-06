@@ -202,17 +202,20 @@
         </div>
       </div>
       <div class="tree">
-        <div class="tree-container card-tree">
+        <div class="tree-container card-component card-tree">
           <div class="card-context-tools">
-            <div class="card-context-menu-trigger" data-menu-type="tree">
+            <div class="card-context-trigger card-context-menu-trigger" data-menu-component="tree" data-menu-type="zooms">
+              <span data-i18n-key="clusters_zooms"></span> <i class="iconic iconic-zoom-in"></i>
+            </div>
+            <div class="card-context-trigger card-context-menu-trigger" data-menu-component="tree" data-menu-type="tree">
               <i class="iconic iconic-dots-vertical"></i>
             </div>
           </div>
-          <div class="tree-title" id="headertag">ms_tree.json</div>
+          <div class="tree-title" id="headertag"></div>
           <div id="graph-div" class="drop-area"></div>
           <div id="draggable-area">
             <div class="drag-trigger" id="rotation-icon">
-              <i class="iconic iconic-refresh"></i>
+              <i class="iconic iconic-rotate"></i>
             </div>
           </div>
           <div class="drop-box">
@@ -236,9 +239,9 @@
         </div>
       </div>
       <div class="map">
-        <div id="map-div" class="map-container card-map">
+        <div id="map-div" class="map-container card-component card-map">
           <div class="card-context-tools">
-            <div class="card-context-menu-trigger" data-menu-type="map">
+            <div class="card-context-trigger card-context-menu-trigger" data-menu-component="map" data-menu-type="map">
               <i class="iconic iconic-dots-vertical"></i>
             </div>
           </div>
@@ -248,9 +251,9 @@
         </div>
       </div>
       <div class="metadata">
-        <div class="metadata-container card card-metadata">
+        <div class="metadata-container card card-component card-metadata">
           <div class="card-context-tools">
-            <div class="card-context-menu-trigger" data-menu-type="metadata">
+            <div class="card-context-trigger card-context-menu-trigger" data-menu-component="metadata" data-menu-type="metadata">
               <i class="iconic iconic-dots-vertical"></i>
             </div>
           </div>
@@ -259,9 +262,9 @@
         </div>
       </div>
       <div class="legend">
-        <div class="card card-legend card-legend-list expanded">
+        <div class="legend-container card card-component card-legend card-legend-list expanded">
           <div class="card-context-tools">
-            <div class="card-context-menu-trigger" data-menu-type="legend">
+            <div class="card-context-trigger card-context-menu-trigger" data-menu-component="legend" data-menu-type="legend">
               <i class="iconic iconic-dots-vertical"></i>
             </div>
           </div>
@@ -347,12 +350,16 @@
   <!-- tree enterobase -->
   <script charset="utf-8" src="js/tree/base_tree.js"></script>
   <script charset="utf-8" src="js/tree/d3_m_tree.js"></script>
+  <!-- metadata izsam -->
+  <script src="js/metadata/zooms-finder.js"></script>
   <!-- custom -->
+  <script src="js/optimizer.js"></script>
   <script src="js/modal.js"></script>
   <script src="js/slider.js"></script>
   <script src="js/loader.js"></script>
   <script src="js/languages.js"></script>
   <script src="js/locales.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/file-handler.js"></script>
   <script src="js/tree.js"></script>
   <script src="js/tree-extended.js"></script>
@@ -364,5 +371,6 @@
   <script src="js/video.js"></script>
   <script src="js/help.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/zooms.js"></script>
 </body>
 </html>

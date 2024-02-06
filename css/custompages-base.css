@@ -129,7 +129,9 @@ input[type="button"] {
 
 .button[disabled],
 button[disabled],
-input[disabled] {
+input[disabled],
+select[disabled],
+textarea[disabled] {
   opacity: 0.5;
 }
 
@@ -2313,6 +2315,7 @@ aside code,
 }
 
 .notifier-contents a {
+  cursor: pointer;
   color: var(--main);
   text-decoration: none;
   -webkit-transition: all 0.3s ease;
@@ -2321,6 +2324,41 @@ aside code,
 
 .notifier-contents a:hover {
   color: var(--accent);
+}
+
+.notifier-contents hr {
+  padding-top: 1.3rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+  border-top: none;
+  border-bottom: 0.1rem solid var(--secondary-light);
+  opacity: 0.7;
+  -webkit-transform: scaleX(0.95);
+  transform: scaleX(0.95);
+}
+
+.notifier-contents .tools {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.notifier-contents a.card-action {
+  color: var(--main);
+  font-size: 1.3rem;
+  cursor: pointer;
+  text-decoration: none;
+  padding-left: 0.3rem;
+}
+
+.notifier-contents a.card-action i {
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+
+.notifier-actions a {
+  font-size: 1.4rem;
+  margin-bottom: 1.3rem;
+  display: block;
 }
 
 .notifier-label {

@@ -1,5 +1,5 @@
 /*
-  iconic-v1.6
+  iconic-v1.9
 */
 
 @font-face {
@@ -689,6 +689,9 @@ i.iconic.iconic-number {
 }
 .iconic-dashboard-off:before {
   content: "\e9d6";
+}
+.iconic-rotate:before {
+  content: "\e9d8";
 }
 .iconic-number-0:before {
   content: "0";

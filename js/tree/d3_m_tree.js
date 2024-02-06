@@ -803,7 +803,6 @@ D3MSTree.prototype.setLayout = function(layout_data){
         } else {
                 // default configuration parameters from gtiz_tree object
                 if (gtiz_tree) {
-                        console.log(gtiz_tree);
                         this.link_font_size = gtiz_tree.branch_label_font_size ? gtiz_tree.branch_label_font_size : this.link_font_size;
                         this.show_link_labels =  gtiz_tree.show_branch_labels == 'hidden' ? false : true;
                 }
@@ -2357,7 +2356,7 @@ D3MSTree.prototype.resize = function() {
   this.legend_div.css({ "left": this.width - 300 });
   this.scale_div.css({ "bottom": "100px" });
   this.scale_div.css({ "left": 0 });
-  this.centerGraph();
+  // this.centerGraph();
 };
 
 /**

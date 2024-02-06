@@ -1,6 +1,6 @@
 let gtiz_context = {};
 gtiz_context.cfg = [];
-gtiz_context.menus = ['tree', 'legend', 'metadata', 'map'];
+gtiz_context.menus = ['tree', 'zooms', 'legend', 'metadata', 'map'];
 gtiz_context.body = document.querySelector('body');
 gtiz_context.triggers = document.querySelectorAll('.card-context-menu-trigger');
 gtiz_context.graph_div = document.querySelector('#graph-div');
@@ -28,6 +28,9 @@ gtiz_context.getMenu = function(type) {
       break;
     case 'tree':
       cfg = gtiz_tree.context_menu;
+      break;
+    case 'zooms':
+      cfg = gtiz_zooms.context_menu;
       break;
     case 'metadata':
       cfg = gtiz_metadata.context_menu;
@@ -249,40 +252,38 @@ gtiz_context.getMenu = function(type) {
   return form;
 }
 
-gtiz_context.closeContextMenu = function(type) {
+gtiz_context.closeContextMenu = function(type, card) {
   let gtiz_context_node = document.querySelector('.context-menu');
-  if (!type) {
-    let cls = gtiz_context_node.getAttribute('class');
-    gtiz_context.menus.forEach(menu => {
-      if (cls.includes(menu)) {
-        type = menu;
-      }
-    });
-  }
-  let specific_cls = 'show-context-menu-' + type;
-  gtiz_context.body.classList.remove('show-context-menu');
-  gtiz_context.body.classList.remove(specific_cls);
-  gtiz_context_node.remove();
-  let card_selector = '.card-' + type;
-  let card_type = document.querySelector(card_selector);
-  card_type.style.removeProperty('transform');
-  card_type.style.removeProperty('z-index');
-  if (type == 'tree') {
-    let tree_container = document.querySelector('.tree');
-    tree_container.style.removeProperty('z-index');
-    tree_container.style.removeProperty('width');
-  }
-  if (type == 'metadata') {
-    let metadata_container = document.querySelector('.metadata');
-    metadata_container.style.removeProperty('transform');
-    metadata_container.style.removeProperty('z-index');
-    metadata_container.style.removeProperty('width');
-  }
-  if (type == 'map') {
-    let map_container = document.querySelector('.map');
-    map_container.style.removeProperty('transform');
-    map_container.style.removeProperty('z-index');
-    map_container.style.removeProperty('width');
+  if (gtiz_context_node) {
+    if (!type) {
+      let cls = gtiz_context_node.getAttribute('class');
+      gtiz_context.menus.forEach(menu => {
+        if (cls.includes(menu)) {
+          type = menu;
+        }
+      });
+    }
+    gtiz_context_node.remove();
+    let specific_cls = 'show-context-menu-' + type;
+    gtiz_context.body.classList.remove('show-context-menu');
+    gtiz_context.body.classList.remove(specific_cls);
+    card.style.removeProperty('transform');
+    card.style.removeProperty('z-index');
+    let container = card.parentNode;
+    if (type == 'tree' || type == 'zooms') {
+      container.style.removeProperty('z-index');
+      container.style.removeProperty('width');
+    }
+    if (type == 'metadata') {
+      container.style.removeProperty('transform');
+      container.style.removeProperty('z-index');
+      container.style.removeProperty('width');
+    }
+    if (type == 'map') {
+      container.style.removeProperty('transform');
+      container.style.removeProperty('z-index');
+      container.style.removeProperty('width');
+    }
   }
 }
 
@@ -290,9 +291,10 @@ gtiz_context.closeContextMenu = function(type) {
  * Build the menu UI relative to the type requested by the user
  * 
  * @param {String} type 'legend' || 'tree' || 'metadata' based on the available context menus
+ * @param {DOM Node} relation Card related to context menu
  * @returns a DOM Node containing UI elements relative to the type
  */
-gtiz_context.buildMenuUi = function(type) {
+gtiz_context.buildMenuUi = function(type, relation) {
   let card = document.createElement('div');
   card.setAttribute('class', 'card card-context-menu expanded');
   let tools = document.createElement('div');
@@ -301,7 +303,7 @@ gtiz_context.buildMenuUi = function(type) {
   close.setAttribute('class', 'card-close-trigger');
   close.innerHTML = '<i class="iconic iconic-close-circle"></i>';
   close.addEventListener('click', (e) => {
-    gtiz_context.closeContextMenu(type);
+    gtiz_context.closeContextMenu(type, relation);
   });
   tools.append(close);
   card.append(tools);
@@ -315,6 +317,9 @@ gtiz_context.buildMenuUi = function(type) {
   }
   if (type == 'tree') {
     title.innerHTML = gtiz_locales.current.grapetree_tools;
+  }
+  if (type == 'zooms') {
+    title.innerHTML = gtiz_locales.current.clusters_zooms_tools;
   }
   if (type == 'map') {
     title.innerHTML = gtiz_locales.current.map_tools;
@@ -336,15 +341,18 @@ gtiz_context.buildMenuUi = function(type) {
 /**
  * Build and show context menu relative to clicked trigger
  * 
- * @param {String} type 'legend' || 'tree' || 'metadata' based on the available context menus
+ * @param {String} type 'legend' || 'tree' || 'metadata' ... based on the available context menus
+ * @param {String} component 'legend' || 'tree' || 'metadata' ... based on the related component
  * @param {Node} trigger DOM node clicked
  * 
  */
-gtiz_context.showMenu = function(type, trigger) {
-  let gtiz_context_node = document.querySelector('.context-menu');
-  if (!gtiz_context_node) {
+gtiz_context.showMenu = function(type, component, trigger) {
+  // let gtiz_context_node = document.querySelector('.context-menu');
+  // if (!gtiz_context_node) {
+    let card = trigger.closest('.card-component');
+    gtiz_context.closeContextMenu(type, card);
+
     let cls_controller = gtiz_context.body.getAttribute('class');
-    let card = trigger.closest('.card-' + type);
     let card_style = getComputedStyle(card);
     let margin = parseInt(card_style.marginRight.replace(/\D/g, ""));
     let width = card.offsetWidth;
@@ -354,7 +362,7 @@ gtiz_context.showMenu = function(type, trigger) {
     let left = x;
     let top = y;
     let translate_value = -(width + margin)/10 + 'rem';
-    if (type == 'tree') {
+    if (type == 'tree' || type == 'zooms') {
       if (!cls_controller.includes('-l')) {
         width = 320;
         translate_value = 0;
@@ -398,6 +406,7 @@ gtiz_context.showMenu = function(type, trigger) {
     let menu_node = document.createElement('div');
     let cls = 'context-menu context-menu-' + type;
     menu_node.setAttribute('class', cls);
+    menu_node.setAttribute('data-component', component);
     menu_node.style.position = 'fixed';
     menu_node.style.top = top/10 + 'rem';
     menu_node.style.left = left/10 + 'rem';
@@ -407,18 +416,18 @@ gtiz_context.showMenu = function(type, trigger) {
     menu_node.style.opacity = 0;
     menu_node.addEventListener('click', (e) => {
       if (e.target == menu_node) {
-        gtiz_context.closeContextMenu(type);
+        gtiz_context.closeContextMenu(type, card);
       }
     });
-    let menu_content = gtiz_context.buildMenuUi(type);
+    let menu_content = gtiz_context.buildMenuUi(type, card);
     menu_node.append(menu_content);
 
     // card style
     card.style.transform = `translateX(${translate_value})`;
-    if (type == 'legend') {
+    if (component == 'legend') {
       card.style.zIndex = 9999;
     }
-    if (type == 'tree') {
+    if (component == 'tree') {
       let tree_container = document.querySelector('.tree');
       tree_container.style.zIndex = 9999;
       if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
@@ -426,7 +435,7 @@ gtiz_context.showMenu = function(type, trigger) {
         tree_container.style.width = (card.offsetWidth + (2 * margin) - width)/10 + 'rem';
       }
     }
-    if (type == 'metadata') {
+    if (component == 'metadata') {
       let metadata_container = document.querySelector('.metadata');
       metadata_container.style.zIndex = 9999;
       if (!cls_controller.includes('-l')) {
@@ -434,7 +443,7 @@ gtiz_context.showMenu = function(type, trigger) {
         metadata_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
       }
     }
-    if (type == 'map') {
+    if (component == 'map') {
       let map_container = document.querySelector('.map');
       map_container.style.zIndex = 9999;
       if (!cls_controller.includes('-l')) {
@@ -466,7 +475,7 @@ gtiz_context.showMenu = function(type, trigger) {
     setTimeout(() => {
       menu_node.style.opacity = 1;
     }, 0);
-  }
+  // }
 }
 
 /**
@@ -476,7 +485,7 @@ gtiz_context.showMenu = function(type, trigger) {
  * @param {String} type Relative card of context menu
  */
 gtiz_context.updateContextPosition = function(menu, type) {
-
+  
   let body_cls = gtiz_context.body.getAttribute('class');
   let component = document.querySelector('.card-' + type);
   let card_context = menu.querySelector('.card-context-menu');
@@ -522,29 +531,33 @@ gtiz_context.updateContextPosition = function(menu, type) {
 gtiz_context.triggers.forEach(function(trigger) {
   trigger.addEventListener('click', function(e) {
     let type = trigger.getAttribute('data-menu-type');
-    gtiz_context.showMenu(type, trigger);
+    let component = trigger.getAttribute('data-menu-component');
+    gtiz_context.showMenu(type, component, trigger);
   });
 });
 
 gtiz_context.graph_div.addEventListener("contextmenu", (e) => {
   e.preventDefault();
   let type = 'tree';
+  let component = 'tree';
   let trigger = document.querySelector('.card-tree .card-context-menu-trigger');
-  gtiz_context.showMenu(type, trigger);
+  gtiz_context.showMenu(type, component, trigger);
 });
 
 gtiz_context.legend_div.addEventListener("contextmenu", (e) => {
   e.preventDefault();
   let type = 'legend';
+  let component = 'legend';
   let trigger = gtiz_context.legend_div.querySelector('.card-context-menu-trigger');
-  gtiz_context.showMenu(type, trigger);
+  gtiz_context.showMenu(type, component, trigger);
 });
 
 gtiz_context.metadata_div.addEventListener("contextmenu", (e) => {
   e.preventDefault();
   let type = 'metadata';
+  let component = 'metadata';
   let trigger = gtiz_context.metadata_div.querySelector('.card-context-menu-trigger');
-  gtiz_context.showMenu(type, trigger);
+  gtiz_context.showMenu(type, component, trigger);
 });
 
 gtiz_context.map_div.addEventListener("contextmenu", (e) => {
@@ -552,18 +565,19 @@ gtiz_context.map_div.addEventListener("contextmenu", (e) => {
   if (cls.includes('map-initialized')) {
     e.preventDefault();
     let type = 'map';
+    let component = 'map';
     let trigger = gtiz_context.map_div.querySelector('.card-context-menu-trigger');
-    gtiz_context.showMenu(type, trigger);
+    gtiz_context.showMenu(type, component, trigger);
   }
 });
 
 window.addEventListener("resize", function() {
   let menu = document.querySelector('.context-menu');
   if (menu) {
-    let cls = menu.getAttribute('class');
+    let component = menu.getAttribute('data-component');
     let type;
     gtiz_context.menus.forEach(menu => {
-      if (cls.includes(menu)) {
+      if (component.includes(menu)) {
         type = menu;
       }
     });

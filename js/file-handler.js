@@ -88,6 +88,19 @@ gtiz_file_handler.load_options = [
 gtiz_file_handler.drop_areas = document.querySelectorAll('.drop-area');
 
 /**
+ * Get base path from tree path
+ * 
+ * @returns string of base path
+ * 
+ */
+gtiz_file_handler.getBasePath = function() {
+	let tree_path = gtiz_file_handler.params.tree;
+  let last_index = tree_path.lastIndexOf('/');
+	let base_path = tree_path.substring(0, last_index);
+	return base_path;
+}
+
+/**
  * Get file extention from string
  * 
  * @param {String} filename File name string
@@ -453,6 +466,7 @@ gtiz_file_handler.loadNetFiles = function() {
 	let tree = null;
   let metadata = null;
 	let geo = null;
+	let zooms = null;
 	for (let key in params) {
     if (params.hasOwnProperty(key)) {
       params[key] = params[key]
@@ -466,6 +480,8 @@ gtiz_file_handler.loadNetFiles = function() {
         metadata = params[key];
       } else if (key === 'geo') {
 				geo = params[key];
+			} else if (key === 'zooms') {
+				zooms = params[key];
 			}
     }
   }
@@ -513,7 +529,7 @@ gtiz_file_handler.loadNetFiles = function() {
 				// gtiz_tree.tree_raw = data;
 				// gtiz_tree.loadMSTree(tree_raw);
 				// to use original tree button we need gtiz_tree.tree_raw populated with an object containing also metadata please find more in the README.md file under Dev notes paragraph
-				gtiz_tree.loadMSTree(data, is_valid);
+				gtiz_tree.loadMSTree(data);
 				if (gtiz_tree.tree) {
 					if (metadata) {
 						gtiz_file_handler.getData(metadata).then((obj) => {
@@ -543,9 +559,22 @@ gtiz_file_handler.loadNetFiles = function() {
 								let components = ['tree', 'legend'];
 								let action = 'remove';
 								gtiz_layout.uiLoadingManager(components, action);
+								gtiz_tree.checkBestLinkDistanceUtil();
+								if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
+									let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
+									let apply = gtiz_utils.postMessage.settings.apply;
+									gtiz_tree.applySettings(settings_obj, apply, false);
+								}
 								gtiz_map.init();
 							} else {
 								gtiz_file_handler.loadMetadataText(obj.text);
+								gtiz_zooms.init();
+								gtiz_tree.checkBestLinkDistanceUtil();
+								if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
+									let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
+									let apply = gtiz_utils.postMessage.settings.apply;
+									gtiz_tree.applySettings(settings_obj, apply, true);
+								}
 								gtiz_map.init();
 							}
 						}).catch((err) => {
@@ -553,7 +582,7 @@ gtiz_file_handler.loadNetFiles = function() {
 							let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
 							let contents = [];
 							let content = document.createElement('p');
-							content.innerHTML = gtiz_locales.metadata_file_generic_problem;
+							content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
 							contents.push(content);
 							let feedback = '<p>' + err + '</p>';
 							let f_type = 'info';
@@ -561,12 +590,24 @@ gtiz_file_handler.loadNetFiles = function() {
 							let components = ['tree', 'legend'];
 							let action = 'remove';
 							gtiz_layout.uiLoadingManager(components, action);
+							gtiz_tree.checkBestLinkDistanceUtil();
+							if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
+								let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
+								let apply = gtiz_utils.postMessage.settings.apply;
+								gtiz_tree.applySettings(settings_obj, apply, false);
+							}
 							gtiz_map.init();
 						});
 					} else {
 						let components = ['tree', 'legend'];
 						let action = 'remove';
 						gtiz_layout.uiLoadingManager(components, action);
+						gtiz_tree.checkBestLinkDistanceUtil();
+						if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
+							let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
+							let apply = gtiz_utils.postMessage.settings.apply;
+							gtiz_tree.applySettings(settings_obj, apply, false);
+						}
 						gtiz_map.init();
 					}
 				}
@@ -626,10 +667,10 @@ gtiz_file_handler.loadFailed = function(msg) {
  * Load tree from uploaded file contents
  * 
  * @param {Object} tree Object containing tree data coming from files upload
- * @param {Boolean} valid if true data is to be considered as a complete json tree
+ * @param {Boolean} json if true data is to be considered as a complete json tree
  * 
  */
-gtiz_file_handler.loadTreeText = function(tree, valid) {
+gtiz_file_handler.loadTreeText = function(tree, json) {
 	gtiz_tree.initiateLoading("Processing tree file");
 	let metadata_select = document.querySelector('#tree-metadata-select');
 	let node_label_text = document.querySelector('#tree-node-label-text');
@@ -660,7 +701,7 @@ gtiz_file_handler.loadTreeText = function(tree, valid) {
 			}
 		}
 		gtiz_tree.tree_raw = data;
-		gtiz_tree.loadMSTree(gtiz_tree.tree_raw, valid);
+		gtiz_tree.loadMSTree(gtiz_tree.tree_raw);
 		// we need to (re)set the category list for select box
 		let metadata_options = data.metadata_options;
 		if (metadata_options) {
@@ -705,6 +746,13 @@ gtiz_file_handler.loadTreeText = function(tree, valid) {
 				node_label_text.value = value;
 			}
 		}
+		if (gtiz_tree.tree) {
+			if (gtiz_tree.tree.metadata) {
+				gtiz_zooms.init();
+			}
+			gtiz_tree.checkBestLinkDistanceUtil();
+			gtiz_map.init();
+		}
 	},500);
 };
 
@@ -719,8 +767,8 @@ gtiz_file_handler.distributeFile = function(text, filename) {
 		let l_components = ['tree', 'map', 'legend'];
 		gtiz_layout.uiLoadingManager(l_components, l_action);
 		let obj = JSON.parse(text);
-		let valid = true;
-		gtiz_file_handler.loadTreeText(text, valid);
+		let json = true;
+		gtiz_file_handler.loadTreeText(text, json);
 		let header_tag = document.querySelector('#headertag');
 		header_tag.classList.add('show');
 		header_tag.innerHTML = filename;

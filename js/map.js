@@ -1,7 +1,6 @@
 let gtiz_map = {};
 
 gtiz_map.initialized = false;
-gtiz_map.load_count = 0;
 gtiz_map.point_min_radius_default = 24;
 gtiz_map.point_max_radius_default = 55;
 gtiz_map.point_min_radius = gtiz_map.point_min_radius_default;
@@ -10,7 +9,7 @@ gtiz_map.default_delta_type = 'geographical'; // or metadata
 gtiz_map.default_delta = 8;
 gtiz_map.delta_type = gtiz_map.default_delta_type;
 gtiz_map.max_delta = 8;
-gtiz_map.min_delta = 0;
+gtiz_map.min_delta = 1;
 gtiz_map.delta = gtiz_map.default_delta;
 gtiz_map.markers_type = 'piechart'; // or heatmap
 gtiz_map.clustering_base = 2; // changing the base value will change the sensibility of the geographical delta for clustering
@@ -126,7 +125,6 @@ gtiz_map.resetMapDelta = function() {
 gtiz_map.setMapDelta = function(value) {
   let type = gtiz_map.delta_type;
   let delta = type == 'geographical' ? parseInt(value) : value;
-  let nodes = gtiz_tree.filtered_nodes;
   gtiz_map.delta = delta;
   gtiz_map.init();
 };
@@ -135,11 +133,9 @@ gtiz_map.getMapDeltaSelectDefault = function() {
   let type = gtiz_map.default_delta_type;
   let value = '';
   if (type == 'geographical') {
-    value = gtiz_map.default_delta;
+    value = gtiz_map.delta;
   } else {
-    if (gtiz_map.default_delta && typeof gtiz_map.default_delta === 'string') {
-      value = gtiz_map.default_delta;
-    } else if (gtiz_map.delta && typeof gtiz_map.delta === 'string') {
+    if (gtiz_map.delta && typeof gtiz_map.delta === 'string') {
       value = gtiz_map.delta;
     } else {
       value = gtiz_tree.tree.display_category;
@@ -405,7 +401,6 @@ gtiz_map.resetMap = function() {
     map.off();
     map.remove();
     gtiz_map.initialized = false;
-    gtiz_map.load_count = 0;
     gtiz_map.geojson_from_metadata = '';
     gtiz_map.geojson = '';
     gtiz_map.map_container.classList.remove('map-initialized');
@@ -606,6 +601,9 @@ gtiz_map.defineMarkers = () => {
       let ul = contents.querySelector('ul');
       let selected_info = ul.querySelector(".point-popup-info-selected");
       let warning_info = ul.querySelector('.point-popup-info-warning');
+      // avoid close button add #close to url
+      let close_button = document.querySelector('.leaflet-popup-close-button');
+      close_button.removeAttribute("href");
       // translate contents
       gtiz_locales.translate(contents);
       /**
@@ -1129,7 +1127,7 @@ gtiz_map.context_menu = [{
       icon : 'iconic-file-text'
   }],
   selected : () => {
-    return  gtiz_map.default_delta_type;
+    return  gtiz_map.delta_type;
   },
   function : (value) => {
     gtiz_map.toggleAggregationMode(value);
@@ -1281,13 +1279,9 @@ gtiz_map.init = function() {
             } 
             gtiz_loader.removeLoader(gtiz_map.map_container);
             gtiz_map.map_container.classList.add('map-initialized');
-            gtiz_map.load_count++;
-            if (gtiz_map.load_count == 1) {
-              // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
-              map.fitBounds(pointLayer.getBounds(), {
-                padding: [21, 21]
-              });
-            }
+            map.fitBounds(pointLayer.getBounds(), {
+              padding: [21, 21]
+            });
             gtiz_tree.updateOriginalTree('map');
           }
         }).catch((err) => {
@@ -1295,7 +1289,7 @@ gtiz_map.init = function() {
           let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
           let contents = [];
           let content = document.createElement('p');
-          content.innerHTML = gtiz_locales.geojson_file_generic_problem;
+          content.innerHTML = gtiz_locales.current.geojson_file_generic_problem;
           contents.push(content);
           let feedback = '<p>' + err + '</p>';
           let f_type = 'info';
@@ -1320,13 +1314,10 @@ gtiz_map.init = function() {
           } 
           gtiz_loader.removeLoader(gtiz_map.map_container);
           gtiz_map.map_container.classList.add('map-initialized');
-          gtiz_map.load_count++;
-          if (gtiz_map.load_count == 1) {
-            // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
-            map.fitBounds(pointLayer.getBounds(), {
-              padding: [21, 21]
-            });
-          }
+          // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
+          map.fitBounds(pointLayer.getBounds(), {
+            padding: [21, 21]
+          });
           gtiz_tree.updateOriginalTree('map');
         } else {
           let map_node = document.querySelector('#map-div');
@@ -1349,13 +1340,10 @@ gtiz_map.init = function() {
       } 
       gtiz_loader.removeLoader(gtiz_map.map_container);
       gtiz_map.map_container.classList.add('map-initialized');
-      gtiz_map.load_count++;
-      if (gtiz_map.load_count == 1) {
-        // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
-        map.fitBounds(pointLayer.getBounds(), {
-          padding: [21, 21]
-        });
-      }
+      // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
+      map.fitBounds(pointLayer.getBounds(), {
+        padding: [21, 21]
+      });
       gtiz_tree.updateOriginalTree('map');
     }
   }, 500);

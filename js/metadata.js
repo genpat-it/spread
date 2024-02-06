@@ -43,6 +43,7 @@ gtiz_metadata.options = {
   rowMultiSelectWithClick : true,
   animateRows: true, // have rows animate to new positions when sorted
   suppressColumnVirtualisation : true,
+  suppressFieldDotNotation : true,
   isRowSelectable: (params) => {
     return !params.data.ID.includes('hypo');
   },
@@ -176,7 +177,7 @@ gtiz_metadata.setColumnsAsLegend = function() {
  */
 gtiz_metadata.moveColumn = function() {
   let column = gtiz_metadata.selected_column;
-  let position = 0;
+  let position = 1;
   gtiz_metadata.options.columnApi.moveColumn(column, position);
 }
 
@@ -314,23 +315,37 @@ gtiz_metadata.deselectAll = function() {
 }
 
 /**
- * Called by tree.interceptr on tree selection change.
+ * Called by tree.interceptor on tree selection change.
  * 
  * @param {Object} nodes Object containing information non selected nodes.
  * 
  */
 gtiz_metadata.findNodes = function(nodes) {
-  let selected = Object.values(nodes).flat();
-  if (gtiz_metadata.options.api) {
-    gtiz_metadata.options.api.forEachNode(node => {
-      let id = selected.find(element => element === node.data.ID);
-      if (id) {
-        node.setSelected(true);
-      } else {
-        node.setSelected(false);
-      }
-    });
-  }
+  let components = ['metadata'];
+	let action = 'add';
+	gtiz_layout.uiLoadingManager(components, action);
+
+  setTimeout(() => {
+    if (!nodes) {
+      nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
+    }
+    let selected = Object.values(nodes).flat();
+    if (gtiz_metadata.options.api) {
+      gtiz_metadata.options.api.forEachNode(node => {
+        let id = selected.find(element => element === node.data.ID);
+        if (id) {
+          node.setSelected(true);
+        } else {
+          node.setSelected(false);
+        }
+      });
+    }
+
+    action = 'remove';
+  	gtiz_layout.uiLoadingManager(components, action);
+    gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
+
+  }, 0);
 }
 
 /**

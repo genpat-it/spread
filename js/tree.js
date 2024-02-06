@@ -1,5 +1,6 @@
 let gtiz_tree = {};
 gtiz_tree.original_tree = {};
+gtiz_tree.full_tree_backup = {};
 gtiz_tree.filtered_nodes = [];
 gtiz_tree.tree = null;
 gtiz_tree.current_metadata_file = null;
@@ -21,11 +22,328 @@ gtiz_tree.node_label_font_size = 12;
 gtiz_tree.individual_segments = 'hidden';
 gtiz_tree.node_radius_size = 100; // value has to be divided for 10 `tree.setNodeSize(gtiz_tree.node_radius_size / 10.);`
 gtiz_tree.node_kurtosis = 100; // value has to be divided for 200 `tree.setRelativeNodeSize(gtiz_tree.node_kurtosis / 200.0);`
+gtiz_tree.node_collapsed_value = 0;
 gtiz_tree.show_branch_labels = 'shown'; // or hidden
 gtiz_tree.branch_label_font_size = 18;
 gtiz_tree.branch_scaling = 100;
 gtiz_tree.branch_log_scale = 'not-active'; // or active
 gtiz_tree.branch_cutoffs_method = 'display'; // or hide or cap
+gtiz_tree.label_to_highlight = ''; // category text to highlight
+gtiz_tree.distance_controller = 400; // Change this value to determine the link distance value at which the best link distance should be applied
+gtiz_tree.distance_cfg = {
+  loopCount: 10000,
+  performanceThresholds: {
+      high: 3,
+      medium: 10
+  },
+  scaleFactors: {
+      high: 0.4,
+      medium: 0.6,
+      low: 0.2
+  }
+};
+
+/**
+ * Check browser performance and suggest a best link distance to collapse branches.
+ * 
+ * 
+ */
+gtiz_tree.checkBestLinkDistanceUtil = function() {
+  let distance = gtiz_tree.tree.max_link_distance;
+  if (distance > gtiz_tree.distance_controller) {
+    // Create an instance of LinkDistanceOptimizer
+    let best_distance = gtiz_optimizer.getBestLinkDistance(distance, gtiz_tree.distance_cfg);
+    best_distance = Math.floor(best_distance);
+
+    if (best_distance != 0 && best_distance != gtiz_tree.node_collapsed_value) {
+      let component = document.querySelector('.tree-container');
+      let container = document.createElement('div');
+      container.setAttribute('class', 'tree-card-message');
+      container.setAttribute('id', 'tree-best-distance-advice');
+
+      let body = document.createElement('div');
+      body.setAttribute('class', 'tree-card-message-body');
+
+      let icon = document.createElement('div');
+      icon.setAttribute('class', 'icon');
+      icon.innerHTML = '<i class="iconic iconic-warning-triangle"></i>'
+      body.append(icon);
+
+      let text = document.createElement('p');
+      let message = gtiz_locales.current.possible_performance_issues_message;
+      text.innerHTML = message.replace('{0}', best_distance);
+      body.append(text);
+      
+      let actions = document.createElement('div');
+      actions.setAttribute('class', 'tree-card-message-actions');
+      
+      let apply = document.createElement('button');
+      apply.innerHTML = gtiz_locales.current.collapse_branches;
+      apply.addEventListener('click', (e) => {
+        gtiz_tree.collapseBranches(best_distance);
+        gtiz_tree.tree.centerGraph();
+        container.remove();
+      });
+
+      let ignore = document.createElement('button');
+      ignore.setAttribute('class', 'secondary');
+      ignore.innerHTML = gtiz_locales.current.im_fine_thanks;
+      ignore.addEventListener('click', (e) => {
+        container.remove();
+      });
+      
+      actions.append(apply);
+      actions.append(ignore);
+
+      container.append(body);
+      container.append(actions);
+
+      component.append(container);
+    }
+  }
+}
+
+/**
+ * Apply settings on originall tree.
+ * 
+ * @param {Object} obj Full tree object from which to take settings or full settings object to apply
+ * @param {Boolean} apply If `true` apply settings
+ * @param {Boolean} metadata If `true` consider apply also settings related to metadata
+ * @param {String} page If `current` reset some settings to default, usefull when appllying settings to tree in current page
+ */
+gtiz_tree.applySettings = function(obj, apply, metadata, page) {
+
+  if (apply == 'apply') {
+    let bkp = obj;
+    let tree = gtiz_tree.tree;
+    // apply all settings
+    let bkp_tree_settings = bkp.gtiz_settings.tree;
+    gtiz_tree.setMetadata(bkp.layout_data.display_category);
+    gtiz_tree.toggleShowNodeLabels(bkp_tree_settings.show_node_labels);
+    gtiz_tree.setNodeLabelMetadata(bkp_tree_settings.node_label);
+    gtiz_tree.setNodeLabelFontSize(bkp_tree_settings.node_label_font_size);
+    // gtiz_tree.highlightLabels(gtiz_tree.label_to_highlight);
+    gtiz_tree.toggleIndividualSegments(bkp_tree_settings.individual_segments);
+    gtiz_tree.setNodeRadiusSize(bkp_tree_settings.node_radius_size);
+    gtiz_tree.setNodeKurtosis(bkp_tree_settings.node_kurtosis);
+    gtiz_tree.toggleShowBranchLabels(bkp_tree_settings.show_branch_labels);
+    gtiz_tree.setBranchLabelFontSize(bkp_tree_settings.branch_label_font_size);
+    gtiz_tree.setBranchScaling(bkp_tree_settings.branch_scaling);
+    // gtiz_tree.collapseBranches(bkp_tree_settings.node_collapsed_value);
+    gtiz_tree.toggleBranchLogScale(bkp_tree_settings.branch_log_scale);
+    gtiz_tree.setBranchLength(bkp_tree_settings.node_collapsed_value);
+    gtiz_tree.setBranchLengthMethod(bkp_tree_settings.branch_cutoffs_method);
+    gtiz_tree.toggleRenderingMode(bkp_tree_settings.rendering_mode);
+    gtiz_tree.setRenderingDynamicSelecion(bkp_tree_settings.rendering_dynamic_selected_only);
+    gtiz_tree.setRenderingStaticSelecion(bkp_tree_settings.rendering_static_real_branch_length);
+
+    if (metadata) {
+      let bkp_category = bkp.layout_data.display_category;
+      // set custom colors
+      let bkp_custom_colors = bkp.layout_data.nodes_links.custom_colours;
+      if (bkp_custom_colors) {
+        Object.keys(bkp_custom_colors).forEach(cat => {
+          let bkp_custom_colors_cat = bkp_custom_colors[cat];
+          Object.keys(bkp_custom_colors_cat).forEach(color => {
+            gtiz_tree.tree.setColour(cat, color, bkp_custom_colors_cat[color]);
+          });
+        });
+        if (gtiz_legend.selection_mode == 'visual') {
+          gtiz_legend.resetVisualSelection();
+          gtiz_legend.highlightSelection();
+        } else {
+          gtiz_legend.resetQualitativeSelection();
+        }
+      }
+      // set metadata
+      let exists = tree.metadata_info[bkp_category];
+      if (exists) {
+        // set max group number
+        let bkp_max_group_number = bkp.metadata_options[bkp_category].category_num;
+        let max_group_number = tree.metadata_info[bkp_category].category_num;
+        if (bkp_max_group_number && bkp_max_group_number != max_group_number) {
+          // tree.metadata_info[bkp_category].category_num = bkp_max_group_number;
+          gtiz_legend.changeMaxGroupNumber(bkp_max_group_number, bkp_category, false);
+        }
+        // set min group number
+        let bkp_min_group_number = bkp.metadata_options[bkp_category].minnum;
+        let min_group_number = tree.metadata_info[bkp_category].minnum;
+        if (bkp_min_group_number && bkp_min_group_number != min_group_number) {
+          // tree.metadata_info[bkp_category].minnum = bkp_min_group_number;
+          gtiz_legend.changeMinGroupSize(bkp_min_group_number, bkp_category, false);
+        }
+        // set coltype
+        let bkp_coltype = bkp.metadata_options[bkp_category].coltype;
+        let coltype = tree.metadata_info[bkp_category].coltype;
+        if (bkp_coltype && bkp_coltype != coltype) {
+          // tree.metadata_info[bkp_category].coltype = bkp_coltype;
+          gtiz_legend.changeDataCategory(bkp_coltype, bkp_category, false);
+        }
+        // set group order
+        let bkp_group_order = bkp.gtiz_legend.group_order;
+        let group_order = gtiz_legend.group_order;
+        if (bkp_group_order && bkp_group_order != group_order) {
+          let value = bkp_group_order.type + '-' + bkp_group_order.sort;
+          gtiz_legend.changeGroupOrder(value, bkp_category, false);
+        }
+        // set color scheme 
+        let bkp_colorscheme = bkp.metadata_options[bkp_category].colorscheme;
+        let colorscheme = tree.metadata_info[bkp_category].colorscheme;
+        if (bkp_colorscheme && bkp_colorscheme != colorscheme) {
+          gtiz_legend.changeColorScheme(bkp_colorscheme, bkp_category, false);
+        }
+        tree.changeCategory(bkp_category);
+      }
+    }
+    if (page != 'current') {
+      // reset layout options
+      let layout = [{
+          type: 'settings',
+          value: bkp.gtiz_layout.settings
+        }, {
+          type: 'map',
+          value: bkp.gtiz_layout.map
+        }, {
+          type: 'legend',
+          value: bkp.gtiz_layout.legend
+        }, {
+          type: 'metadata',
+          value: bkp.gtiz_layout.metadata
+        }, {
+          type: 'video',
+          value: bkp.gtiz_layout.video
+        }, {
+          type: 'fullscreen',
+          value: bkp.gtiz_layout.fullscreen
+      }];
+      layout.forEach(element => {
+        let selector = '[data-view="' + element.type + '"]';
+        let node = gtiz_layout.quick_actions_node.querySelector(selector);
+        if (node) {
+          let selection = node.getAttribute('data-selection');
+          if (selection != element.value) {
+            let event = new MouseEvent('click', {
+              bubbles: true,     // Indicates whether the event bubbles up through the DOM or not
+              cancelable: true,  // Indicates whether the event is cancelable
+              view: window,      // Specifies the view (window) from which the event was generated
+              // Additional properties for simulating specific types of clicks (e.g., with Ctrl key)
+            });
+            // Dispatch the event
+            node.dispatchEvent(event);
+          }
+        }
+      });
+    }
+  } else {
+    if (page == 'current') {
+      // reset layout options
+      let layout = [{
+          type: 'settings',
+          value: 'off'
+        }, {
+          type: 'map',
+          value: 'off'
+        }, {
+          type: 'legend',
+          value: 'on'
+        }, {
+          type: 'metadata',
+          value: 'off'
+        }, {
+          type: 'video',
+          value: 'on'
+        }, {
+          type: 'fullscreen',
+          value: 'off'
+      }];
+      layout.forEach(element => {
+        let selector = '[data-view="' + element.type + '"]';
+        let node = gtiz_layout.quick_actions_node.querySelector(selector);
+        if (node) {
+          let selection = node.getAttribute('data-selection');
+          if (selection != element.value) {
+            let event = new MouseEvent('click', {
+              bubbles: true,     // Indicates whether the event bubbles up through the DOM or not
+              cancelable: true,  // Indicates whether the event is cancelable
+              view: window,      // Specifies the view (window) from which the event was generated
+              // Additional properties for simulating specific types of clicks (e.g., with Ctrl key)
+            });
+            // Dispatch the event
+            node.dispatchEvent(event);
+          }
+        }
+      });
+    }
+  }
+}
+
+/**
+ * Get complete settinfs object
+ * 
+ * @returns Object
+ */
+gtiz_tree.getCompleteGrapeTreeSettings = function() {
+  let obj = {};
+  obj.gtiz_locales = {
+		languages : gtiz_locales.languages
+	};
+  obj.gtiz_layout = {
+		settings : gtiz_layout.settings,
+		map : gtiz_layout.map,
+		metadata : gtiz_layout.metadata,
+		legend : gtiz_layout.legend,
+		video : gtiz_layout.video
+	};
+  obj.gtiz_settings = {
+		cfg : gtiz_settings.cfg,
+		tree : {
+			rendering_mode : gtiz_tree.rendering_mode,
+			rendering_dynamic_selected_only : gtiz_tree.rendering_dynamic_selected_only,
+			rendering_static_real_branch_length : gtiz_tree.rendering_static_real_branch_length,
+			show_node_labels : gtiz_tree.show_node_labels,
+			node_label : gtiz_tree.node_label,
+			node_label_font_size : gtiz_tree.node_label_font_size,
+			individual_segments : gtiz_tree.individual_segments,
+			node_radius_size : gtiz_tree.node_radius_size,
+			node_kurtosis : gtiz_tree.node_kurtosis,
+      node_collapsed_value : gtiz_tree.node_collapsed_value,
+			show_branch_labels : gtiz_tree.show_branch_labels,
+			branch_label_font_size : gtiz_tree.branch_label_font_size,
+			branch_scaling : gtiz_tree.branch_scaling,
+			branch_log_scale : gtiz_tree.branch_log_scale,
+			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method,
+      label_to_highlight : gtiz_tree.label_to_highlight
+		},
+		map : {
+			default_delta_type : gtiz_map.delta_type,
+			default_delta : gtiz_map.delta,
+			point_min_radius : gtiz_map.point_min_radius,
+			point_max_radius : gtiz_map.point_max_radius,
+			markers_type : gtiz_map.markers_type
+		}
+	};
+  obj.gtiz_legend = {
+		selection_mode : gtiz_legend.selection_mode,
+		view_mode : gtiz_legend.view_mode,
+		group_order : gtiz_legend.group_order,
+		selection_map : gtiz_legend.getSelectionMap()
+	};
+  obj.gtiz_metadata = {
+		show_nodes : gtiz_metadata.show_nodes,
+		show_hypothetical : gtiz_metadata.show_hypothetical
+	};
+  obj.gtiz_video = {
+		cfg : gtiz_video.cfg
+	};
+  let layout = gtiz_tree.tree.getLayout();
+  obj.layout_data = {
+    display_category : layout.display_category,
+    nodes_links : layout.nodes_links,
+  }
+  obj.metadata_options = gtiz_tree.tree.getMetadataOptions();
+
+  return obj;
+}
 
 /**
  * Get complete GrapeTree object (tree, metadata, map, settings etc.)
@@ -36,7 +354,7 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
   let obj = gtiz_tree.tree.getTreeAsObject();
   obj.gtiz_locales = {
 		languages : gtiz_locales.languages
-	}
+	};
   if (gtiz_map.geojson && gtiz_map.geojson != '') {
 		obj.gtiz_map = {
 			geojson : gtiz_map.geojson
@@ -61,11 +379,13 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
 			individual_segments : gtiz_tree.individual_segments,
 			node_radius_size : gtiz_tree.node_radius_size,
 			node_kurtosis : gtiz_tree.node_kurtosis,
+      node_collapsed_value : gtiz_tree.node_collapsed_value,
 			show_branch_labels : gtiz_tree.show_branch_labels,
 			branch_label_font_size : gtiz_tree.branch_label_font_size,
 			branch_scaling : gtiz_tree.branch_scaling,
 			branch_log_scale : gtiz_tree.branch_log_scale,
-			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method
+			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method,
+      label_to_highlight : gtiz_tree.label_to_highlight
 		},
 		map : {
 			default_delta_type : gtiz_map.delta_type,
@@ -87,6 +407,14 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
 	};
   obj.gtiz_video = {
 		cfg : gtiz_video.cfg
+	};
+  obj.gtiz_zooms = {
+		cfg : gtiz_zooms.cfg,
+		category : gtiz_zooms.category,
+    soi : gtiz_zooms.soi,
+    thresholds_params : gtiz_zooms.thresholds_params,
+    zooms_prefix : gtiz_zooms.zooms_prefix,
+    zooms : gtiz_zooms.zooms
 	};
 
   return obj;
@@ -132,7 +460,10 @@ gtiz_tree.saveOriginalTree = function() {
 
 gtiz_tree.findNodes = function(nodes) {
   gtiz_map.findNodesInMap(nodes);
-  gtiz_metadata.findNodes(nodes);
+  if (gtiz_layout.metadata == 'on') {
+    gtiz_metadata.findNodes(nodes);
+  }
+  gtiz_zooms.checkZooms(nodes);
 }
 
 /**
@@ -183,8 +514,10 @@ gtiz_tree.setBranchLength = function(value) {
 gtiz_tree.setBranchLengthMethod = function(value) {
   gtiz_tree.branch_cutoffs_method = value;
   let input = document.querySelector('#tree-branch-length');
-  let max = parseFloat(input.value);
-  gtiz_tree.setBranchLength(max);
+  if (input) {
+    let max = parseFloat(input.value);
+    gtiz_tree.setBranchLength(max);
+  }
 }
 
 gtiz_tree.toggleBranchLogScale = function(value) {
@@ -198,6 +531,7 @@ gtiz_tree.toggleBranchLogScale = function(value) {
 
 gtiz_tree.collapseBranches = function(value) {
   let v = parseFloat(value);
+  gtiz_tree.node_collapsed_value = v;
   gtiz_tree.tree.collapseNodes(v);
 }
 
@@ -291,12 +625,15 @@ gtiz_tree.highlightLabels = function(value) {
   // clean legend selection
   let selection_mode = gtiz_legend.selection_mode;
   let items = document.querySelectorAll('.card-legend .list-row');
-  items.forEach(item => {
-    item.classList.remove('selected');
-    let check = item.querySelector('.list-check');
-    let icon = check.querySelector('i');
-    icon.setAttribute('class', 'iconic iconic-check-circle-empty');
-  });
+  if (items) {
+    items.forEach(item => {
+      item.classList.remove('selected');
+      let check = item.querySelector('.list-check');
+      let icon = check.querySelector('i');
+      icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+    });
+  }
+  
   if (selection_mode == 'qualitative') {
     gtiz_legend.nodeSelection();
   } else {
@@ -305,6 +642,7 @@ gtiz_tree.highlightLabels = function(value) {
   let node_label = document.querySelector('#tree-node-label-text');
   let category = node_label.value;
   let keyword = value;
+  gtiz_tree.label_to_highlight = keyword;
 	if (!keyword) {
     gtiz_tree.tree.clearSelection();
 		return;
@@ -365,7 +703,7 @@ gtiz_tree.getMetadataSelectOptions = function() {
  * 
  * Changes the category displayed. If no category is given then the node IDs will be displayed.
  * 
- * changeCategory(string)
+ * @param {String} value category to change
  * 
  */
 gtiz_tree.setMetadata = function(value) {
@@ -399,16 +737,24 @@ gtiz_tree.toggleRenderingMode = function(value) {
   let static_check = document.querySelector('#tree-rendering-static-real-branch-length');
   let dynamic_check = document.querySelector('#tree-rendering-dynamic-selected-only');
   if (value == 'dynamic') {
-    dynamic_check.setAttribute('style', 'display: block;');
-    static_check.setAttribute('style', 'display: none;');
+    if (dynamic_check) {
+      dynamic_check.setAttribute('style', 'display: block;');
+    }
+    if (static_check) {
+      static_check.setAttribute('style', 'display: none;');
+    }
     if (gtiz_tree.rendering_dynamic_selected_only == 'selceted_only') {
       gtiz_tree.tree.unfixSelectedNodes(false);
     } else {
       gtiz_tree.tree.unfixSelectedNodes(true);
     }
   } else {
-    dynamic_check.setAttribute('style', 'display: none;');
-    static_check.setAttribute('style', 'display: block;');
+    if (dynamic_check) {
+      dynamic_check.setAttribute('style', 'display: none;');
+    }
+    if (static_check) {
+      static_check.setAttribute('style', 'display: block;');
+    }
     if (gtiz_tree.rendering_static_real_branch_length == 'real') {
       gtiz_tree.tree.fixAllNodes(true);
     } else {
@@ -485,6 +831,7 @@ gtiz_tree.addMetadataOptions = function (data) {
  * @param {Object} tree Tree object
  */
 gtiz_tree.treeLoaded = function(tree) {
+
   tree.centerGraph();
   tree.resize();
   let tree_time = gtiz_layout.getStyleTime(gtiz_layout.tree_node);
@@ -517,11 +864,11 @@ gtiz_tree.treeLoaded = function(tree) {
         if (video_status && gtiz_video.status != 'init') {
           gtiz_video.reset();
         }
-        tree.clearSelection();
+        // tree.clearSelection();
       }
       if (gtiz_tree.change_counter > 1) {
         if (gtiz_map.geojson != '' && gtiz_layout.map == 'on') {
-          gtiz_map.init();
+          gtiz_map.defineMarkers();
         }
       }
       gtiz_tree.change_counter++;
@@ -664,10 +1011,10 @@ gtiz_tree.treeLoading = function(tree, msg) {
  * Load tree process
  * 
  * @param {Object} data Object containing tree data coming from url parameters or files upload
- * @param {Boolean} valid if true data is to be considered as a complete json tree
+ * @param {Boolean} json if true data is to be considered as a complete json tree
  *  
  */
-gtiz_tree.loadMSTree = function(data, valid) {
+gtiz_tree.loadMSTree = function(data, json) {
   gtiz_tree.metadata_options = {};
   if (gtiz_tree.tree) {
     gtiz_tree.tree.svg.remove();
@@ -690,86 +1037,96 @@ gtiz_tree.loadMSTree = function(data, valid) {
   gtiz_tree.tree = new D3MSTree("graph-div", JSON.parse(JSON.stringify(data)), function(tree, msg) {
     gtiz_tree.treeLoading(tree, msg);
   });
-  if (valid) {
-    // controlling if data contains configurations
-    let layout = data.gtiz_layout;
-    let settings = data.gtiz_settings;
-    let map = data.gtiz_map;
-    let legend = data.gtiz_legend;
-    let metadata = data.gtiz_metadata;
-    let video = data.gtiz_video;
-    let locales = data.gtiz_locales;
-    if (map) {
-      let geoJSON = map.geojson;
-      if (geoJSON) {
-        gtiz_map.setGeoJSON(geoJSON);
-        // we need to call map definition points method due with the load JSON functions we don't call the loadMetadataText() as called by the loadNetFIles()
-        // reset gtiz_map.load_count allow us to give an initial fitbounds on markers
-        gtiz_map.load_count = 0;
-        gtiz_map.init();
-      }
-    }
-    if (layout) {
-      gtiz_layout.settings = layout.settings;
-      if (!gtiz_map.geojson || gtiz_map.geojson == '') {
-        gtiz_layout.map = 'off';
-      } else {
-        gtiz_layout.map = layout.map;
-      }
-      gtiz_layout.metadata = layout.metadata;
-      gtiz_layout.legend = layout.legend;
-      gtiz_layout.video = layout.video;
-    }
-    if (settings) {
-      if (settings.cfg) {
-        gtiz_settings.cfg.forEach(setting => {
-          let card = settings.cfg.find(element => element.card === setting.card);
-          setting.expanded = card.expanded;
-        });
-      }
-      if (settings.tree) {
-        gtiz_tree.rendering_mode = settings.tree.rendering_mode;
-        gtiz_tree.rendering_dynamic_selected_only = settings.tree.rendering_dynamic_selected_only;
-        gtiz_tree.rendering_static_real_branch_length = settings.tree.rendering_static_real_branch_length;
-        gtiz_tree.show_node_labels = settings.tree.show_node_labels;
-        gtiz_tree.node_label = settings.tree.node_label;
-        gtiz_tree.node_label_font_size = settings.tree.node_label_font_size;
-        gtiz_tree.individual_segments = settings.tree.individual_segments;
-        gtiz_tree.node_radius_size = settings.tree.node_radius_size;
-        gtiz_tree.node_kurtosis = settings.tree.node_kurtosis;
-        gtiz_tree.show_branch_labels = settings.tree.show_branch_labels;
-        gtiz_tree.branch_label_font_size = settings.tree.branch_label_font_size;
-        gtiz_tree.branch_scaling = settings.tree.branch_scaling;
-        gtiz_tree.branch_log_scale = settings.tree.branch_log_scale;
-        gtiz_tree.branch_cutoffs_method = settings.tree.branch_cutoffs_method;
-      }
-      if (settings.map) {
-        gtiz_map.default_delta_type = settings.map.default_delta_type;
-        gtiz_map.default_delta = settings.map.default_delta;
-        gtiz_map.point_min_radius = settings.map.point_min_radius;
-        gtiz_map.point_max_radius = settings.map.point_max_radius;
-        gtiz_map.markers_type = settings.map.markers_type;
-      }
-    }
-    if (legend) {
-      gtiz_legend.selection_mode = legend.selection_mode,
-      gtiz_legend.view_mode = legend.view_mode,
-      gtiz_legend.group_order = legend.group_order
-      gtiz_legend.selection_map = legend.selection_map;
-    }
-    if (video) {
-      gtiz_video.cfg = video.cfg;
-    }
-    /* if (metadata) {
-      gtiz_metadata.show_nodes = metadata.show_nodes;
-		  gtiz_metadata.show_hypothetical = metadata.show_hypothetical;
-    } */
-    if (locales) {
-      gtiz_locales.languages = locales.languages;
-      gtiz_locales.current = gtiz_locales.getActiveLanguageTerms();
-      gtiz_locales.translate();
+
+  // control if data contains configurations
+  let layout = data.gtiz_layout;
+  let settings = data.gtiz_settings;
+  let map = data.gtiz_map;
+  let legend = data.gtiz_legend;
+  let metadata = data.gtiz_metadata;
+  let video = data.gtiz_video;
+  let locales = data.gtiz_locales;
+  let zooms = data.gtiz_zooms;
+  if (map) {
+    let geoJSON = map.geojson;
+    if (geoJSON) {
+      gtiz_map.setGeoJSON(geoJSON);
+      // we need to call map definition points method due with the load JSON functions we don't call the loadMetadataText() as called by the loadNetFIles()
+      // reset gtiz_map.load_count allow us to give an initial fitbounds on markers
+      gtiz_map.load_count = 0;
     }
   }
+  if (layout) {
+    gtiz_layout.settings = layout.settings;
+    if (!gtiz_map.geojson || gtiz_map.geojson == '') {
+      gtiz_layout.map = 'off';
+    } else {
+      gtiz_layout.map = layout.map;
+    }
+    gtiz_layout.metadata = layout.metadata;
+    gtiz_layout.legend = layout.legend;
+    gtiz_layout.video = layout.video;
+  }
+  if (settings) {
+    if (settings.cfg) {
+      gtiz_settings.cfg.forEach(setting => {
+        let card = settings.cfg.find(element => element.card === setting.card);
+        setting.expanded = card.expanded;
+      });
+    }
+    if (settings.tree) {
+      gtiz_tree.rendering_mode = settings.tree.rendering_mode;
+      gtiz_tree.rendering_dynamic_selected_only = settings.tree.rendering_dynamic_selected_only;
+      gtiz_tree.rendering_static_real_branch_length = settings.tree.rendering_static_real_branch_length;
+      gtiz_tree.show_node_labels = settings.tree.show_node_labels;
+      gtiz_tree.node_label = settings.tree.node_label;
+      gtiz_tree.node_label_font_size = settings.tree.node_label_font_size;
+      gtiz_tree.individual_segments = settings.tree.individual_segments;
+      gtiz_tree.node_radius_size = settings.tree.node_radius_size;
+      gtiz_tree.node_kurtosis = settings.tree.node_kurtosis;
+      gtiz_tree.node_collapsed_value = settings.tree.node_collapsed_value;
+      gtiz_tree.show_branch_labels = settings.tree.show_branch_labels;
+      gtiz_tree.branch_label_font_size = settings.tree.branch_label_font_size;
+      gtiz_tree.branch_scaling = settings.tree.branch_scaling;
+      gtiz_tree.branch_log_scale = settings.tree.branch_log_scale;
+      gtiz_tree.branch_cutoffs_method = settings.tree.branch_cutoffs_method;
+      gtiz_tree.label_to_highlight = settings.tree.label_to_highlight;
+    }
+    if (settings.map) {
+      gtiz_map.default_delta_type = settings.map.default_delta_type;
+      gtiz_map.default_delta = settings.map.default_delta;
+      gtiz_map.point_min_radius = settings.map.point_min_radius;
+      gtiz_map.point_max_radius = settings.map.point_max_radius;
+      gtiz_map.markers_type = settings.map.markers_type;
+    }
+  }
+  if (legend) {
+    gtiz_legend.selection_mode = legend.selection_mode,
+    gtiz_legend.view_mode = legend.view_mode,
+    gtiz_legend.group_order = legend.group_order
+    gtiz_legend.selection_map = legend.selection_map;
+  }
+  if (video) {
+    gtiz_video.cfg = video.cfg;
+  }
+  /* if (metadata) {
+    gtiz_metadata.show_nodes = metadata.show_nodes;
+    gtiz_metadata.show_hypothetical = metadata.show_hypothetical;
+  } */
+  if (locales) {
+    gtiz_locales.languages = locales.languages;
+    gtiz_locales.current = gtiz_locales.getActiveLanguageTerms();
+    gtiz_locales.translate();
+  }
+  if (zooms) {
+    gtiz_zooms.cfg = zooms.cfg,
+    gtiz_zooms.category = zooms.category,
+    gtiz_zooms.soi = zooms.soi,
+    gtiz_zooms.thresholds_params = zooms.thresholds_params,
+    gtiz_zooms.zooms_prefix = zooms.zooms_prefix,
+    gtiz_zooms.zooms = zooms.zooms
+  }
+
   gtiz_metadata.init();
   gtiz_legend.init();
   gtiz_video.init();

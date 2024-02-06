@@ -38,6 +38,10 @@
   opacity: 0;
 }
 
+.leaflet-container a.leaflet-popup-close-button {
+  cursor: pointer;
+}
+
 .leaflet-popup-content {
   max-height: 165px;
   overflow-y: auto;
