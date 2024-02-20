@@ -1,4 +1,4 @@
-# COHESIVE - GrapeTree extended version
+# SPREAD, Spatiotemporal Phylogenomic Research and Epidemiological Analysis Dashboard - COHESIVE version
 
 ## Description
 
@@ -6,7 +6,7 @@ The project is based on [GrapeTree](https://github.com/achtman-lab/GrapeTree), a
 
 The idea was to extend the original project in order to conducts spatio-temporal analyses with an integrated geographic information system (GIS) as well as a data visualization system across time. The web application allows users to upload geographic coordinates and temporal data related to each sample and allows to display them reflecting the selection in the tree on the map and vice versa, and reproducing a timelapse visualization both in the map and in the tree.
 
-## Use GrapeTree extended version
+## Use SPREAD
 
 You can download the project and easly running it locally, but we provide also a ready to use version freely available following link below:
 
@@ -32,15 +32,15 @@ To start a web server, in terminal open the directory containing your static web
 
 `live-server`
 
-### Run GrapeTree locally
+### Run SPREAD locally
 
-Download the .zip of the code from this repository, then unzip on a directory `DIR_GRAPETREE` (for example: `/tmp/grapetree-extended`).
+Download the .zip of the code from this repository, then unzip on a directory `DIR_SPREAD` (for example: `/tmp/spread`).
 
 **Source files in place**
 
-Produce your newick (`tree.nwk`) and metadata (`meta.tsv`) files and copy them inside `DIR_GRAPETREE`, then on terminal:
+Produce your newick (`tree.nwk`) and metadata (`meta.tsv`) files and copy them inside `DIR_SPREAD`, then on terminal:
 
-`live-server DIR_GRAPETREE`
+`live-server DIR_SPREAD`
 
 Now you will be able to load data by url in your web browser, for example:
 
@@ -84,9 +84,9 @@ Dashboard allows you to download a complete JSON file including metadata and con
 
 ## Zooms for clusters
 
-GrapeTree can be used to visualize results generated with [ReporTree](https://github.com/insapathogenomics/ReporTree). Very briefly, ReporTree allows the generation of a series of zooms on clusters by specifying samples of interest and parameters such as thresholds and distances.
+SPREAD can be used to visualize results generated with [ReporTree](https://github.com/insapathogenomics/ReporTree). Very briefly, ReporTree allows the generation of a series of zooms on clusters by specifying samples of interest and parameters such as thresholds and distances.
 
-In this context, it's possible to indicate to GrapeTree the presence of available zooms using the methods described below.
+In this context, it's possible to indicate to SPREAD the presence of available zooms using the methods described below.
 
 > **Please note.**
 > Here, we describe how to set up and place the needed newick and metadata files for zooms. However, if you produce these files directly with ReporTree, the structure, composition, and positions are already correct. 
