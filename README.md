@@ -46,11 +46,15 @@ Produce your newick (`tree.nwk`) and metadata (`meta.tsv`) files and copy them i
 
 Now you will be able to load data by url in your web browser, for example:
 
-`http://localhost:8080?tree=tree.nwk&metadata=metadata.tsv`
+```
+http://localhost:8080?tree=tree.nwk&metadata=metadata.tsv
+```
 
 In the project you will find a `datasets` folder with some example data to load, you can use url to see them as well:
 
-`http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&geo=/datasets/test/points.geojson`
+```
+http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&geo=/datasets/test/points.geojson
+```
 
 ### Load geoJSON or cooridates data
 
@@ -64,7 +68,9 @@ Alternatively you can integrate in `metadata.tsv` longitute and latitude values 
 
 Using our data example:
 
-`http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&longitude=x&latitude=y`
+```
+http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&longitude=x&latitude=y
+```
 
 > **Important**
 >
