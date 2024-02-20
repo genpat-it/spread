@@ -6,6 +6,8 @@ The project is based on [GrapeTree](https://github.com/achtman-lab/GrapeTree), a
 
 The idea was to extend the original project in order to conducts spatio-temporal analyses with an integrated geographic information system (GIS) as well as a data visualization system across time. The web application allows users to upload geographic coordinates and temporal data related to each sample and allows to display them reflecting the selection in the tree on the map and vice versa, and reproducing a timelapse visualization both in the map and in the tree.
 
+> Previously known as GrapeTree Extended.
+
 ## Use SPREAD
 
 You can download the project and easly running it locally, but we provide also a ready to use version freely available following link below:
