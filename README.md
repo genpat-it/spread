@@ -1,4 +1,4 @@
-# SPREAD, Spatiotemporal Pathogens Relationships and Epidemiological Analysis Dashboard
+# SPREAD, Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard
 
 Previously known as GrapeTree Extended.
 
