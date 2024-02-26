@@ -1,6 +1,6 @@
 # SPREAD, Spatiotemporal Pathogens Relationships and Epidemiological Analysis Dashboard
 
-> Previously known as GrapeTree Extended.
+Previously known as GrapeTree Extended.
 
 ## Description
 
