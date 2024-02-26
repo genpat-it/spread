@@ -1,12 +1,12 @@
-# SPREAD, Spatiotemporal Phylogenomic Research and Epidemiological Analysis Dashboard - COHESIVE version
+# SPREAD, Spatiotemporal Pathogens Relationships and Epidemiological Analysis Dashboard
+
+> Previously known as GrapeTree Extended.
 
 ## Description
 
 The project is based on [GrapeTree](https://github.com/achtman-lab/GrapeTree), a fully interactive, tree visualization program within EnteroBase, which supports facile manipulations of both tree layout and metadata. Please see more info [here](https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html).
 
 The idea was to extend the original project in order to conducts spatio-temporal analyses with an integrated geographic information system (GIS) as well as a data visualization system across time. The web application allows users to upload geographic coordinates and temporal data related to each sample and allows to display them reflecting the selection in the tree on the map and vice versa, and reproducing a timelapse visualization both in the map and in the tree.
-
-> Previously known as GrapeTree Extended.
 
 ## Use SPREAD
 
