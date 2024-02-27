@@ -169,7 +169,7 @@ then add in the URL `zooms_list=zooms.txt` as parameter.
 
 ## Available Languages and translations
 
-Currently, the available languages are English and Italian. However, the application can be easily extended with new translations. If you would like to contribute, you can use the `en.js` or `it.js` file as a template from the `i18n` folder in this repository and translate the values. For any information or support regarding this, do not hesitate to contact bioinformatica@izs.it.
+Currently, the available languages are English and Italian. However, the application can be easily extended to include new translations. If you would like to contribute, you can use the `en.js` or `it.js` file as a template from the `i18n` folder in this repository and translate the values. Please find instructions in the `js/i18n/README.md` file. For any information or support regarding this, do not hesitate to contact bioinformatica@izs.it.
 
 ## Documentation
 
