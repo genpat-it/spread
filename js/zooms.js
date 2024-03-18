@@ -3,7 +3,7 @@ let gtiz_zooms = {};
 // Configuration object to check zooms in metadata header columns
 gtiz_zooms.cfg = {
   metadata_prefix_MST: 'MST-',
-  metadata_sample_name: 'CMP'
+  metadata_sample_name: undefined
 };
 
 gtiz_zooms.category = 'category';
@@ -1079,6 +1079,12 @@ gtiz_zooms.init = function() {
     let prefix = gtiz_file_handler.params.zooms_prefix;
     gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree_';
 
+    if (gtiz_file_handler.samples_column) {
+      gtiz_zooms.cfg.metadata_sample_name = gtiz_file_handler.samples_column;
+    } else {
+      gtiz_zooms.cfg.metadata_sample_name = 'ID';
+    }
+
     gtiz_zooms.buildZoomsObjects();
 
   } else {
@@ -1137,6 +1143,13 @@ gtiz_zooms.init = function() {
           let prefix = gtiz_file_handler.params.zooms_prefix ? gtiz_file_handler.params.zooms_prefix : extracted[0].prefix;
           gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree_';
           gtiz_zooms.zooms = aggregated;
+
+          if (gtiz_file_handler.samples_column) {
+            gtiz_zooms.cfg.metadata_sample_name = gtiz_file_handler.samples_column;
+          } else {
+            gtiz_zooms.cfg.metadata_sample_name = 'ID';
+          }
+          
           gtiz_zooms.buildZoomsObjects();
         }
       }).catch((err) => {

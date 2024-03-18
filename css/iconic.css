@@ -1,5 +1,5 @@
 /*
-  iconic-v1.9
+  iconic-v2.0
 */
 
 @font-face {
@@ -692,6 +692,9 @@ i.iconic.iconic-number {
 }
 .iconic-rotate:before {
   content: "\e9d8";
+}
+.iconic-zip-file:before {
+  content: "\e9d9";
 }
 .iconic-number-0:before {
   content: "0";

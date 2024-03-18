@@ -378,6 +378,7 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 		} else {
 			id_name = header_index[0];
 		}
+		gtiz_file_handler.samples_column = id_name;
 		category = header_index.length > 1 ? header_index[1] : header_index[0];
 		for (let i in header_index) {
 			let header = header_index[i];
