@@ -9,7 +9,7 @@ gtiz_zooms.cfg = {
 gtiz_zooms.category = 'category';
 gtiz_zooms.soi = 'sample of interest';
 gtiz_zooms.thresholds_params = [];
-gtiz_zooms.zooms_prefix = 'Reportree_';
+gtiz_zooms.zooms_prefix = 'Reportree';
 gtiz_zooms.thresholds = [];
 gtiz_zooms.msts = [];
 
@@ -1077,7 +1077,7 @@ gtiz_zooms.init = function() {
     }
 
     let prefix = gtiz_file_handler.params.zooms_prefix;
-    gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree_';
+    gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree';
 
     if (gtiz_file_handler.samples_column) {
       gtiz_zooms.cfg.metadata_sample_name = gtiz_file_handler.samples_column;
@@ -1141,7 +1141,7 @@ gtiz_zooms.init = function() {
             return acc;
           }, {});
           let prefix = gtiz_file_handler.params.zooms_prefix ? gtiz_file_handler.params.zooms_prefix : extracted[0].prefix;
-          gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree_';
+          gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree';
           gtiz_zooms.zooms = aggregated;
 
           if (gtiz_file_handler.samples_column) {

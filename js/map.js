@@ -328,7 +328,7 @@ gtiz_map.sampleSelection = function (sample, code, ctrl) {
       });
     } else {
       // insert here a modal box with the alert message
-      alert("Oops! It seems that the selected sample does not have a match on GrapeTree.");
+      alert("Oops! It seems that the selected sample does not have a match on Tree.");
     }
   } else {
     sample.classList.remove('p-selected');
@@ -634,7 +634,7 @@ gtiz_map.defineMarkers = () => {
           warning_info.setAttribute('class', 'point-popup-info-warning');
           ul.appendChild(warning_info);
         }
-        warning_info.innerHTML = 'Samples not in GrapeTree <span class="info-number">' + warnings + '</span>';
+        warning_info.innerHTML = 'Samples not in Tree <span class="info-number">' + warnings + '</span>';
       }
       /**
        * Center and zoom on point clicked

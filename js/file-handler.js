@@ -883,7 +883,7 @@ gtiz_file_handler.saveGrapeTreeAsJson = function() {
 			feedback.classList.add('show');
 		}
 	} else {
-		console.log('Oops! I was unable to get GrapeTree as object.');
+		console.log('Oops! I was unable to get Tree as object.');
 	}
 }
 

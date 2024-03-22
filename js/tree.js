@@ -454,7 +454,7 @@ gtiz_tree.saveOriginalTree = function() {
   if (obj) {
     gtiz_tree.original_tree = {...obj};
   } else {
-    console.log('Oops! I was unable to get complete GrapeTree as object');
+    console.log('Oops! I was unable to get complete tree as object');
   }
 }
 
@@ -1315,10 +1315,10 @@ gtiz_tree.openFileHandlerModal = function(mode) {
   let contents = gtiz_tree.buildFileHandlerModalContents(mode);
 	switch (mode) {
 		case 'save':
-			title = gtiz_locales.current.save_grapetree;
+			title = gtiz_locales.current.save_tree;
 			break;
 		case 'load':
-			title = gtiz_locales.current.load_grapetree;
+			title = gtiz_locales.current.load_tree;
 			break;
 		default:
 			title = undefined;
@@ -1490,7 +1490,7 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'button',
-  label : gtiz_locales.current.save_grapetree,
+  label : gtiz_locales.current.save_tree,
   icon : 'iconic-folder',
   function : () => {
     let mode = 'save';
@@ -1498,7 +1498,7 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'button',
-  label : gtiz_locales.current.load_grapetree,
+  label : gtiz_locales.current.load_tree,
   icon : 'iconic-file-plus',
   function : () => {
     let mode = 'load';
