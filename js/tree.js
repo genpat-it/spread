@@ -346,7 +346,7 @@ gtiz_tree.getCompleteGrapeTreeSettings = function() {
 }
 
 /**
- * Get complete GrapeTree object (tree, metadata, map, settings etc.)
+ * Get complete SPREAD object (tree, metadata, map, settings etc.)
  * 
  * @returns Object
  */
@@ -1315,10 +1315,10 @@ gtiz_tree.openFileHandlerModal = function(mode) {
   let contents = gtiz_tree.buildFileHandlerModalContents(mode);
 	switch (mode) {
 		case 'save':
-			title = gtiz_locales.current.save_tree;
+			title = gtiz_locales.current.save_spread;
 			break;
 		case 'load':
-			title = gtiz_locales.current.load_tree;
+			title = gtiz_locales.current.load_spread;
 			break;
 		default:
 			title = undefined;
@@ -1490,7 +1490,7 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'button',
-  label : gtiz_locales.current.save_tree,
+  label : gtiz_locales.current.save_spread,
   icon : 'iconic-folder',
   function : () => {
     let mode = 'save';
@@ -1498,7 +1498,7 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'button',
-  label : gtiz_locales.current.load_tree,
+  label : gtiz_locales.current.load_spread,
   icon : 'iconic-file-plus',
   function : () => {
     let mode = 'load';
@@ -1515,7 +1515,7 @@ gtiz_tree.context_menu = [{
   function : () => {
     let text = gtiz_tree.tree.getSVG();
     let timestamp =  Date.now();
-    let name = "grapetree" + timestamp + ".svg";
+    let name = "spread" + timestamp + ".svg";
     gtiz_file_handler.saveTextAsFile(text, name);
   }
 }];

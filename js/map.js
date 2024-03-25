@@ -328,7 +328,7 @@ gtiz_map.sampleSelection = function (sample, code, ctrl) {
       });
     } else {
       // insert here a modal box with the alert message
-      alert("Oops! It seems that the selected sample does not have a match on Tree.");
+      alert("Oops! It seems that the selected sample does not have a match on SPREAD.");
     }
   } else {
     sample.classList.remove('p-selected');
@@ -505,7 +505,7 @@ gtiz_map.getPopUp = (samples) => {
   sample_list_box.setAttribute('class', 'pu-samples-list-container');
   let sample_list_label = document.createElement('div');
   sample_list_label.setAttribute('class', 'label label-select-tree');
-  sample_list_label.innerHTML = gtiz_locales.current.select_grapetree_message;
+  sample_list_label.innerHTML = gtiz_locales.current.select_tree_message;
   sample_list_box.append(sample_list_label);
   samples.forEach(sample => {
     sample_list_box.append(sample);
@@ -634,7 +634,7 @@ gtiz_map.defineMarkers = () => {
           warning_info.setAttribute('class', 'point-popup-info-warning');
           ul.appendChild(warning_info);
         }
-        warning_info.innerHTML = 'Samples not in Tree <span class="info-number">' + warnings + '</span>';
+        warning_info.innerHTML = 'Samples not in SPREAD <span class="info-number">' + warnings + '</span>';
       }
       /**
        * Center and zoom on point clicked

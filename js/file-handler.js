@@ -872,7 +872,7 @@ gtiz_file_handler.saveGrapeTreeAsJson = function() {
 	if (obj) {
 		let text = JSON.stringify(obj);
 		let timestamp =  Date.now();
-		let name = "grapetree" + timestamp + ".json";
+		let name = "spread" + timestamp + ".json";
 		let feedback = document.querySelector('.modal-feedback');
 		if (text) {
 			gtiz_file_handler.saveTextAsFile(text, name);
@@ -883,7 +883,7 @@ gtiz_file_handler.saveGrapeTreeAsJson = function() {
 			feedback.classList.add('show');
 		}
 	} else {
-		console.log('Oops! I was unable to get Tree as object.');
+		console.log('Oops! I was unable to get SPREAD as object.');
 	}
 }
 
