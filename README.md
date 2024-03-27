@@ -107,7 +107,7 @@ Here the minimum metadata mandatory schema:
 
 |ID             |category            |MST-21x1.0 |MST-15x1.0 |MST-7x1.0  |MST-4x1.0 |
 |---------------|--------------------|-----------|-----------|-----------|----------|
-|00.00000.00.00 |Samples of interest |cluster_4  |cluster_11 |cluster_22 |cluster_32|
+|00.00000.00.00 |sample of interest  |cluster_4  |cluster_11 |cluster_22 |cluster_32|
 
 ### Source files in place
 
@@ -142,14 +142,14 @@ Once the zooms folders are moved as shown, it is necessary to specify some param
 There are 2 parameters to specify: `zooms`, which is mandatory, and `zooms_prefix`, which is optional.
 
 * `zooms` parameter can have one of the following syntax:
-  - `zooms=category,sample%20of%20interest@5,7`: The code will find in the general metadata file the clusters for the samples marked as samples of interest for the indicated thresholds.
-  - `zooms=category,sample%20of%20interest@all`: The code will find in the general metadata file the clusters for the samples marked as samples of interest for all thresholds.
+  - `zooms=category,sample%20of%20interest@5,7`: the code will find in the general metadata file the clusters for the samples marked as sample of interest for the indicated thresholds.
+  - `zooms=category,sample%20of%20interest@all`: the code will find in the general metadata file the clusters for the samples marked as sample of interest for all thresholds.
   - `zooms=@7,21`: The code will use `category` and `sample of interest` by default to find clusters in the general metadata file for the indicated thresholds.
   - `zooms=all`: The code will use `category` and `sample of interest` by default to find clusters in the general metadata file for all thresholds.
 
 > **Please note.** As permitted by ReporTree, different thresholds can be separated by commas (e.g., @5,8,16), but you can also define ranges by specifying them with a hyphen to separate the minimum and maximum (e.g., @5,8,10-20).
 
-* `zooms_prefix` should define a prefix used for files and folders if it differs from the one provided by default by ReporTree, `Reportree_`.
+* `zooms_prefix` should define a prefix used for files and folders if it differs from the one provided by default by ReporTree, `Reportree`.
   - `zooms_prefix=zoom` indicates that folder names and file names start with `zoom_`.
 
 #### 2. Provide an index
@@ -167,11 +167,12 @@ zoom_MST-7x1.0_cluster_887
 zoom_MST-7x1.0_cluster_907
 ```
 
-then add in the URL `zooms_list=zooms.txt` as parameter.
+then add in the URL one of the following parameters:
 
-## Available Languages and translations
+* `zooms_list=category,sample%20of%20interest@zooms.txt`: the code will find in the general metadata file the clusters for the samples marked as sample of interest for zooms indicated by `zooms.txt` file.
+* `zooms_list=@zooms.txt` or `zooms_list=zooms.txt`: the code will use `category` and `sample of interest` by default to find clusters in the general metadata file for zooms indicated by `zooms.txt` file.
 
-Currently, the available languages are English and Italian. However, the application can be easily extended to include new translations. If you would like to contribute, you can use the `en.js` or `it.js` file as a template from the `i18n` folder in this repository and translate the values. Please find instructions in the `js/i18n/README.md` file. For any information or support regarding this, do not hesitate to contact bioinformatica@izs.it.
+> **Please note.** `prefix` is obtained by the first line of the `.txt` file.
 
 ## Documentation
 

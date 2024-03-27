@@ -453,6 +453,31 @@ gtiz_metadata.init = function() {
       gtiz_metadata.selectAllFilteredOnly();
     }
   });
+  // Following code is needed because the click on the checbox input elements does not fire cellClick event...
+  let checkboxes = document.querySelectorAll('.ag-checkbox-input');
+  checkboxes.forEach(element => {
+    element.addEventListener('click', function(event) {
+        event.stopPropagation();
+        let target = element.parentNode;
+        let codes = [];
+        if (target.classList.contains('ag-checked')) {
+          gtiz_metadata.options.api.forEachNode(element => {
+            if (element.isSelected() && !element.data.ID.includes('hypo')) {
+              codes.push(element.data.ID);
+            }
+          });
+          gtiz_tree.tree.clearSelection();
+          gtiz_tree.tree.selectNodesByIds(codes);
+        } else {
+          gtiz_metadata.options.api.forEachNode(element => {
+            if (!element.isSelected() && !element.data.ID.includes('hypo')) {
+              codes.push(element.data.ID);
+            }
+          });
+          gtiz_tree.tree.unselectNodesByIds(codes);
+        }
+    });
+});
 }
 
 /**

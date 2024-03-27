@@ -940,7 +940,6 @@ gtiz_zooms.checkZooms = function(nodes) {
  * 
  */
 gtiz_zooms.setAvailableZooms = function() {
-
   if (gtiz_utils.isObjectNotEmpty(gtiz_zooms.zooms)) {
     gtiz_zooms.tree_node.classList.add('zoom-available');
     gtiz_zooms.showZoomsAvailableNotifier();
@@ -1064,7 +1063,7 @@ gtiz_zooms.init = function() {
       // metadata column to take into consideration
       gtiz_zooms.category = categories[0] ? categories[0] : 'category';
       // sample of interest used to generate clusters
-      gtiz_zooms.soi = categories[1] ? categories[1].toLowerCase() : 'sample of interest';
+      gtiz_zooms.soi = categories[1] ? categories[1] : 'sample of interest';
     } else {
       // metadata column to take into consideration
       gtiz_zooms.category = 'category';
@@ -1089,10 +1088,27 @@ gtiz_zooms.init = function() {
 
   } else {
 
-    if ('zooms_list' in gtiz_file_handler.params) {      
+    if ('zooms_list' in gtiz_file_handler.params) {
+      
+      let zooms = gtiz_file_handler.params.zooms_list;
+      let parts = zooms.includes('@') ? zooms.split('@') : undefined;
+      let categories = parts ? parts[0].split(',') : undefined;
       let base_path = gtiz_file_handler.getBasePath();
-      let file = gtiz_file_handler.params.zooms_list
+      let file = parts ? parts[1] : zooms;
       let path = base_path + '/' + file;
+
+      if (categories) {
+        // metadata column to take into consideration
+        gtiz_zooms.category = categories[0] ? categories[0] : 'category';
+        // sample of interest used to generate clusters
+        gtiz_zooms.soi = categories[1] ? categories[1] : 'sample of interest';
+      } else {
+        // metadata column to take into consideration
+        gtiz_zooms.category = 'category';
+        // sample of interest used to generate clusters
+        gtiz_zooms.soi = 'sample of interest';
+      }
+
       gtiz_file_handler.getData(path).then((obj) => {
         if (obj.error) {
           let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
