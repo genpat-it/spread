@@ -203,3 +203,7 @@ then add in the URL one of the following parameters:
 If you run SPREAD, please cite the publication:
 
 [de Ruvo A, De Luca A, Bucciacchio A, Castelli P, Di Lorenzo A, Radomski N, Di Pasquale A (2024) SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard](https://veterinariaitaliana.izs.it/index.php/VetIt/article/view/3476/1426)
+
+Also, SPREAD relies on the work of other developers. So, there are other tools that you must cite:
+* ReporTree: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-023-01196-1
+* GrapeTree: http://www.genome.org/cgi/doi/10.1101/gr.232397.117
