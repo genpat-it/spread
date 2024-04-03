@@ -204,6 +204,20 @@ then add in the URL one of the following parameters:
 
 - **Video Upload:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-upload.mp4) - This video shows how to upload data in SPREAD.
 
+## Video
+
+### Settings Video
+<video width="640" height="360" controls>
+  <source src="https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-settings.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+### Upload Video
+<video width="640" height="360" controls>
+  <source src="https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-upload.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## License
 
 Copyright Warwick University This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
