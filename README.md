@@ -174,6 +174,12 @@ then add in the URL one of the following parameters:
 
 > **Please note.** `prefix` is obtained by the first line of the `.txt` file.
 
+## Videos
+
+- **Video Settings:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-settings.mp4) - This video demonstrates the settings configuration in SPREAD.
+
+- **Video Upload:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-upload.mp4) - This video shows how to upload data in SPREAD.
+
 ## Documentation
 
 * [https://cohesive.izs.it/wiki/user/Dashboards/GrapeTree/GrapeTree_extended.html](https://cohesive.izs.it/wiki/user/Dashboards/GrapeTree/GrapeTree_extended.html)
@@ -197,12 +203,6 @@ then add in the URL one of the following parameters:
 ### Legend
 
 * [https://github.com/bgrins/spectrum](https://github.com/bgrins/spectrum)
-
-## Videos
-
-- **Video Settings:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-settings.mp4) - This video demonstrates the settings configuration in SPREAD.
-
-- **Video Upload:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-upload.mp4) - This video shows how to upload data in SPREAD.
 
 ## License
 
