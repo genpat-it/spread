@@ -198,6 +198,12 @@ then add in the URL one of the following parameters:
 
 * [https://github.com/bgrins/spectrum](https://github.com/bgrins/spectrum)
 
+## Videos
+
+- **Video Settings:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-settings.mp4) - This video demonstrates the settings configuration in SPREAD.
+
+- **Video Upload:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-upload.mp4) - This video shows how to upload data in SPREAD.
+
 ## License
 
 Copyright Warwick University This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
