@@ -21,4 +21,3 @@ jobs:
         run: |
           docker build . --file Dockerfile --tag ghcr.io/genpat-it/spread:latest
           docker push ghcr.io/genpat-it/spread:latest
-
