@@ -201,4 +201,5 @@ then add in the URL one of the following parameters:
 ## Citation
 
 If you run SPREAD, please cite the publication:
+
 [de Ruvo A, De Luca A, Bucciacchio A, Castelli P, Di Lorenzo A, Radomski N, Di Pasquale A (2024) SPREAD: Spatiotemporal Pathogen Relationships andEpidemiological Analysis Dashboard](https://veterinariaitaliana.izs.it/index.php/VetIt/article/view/3476/1426)
