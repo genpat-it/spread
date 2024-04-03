@@ -2,6 +2,23 @@
 
 Previously known as GrapeTree Extended.
 
+## Table of Contents
+- [Description](#description)
+- [Use SPREAD](#use-spread)
+- [Instruction to run it locally](#instruction-to-run-it-locally)
+  - [Prerequisites](#prerequisites)
+  - [Install and use live-server](#install-and-use-live-server)
+  - [Run SPREAD locally](#run-spread-locally)
+  - [Load geoJSON or cooridates data](#load-geojson-or-cooridates-data)
+  - [Load files](#load-files)
+  - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
+  - [Zooms for clusters](#zooms-for-clusters)
+- [Videos](#videos)
+- [Documentation](#documentation)
+- [Credits](#credits)
+- [License](#license)
+- [Citation](#citation)
+
 ## Description
 
 The project is based on [GrapeTree](https://github.com/achtman-lab/GrapeTree), a fully interactive, tree visualization program within EnteroBase, which supports facile manipulations of both tree layout and metadata. Please see more info [here](https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html).
