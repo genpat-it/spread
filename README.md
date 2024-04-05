@@ -191,6 +191,46 @@ then add in the URL one of the following parameters:
 
 > **Please note.** `prefix` is obtained by the first line of the `.txt` file.
 
+## Docker
+
+### Building from DockerHub
+
+```bash
+docker pull ghcr.io/genpat-it/spread:latest
+docker run -d -p 3000:80 --name spread ghcr.io/genpat-it/spread:latest
+```
+You can surf the spread instance by visiting `http://<IP_ADDRESS_OR_HOSTNAME>:3000`  in your web browser.
+
+### Building from Source
+
+To build the Docker image from the source code, follow these steps:
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/genpat-it/spread
+```
+
+2. Navigate to the cloned directory:
+
+```bash
+cd spread
+```
+
+3. Build the Docker image using the provided Dockerfile. You can also specify the port using the `PORT` build argument:
+
+```bash
+docker build . -t spread --build-arg PORT=3000
+```
+
+4. Once the image is built, you can run the Docker container:
+
+```bash
+docker run -d spread
+```
+
+This will expose the application running inside the container on port 3000 of your host machine.
+
 ## Videos
 
 - **Video Settings:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-settings.mp4) - This video demonstrates the settings configuration in SPREAD.

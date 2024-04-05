@@ -29,17 +29,20 @@ gtiz_tree.branch_scaling = 100;
 gtiz_tree.branch_log_scale = 'not-active'; // or active
 gtiz_tree.branch_cutoffs_method = 'display'; // or hide or cap
 gtiz_tree.label_to_highlight = ''; // category text to highlight
-gtiz_tree.distance_controller = 400; // Change this value to determine the link distance value at which the best link distance should be applied
+gtiz_tree.link_elements_controller = 1000;
+gtiz_tree.performance_choice_done = false;
+
 gtiz_tree.distance_cfg = {
   loopCount: 10000,
+  svgCircleRadius: 400,
   performanceThresholds: {
-      high: 3,
-      medium: 10
+    high: 30,
+    medium: 70
   },
   scaleFactors: {
-      high: 0.4,
-      medium: 0.6,
-      low: 0.2
+    high: 0.2,
+    medium: 0.4,
+    low: 0.8
   }
 };
 
@@ -50,11 +53,11 @@ gtiz_tree.distance_cfg = {
  */
 gtiz_tree.checkBestLinkDistanceUtil = function() {
   let distance = gtiz_tree.tree.max_link_distance;
-  if (distance > gtiz_tree.distance_controller) {
+  let links = gtiz_tree.tree.link_elements[0].length;
+  if (links > gtiz_tree.link_elements_controller && !gtiz_tree.performance_choice_done) {
     // Create an instance of LinkDistanceOptimizer
     let best_distance = gtiz_optimizer.getBestLinkDistance(distance, gtiz_tree.distance_cfg);
     best_distance = Math.floor(best_distance);
-
     if (best_distance != 0 && best_distance != gtiz_tree.node_collapsed_value) {
       let component = document.querySelector('.tree-container');
       let container = document.createElement('div');
@@ -81,6 +84,7 @@ gtiz_tree.checkBestLinkDistanceUtil = function() {
       apply.innerHTML = gtiz_locales.current.collapse_branches;
       apply.addEventListener('click', (e) => {
         gtiz_tree.collapseBranches(best_distance);
+        gtiz_tree.performance_choice_done = true;
         gtiz_tree.tree.centerGraph();
         container.remove();
       });
@@ -89,6 +93,7 @@ gtiz_tree.checkBestLinkDistanceUtil = function() {
       ignore.setAttribute('class', 'secondary');
       ignore.innerHTML = gtiz_locales.current.im_fine_thanks;
       ignore.addEventListener('click', (e) => {
+        gtiz_tree.performance_choice_done = true;
         container.remove();
       });
       
@@ -312,7 +317,8 @@ gtiz_tree.getCompleteGrapeTreeSettings = function() {
 			branch_scaling : gtiz_tree.branch_scaling,
 			branch_log_scale : gtiz_tree.branch_log_scale,
 			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method,
-      label_to_highlight : gtiz_tree.label_to_highlight
+      label_to_highlight : gtiz_tree.label_to_highlight,
+      link_elements_controller : gtiz_tree.link_elements_controller
 		},
 		map : {
 			default_delta_type : gtiz_map.delta_type,
@@ -385,7 +391,8 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
 			branch_scaling : gtiz_tree.branch_scaling,
 			branch_log_scale : gtiz_tree.branch_log_scale,
 			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method,
-      label_to_highlight : gtiz_tree.label_to_highlight
+      label_to_highlight : gtiz_tree.label_to_highlight,
+      link_elements_controller : gtiz_tree.link_elements_controller
 		},
 		map : {
 			default_delta_type : gtiz_map.delta_type,
@@ -1091,6 +1098,7 @@ gtiz_tree.loadMSTree = function(data, json) {
       gtiz_tree.branch_log_scale = settings.tree.branch_log_scale;
       gtiz_tree.branch_cutoffs_method = settings.tree.branch_cutoffs_method;
       gtiz_tree.label_to_highlight = settings.tree.label_to_highlight;
+      gtiz_tree.link_elements_controller = settings.tree.link_elements_controller;
     }
     if (settings.map) {
       gtiz_map.default_delta_type = settings.map.default_delta_type;
