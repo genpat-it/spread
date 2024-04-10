@@ -17,14 +17,17 @@ gtiz_zooms.samples_by_mst_cluster = undefined;
 gtiz_zooms.clusters_by_sample_mst = undefined;
 gtiz_zooms.clusters_by_category_mst = undefined;
 
+gtiz_zooms.zooms_types = ['cluster', 'closest'];
 gtiz_zooms.clusters = {};
 gtiz_zooms.zooms = {};
 gtiz_zooms.filtered_zooms = {};
 
-gtiz_zooms.selected_threshold = undefined;
-gtiz_zooms.filtered_selected_threshold = undefined;
-gtiz_zooms.selected_cluster = undefined;
-gtiz_zooms.filtered_selected_cluster = undefined;
+gtiz_zooms.selected_zoom_type = undefined;
+gtiz_zooms.filtered_selected_zoom_type = undefined;
+gtiz_zooms.selected_category = undefined;
+gtiz_zooms.filtered_selected_category = undefined;
+gtiz_zooms.selected_tree = undefined;
+gtiz_zooms.filtered_selected_tree = undefined;
 gtiz_zooms.selection_alerts = 'show'
 gtiz_zooms.apply_settings = 'apply';
 
@@ -32,41 +35,62 @@ gtiz_zooms.tree_node = document.querySelector('.tree-container');
 
 gtiz_zooms.context_menu = [{
   type : 'select',
-  id : 'zooms-menu-mst',
+  id : 'zooms-menu-zoom-type',
   label : () => {
-    return gtiz_locales.current.select_threshold;
+    return gtiz_locales.current.select_zoom_type;
   },
   icon : '',
   options : () => {
-    let values = gtiz_zooms.getMstOptions();
+    let values = gtiz_zooms.getZoomTypeOptions();
     return values;
   },
   default : undefined,
   get_default : () => {
-    let value = gtiz_legend.getMstOptionsDefaultValue();
+    let value = gtiz_zooms.getZoomTypeOptionsDefaultValue();
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeMstOption(value);
+    gtiz_zooms.changeZoomTypeOption(value);
   }
 }, {
   type : 'select',
-  id : 'zooms-menu-clusters',
+  id : 'zooms-menu-category',
   label : () => {
-    return gtiz_locales.current.select_cluster;
+    let value = gtiz_zooms.getCategoryOptionsLabel();
+    return value;
   },
   icon : '',
   options : () => {
-    let values = gtiz_zooms.getClustersOptions();
+    let values = gtiz_zooms.getCategoryOptions();
     return values;
   },
   default : undefined,
   get_default : () => {
-    let value = gtiz_zooms.getClustersOptionsDefaultValue();
+    let value = gtiz_zooms.getCategoryOptionsDefaultValue();
     return value;
   },
   function : (value) => {
-    gtiz_zooms.changeClusterOption(value);
+    gtiz_zooms.changeCategoryOption(value);
+  }
+}, {
+  type : 'select',
+  id : 'zooms-menu-zoomed-tree',
+  label : () => {
+    let value = gtiz_zooms.getZoomedTreeOptionsLabel();
+    return value;
+  },
+  icon : '',
+  options : () => {
+    let values = gtiz_zooms.getZoomedTreeOptions();
+    return values;
+  },
+  default : undefined,
+  get_default : () => {
+    let value = gtiz_zooms.getZoomedTreeOptionsDefaultValue();
+    return value;
+  },
+  function : (value) => {
+    gtiz_zooms.changeZoomedTreeOption(value);
   }
 }, {
   type : 'separator'
@@ -154,41 +178,62 @@ gtiz_zooms.context_menu = [{
 
 gtiz_zooms.filtered_context_menu = [{
   type : 'select',
-  id : 'zooms-filtered-menu-mst',
+  id : 'zooms-filtered-menu-zoom-type',
   label : () => {
-    return gtiz_locales.current.select_threshold;
+    return gtiz_locales.current.select_zoom_type;
   },
   icon : '',
   options : () => {
-    let values = gtiz_zooms.getMstOptions(true);
+    let values = gtiz_zooms.getZoomTypeOptions(true);
     return values;
   },
   default : undefined,
   get_default : () => {
-    let value = gtiz_legend.getMstOptionsDefaultValue(true);
+    let value = gtiz_zooms.getZoomTypeOptionsDefaultValue(true);
     return value;
   },
   function : (value) => {
-    gtiz_legend.changeMstOption(value, true);
+    gtiz_zooms.changeZoomTypeOption(value, true);
   }
 }, {
   type : 'select',
-  id : 'zooms-filtered-menu-clusters',
+  id : 'zooms-filtered-menu-category',
   label : () => {
-    return gtiz_locales.current.select_cluster;
+    let value = gtiz_zooms.getCategoryOptionsLabel(true);
+    return value;
   },
   icon : '',
   options : () => {
-    let values = gtiz_zooms.getClustersOptions(true);
+    let values = gtiz_zooms.getCategoryOptions(true);
     return values;
   },
   default : undefined,
   get_default : () => {
-    let value = gtiz_zooms.getClustersOptionsDefaultValue(true);
+    let value = gtiz_zooms.getCategoryOptionsDefaultValue(true);
     return value;
   },
   function : (value) => {
-    gtiz_zooms.changeClusterOption(value, true);
+    gtiz_zooms.changeCategoryOption(value, true);
+  }
+}, {
+  type : 'select',
+  id : 'zooms-filtered-menu-zoomed-tree',
+  label : () => {
+    let value = gtiz_zooms.getZoomedTreeOptionsLabel(true);
+    return value;
+  },
+  icon : '',
+  options : () => {
+    let values = gtiz_zooms.getZoomedTreeOptions(true);
+    return values;
+  },
+  default : undefined,
+  get_default : () => {
+    let value = gtiz_zooms.getZoomedTreeOptionsDefaultValue(true);
+    return value;
+  },
+  function : (value) => {
+    gtiz_zooms.changeZoomedTreeOption(value, true);
   }
 }, {
   type : 'separator'
@@ -288,8 +333,8 @@ gtiz_zooms.loadZoomedTreeInNewTab = function(filtered) {
   // get base path from tree pat
   let base_path = gtiz_file_handler.getBasePath();
   let prefix = gtiz_zooms.zooms_prefix + '_';
-  let threshold = filtered ? gtiz_zooms.filtered_selected_threshold : gtiz_zooms.selected_threshold;
-  let cluster = filtered ? gtiz_zooms.filtered_selected_cluster : gtiz_zooms.selected_cluster;
+  let threshold = filtered ? gtiz_zooms.filtered_selected_category : gtiz_zooms.selected_category;
+  let cluster = filtered ? gtiz_zooms.filtered_selected_tree : gtiz_zooms.selected_tree;
   let zoom = threshold + '_' + cluster;
   // build path
   let path = base_path + '/' + prefix + zoom + '/';
@@ -338,8 +383,8 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
   // get base path from tree pat
   let base_path = gtiz_file_handler.getBasePath();
   let prefix = gtiz_zooms.zooms_prefix + '_';
-  let threshold = filtered ? gtiz_zooms.filtered_selected_threshold : gtiz_zooms.selected_threshold;
-  let cluster = filtered ? gtiz_zooms.filtered_selected_cluster : gtiz_zooms.selected_cluster;
+  let threshold = filtered ? gtiz_zooms.filtered_selected_category : gtiz_zooms.selected_category;
+  let cluster = filtered ? gtiz_zooms.filtered_selected_tree : gtiz_zooms.selected_tree;
   let zoom = threshold + '_' + cluster;
   // build path
   let path = base_path + '/' + prefix + zoom + '/';
@@ -476,8 +521,8 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 };
 
 gtiz_zooms.selectInvolvedNodes = function() {
-  let selected = gtiz_zooms.selected_threshold;
-  let cluster = gtiz_zooms.selected_cluster;
+  let selected = gtiz_zooms.selected_category;
+  let cluster = gtiz_zooms.selected_tree;
   if (typeof gtiz_zooms.samples_by_mst_cluster && gtiz_zooms.samples_by_mst_cluster != null) {
     let threshold = gtiz_zooms.samples_by_mst_cluster[selected];
     if (threshold) {
@@ -505,30 +550,96 @@ gtiz_zooms.selectInvolvedNodes = function() {
   }
 }
 
-gtiz_zooms.setSelectedCluster = function(value, filtered) {
+gtiz_zooms.setSelectedZoomedTree = function(value, filtered) {
   if (filtered) {
-    gtiz_zooms.filtered_selected_cluster = value ? value : undefined;
+    gtiz_zooms.filtered_selected_tree = value ? value : undefined;
   } else {
-    gtiz_zooms.selected_cluster = value ? value : undefined;
+    gtiz_zooms.selected_tree = value ? value : undefined;
   }
 }
 
-gtiz_zooms.changeClusterOption = function(value, filtered) {
-  gtiz_zooms.setSelectedCluster(value, filtered);
+gtiz_zooms.changeZoomedTreeOption = function(value, filtered) {
+  gtiz_zooms.setSelectedZoomedTree(value, filtered);
 }
 
-gtiz_zooms.getClustersOptionsDefaultValue = function(filtered) {
-  let threshold = filtered ? gtiz_zooms.filtered_selected_threshold : gtiz_zooms.selected_threshold;
-  let clusters = filtered ? gtiz_zooms.filtered_zooms[threshold] : gtiz_zooms.zooms[threshold];
-  gtiz_zooms.setSelectedCluster(clusters[0], filtered);
-  return clusters[0];
+gtiz_zooms.getZoomedTreeOptionsDefaultValue = function(filtered) {
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let category = filtered ? gtiz_zooms.filtered_selected_category : gtiz_zooms.selected_category;
+  let trees = filtered ? gtiz_zooms.filtered_zooms[type][category] : gtiz_zooms.zooms[type][category];
+  gtiz_zooms.setSelectedZoomedTree(trees[0], filtered);
+  return trees[0];
 }
 
-gtiz_zooms.getClustersOptions = function(filtered) {
-  let threshold = filtered ? gtiz_zooms.filtered_selected_threshold : gtiz_zooms.selected_threshold;
-  let clusters = filtered ? gtiz_zooms.filtered_zooms[threshold] : gtiz_zooms.zooms[threshold];
+gtiz_zooms.getZoomedTreeOptions = function(filtered) {
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let category = filtered ? gtiz_zooms.filtered_selected_category : gtiz_zooms.selected_category;
+  let trees = filtered ? gtiz_zooms.filtered_zooms[type][category] : gtiz_zooms.zooms[type][category];
   let options = [];
-  clusters.forEach(threshold => {
+  trees.forEach(tree => {
+    let obj = {
+      label : tree,
+      value : tree
+    }
+    options.push(obj);
+  });
+  return options;
+}
+
+gtiz_zooms.getZoomedTreeOptionsLabel = function(filtered) {
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let label = '';
+  switch (type) {
+    case 'cluster':
+      label = gtiz_locales.current.select_cluster;
+      break;
+    case 'closest':
+      label = gtiz_locales.current.select_closest;
+      break;
+    default:
+      label = gtiz_locales.current.select;
+      break;
+  }
+  return label;
+}
+
+gtiz_zooms.setSelectedCategory = function(value, filtered) {
+  if (filtered) {
+    gtiz_zooms.filtered_selected_category = value ? value : undefined;
+  } else {
+    gtiz_zooms.selected_category = value ? value : undefined;
+  }
+}
+
+gtiz_zooms.changeCategoryOption = function(value, filtered) {
+  gtiz_zooms.setSelectedCategory(value, filtered);
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let selector = filtered ? '#zooms-filtered-menu-zoomed-tree' : '#zooms-menu-zoomed-tree';
+  let select = document.querySelector(selector);
+  let box = select.parentNode;
+  let label = box.querySelector('.form-label');
+  label.innerHTML = gtiz_zooms.getZoomedTreeOptionsLabel();
+  select.innerHTML = '';
+  let trees = filtered ? gtiz_zooms.filtered_zooms[type][value] : gtiz_zooms.zooms[type][value];
+  trees.forEach(tree => {
+    let option = new Option(tree, tree);
+    select.add(option);
+  });
+  gtiz_zooms.setSelectedZoomedTree(trees[0], filtered);
+  select.value = trees[0];
+}
+
+gtiz_zooms.getCategoryOptionsDefaultValue = function(filtered) {
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let category = filtered ? Object.keys(gtiz_zooms.filtered_zooms[type]) : Object.keys(gtiz_zooms.zooms[type]);
+  gtiz_zooms.setSelectedCategory(category[0], filtered);
+  return category[0];
+}
+
+gtiz_zooms.getCategoryOptions = function(filtered) {
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let category = filtered ? Object.keys(gtiz_zooms.filtered_zooms[type]) : Object.keys(gtiz_zooms.zooms[type]);
+  let options = [];
+  category.forEach(threshold => {
     let obj = {
       label : threshold,
       value : threshold
@@ -538,43 +649,85 @@ gtiz_zooms.getClustersOptions = function(filtered) {
   return options;
 }
 
-gtiz_zooms.setSelectedMst = function(value, filtered) {
+gtiz_zooms.getCategoryOptionsLabel = function(filtered) {
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let label = '';
+  switch (type) {
+    case 'cluster':
+      label = gtiz_locales.current.select_threshold;
+      break;
+    case 'closest':
+      label = gtiz_locales.current.select_sample;
+      break;
+    default:
+      label = gtiz_locales.current.select;
+      break;
+  }
+  return label;
+}
+
+gtiz_zooms.setSelectedZoomType = function(value, filtered) {
   if (filtered) {
-    gtiz_zooms.filtered_selected_threshold = value ? value : undefined;
+    gtiz_zooms.filtered_selected_zoom_type = value ? value : undefined;
   } else {
-    gtiz_zooms.selected_threshold = value ? value : undefined;
+    gtiz_zooms.selected_zoom_type = value ? value : undefined;
   }
 }
 
-gtiz_legend.changeMstOption = function(value, filtered) {
-  gtiz_zooms.setSelectedMst(value, filtered);
-  let selector = filtered ? '#zooms-filtered-menu-clusters' : '#zooms-menu-clusters';
+gtiz_zooms.changeZoomTypeOption = function(value, filtered) {
+  gtiz_zooms.setSelectedZoomType(value, filtered);
+  let type = filtered ? gtiz_zooms.filtered_selected_zoom_type : gtiz_zooms.selected_zoom_type;
+  let selector = filtered ? '#zooms-filtered-menu-category' : '#zooms-menu-category';
   let select = document.querySelector(selector);
+  let box = select.parentNode;
+  let label = box.querySelector('.form-label');
+  label.innerHTML = gtiz_zooms.getCategoryOptionsLabel();
   select.innerHTML = '';
-  let clusters = filtered ? gtiz_zooms.filtered_zooms[value] : gtiz_zooms.zooms[value];
-  clusters.forEach(threshold => {
-    let option = new Option(threshold, threshold);
+  let categories = filtered ? Object.keys(gtiz_zooms.filtered_zooms[type]) : Object.keys(gtiz_zooms.zooms[type]);
+  categories.forEach(tree => {
+    let option = new Option(tree, tree);
     select.add(option);
   });
-  gtiz_zooms.setSelectedCluster(clusters[0], filtered);
-  select.value = clusters[0];
+  gtiz_zooms.setSelectedZoomedTree(categories[0], filtered);
+  // Create a new 'change' event
+  let event = new Event('change', {
+    bubbles: true, // This event bubbles up through the DOM
+    cancelable: true, // This event can be cancelled
+  });
+  select.value = categories[0];
+  // Dispatch the event to trigger all 'change' event listeners
+  select.dispatchEvent(event);
 }
 
-gtiz_legend.getMstOptionsDefaultValue = function(filtered) {
-  let thresholds = filtered ? Object.keys(gtiz_zooms.filtered_zooms) : Object.keys(gtiz_zooms.zooms);
-  gtiz_zooms.setSelectedMst(thresholds[0], filtered);
-  return thresholds[0];
+gtiz_zooms.getZoomTypeOptionsDefaultValue = function(filtered) {
+  let types = filtered ? Object.keys(gtiz_zooms.filtered_zooms) : Object.keys(gtiz_zooms.zooms);
+  gtiz_zooms.setSelectedZoomType(types[0], filtered);
+  return types[0];
 }
 
-gtiz_zooms.getMstOptions = function(filtered) {
-  let thresholds = filtered ? Object.keys(gtiz_zooms.filtered_zooms) : Object.keys(gtiz_zooms.zooms);
+gtiz_zooms.getZoomTypeOptions = function(filtered) {
+  let types = gtiz_zooms.zooms_types;
   let options = [];
-  thresholds.forEach(threshold => {
-    let obj = {
-      label : threshold,
-      value : threshold
+  types.forEach(type => {
+    let obj = {};
+    switch (type) {
+      case 'cluster':
+        obj.label = gtiz_locales.current.cluster;
+        break;
+      case 'closest':
+        obj.label = gtiz_locales.current.closest;
+        break;
     }
-    options.push(obj);
+    obj.value = type;
+    if (filtered) {
+      if (gtiz_zooms.filtered_zooms[type]) {
+        options.push(obj);
+      }
+    } else {
+      if (gtiz_zooms.zooms[type]) {
+        options.push(obj);
+      }
+    }
   });
   return options;
 }
@@ -849,15 +1002,15 @@ gtiz_zooms.showSelectionNotifier = function() {
 
 gtiz_zooms.showZoomsAvailableNotifier = function() {
   let component = 'tree';
-  let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.zooms_found_for_clusters;
+  let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.zooms_found;
   let id = 'zooms-found-notifier';
   let contents = [];
   let content = document.createElement('p');
-  content.innerHTML = gtiz_locales.current.zooms_found_for_clusters_message;
+  content.innerHTML = gtiz_locales.current.zooms_found_message;
   contents.push(content);
   let actions = [];
   let link = document.createElement('a');
-  link.innerHTML = '<i class="iconic iconic-zoom-in"></i> ' + gtiz_locales.current.see_clusters_zooms;
+  link.innerHTML = '<i class="iconic iconic-zoom-in"></i> ' + gtiz_locales.current.see_available_zooms;
   link.addEventListener('click', function (e) {
     let trigger = document.querySelector('[data-menu-type="zooms"]');
     gtiz_context.showMenu('zooms', 'tree', trigger);
@@ -869,7 +1022,7 @@ gtiz_zooms.showZoomsAvailableNotifier = function() {
     }
   });
   actions.push(link);
-  let feedback = '<p>' + gtiz_locales.current.zooms_found_for_clusters_info + '</p>';
+  let feedback = '<p>' + gtiz_locales.current.zooms_found_info + '</p>';
   let f_type = 'info';
   gtiz_modal.buildComponentNotifier(component, id, title, contents, actions, feedback, f_type);
 }
@@ -880,49 +1033,51 @@ gtiz_zooms.showZoomsAvailableNotifier = function() {
  * @param {Object} nodes Selected category
  */
 gtiz_zooms.checkZooms = function(nodes) {
-
-  function intersectClustersWithObject(clusters, obj) {
-    let result = {};
-    Object.keys(obj).forEach(key => {
-        let intersection = obj[key].filter(cluster => clusters.includes(cluster));
-        if (intersection.length > 0) {
-          result[key] = intersection;
-        }
-    });
-    return result;
-  }
-
   if (gtiz_utils.isObjectNotEmpty(gtiz_zooms.zooms)) {
     if (!nodes) {
       nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
     }
     let ids = Object.values(nodes).flat();
-    let msts = gtiz_zooms.msts;
-    let clusters = [];
-    if (ids.length > 0 && msts.length > 0) {
+    let types = Object.keys(gtiz_zooms.zooms);
+    let msts = [];
+    let samples = [];
+    types.forEach(type => {
+      switch (type) {
+        case 'cluster':
+          msts = Object.keys(gtiz_zooms.zooms[type]);
+          break;
+        case 'closest':
+          samples = Object.keys(gtiz_zooms.zooms[type]);
+          break;
+      }
+    });
+    if (ids.length > 0) {
       ids.forEach(id => {
-        msts.forEach(mst => {
-          let mst_clusters = gtiz_zooms.zooms[mst];
-          if (mst_clusters && gtiz_zooms.clusters_by_sample_mst) {
-            let sample = gtiz_zooms.clusters_by_sample_mst[id];
-            if (sample) {
-              let clusters_by_sample = sample[mst];
-              if (clusters_by_sample) {
-                /**
-                 * Here we build an interception from the two arrays to check if a zoom is available for provided sample (id).
-                 */
-                let set = new Set(clusters_by_sample);
-                let intersection = mst_clusters.filter(item => set.has(item));
-                if (intersection && intersection.length > 0) {
-                  clusters.push(...intersection);
-                }
+        if (gtiz_zooms.zooms['closest']) {
+          if (gtiz_zooms.zooms['closest'][id]) {
+            if (!gtiz_zooms.filtered_zooms['closest']) {
+              gtiz_zooms.filtered_zooms['closest'] = {};
+            }
+            gtiz_zooms.filtered_zooms['closest'][id] = gtiz_zooms.zooms['closest'][id];
+          }
+        }
+        if (gtiz_zooms.zooms['cluster']) {
+          msts.forEach(mst => {
+            if (gtiz_tree.tree.metadata[id] && gtiz_tree.tree.metadata[id][mst]) {
+              let cluster = gtiz_tree.tree.metadata[id][mst];
+              if (!gtiz_zooms.filtered_zooms['cluster']) {
+                gtiz_zooms.filtered_zooms['cluster'] = {};
+              }
+              if (!gtiz_zooms.filtered_zooms['cluster'][mst]) {
+                gtiz_zooms.filtered_zooms['cluster'][mst] = [];
+              }
+              if (gtiz_zooms.zooms['cluster'][mst].includes(cluster) && !gtiz_zooms.filtered_zooms['cluster'][mst].includes(cluster)) {
+                gtiz_zooms.filtered_zooms['cluster'][mst].push(cluster);
               }
             }
-          }
-        });
+          });
+        }
       });
-      clusters = [...new Set(clusters)];
-      gtiz_zooms.filtered_zooms = intersectClustersWithObject(clusters, gtiz_zooms.zooms);
       if (gtiz_utils.isObjectNotEmpty(gtiz_zooms.filtered_zooms)) {
         gtiz_zooms.closeSelectionNotifier();
         gtiz_zooms.showSelectionNotifier();
@@ -976,7 +1131,8 @@ gtiz_zooms.setAvailableZooms = function() {
       Object.keys(gtiz_zooms.clusters).forEach(key => {
         gtiz_zooms.thresholds.forEach(threshold => {
           if (key == threshold) {
-            gtiz_zooms.zooms[key] = gtiz_zooms.clusters[key];
+            gtiz_zooms.zooms['cluster'] = {};
+            gtiz_zooms.zooms['cluster'][key] = gtiz_zooms.clusters[key];
           }
         });
       });
@@ -1053,6 +1209,24 @@ gtiz_zooms.init = function() {
   // reset actions
   gtiz_zooms.tree_node.classList.remove('zoom-available');
 
+  // get and set columns name for samples
+  if (gtiz_file_handler.samples_column) {
+    gtiz_zooms.cfg.metadata_sample_name = gtiz_file_handler.samples_column;
+  } else {
+    gtiz_zooms.cfg.metadata_sample_name = 'ID';
+  }
+
+  // get and set prefix, default `Reportree`
+  if ('zooms_prefix' in gtiz_file_handler.params) {
+    gtiz_zooms.zooms_prefix = gtiz_file_handler.params.zooms_prefix;
+  } else {
+    let name = gtiz_file_handler.params.tree.split('/').pop();
+    let prefix = name.split('.')[0];
+    if (prefix) {
+      gtiz_zooms.zooms_prefix = prefix;
+    }
+  }
+
   if ('zooms' in gtiz_file_handler.params) {
     let zooms = gtiz_file_handler.params.zooms;
     let parts = zooms.includes('@') ? zooms.split('@') : undefined;
@@ -1073,15 +1247,6 @@ gtiz_zooms.init = function() {
 
     if (thresholds && thresholds.length > 0) {
       gtiz_zooms.thresholds_params = thresholds;
-    }
-
-    let prefix = gtiz_file_handler.params.zooms_prefix;
-    gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree';
-
-    if (gtiz_file_handler.samples_column) {
-      gtiz_zooms.cfg.metadata_sample_name = gtiz_file_handler.samples_column;
-    } else {
-      gtiz_zooms.cfg.metadata_sample_name = 'ID';
     }
 
     gtiz_zooms.buildZoomsObjects();
@@ -1135,38 +1300,57 @@ gtiz_zooms.init = function() {
           }
         } else {
           let contents = obj.text;
+          let prefix = gtiz_zooms.zooms_prefix + '_';
           let list = contents.split(/\r?\n/); // \n or \r\n if generated by windows
-          let extracted = list.map(item => {
-            let parts = item.split("_");
-            // Assuming the first and second underscores always exist,
-            // 'parts[1]' will be the string between the first and second underscore,
-            // and 'parts.slice(2).join("_")' will reconstruct the string after the second underscore.
-            return {
-              prefix: parts[0],
-              threshold: parts[1],
-              cluster: parts.slice(2).join("_")
-            };
-          });
-          let aggregated = extracted.reduce((acc, { threshold, cluster }) => {
-            // If the key exists, push to its array, otherwise create a new array with the item
-            if (acc[threshold]) {
-              acc[threshold].push(cluster);
+          // Remove prefix from list
+          list = list.map(element => element.replace(prefix, ''));
+          let metadata_info = gtiz_tree.tree.metadata_info;
+          let metadata = gtiz_tree.tree.metadata;
+          let samples = Object.values(metadata).filter(item => item[gtiz_zooms.category] == gtiz_zooms.soi).map(item => item[gtiz_zooms.cfg.metadata_sample_name]);
+          let extracted = list.map(element => {
+            let parts = element.split('_');
+            let part = parts[0];
+            if (metadata_info[part]) {
+              return {
+                type: 'cluster',
+                threshold: part,
+                cluster: element.replace(part + '_', '')
+              };
             } else {
-              acc[threshold] = [cluster];
+              for (let sample of samples) {
+                if (element.includes(sample)) {
+                  return {
+                    type: 'closest',
+                    sample: sample,
+                    closest: element.replace(sample + '_', '')
+                  };
+                }
+              }
             }
-            return acc;
-          }, {});
-          let prefix = gtiz_file_handler.params.zooms_prefix ? gtiz_file_handler.params.zooms_prefix : extracted[0].prefix;
-          gtiz_zooms.zooms_prefix = prefix ? prefix : 'Reportree';
+            return null; // Return null or some default value if no conditions are met
+          });
+          let aggregated = extracted.reduce((acc, item) => {
+            if (item.type == 'cluster') {
+              if (!acc[item.type]) {
+                acc[item.type] = {};
+              }
+              if (!acc[item.type][item.threshold]) {
+                acc[item.type][item.threshold] = [];
+              }
+              acc[item.type][item.threshold].push(item.cluster);
+            } else if (item.type == 'closest') {
+              if (!acc[item.type]) {
+                acc[item.type] = {};
+              }
+              if (!acc[item.type][item.sample]) {
+                acc[item.type][item.sample] = [];
+              }
+              acc[item.type][item.sample].push(item.closest);
+            }
+            return acc; // This is crucial, as it passes the accumulator to the next iteration
+          }, {}); // Initial value of the accumulator
           gtiz_zooms.zooms = aggregated;
-
-          if (gtiz_file_handler.samples_column) {
-            gtiz_zooms.cfg.metadata_sample_name = gtiz_file_handler.samples_column;
-          } else {
-            gtiz_zooms.cfg.metadata_sample_name = 'ID';
-          }
-          
-          gtiz_zooms.buildZoomsObjects();
+          gtiz_zooms.setAvailableZooms();
         }
       }).catch((err) => {
         console.log(err);

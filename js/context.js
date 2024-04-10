@@ -319,7 +319,7 @@ gtiz_context.buildMenuUi = function(type, relation) {
     title.innerHTML = gtiz_locales.current.tree_tools;
   }
   if (type == 'zooms') {
-    title.innerHTML = gtiz_locales.current.clusters_zooms_tools;
+    title.innerHTML = gtiz_locales.current.zooms_tools;
   }
   if (type == 'map') {
     title.innerHTML = gtiz_locales.current.map_tools;

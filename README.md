@@ -3,6 +3,7 @@
 Previously known as GrapeTree Extended.
 
 ## Table of Contents
+
 - [Description](#description)
 - [Use SPREAD](#use-spread)
 - [Instruction to run it locally](#instruction-to-run-it-locally)
@@ -13,6 +14,7 @@ Previously known as GrapeTree Extended.
   - [Load files](#load-files)
   - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
   - [Zooms for clusters](#zooms-for-clusters)
+- [Docker](#docker)
 - [Videos](#videos)
 - [Documentation](#documentation)
 - [Credits](#credits)
