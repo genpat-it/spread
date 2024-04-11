@@ -521,30 +521,27 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 };
 
 gtiz_zooms.selectInvolvedNodes = function() {
+  let type = gtiz_zooms.selected_zoom_type;
   let selected = gtiz_zooms.selected_category;
   let cluster = gtiz_zooms.selected_tree;
-  if (typeof gtiz_zooms.samples_by_mst_cluster && gtiz_zooms.samples_by_mst_cluster != null) {
-    let threshold = gtiz_zooms.samples_by_mst_cluster[selected];
-    if (threshold) {
-      let codes = threshold[cluster];
-      gtiz_tree.tree.selectNodesByIds(codes);
-    } else {
-      let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
-      let contents = [];
-      let content = document.createElement('p');
-      content.innerHTML = gtiz_locales.current.zooms_clusters_generic_problem;
-      contents.push(content);
-      let feedback = '<p>' + gtiz_locales.current.selected_threshold_not_found_in_metadata + '</p>';
-      let f_type = 'info';
-      gtiz_modal.buildNotifier(title, contents, feedback, f_type);
-    }
+  let codes = [];
+  if (type == "cluster") {
+    let metadata = gtiz_tree.tree.metadata;
+    codes = Object.keys(metadata).filter(key => {
+      return metadata[key][selected] === cluster;
+    });
+  } else if (type == 'closest') {
+    codes = [selected];
+  }
+  if (codes.length > 0) {
+    gtiz_tree.tree.selectNodesByIds(codes);
   } else {
     let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
     let contents = [];
     let content = document.createElement('p');
     content.innerHTML = gtiz_locales.current.zooms_clusters_generic_problem;
     contents.push(content);
-    let feedback = '<p>' + gtiz_locales.current.samples_by_mst_and_cluster_not_found + '</p>';
+    let feedback = '<p>' + gtiz_locales.current.select_involved_nodes_empty_feedback + '</p>';
     let f_type = 'info';
     gtiz_modal.buildNotifier(title, contents, feedback, f_type);
   }

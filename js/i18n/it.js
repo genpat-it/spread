@@ -177,6 +177,7 @@ gtiz_languages.it = {
   "select_file_msg": "Per favore seleziona un file da caricare.",
   "select_format_to_download" : "Seleziona il formato da scaricare",
   "select_involved_nodes": "Seleziona nodi coinvolti",
+  "select_involved_nodes_empty_feedback": "Campioni non trovati nei metadata.",
   "select_language": "Seleziona lingua",
   "select_threshold": "Seleziona soglia",
   "select_tree_message": "Seleziona un campione per vederlo nell'albero",

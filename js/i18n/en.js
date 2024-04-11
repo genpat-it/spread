@@ -178,6 +178,7 @@ gtiz_languages.en = {
   "select_format_to_download" : "Select format to download",
   "select_tree_message": "Select a sample to see it in the tree",
   "select_involved_nodes": "Select involved nodes",
+  "select_involved_nodes_empty_feedback": "Samples were not found in metadata.",
   "select_language": "Select language",
   "select_sample": "Select sample",
   "select_threshold": "Select threshold",
