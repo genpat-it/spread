@@ -1313,7 +1313,7 @@ gtiz_zooms.init = function() {
           let extracted = list.map(element => {
             let parts = element.split('_');
             let part = parts[0];
-            if (metadata_info[part]) {
+            if (metadata_info[part] && part.includes(gtiz_zooms.cfg.metadata_prefix_MST)) {
               return {
                 type: 'cluster',
                 threshold: part,
