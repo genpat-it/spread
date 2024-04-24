@@ -8,6 +8,140 @@ gtiz_metadata.metadata_node = document.querySelector(".metadata");
 gtiz_metadata.grid_div = document.getElementById("metadata-grid");
 
 /**
+ * Card header menu definition.
+ * 
+ */
+gtiz_metadata.card_menu = [{
+  type : 'button',
+  label : gtiz_locales.current.select_all,
+  icon : 'iconic-check-circle',
+  function : () => {
+    gtiz_metadata.selectAll();
+  }
+}, {
+  type : 'button',
+  label : gtiz_locales.current.clean_selection,
+  icon : 'iconic-minus-circle',
+  function : () => {
+    gtiz_metadata.deselectAll();
+  }
+}];
+
+/**
+ * Card context menu definition
+ * 
+ */
+gtiz_metadata.context_menu = [{
+  type : 'toggle',
+  id : 'metadata-selected-only',
+  options : [{
+      label : () => {
+        return gtiz_locales.current.selected_only;
+      },
+      value : 'show_selected',
+      icon : 'iconic-eye'
+    }, {
+      label : () => {
+        return gtiz_locales.current.selected_only;
+      },
+      value : 'show_all',
+      icon : 'iconic-eye-off'
+  }],
+  selected : () => {
+    return  gtiz_metadata.show_nodes;
+  },
+  function : (value) => {
+    gtiz_metadata.toggleShowSelected(value);
+  }
+}, {
+  type : 'separator'
+}, {
+  type : 'select',
+  id : 'metadata-menu-color-by',
+  label : () => {
+    return gtiz_locales.current.column_selection;
+  },
+  icon : '',
+  options : () => {
+    let values = gtiz_metadata.getColorByOptions();
+    return values;
+  },
+  default : undefined,
+  get_default : () => {
+    let value = gtiz_metadata.getColorByDefaultValue();
+    return value;
+  },
+  function : (value) => {
+    gtiz_metadata.changeCategoryColor(value);
+  }
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.move_to_first_position;
+  },
+  icon : 'iconic-undo',
+  function : () => {
+    gtiz_metadata.moveColumn();
+  }
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.set_as_figure_legend;
+  },
+  icon : 'iconic-bookmark',
+  function : () => {
+    gtiz_metadata.setColumnsAsLegend();
+  }
+}, {
+  type : 'separator'
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.resize_columns;
+  },
+  icon : 'iconic-columns-vertical',
+  function : () => {
+    gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
+  }
+}, {
+  type : 'separator'
+}, {
+  type : 'toggle',
+  id : 'metadata-show-hypo',
+  options : [{
+      label : () => {
+        return gtiz_locales.current.show_hypothetical;
+      },
+      value : 'show_hypo',
+      icon : 'iconic-eye'
+    }, {
+      label : () => {
+        return gtiz_locales.current.show_hypothetical;
+      },
+      value : 'hide_hypo',
+      icon : 'iconic-eye-off'
+  }],
+  selected : () => {
+    return  gtiz_metadata.show_hypothetical;
+  },
+  function : (value) => {
+    gtiz_metadata.toggleShowHypotetical(value);
+  }
+}, {
+  type : 'separator'
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.download_table + ' (.csv)';
+  },
+  icon : 'iconic-file-text',
+  function : () => {
+    gtiz_metadata.downloadCsv();
+  }
+}];
+
+
+/**
  * Avoid text selection when we perform a multiselection on checkboxes
  * 
  */
@@ -23,67 +157,6 @@ gtiz_metadata.grid_div.addEventListener('selectstart', function(event) {
     }
   }
 });
-
-/**
- * Options definition for ag-grid library
- * 
- */
-gtiz_metadata.options = {
-  // default col def properties get applied to all columns
-  defaultColDef: {
-    sortable: true,
-    filter: true,
-    resizable: true
-  },
-  enableCellTextSelection : true,
-  ensureDomOrder : true,
-  rowSelection: 'multiple',
-  suppressRowClickSelection: true,
-  rowMultiSelectWithClick : true,
-  animateRows: true, // have rows animate to new positions when sorted
-  suppressColumnVirtualisation : true,
-  suppressFieldDotNotation : true,
-  isRowSelectable: (params) => {
-    return !params.data.ID.includes('hypo');
-  },
-  onSelectionChanged : (event) => {
-    if (event.source === 'api') {
-      return;
-    }
-    if (event.source === 'checkboxSelected') {
-      let nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
-      // Select all nodes between the last selected node and the current node
-      let selected = event.api.getSelectedNodes();
-      let codes = [];
-      selected.forEach(element => {
-        codes.push(element.data.ID);
-      });
-      if (codes.length >= nodes.length) {
-        gtiz_tree.tree.clearSelection();
-        gtiz_tree.tree.selectNodesByIds(codes);
-      } else {
-        let filtered = nodes.filter(item => !codes.includes(item));
-        gtiz_tree.tree.unselectNodesByIds(filtered);
-      }
-    }
-    if (event.source === 'uiSelectAllFiltered') {
-      let selected = event.api.getSelectedNodes();
-      if (selected == 0) {
-        gtiz_metadata.deselectAllFilteredOnly();
-      } else {
-        gtiz_metadata.selectAllFilteredOnly();
-      }
-    }
-  },
-  isExternalFilterPresent: () => {
-    let present = gtiz_metadata.isExternalFilterPresent();
-    return present;
-  },
-  doesExternalFilterPass: (node) => {
-    let filtered = gtiz_metadata.doesExternalFilterPass(node);
-    return filtered;
-  }
-};
 
 /**
  * Should return true if external filter passes, otherwise false.
@@ -239,7 +312,6 @@ gtiz_metadata.selectAllFilteredOnly = function() {
       codes.push(element.data.ID);
     }
   });
-  gtiz_tree.tree.clearSelection();
   gtiz_tree.tree.selectNodesByIds(codes);
 }
 
@@ -283,6 +355,7 @@ gtiz_metadata.deselectAll = function() {
  * 
  */
 gtiz_metadata.findNodes = function(nodes) {
+  
   let components = ['metadata'];
 	let action = 'add';
 	gtiz_layout.uiLoadingManager(components, action);
@@ -296,9 +369,13 @@ gtiz_metadata.findNodes = function(nodes) {
       gtiz_metadata.options.api.forEachNode(node => {
         let id = selected.find(element => element === node.data.ID);
         if (id) {
-          node.setSelected(true);
+          if (!node.isSelected()) {
+            node.setSelected(true);
+          }
         } else {
-          node.setSelected(false);
+          if (node.isSelected()) {
+            node.setSelected(false);
+          }
         }
       });
     }
@@ -334,6 +411,64 @@ gtiz_metadata.buildUi = function() {
     }
   });
 }
+/**
+ * Options definition for ag-grid library
+ * 
+ */
+gtiz_metadata.options = {
+  // default col def properties get applied to all columns
+  defaultColDef: {
+    sortable: true,
+    filter: true,
+    resizable: true
+  },
+  enableCellTextSelection : true,
+  ensureDomOrder : true,
+  rowSelection: 'multiple',
+  suppressRowClickSelection: true,
+  rowMultiSelectWithClick : true,
+  animateRows: true, // have rows animate to new positions when sorted
+  suppressColumnVirtualisation : true,
+  suppressFieldDotNotation : true,
+  isRowSelectable: (params) => {
+    return !params.data.ID.includes('hypo');
+  },
+  onSelectionChanged : (event) => {
+    if (event.source === 'api') {
+      return;
+    }
+    if (event.source === 'checkboxSelected') {
+      let nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
+      let selected = event.api.getSelectedNodes();
+      let codes = [];
+      selected.forEach(element => {
+        codes.push(element.data.ID);
+      });
+      if (codes.length >= nodes.length) {
+        gtiz_tree.tree.selectNodesByIds(codes);
+      } else {
+        let filtered = nodes.filter(item => !codes.includes(item));
+        gtiz_tree.tree.unselectNodesByIds(filtered);
+      }
+    }
+    if (event.source === 'uiSelectAllFiltered') {
+      let selected = event.api.getSelectedNodes();
+      if (selected.length == 0) {
+        gtiz_metadata.deselectAllFilteredOnly();
+      } else {
+        gtiz_metadata.selectAllFilteredOnly();
+      }
+    }
+  },
+  isExternalFilterPresent: () => {
+    let present = gtiz_metadata.isExternalFilterPresent();
+    return present;
+  },
+  doesExternalFilterPass: (node) => {
+    let filtered = gtiz_metadata.doesExternalFilterPass(node);
+    return filtered;
+  }
+};
 
 /**
  * Set grid contents from metadata tree informations.
@@ -354,8 +489,8 @@ gtiz_metadata.setGrid = function() {
     resizable: true,
     suppressAutoSize: true,
     lockPosition: true,
-    showDisabledCheckboxes: true,
-  }
+    showDisabledCheckboxes: true
+  };
   columns.push(check);
   Object.keys(fields).forEach((key, index) => {
     if (fields[key] != 'nothing') {
@@ -363,13 +498,11 @@ gtiz_metadata.setGrid = function() {
       let obj = {};
       if (check) {
         obj = {
-          field : fields[key],
-          // checkboxSelection: check,
+          field : fields[key]
         }
       } else {
         obj = {
-          field : fields[key],
-          // checkboxSelection: check,
+          field : fields[key]
         }
       }
       columns.push(obj);
@@ -406,136 +539,3 @@ gtiz_metadata.init = function() {
   gtiz_metadata.setGrid();
   gtiz_metadata.buildUi();
 }
-
-/**
- * Card header menu definition.
- * 
- */
-gtiz_metadata.card_menu = [{
-  type : 'button',
-  label : gtiz_locales.current.select_all,
-  icon : 'iconic-check-circle',
-  function : () => {
-    gtiz_metadata.selectAll();
-  }
-}, {
-  type : 'button',
-  label : gtiz_locales.current.clean_selection,
-  icon : 'iconic-minus-circle',
-  function : () => {
-    gtiz_metadata.deselectAll();
-  }
-}];
-
-/**
- * Card context menu definition
- * 
- */
-gtiz_metadata.context_menu = [{
-  type : 'toggle',
-  id : 'metadata-selected-only',
-  options : [{
-      label : () => {
-        return gtiz_locales.current.selected_only;
-      },
-      value : 'show_selected',
-      icon : 'iconic-eye'
-    }, {
-      label : () => {
-        return gtiz_locales.current.selected_only;
-      },
-      value : 'show_all',
-      icon : 'iconic-eye-off'
-  }],
-  selected : () => {
-    return  gtiz_metadata.show_nodes;
-  },
-  function : (value) => {
-    gtiz_metadata.toggleShowSelected(value);
-  }
-}, {
-  type : 'separator'
-}, {
-  type : 'select',
-  id : 'metadata-menu-color-by',
-  label : () => {
-    return gtiz_locales.current.column_selection;
-  },
-  icon : '',
-  options : () => {
-    let values = gtiz_metadata.getColorByOptions();
-    return values;
-  },
-  default : undefined,
-  get_default : () => {
-    let value = gtiz_metadata.getColorByDefaultValue();
-    return value;
-  },
-  function : (value) => {
-    gtiz_metadata.changeCategoryColor(value);
-  }
-}, {
-  type : 'button',
-  label : () => {
-    return gtiz_locales.current.move_to_first_position;
-  },
-  icon : 'iconic-undo',
-  function : () => {
-    gtiz_metadata.moveColumn();
-  }
-}, {
-  type : 'button',
-  label : () => {
-    return gtiz_locales.current.set_as_figure_legend;
-  },
-  icon : 'iconic-bookmark',
-  function : () => {
-    gtiz_metadata.setColumnsAsLegend();
-  }
-}, {
-  type : 'separator'
-}, {
-  type : 'button',
-  label : () => {
-    return gtiz_locales.current.resize_columns;
-  },
-  icon : 'iconic-columns-vertical',
-  function : () => {
-    gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
-  }
-}, {
-  type : 'separator'
-}, {
-  type : 'toggle',
-  id : 'metadata-show-hypo',
-  options : [{
-      label : () => {
-        return gtiz_locales.current.show_hypothetical;
-      },
-      value : 'show_hypo',
-      icon : 'iconic-eye'
-    }, {
-      label : () => {
-        return gtiz_locales.current.show_hypothetical;
-      },
-      value : 'hide_hypo',
-      icon : 'iconic-eye-off'
-  }],
-  selected : () => {
-    return  gtiz_metadata.show_hypothetical;
-  },
-  function : (value) => {
-    gtiz_metadata.toggleShowHypotetical(value);
-  }
-}, {
-  type : 'separator'
-}, {
-  type : 'button',
-  label : () => {
-    return gtiz_locales.current.download_table + ' (.csv)';
-  },
-  icon : 'iconic-file-text',
-  function : () => {
-    gtiz_metadata.downloadCsv();
-  }
-}];
