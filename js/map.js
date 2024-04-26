@@ -19,6 +19,22 @@ gtiz_map.geojson_from_metadata = ''; // populated if .tsv contains coordinates
 gtiz_map.geojson = ''; // to be populated on loadJSON
 
 gtiz_map.map_container = document.querySelector('.map-container');
+gtiz_map.map_node = document.querySelector('#map-div');
+
+// Listen for keydown event
+gtiz_map.map_container.addEventListener('keydown', function(e) {
+  if (e.key === 'Shift') {
+    gtiz_map.map_node.style.cursor = 'crosshair';
+  }
+});
+
+// Listen for keyup event
+gtiz_map.map_container.addEventListener('keyup', function(e) {
+  if (e.key === 'Shift') {
+    // If the shift key is released, change the cursor style back to default
+    gtiz_map.map_node.style.cursor = '';
+  }
+});
 
 /**
  * 
@@ -394,6 +410,61 @@ gtiz_map.initMap = () => {
   let height = gtiz_map.map_container.clientHeight;
   let min_zoom = Math.ceil(Math.log2(Math.max(width, height) / 256));
   map.setMinZoom(min_zoom);
+
+  map.boxZoom.disable();
+
+  let rectangle;
+  let startPoint;
+  let color = getComputedStyle(document.documentElement).getPropertyValue('--light').trim();
+  // Handle mousedown event
+  map.on('mousedown', function(e) {
+    if (!e.originalEvent.shiftKey) return;
+    e.originalEvent.preventDefault();
+    startPoint = map.mouseEventToLatLng(e.originalEvent);
+    rectangle = L.rectangle([startPoint, startPoint], {
+      color: color, // RGB part of your color
+      fillColor: color, // RGB part of your color
+      fillOpacity: 0.2, // Alpha channel
+      weight: 1
+    }).addTo(map);
+  });
+
+  // Handle mousemove event
+  map.on('mousemove', function(e) {
+    if (!e.originalEvent.shiftKey || !startPoint) return;
+    rectangle.setBounds(L.latLngBounds(startPoint, map.mouseEventToLatLng(e.originalEvent)));
+  });
+
+  // Handle mouseup event
+  map.on('mouseup', function(e) {
+    if (!e.originalEvent.shiftKey || !startPoint) return;
+    startPoint = null;
+    let nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
+    let selectedPoints = [];
+    let bounds = rectangle.getBounds();
+    pointLayer.eachLayer(function(layer) {
+      if (bounds.contains(layer.getLatLng())) {
+        selectedPoints.push(layer.feature.properties.samples);
+      }
+    });
+    
+    map.removeLayer(rectangle);
+    rectangle = null;
+    
+    let samples = [];
+    selectedPoints.forEach(point => {
+      point.forEach(p => {
+        samples.push(p.codice);
+      });
+    });
+    let filtered = nodes.filter(item => samples.includes(item));
+    if (filtered.length > 0) {
+      gtiz_tree.tree.unselectNodesByIds(filtered);
+    } else {
+      gtiz_tree.tree.selectNodesByIds(samples);
+    }
+  });
+
 } // initMap
 
 gtiz_map.resetMap = function() {
@@ -1202,6 +1273,26 @@ gtiz_map.context_menu = [{
   icon : 'iconic-refresh',
   function : () => {
     gtiz_map.resetMinMaxMarkerValues();
+  }
+}, {
+  type : 'separator'
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.select_all;
+  },
+  icon : 'iconic-check-circle',
+  function : () => {
+    gtiz_tree.tree.selectAll();
+  }
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.deselect_all;
+  },
+  icon : 'iconic-minus-circle',
+  function : () => {
+    gtiz_tree.tree.clearSelection();
   }
 }, {
   type : 'separator'
