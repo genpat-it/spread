@@ -25,7 +25,7 @@ jobs:
 
       - name: Replace placeholder with current date
         run: |
-          DATE=`date +'%Y-%m-%d %H:%M:%S'`
+          DATE=`date +'%Y-%m-%d'`
           sed -i "s/__LAST_UPDATE__/$DATE/" index.html
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
