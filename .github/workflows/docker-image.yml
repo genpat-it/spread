@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-actions[bot]'  # Prevent running if GitHub Actions made the push
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
