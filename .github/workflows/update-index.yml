@@ -9,12 +9,11 @@ jobs:
   update:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_PAT }}  # Use the PAT for checkout
 
       - name: Replace __LAST_UPDATE__ placeholder
         run: |
