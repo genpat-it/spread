@@ -9,7 +9,9 @@ jobs:
   update:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
