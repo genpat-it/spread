@@ -54,6 +54,17 @@ gtiz_utils.extractNumbersAndRanges = function(input) {
   return Array.from(numberSet);
 }
 
+/**
+ * Set the copy right year.
+ * 
+ */
+gtiz_utils.setCopyRightYear = function() {
+  let footer = document.querySelector('footer');
+  let copyright = footer.querySelector('.copyright-year');
+  let year = new Date().getFullYear();
+  copyright.innerHTML = year;
+}
+
 window.addEventListener('message', (event) => {
   let url = new URL(window.location.href);
   let pathname = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
@@ -62,4 +73,8 @@ window.addEventListener('message', (event) => {
   if (event.origin === domain) {
     gtiz_utils.postMessage = event.data;
   }
+});
+
+window.addEventListener('DOMContentLoaded', (event) => {
+  gtiz_utils.setCopyRightYear();
 });
