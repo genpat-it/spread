@@ -1,0 +1,33 @@
+name: Update index.html
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Replace __LAST_UPDATE__ placeholder
+        run: |
+          DATE=`date +%Y-%m-%d`
+          sed -i "s/__LAST_UPDATE__/$DATE/g" index.html
+
+      - name: Commit and push if it changed
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const git = require('simple-git')();
+            const changedFiles = await git.diffSummary(['--cached']).then((summary) => summary.files.map((file) => file.file));
+            if (changedFiles.includes('index.html')) {
+              await git.addConfig('user.name', 'GitHub Actions')
+              await git.addConfig('user.email', 'github-actions[bot]@users.noreply.github.com')
+              await git.commit('Update __LAST_UPDATE__ in index.html')
+              await git.push();
+            }
