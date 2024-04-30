@@ -13,9 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4  # Update to the latest version compatible with Node.js 20
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GH_PAT }}  # Use the PAT for checkout
 
       - name: Replace __LAST_UPDATE__ placeholder
         run: |
