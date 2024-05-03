@@ -111,7 +111,7 @@ http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metad
 
 ### Load files
 
-The can also directly upload files by dragging them over the tree, over the initial droppable area or using load buttons provided in the UI. In this case you don't neet to user parameters in the url. You can drag or load a `.nwk` file followed by a `.tsv` file containing metadata and optionally a `.geojson` file containing geo-saptial information.
+You can also directly upload files by dragging them over the tree, over the initial droppable area or using load buttons provided in the UI. In this case you don't need to user parameters in the url. You can drag or load a `.nwk` file followed by a `.tsv` file containing metadata and optionally a `.geojson` file containing geo-saptial information.
 
 > **Important**
 >
