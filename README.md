@@ -25,7 +25,7 @@ Previously known as GrapeTree Extended.
 
 <p align="center">
 <br>
-<img src="https://github.com/genpat-it/spread/assets/87088754/547ff60b-04ec-4fa3-85b6-5f07f55402a6" width="340">
+<img src="https://github.com/genpat-it/spread/assets/87088754/547ff60b-04ec-4fa3-85b6-5f07f55402a6" width="300">
 <br>
 </p>
 
