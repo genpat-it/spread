@@ -23,6 +23,14 @@ Previously known as GrapeTree Extended.
 
 ## Description
 
+<p align="center">
+<br>
+<img src="https://github.com/genpat-it/spread/assets/87088754/547ff60b-04ec-4fa3-85b6-5f07f55402a6" width="340">
+<br>
+</p>
+
+# 
+
 The project is based on [GrapeTree](https://github.com/achtman-lab/GrapeTree), a fully interactive, tree visualization program within EnteroBase, which supports facile manipulations of both tree layout and metadata. Please see more info [here](https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html).
 
 The idea was to extend the original project in order to conducts spatio-temporal analyses with an integrated geographic information system (GIS) as well as a data visualization system across time. The web application allows users to upload geographic coordinates and temporal data related to each sample and allows to display them reflecting the selection in the tree on the map and vice versa, and reproducing a timelapse visualization both in the map and in the tree.
@@ -47,11 +55,15 @@ To run the project locally you need to set a web server, **node packages http-se
 
 Now you will be able to install `live-server` globally on your machine using the node package manager `npm` command line tool, this will allow you to run a web server from anywhere on your computer.
 
-`npm install live-server -g`
+```
+npm install live-server -g
+```
 
 To start a web server, in terminal open the directory containing your static web files and start the server with the following command:
 
-`live-server`
+```
+live-server
+```
 
 ### Run SPREAD locally
 
@@ -261,7 +273,7 @@ This will expose the application running inside the container on port 3000 of yo
 
 ## License
 
-Copyright Warwick University This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.
 
@@ -271,7 +283,9 @@ You should have received a copy of the GNU General Public License along with thi
 
 If you run SPREAD, please cite the publication:
 
-[de Ruvo A, De Luca A, Bucciacchio A, Castelli P, Di Lorenzo A, Radomski N, Di Pasquale A (2024) SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard](https://veterinariaitaliana.izs.it/index.php/VetIt/article/view/3476/1426)
+* [de Ruvo A, De Luca A, Bucciacchio A, Castelli P, Di Lorenzo A, Radomski N, Di Pasquale A (2024) SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard](https://veterinariaitaliana.izs.it/index.php/VetIt/article/view/3476/1426)
+
+* [De Luca A, de Ruvo A, Di Lorenzo A, Bucciacchio A, Di Pasquale A (2023) GrapeTree integration with spatio-temporal data visualization: a holistic understanding of diseases and the transmission pathways](https://www.veterinariaitaliana.izs.it/index.php/GEOVET23/article/view/3224)
 
 Also, SPREAD relies on the work of other developers. So, there are other tools that you must cite:
 * ReporTree: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-023-01196-1
