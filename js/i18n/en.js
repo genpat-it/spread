@@ -32,7 +32,7 @@ gtiz_languages.en = {
   "download": "Download",
   "download_table": "Download table",
   "download_svg": "Download Svg",
-  "drop_info": "You can also drag or load a .nwk file followed by a .tsv file containing metadata and optionally a .geojson file containing geo-saptial information. Please read more on our <a href=\"https://cohesive.izs.it/wiki/user/Dashboards/SPREAD/SPREAD.html\" target=\"_blank\">wiki</a>.",
+  "drop_info": "You can also drag or load a .nwk file followed by a .tsv file containing metadata and optionally a .geojson file containing geo-saptial information. Please read more on our <a href=\"https://github.com/genpat-it/spread/wiki\" target=\"_blank\">wiki</a>.",
   "drop_message": "Please drag here a valid .json file or load it from your file system to start with SPREAD.",
   "dropped_files_alert": "You can only drop one file at a time: a complete <strong>.json</strong> file or alternatively a <strong>.nwk</strong> then a <strong>.tsv</strong> containing metadata, and then optionally a <strong>.geojson</strong> containing spatial informations.",
   "dynamic" : "Dynamic",
@@ -43,6 +43,7 @@ gtiz_languages.en = {
   "export_newick" : "Export newick",
   "fetch_error" : "Fetch request failed.",
   "font_size" : "Font size",
+  "footer_disclaimer" : "This project is part of the European Joint Programme One Health EJP. This project has received funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No 773830.",
   "for_branches_longer_than" : "For branches longer than:",
   "forbidden_net_geojson_alert" : "It seems that you do not have permission to access the GeoJson indicated in the URL. Please try logging in to <a href='{0}' target='_blank'>{1}</a> and refresh the page.",
   "forbidden_net_metadata_alert" : "It seems that you do not have permission to access Metadata indicated in the URL. Please try logging in to <a href='{0}' target='_blank'>{1}</a> and refresh the page.",
@@ -83,7 +84,7 @@ gtiz_languages.en = {
     "map": {
       "help": '<p>Through the options available in this section, you can control the appearance of the map.</p><ul><li><strong>Join by coordinates/by metadata:</strong> The toggle allows you to aggregate points on the map based on the geographical proximity of the provided coordinates or based on the values of the loaded metadata. In the first case, you can define a numerical value for <strong>delta</strong>, which determines the degree of aggregation.</li><li><strong>Minimum/Maximum marker radius:</strong> With these two fields, you can adjust the size of the points on the map by defining a minimum and a maximum radius. The initial size is relative to the number of nodes present at the same geographical coordinates.</li><li><strong>Pie Chart mode/Heatmap mode:</strong> This toggle allows you to change the visualization mode of the points on the map. With the first option (selected by default), the points will be displayed with pie charts based on the categories of the tree nodes, while with the second option, a blur effect is applied to the nodes.</li></ul>'
     },
-    "feedback": '<p>You can find the complete documentation on our <a href="https://cohesive.izs.it/wiki/user/Dashboards/SPREAD/SPREAD.html" target="_blank">wiki</a>. Please visit also <a href="https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html" target="_blank">EnteroBase documentation</a>.</p>'
+    "feedback": '<p>You can find the complete documentation on our <a href="https://github.com/genpat-it/spread/wiki" target="_blank">wiki</a>. Please visit also <a href="https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html" target="_blank">EnteroBase documentation</a>.</p>'
   },
   "hide": "Hide",
   "hide_labels": "Hide labels",

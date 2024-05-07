@@ -1,0 +1,70 @@
+{
+  "themes" : [{
+    "active" : true,
+    "name" : "default",
+    "author" : "Alessandro De Luca, IZSAM G. Caporale",
+    "logo" : "img/logo.svg",
+    "title" : {
+      "it" : "SPREAD",
+      "en" : "SPREAD"
+    },
+    "favicon" : "img/logo.ico",
+    "vars" : "css/vars.css",
+    "modules" : {
+      "header" : {
+        "css" : "css/header.css",
+        "html" : "html/header.html"
+      },
+      "footer" : {
+        "css" : "css/footer.css",
+        "html" : "html/footer.html"
+      }
+    },
+    "version" : "1.0.0"
+  }, {
+    "active" : false,
+    "name" : "genpat",
+    "author" : "Alessandro De Luca, IZSAM G. Caporale",
+    "logo" : "img/logo.svg",
+    "title" : {
+      "it" : "Piattaforma GenPat, SPREAD",
+      "en" : "GenPat Platform, SPREAD"
+    },
+    "favicon" : "img/logo.ico",
+    "vars" : "css/vars.css",
+    "modules" : {
+      "header" : {
+        "css" : "css/header.css",
+        "html" : "html/header.html"
+      },
+      "footer" : {
+        "css" : "css/footer.css",
+        "html" : "html/footer.html"
+      }
+    },
+    "version" : "1.0.0"
+  }, {
+    "active" : false,
+    "name" : "cohesive",
+    "author" : "Alessandro De Luca, IZSAM G. Caporale",
+    "logo" : "img/logo.svg",
+    "title" : {
+      "it" : "Sistema Informativo COHESIVE, SPREAD",
+      "en" : "COHESIVE Information System, SPREAD"
+    },
+    "favicon" : "img/logo.ico",
+    "vars" : "css/vars.css",
+    "modules" : {
+      "header" : {
+        "css" : "css/header.css",
+        "html" : "html/header.html"
+      },
+      "footer" : {
+        "css" : "css/footer.css",
+        "html" : "html/footer.html"
+      }
+    },
+    "version" : "1.0.0"
+  }],
+  "copyright" : "&copy; {__YEAR__} IZSAM G. Caporale"
+}

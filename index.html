@@ -3,17 +3,17 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>COHESIVE Information System - SPREAD</title>
+	<title>SPREAD</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="shortcut icon" href="img/cohesive-theme/favicon.ico">
+	<link rel="shortcut icon" href="themes/default/img/logo.ico">
   <link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/skeleton.css">
   <link rel="stylesheet" href="css/iconic.css">
-  <link rel="stylesheet" href="css/cohesive-vars.css">
-  <link rel="stylesheet" href="css/custompages-base.css">
-  <link rel="stylesheet" href="css/dashboard-grapetree-view.css">
-	<link rel="stylesheet" href="css/cohesive-header.css">
-  <link rel="stylesheet" href="css/cohesive-footer.css">
+  <link rel="stylesheet" href="themes/default/css/vars.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+	<link rel="stylesheet" href="themes/default/css/header.css">
+  <link rel="stylesheet" href="themes/default/css/footer.css">
 
   <!-- libraries -->
   <!-- jquery-ui -->
@@ -30,21 +30,15 @@
 </head>
 
 <body class="dashboard dashboard-grapetree">
-	<header class="header">
+  
+  <header class="header">
     <div class="top-bar">
       <div class="platform-heading">
-        <div class="platoform-logo">
-          <img src="img/cohesive-theme/platform-logo.svg" alt="Logo">
-        </div>
-        <div class="platform-title">
-          <h1>COHESIVE Information System, SPREAD</h1>
-        </div>
+        <!-- here custom contents for header, you can define them in themes/theme-name/html/header.html -->
       </div>
       <div class="toolbar">
         <div class="tool tool-lang">
-          <div class="tool-label">
-            It
-          </div>
+          <div class="tool-label"></div>
           <div class="tool-trigger">
             <i class="iconic iconic-globe"></i>
           </div>
@@ -58,7 +52,7 @@
       </div>
     </div>
   </header>
-  
+
   <main>
     <section class="quick-actions">
       <div class="tools-wrapper">
@@ -301,40 +295,17 @@
     </div>
   </section>
 
-	<footer>
+  <footer>
     <div class="footer-contents">
       <div class="footer-close" onclick="gtiz_layout.showFooter()"><i class="iconic iconic-close-circle"></i></div>
-      <div class="logo genpat-logo">
-        <img src="img/cohesive-theme/eu-emblem.svg" alt="EU Emblem">
+      <div class="footer-content">
+        <!-- here custom contents for footer, you can define them in themes/theme-name/html/footer.html -->
       </div>
-      <div class="useful useful-disclaimer">
-        <p>
-          This project is part of the European Joint Programme One Health EJP. This project has received funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No 773830.
-        </p>
-      </div>
-      <div class="useful useful-links">
-        <h6 data-i18n-key="useful_links">Useful links</h6>
-        <ul>
-          <li><a href="https://onehealthejp.eu/">One Heakth EJP</a></li>
-          <li><a href="https://www.izs.it/IZS/Eccellenza/Centri_nazionali/CRN_-_Sequenze_Genomiche" target="_blank"><span data-i18n-key="crn_genome_sequencing">CRN Genome Sequencing</span></a></li>
-          <li><a href="https://github.com/achtman-lab/GrapeTree" target="_blank">GrapeTree Github</a></li>
-          <li><a href="https://www.izs.it/IZS/" target="_blank">IZSAM "G. Caporale"</a></li>
-        </ul>
-        <div class="useful useful-help">
-          <h6 data-i18n-key="support">Support</h6>
-          <ul>
-            <li><a href="https://cohesive.izs.it/wiki/user/Dashboards/SPREAD/SPREAD.html" target="_blank">Wiki</a></li>
-            <li><a href="mailto:bioinformatica@izs.it" target="_blank">bioinformatica@izs.it</a></li>
-            <li><a href="tel:+3908613321" target="_blank">+39 0861 3321</a></li>
-          </ul>
-        </div>
+      <div class="footer-info">
         <div class="info">
-          <img src="img/cohesive-theme/izsam-logo.svg">
-        </div>
-        <div class="info">
-          <p><span data-i18n-key="cookies_notice">This application does not use cookies.</span></p>
-		      <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">2024-05-03</span></p>
-          <p class="copyright">&copy; <span class="copyright-year"></span> IZSAM "G. Caporale"</p>
+          <p><span data-i18n-key="cookies_notice">Questa applicazione non utilizza cookies.</span></p>
+          <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">__LAST_UPDATE__</span></p>
+          <p class="copyright">&copy; <span class="copyright-year"></span> IZSAM 'G. Caporale'</p>
         </div>
       </div>
     </div>
@@ -372,5 +343,6 @@
   <script src="js/help.js"></script>
   <script src="js/map.js"></script>
   <script src="js/zooms.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

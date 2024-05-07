@@ -913,7 +913,8 @@ gtiz_file_handler.modalSetFilesToLoad = function(files) {
 	gtiz_file_handler.files_to_load = files;
 };
 
-window.addEventListener('DOMContentLoaded', function(e) {
+
+gtiz_file_handler.init = function() {
 	gtiz_file_handler.drop_areas.forEach(drop_area => {
 		gtiz_file_handler.dropFiles(drop_area);
 	});
@@ -922,4 +923,4 @@ window.addEventListener('DOMContentLoaded', function(e) {
 	gtiz_layout.uiLoadingManager(l_components, l_action);	
 	gtiz_tree.initiateLoading("Waiting for tree...");
 	gtiz_file_handler.loadNetFiles();
-});
+};

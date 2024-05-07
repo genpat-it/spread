@@ -60,9 +60,13 @@ gtiz_utils.extractNumbersAndRanges = function(input) {
  */
 gtiz_utils.setCopyRightYear = function() {
   let footer = document.querySelector('footer');
-  let copyright = footer.querySelector('.copyright-year');
-  let year = new Date().getFullYear();
-  copyright.innerHTML = year;
+  if (footer) {
+    let copyright = footer.querySelector('.copyright-year');
+    if (copyright) {
+      let year = new Date().getFullYear();
+      copyright.innerHTML = year;
+    }
+  }
 }
 
 window.addEventListener('message', (event) => {
