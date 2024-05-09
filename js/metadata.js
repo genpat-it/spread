@@ -138,6 +138,15 @@ gtiz_metadata.context_menu = [{
   function : () => {
     gtiz_metadata.downloadCsv();
   }
+}, {
+  type : 'button',
+  label : () => {
+    return gtiz_locales.current.download_table + ' (.tsv)';
+  },
+  icon : 'iconic-file-text',
+  function : () => {
+    gtiz_metadata.downloadTsv();
+  }
 }];
 
 
@@ -286,6 +295,33 @@ gtiz_metadata.getColorByOptions = function() {
 }
 
 /**
+ * Export table as tsv
+ * 
+ * 
+ */
+gtiz_metadata.downloadTsv = function() {
+  let nodes = gtiz_metadata.options.api.getRenderedNodes();
+  let array = [];
+  nodes.forEach(element => {
+    if (element.data.nothing) {
+      delete element.data.nothing;   
+    }
+    array.push(element.data);
+  });
+  let keys = Object.keys(array[0]);
+  // Create the header row
+  let tsv = keys.join('\t') + '\n';
+  // Create the data rows
+  for (let obj of array) {
+      let values = Object.values(obj);
+      tsv += values.join('\t') + '\n';
+  }
+  let timestamp =  Date.now();
+  let name = "metadata" + timestamp + ".tsv";
+  gtiz_file_handler.saveTextAsFile(tsv, name);
+}
+
+/**
  * Export table as csv
  * 
  * https://www.ag-grid.com/javascript-data-grid/csv-export/
@@ -295,8 +331,11 @@ gtiz_metadata.downloadCsv = function() {
   let columns = gtiz_metadata.options.columnApi.getColumns();
   // we are removing first column dedicated to checkbox
   columns.shift();
+  let timestamp =  Date.now();
+  let name = "metadata" + timestamp + ".csv";
   gtiz_metadata.options.api.exportDataAsCsv({
-    columnKeys: columns
+    columnKeys: columns,
+    fileName: name
   });
 }
 
@@ -467,6 +506,44 @@ gtiz_metadata.options = {
   doesExternalFilterPass: (node) => {
     let filtered = gtiz_metadata.doesExternalFilterPass(node);
     return filtered;
+  },
+  onCellValueChanged: (event) => {
+    console.log(event);
+
+    let nodes = gtiz_metadata.options.api.getRenderedNodes();
+    let array = [];
+    nodes.forEach(element => {
+      if (element.data.nothing) {
+        delete element.data.nothing;   
+      }
+      array.push(element.data);
+    });
+    let keys = Object.keys(array[0]);
+    // Create the header row
+    let tsv = keys.join('\t') + '\n';
+    // Create the data rows
+    for (let obj of array) {
+        let values = Object.values(obj);
+        tsv += values.join('\t') + '\n';
+    }
+
+    gtiz_tree.current_metadata_file = tsv;
+		if (gtiz_tree.tree) {
+			let l_action = 'add';
+			let l_components = ['tree', 'map', 'legend'];
+			gtiz_layout.uiLoadingManager(l_components, l_action);
+			gtiz_file_handler.loadMetadataText(tsv);
+			gtiz_map.init();
+		} else {
+			let title = gtiz_locales.current.oops;
+			let contents = [];
+			let body = document.createElement('div');
+			body.innerHTML = gtiz_locales.current.missing_tree_alert;
+			contents.push(body);
+			gtiz_modal.buildModal(title, contents);
+			console.log(gtiz_locales.current.missing_tree_alert);
+		}
+
   }
 };
 
@@ -494,15 +571,15 @@ gtiz_metadata.setGrid = function() {
   columns.push(check);
   Object.keys(fields).forEach((key, index) => {
     if (fields[key] != 'nothing') {
-      let check = fields[key] == 'ID' ? true : false;
       let obj = {};
-      if (check) {
+      if (fields[key] == 'ID' || fields[key] == gtiz_file_handler.samples_column) {
         obj = {
           field : fields[key]
         }
       } else {
         obj = {
-          field : fields[key]
+          field : fields[key],
+          editable: true
         }
       }
       columns.push(obj);

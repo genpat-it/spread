@@ -148,6 +148,7 @@ gtiz_languages.it = {
   "original_tree": "Tree iniziale",
   "pie_chart_mode": "Modalità diagramma",
   "possible_performance_issues_message" : "Potresti avere problemi di performance visualizzando il tree esteso. Suggerisco di impostare la distanza dei collegamenti su <strong>{0}</strong>.",
+  "publications": "Pubblicazioni",
   "quick_gradient": "Gradiente veloce",
   "radius_size": "Dimensione raggio (%)",
   "real_branch_length" : "Lunghezza branch reale",

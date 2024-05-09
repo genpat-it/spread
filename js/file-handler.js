@@ -370,7 +370,8 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	}
 	let meta = {};
 	let id_name = '';
-	let category = 'nothing';
+	let tree = gtiz_tree.tree;
+	let category = tree.display_category ? tree.display_category : 'nothing';
 	let options = {};
 	if (header_index) {
 		if (header_index.find(function(d) {return d == "ID"})) {
@@ -379,7 +380,9 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 			id_name = header_index[0];
 		}
 		gtiz_file_handler.samples_column = id_name;
-		category = header_index.length > 1 ? header_index[1] : header_index[0];
+		if (category == 'nothing') {
+			category = header_index.length > 1 ? header_index[1] : header_index[0];
+		}
 		for (let i in header_index) {
 			let header = header_index[i];
 			options[header] = header;

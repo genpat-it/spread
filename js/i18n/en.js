@@ -148,6 +148,7 @@ gtiz_languages.en = {
   "original_tree": "Original tree",
   "pie_chart_mode": "Pie Chart mode",
   "possible_performance_issues_message" : "Possible performance issues, I suggest to set link distances value to <strong>{0}</strong>.",
+  "publications": "Publications",
   "quick_gradient": "Quick gradient",
   "radius_size": "Radius size (%)",
   "real_branch_length" : "Real branch length",
