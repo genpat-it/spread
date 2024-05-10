@@ -285,12 +285,13 @@ You should have received a copy of the GNU General Public License along with thi
 
 ## Citation
 
-If you run SPREAD, please cite the publication:
+If you run SPREAD, please cite publications:
 
-* [de Ruvo A, De Luca A, Bucciacchio A, Castelli P, Di Lorenzo A, Radomski N, Di Pasquale A (2024) SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard](https://veterinariaitaliana.izs.it/index.php/VetIt/article/view/3476/1426)
+de Ruvo, A., De Luca, A., Bucciacchio, A., Castelli, P., Di Lorenzo, A., Radomski, N., Di Pasquale, A. SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard. Veterinaria Italiana, Vol. 60 No. 4 (2024): Special Issue GeoVet23. https://doi.org/10.12834/VetIt.3476.23846.1 
 
-* [De Luca A, de Ruvo A, Di Lorenzo A, Bucciacchio A, Di Pasquale A (2023) GrapeTree integration with spatio-temporal data visualization: a holistic understanding of diseases and the transmission pathways](https://www.veterinariaitaliana.izs.it/index.php/GEOVET23/article/view/3224)
+De Luca, A., de Ruvo, A., Di Lorenzo, A., Bucciacchio, A., Di Pasquale, A. GrapeTree integration with spatio-temporal data visualization: a holistic understanding of diseases and the transmission pathways. GeoVet23. [Poster](https://www.veterinariaitaliana.izs.it/index.php/GEOVET23/article/view/3224)
 
 Also, SPREAD relies on the work of other developers. So, there are other tools that you must cite:
+
 * ReporTree: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-023-01196-1
 * GrapeTree: http://www.genome.org/cgi/doi/10.1101/gr.232397.117
