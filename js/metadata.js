@@ -130,22 +130,24 @@ gtiz_metadata.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'button_optioned',
+  id : 'metadata-export-button',
   label : () => {
-    return gtiz_locales.current.download_table + ' (.csv)';
+    return gtiz_locales.current.download_table;
   },
-  icon : 'iconic-file-text',
-  function : () => {
-    gtiz_metadata.downloadCsv();
-  }
-}, {
-  type : 'button',
-  label : () => {
-    return gtiz_locales.current.download_table + ' (.tsv)';
+  icon : 'iconic-download',
+  options : [{
+    label: '.csv',
+    value: 'csv'
+  }, {
+    label: '.tsv',
+    value: 'tsv'
+  }],
+  selected : () => {
+    return  'csv';
   },
-  icon : 'iconic-file-text',
-  function : () => {
-    gtiz_metadata.downloadTsv();
+  function : (e) => {
+    gtiz_metadata.exportTable(e);
   }
 }];
 
@@ -295,46 +297,28 @@ gtiz_metadata.getColorByOptions = function() {
 }
 
 /**
- * Export table as tsv
- * 
- * 
- */
-gtiz_metadata.downloadTsv = function() {
-  let nodes = gtiz_metadata.options.api.getRenderedNodes();
-  let array = [];
-  nodes.forEach(element => {
-    if (element.data.nothing) {
-      delete element.data.nothing;   
-    }
-    array.push(element.data);
-  });
-  let keys = Object.keys(array[0]);
-  // Create the header row
-  let tsv = keys.join('\t') + '\n';
-  // Create the data rows
-  for (let obj of array) {
-      let values = Object.values(obj);
-      tsv += values.join('\t') + '\n';
-  }
-  let timestamp =  Date.now();
-  let name = "metadata" + timestamp + ".tsv";
-  gtiz_file_handler.saveTextAsFile(tsv, name);
-}
-
-/**
- * Export table as csv
- * 
+ * Export table
  * https://www.ag-grid.com/javascript-data-grid/csv-export/
  * 
+ * We use same function by changing separator value and file name.
+ * 
+ * @param {event} e Event object
  */
-gtiz_metadata.downloadCsv = function() {
+gtiz_metadata.exportTable = function(e) {
+  let buttuon = e.currentTarget;
+  let box = buttuon.parentElement;
+  let select = box.querySelector('select');
+  let value = select ? select.value : 'csv';
+  let separator = value == 'csv' ? ',' : '\t';
+  let timestamp =  Date.now();
+  let name = "metadata" + timestamp + "." + value;
   let columns = gtiz_metadata.options.columnApi.getColumns();
   // we are removing first column dedicated to checkbox
   columns.shift();
-  let timestamp =  Date.now();
-  let name = "metadata" + timestamp + ".csv";
   gtiz_metadata.options.api.exportDataAsCsv({
     columnKeys: columns,
+    suppressQuotes: true,
+    columnSeparator: separator,
     fileName: name
   });
 }
@@ -508,26 +492,14 @@ gtiz_metadata.options = {
     return filtered;
   },
   onCellValueChanged: (event) => {
-    console.log(event);
-
-    let nodes = gtiz_metadata.options.api.getRenderedNodes();
-    let array = [];
-    nodes.forEach(element => {
-      if (element.data.nothing) {
-        delete element.data.nothing;   
-      }
-      array.push(element.data);
+    let columns = gtiz_metadata.options.columnApi.getColumns();
+    // we are removing first column dedicated to checkbox
+    columns.shift();
+    let tsv = gtiz_metadata.options.api.getDataAsCsv({
+      columnKeys: columns,
+      suppressQuotes: true,
+      columnSeparator: '\t'
     });
-    let keys = Object.keys(array[0]);
-    // Create the header row
-    let tsv = keys.join('\t') + '\n';
-    // Create the data rows
-    for (let obj of array) {
-        let values = Object.values(obj);
-        tsv += values.join('\t') + '\n';
-    }
-
-    gtiz_tree.current_metadata_file = tsv;
 		if (gtiz_tree.tree) {
 			let l_action = 'add';
 			let l_components = ['tree', 'map', 'legend'];
@@ -543,7 +515,6 @@ gtiz_metadata.options = {
 			gtiz_modal.buildModal(title, contents);
 			console.log(gtiz_locales.current.missing_tree_alert);
 		}
-
   }
 };
 
@@ -572,13 +543,15 @@ gtiz_metadata.setGrid = function() {
   Object.keys(fields).forEach((key, index) => {
     if (fields[key] != 'nothing') {
       let obj = {};
-      if (fields[key] == 'ID' || fields[key] == gtiz_file_handler.samples_column) {
+      if (fields[key] == 'ID' || fields[key] == gtiz_file_handler.samples_column){
         obj = {
-          field : fields[key]
+          field : fields[key],
+          headerName : fields[key]
         }
       } else {
         obj = {
           field : fields[key],
+          headerName : fields[key],
           editable: true
         }
       }

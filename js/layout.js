@@ -147,6 +147,7 @@ gtiz_layout.tree_node = document.querySelector('.tree');
 gtiz_layout.map_node = document.querySelector('.map');
 gtiz_layout.legend_node = document.querySelector('.legend');
 gtiz_layout.view_triggers = document.querySelectorAll('[data-view-trigger]');
+gtiz_layout.expand_triggers = document.querySelectorAll('.card-context-expand-trigger');
 
 gtiz_layout.getStyleTime = function(node) {
   let styles = window.getComputedStyle(node);
@@ -156,6 +157,31 @@ gtiz_layout.getStyleTime = function(node) {
   delay = parseFloat(delay);
   let time = (duration + delay) * 1000;
   return time;
+}
+
+/**
+ * Expand component view.
+ * 
+ * @param {String} component data-component attribute value, it identifies the component to expand 
+ * @param {Node} trigger DOM node clicked
+ */
+gtiz_layout.expandComponent = function(component, trigger) {
+  let card = trigger.closest('.card-component');
+  let node = document.querySelector('.' + component);
+  let cls = component + '-expanded';
+
+  let gtiz_context_node = document.querySelector('.context-menu');
+	if (gtiz_context_node) {
+		gtiz_context.closeContextMenu(component, card);
+	}
+
+  node.classList.toggle(cls);
+  
+  if (node.classList.contains(cls)) {
+    trigger.innerHTML = '<i class="iconic iconic-minimize"></i>';
+  } else {
+    trigger.innerHTML = '<i class="iconic iconic-maximize"></i>';
+  }
 }
 
 /**
@@ -535,6 +561,13 @@ gtiz_layout.init = function() {
   }
   gtiz_layout.buildToolsUi(gtiz_layout.cfg);
 }
+
+gtiz_layout.expand_triggers.forEach(function(trigger) {
+  trigger.addEventListener('click', function(e) {
+    let component = trigger.getAttribute('data-component');
+    gtiz_layout.expandComponent(component, trigger);
+  });
+});
 
 document.addEventListener("fullscreenchange", function(e) {
   if (gtiz_layout.fullscreen == 'on') {

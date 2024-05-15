@@ -30,7 +30,7 @@ gtiz_languages.it = {
   "display": "Mostra",
   "do_not_use_current_settings": "Non usare impostazioni correnti",
   "download": "Download",
-  "download_table": "Esporta tabella",
+  "download_table": "Download tabella",
   "download_svg": "Download Svg",
   "drop_info": "Puoi anche trascinare o caricare un file .nwk seguito da un file .tsv per i metadata da associare al tree. Opzionalmente puoi trascinare o caricare un file .geojson contenente informazioni geospaziali. Puoi trovare una guida completa sul nostro <a href=\"https://github.com/genpat-it/spread/wiki\" target=\"_blank\">wiki</a>.",
   "drop_message": "Trascina in quest'area un file .json valido oppure caricalo dal tuo computer per iniziare con SPREAD.",

@@ -926,6 +926,21 @@
   }
 }
 
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-s-mt-l .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-s-mt .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-m-mt-l .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-mt-l .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-m-mt .metadata.metadata-expanded,
+.dashboard-grapetree.dashboard-grapetree-mt .metadata.metadata-expanded {
+  top: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  z-index: 9999;
+}
+
 .dashboard-grapetree .metadata-container {
   display: flex;
   overflow: hidden;
@@ -1242,20 +1257,17 @@
 
 .dashboard-grapetree .card-context-tools {
   top: 1.7rem;
-}
-
-.dashboard-grapetree.tree-not-defined .tree .card-context-tools,
-.dashboard-grapetree .tree-loading .tree .card-context-tools {
-  display: none;
-}
-
-.dashboard-grapetree .tree .card-context-tools {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-content: center;
   justify-content: flex-end;
   align-items: center;
+}
+
+.dashboard-grapetree.tree-not-defined .tree .card-context-tools,
+.dashboard-grapetree .tree-loading .tree .card-context-tools {
+  display: none;
 }
 
 .dashboard-grapetree .card-expandable .card-context-tools {
@@ -1327,9 +1339,17 @@
   padding-left: 0.3rem;
 }
 
+.dashboard-grapetree .card a.card-action.card-action-accent {
+  color: var(--accent);
+}
+
 .dashboard-grapetree .card a.card-action i {
   display: inline-block;
   margin-right: 0.3rem;
+}
+
+.dashboard-grapetree .card a.card-action.card-action-accent i {
+  color: var(--accent);
 }
 
 .dashboard-grapetree .select-box,
@@ -1382,6 +1402,23 @@
 .dashboard-grapetree input[type="number"],
 .dashboard-grapetree input[type="search"] {
   font-size: 1.3rem;
+}
+
+.dashboard-grapetree .button-box select {
+  display: inline-block;
+  font-size: 1.2rem;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0;
+  padding-right: 0.2rem;
+  padding-bottom: 0.2rem;
+  height: 2.6rem;
+  width: 3.9rem;
+  text-align: center;
+  background-color: var(--white);
+  margin-left: 0.5rem;
+  -webkit-transform: translateY(-0.15rem);
+  transform: translateY(-0.15rem);
 }
 
 .slider {

@@ -787,11 +787,11 @@ gtiz_file_handler.distributeFile = function(text, filename) {
 		header_tag.innerHTML = filename;
 	}
 	if (extension === 'tsv') {
-		gtiz_tree.current_metadata_file = text;
 		if (gtiz_tree.tree) {
 			let l_action = 'add';
 			let l_components = ['tree', 'map', 'legend'];
 			gtiz_layout.uiLoadingManager(l_components, l_action);
+			gtiz_tree.current_metadata_file = text;
 			gtiz_file_handler.loadMetadataText(text);
 			gtiz_map.init();
 		} else {

@@ -136,6 +136,59 @@ gtiz_context.getMenu = function(type) {
       box.append(a);
       form.append(box);
     }
+    if (item.type == 'button_optioned') {
+      let box = document.createElement('div'); 
+      box.setAttribute('class', 'button-box button-box-optioned');
+      if (item.id) {
+        box.setAttribute('id', item.id);
+      }
+      let a = document.createElement('a');
+      a.setAttribute('class', 'card-action');
+      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      if (typeof item.label === 'string') {
+        a.innerHTML = icon + item.label;
+      } else {
+        if (typeof item.label === 'function') {
+          let label_text = item.label();
+          a.innerHTML = icon + label_text;
+        }
+      }
+      a.addEventListener('click', (e) => {
+        item.function(e);
+      });
+      box.append(a);
+      
+      let select = document.createElement('select');
+      if (Array.isArray(item.options)) {
+        let options = item.options;
+        options.forEach(el => {
+          let option = document.createElement('option');
+          option.setAttribute('value', el.value);
+          if (typeof el.label === 'string') {
+            option.innerHTML = el.label;
+          } else {
+            if (typeof el.label === 'function') {
+              let label_text = el.label();
+              option.innerHTML = label_text;
+            }
+          }
+          select.append(option);
+        });
+      } else {
+        if (typeof item.options === 'function') {
+          let options = item.options();
+          options.forEach(el => {
+            let option = document.createElement('option');
+            option.setAttribute('value', el.value);
+            option.innerHTML = el.label;
+            select.append(option);
+          });
+        }
+      }
+      box.append(select);
+
+      form.append(box);
+    }
     if (item.type == 'select') {
       let box = document.createElement('div'); 
       box.setAttribute('class', 'select-box');
@@ -275,9 +328,7 @@ gtiz_context.closeContextMenu = function(type, card) {
       container.style.removeProperty('width');
     }
     if (type == 'metadata') {
-      container.style.removeProperty('transform');
-      container.style.removeProperty('z-index');
-      container.style.removeProperty('width');
+      container.style.cssText = '';
     }
     if (type == 'map') {
       container.style.removeProperty('transform');
@@ -350,6 +401,8 @@ gtiz_context.showMenu = function(type, component, trigger) {
   // let gtiz_context_node = document.querySelector('.context-menu');
   // if (!gtiz_context_node) {
     let card = trigger.closest('.card-component');
+    let parent = card.parentNode;
+    let parent_cls = parent.getAttribute('class');
     gtiz_context.closeContextMenu(type, card);
 
     let cls_controller = gtiz_context.body.getAttribute('class');
@@ -379,15 +432,21 @@ gtiz_context.showMenu = function(type, component, trigger) {
       }
     }
     if (type == 'metadata') {
-      if (!cls_controller.includes('-l')) {
-        width = 320;
-        translate_value = 0;
-        left = x + card.offsetWidth + margin - width;
+      if (!parent_cls.includes('expanded')) {
+        if (!cls_controller.includes('-l')) {
+          width = 320;
+          translate_value = 0;
+          left = x + card.offsetWidth + margin - width;
+        } else {
+          let legend_width = document.querySelector('.card-legend').offsetWidth;
+          width = legend_width;
+          translate_value = 0;
+          left = x + card.offsetWidth + margin;
+        }
       } else {
-        let legend_width = document.querySelector('.card-legend').offsetWidth;
-        width = legend_width;
-        translate_value = 0;
-        left = x + card.offsetWidth + margin;
+        width = 320;
+        translate_value = width;
+        left = x + card.offsetWidth + margin - width;
       }
     }
     if (type == 'map') {
@@ -432,15 +491,19 @@ gtiz_context.showMenu = function(type, component, trigger) {
       tree_container.style.zIndex = 9999;
       if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
         // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-        tree_container.style.width = (card.offsetWidth + (2 * margin) - width)/10 + 'rem';
+        tree_container.style.width = 'auto';
+        tree_container.style.right = (margin/2 + width)/10 + 'rem';
       }
     }
     if (component == 'metadata') {
-      let metadata_container = document.querySelector('.metadata');
-      metadata_container.style.zIndex = 9999;
-      if (!cls_controller.includes('-l')) {
-        // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-        metadata_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
+      parent.style.zIndex = 9999;
+      if (parent_cls.includes('expanded')) {
+        parent.style.right = (margin/2 + width)/10 + 'rem';
+      } else {
+        if (!cls_controller.includes('-l')) {
+          // card.style.width = (card.offsetWidth - width)/10 + 'rem';
+          metadata_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
+        }
       }
     }
     if (component == 'map') {
@@ -488,11 +551,14 @@ gtiz_context.updateContextPosition = function(menu, type) {
   
   let body_cls = gtiz_context.body.getAttribute('class');
   let component = document.querySelector('.card-' + type);
+  let parent = component.parentNode;
+  let parent_cls = parent.getAttribute('class');
   let card_context = menu.querySelector('.card-context-menu');
   let card_form = card_context.querySelector('.card-form');
   let card_form_top = card_form.offsetTop;
   let component_style = getComputedStyle(component);
   let menu_h = menu.offsetHeight;
+  let menu_w = menu.offsetWidth;
   let card_context_h = card_context.offsetHeight;
   let margin_r = parseInt(component_style.marginRight.replace(/\D/g, ""));
   let width = component.offsetWidth;
@@ -508,12 +574,12 @@ gtiz_context.updateContextPosition = function(menu, type) {
     let translate = -(width + margin_r)/10 + 'rem';
     component.style.transform = `translateX(${translate})`;
   }
-  if (!body_cls.includes('-l')) {
-    width = 320;
-  } else {
+  if (!parent_cls.includes('expanded') && body_cls.includes('-l')) {
     let legend_width = document.querySelector('.main > .legend').offsetWidth;
-    menu.style.width = legend_width/10 + 'rem';
+    menu_w = legend_width;
   }
+  menu.style.width = menu_w/10 + 'rem';
+
   if (card_context_h > menu_h) {
     let height = menu_h - 
       parseInt(getComputedStyle(card_context).paddingTop) -
