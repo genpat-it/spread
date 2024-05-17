@@ -315,7 +315,7 @@ gtiz_legend.toggleItemSelection = function(obj, tree) {
   if (selection_mode == 'qualitative') {
     gtiz_legend.nodeSelection(obj, tree);
   } else {
-    gtiz_legend.highlightSelection(obj, tree);
+    gtiz_legend.highlightSelection();
   }
 };
 
@@ -623,16 +623,29 @@ gtiz_legend.nodeSelection = function(obj, tree) {
   if (!tree) {
     tree = gtiz_tree.tree;
   }
-  let category = obj ? obj.category : tree.display_category;
   // Retrieve an array of all values in `tree.metadata`
   let metadata = Object.values(tree.metadata);
   let node_ids = {};
-  let items = document.querySelectorAll('.card-legend .list-row');
-  let selected = [];
-  tree.clearSelection();
-  items.forEach(item => {
+  if (obj) {
+    let category = obj.category ? obj.category : tree.display_category;
+    let item = obj.current_target;
+    let group = obj.real ? obj.real : item.getAttribute('data-real-group-izsam');
+    // Filter the metadata values based on the condition `d[category] === group`
+    let filtered = metadata.filter(function(d) {
+      return d[category] === group;
+    });
+    let codes = filtered.map(function(item) {
+      return item.__Node;
+    });
     if (item.classList.contains('selected')) {
-      selected.push(item);
+      gtiz_tree.tree.selectNodesByIds(codes);
+    } else {
+      gtiz_tree.tree.unselectNodesByIds(codes);
+    }
+  } else {
+    let category = tree.display_category;
+    let items = document.querySelectorAll('.card-legend .list-row');
+    items.forEach(item => {
       let group = item.getAttribute('data-real-group-izsam');
       // Filter the metadata values based on the condition `d[category] === group`
       let filtered = metadata.filter(function(d) {
@@ -640,19 +653,18 @@ gtiz_legend.nodeSelection = function(obj, tree) {
       });
       // Iterate over the filtered metadata values and update `node_ids` object
       filtered.forEach(function(d) {
-        node_ids[d.__Node] = 1;
+        node_ids[d.__Node] = item.classList.contains('selected');
       });
-      // Filter the `tree.force_nodes` array based on matching `id` property with `node_ids` keys
-      let filtered_force_nodes = tree.force_nodes.filter(function(n) {
-        return node_ids[n.id];
-      });
-      // Set the `selected` property of each matched node to `true`
-      filtered_force_nodes.forEach(function(n) {
-        n.selected = true;
-      });
+    });
+    let unseleceted = Object.keys(node_ids).filter(function(d) {  return !node_ids[d]; });
+    let selected = Object.keys(node_ids).filter(function(d) {  return node_ids[d]; });
+    if (selected.length > 0) {
+      gtiz_tree.tree.selectNodesByIds(selected);
     }
-  });
-  tree._updateSelectionStatus();
+    if (unseleceted.length > 0) {
+      gtiz_tree.tree.unselectNodesByIds(unseleceted);
+    }
+  }
 }
 
 /**
@@ -661,15 +673,11 @@ gtiz_legend.nodeSelection = function(obj, tree) {
  * @param {Object} obj Object containing information about legend, category and item clicked
  * @param {Object} tree The tree object
  */
-gtiz_legend.highlightSelection = function (obj, tree) {
-  if (!tree) {
-    tree = gtiz_tree.tree;
-  }
+gtiz_legend.highlightSelection = function () {
   let groups = [];
   let colors = [];
   let values = [];
   let path_parents = [];
-  let current_category = obj ? obj.category : tree.display_category;
   let paths = document.querySelectorAll('#vis .node-paths');
   let links = document.querySelectorAll('#vis .link');
   let items = document.querySelectorAll('.card-legend .list-row');

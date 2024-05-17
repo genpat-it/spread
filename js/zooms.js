@@ -1217,10 +1217,12 @@ gtiz_zooms.init = function() {
   if ('zooms_prefix' in gtiz_file_handler.params) {
     gtiz_zooms.zooms_prefix = gtiz_file_handler.params.zooms_prefix;
   } else {
-    let name = gtiz_file_handler.params.tree.split('/').pop();
-    let prefix = name.split('.')[0];
-    if (prefix) {
-      gtiz_zooms.zooms_prefix = prefix;
+    if ('tree' in gtiz_file_handler.params) {
+      let name = gtiz_file_handler.params.tree.split('/').pop();
+      let prefix = name.split('.')[0];
+      if (prefix) {
+        gtiz_zooms.zooms_prefix = prefix;
+      }
     }
   }
 

@@ -91,6 +91,7 @@ gtiz_video.setSliderDirection = function(current) {
 gtiz_video.legendSetSelection = function(index, direction) {
   let item_nodes = document.querySelectorAll('.card-legend .list-row');
   let items = Array.from(item_nodes);
+  let selection_mode = gtiz_legend.selection_mode;
   let sliced;
   if (direction == 'forward') {
     sliced = items.slice(0, index + 1);
@@ -99,26 +100,33 @@ gtiz_video.legendSetSelection = function(index, direction) {
   }
   if (sliced) {
     sliced.forEach((el, i) => {
-      let check = el.querySelector('.list-check');
-      let icon = check.querySelector('i');
       if (direction == 'forward') {
-        icon.setAttribute('class', 'iconic iconic-check-circle');
-        el.classList.add('selected');
+        if (!el.classList.contains('selected')) {
+          let obj = {
+            category: el.getAttribute('data-category-izsam'),
+            current_target: el,
+            real: el.getAttribute('data-real-group-izsam'),
+            colour: el.getAttribute('data-group-colour-izsam')
+          };
+          gtiz_legend.toggleItemSelection(obj);
+        }
       } else {
-        icon.setAttribute('class', 'iconic iconic-check-circle-empty');
-        el.classList.remove('selected');
+        if (el.classList.contains('selected')) {
+
+          let obj = {
+            category: el.getAttribute('data-category-izsam'),
+            current_target: el,
+            real: el.getAttribute('data-real-group-izsam'),
+            colour: el.getAttribute('data-group-colour-izsam')
+          };
+          gtiz_legend.toggleItemSelection(obj);
+        }
       }
       if ((direction === 'forward' && i === index) || (direction !== 'forward' && i === 0)) {
         let el_top = el.offsetTop;
         gtiz_video.scrollToPosition(el_top);
       }
     });
-    let selection_mode = gtiz_legend.selection_mode;
-    if (selection_mode == 'qualitative') {
-      gtiz_legend.nodeSelection();
-    } else {
-      gtiz_legend.highlightSelection();
-    }
   }
 }
 
