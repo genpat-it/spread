@@ -3,7 +3,7 @@ gtiz_file_handler.tsv_metadata = undefined;
 gtiz_file_handler.files_to_load = [];
 gtiz_file_handler.save_options = [
 	{
-		type : 'button',
+		type : 'abutton',
 		id : 'file-handler-save-json',
 		label : gtiz_locales.current.save_as_complete_json + ' (.json)',
 		icon : 'iconic-file',
@@ -11,7 +11,7 @@ gtiz_file_handler.save_options = [
 			gtiz_file_handler.saveGrapeTreeAsJson();
 		}
 	}, {
-		type : 'button',
+		type : 'abutton',
 		id : 'file-handler-export-nwk',
 		label : gtiz_locales.current.export_newick + ' (.nwk)',
 		icon : 'iconic-file-text',
@@ -30,7 +30,7 @@ gtiz_file_handler.save_options = [
 			}
 		}
 	}, {
-		type : 'button',
+		type : 'abutton',
 		id : 'file-handler-export-metadata',
 		label : gtiz_locales.current.export_metadata + ' (.tsv)',
 		icon : 'iconic-file-text',
@@ -49,7 +49,7 @@ gtiz_file_handler.save_options = [
 			}
 		}
 	}, {
-		type : 'button',
+		type : 'abutton',
 		id : 'file-handler-export-geojson',
 		label : gtiz_locales.current.export_geoJson + ' (.geoJson)',
 		icon : 'iconic-pin',
@@ -395,16 +395,20 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 			meta[line[id_name]] = line;
 		});
 	}
-	gtiz_tree.tree.addMetadataOptions(options);
-	let metadata_select = document.querySelector('#tree-metadata-select');
-	if (metadata_select) {
-		metadata_select.value = category;
-	}
-	let node_label_text = document.querySelector("#tree-node-label-text");
-	if (node_label_text) {
-		let value = gtiz_tree.node_label ? gtiz_tree.node_label : category;
-		node_label_text.value = value;
-	}
+
+	gtiz_tree.tree.addMetadataOptions(options);	
+
+	gtiz_utils.medatadata_select_nodes.forEach((node) => {
+		let select = document.querySelector(node);
+		if (select) {
+			select.value = category;
+			if (select.id == 'tree-node-label-text') {
+				let value = gtiz_tree.node_label ? gtiz_tree.node_label : category;
+				select.value = value;
+			}
+		}
+	});
+
 	gtiz_tree.tree.addMetadata(meta);
 	// to be changed in this way for parameters &x=title_name_longitute&y=title_name_latitudine
 	if (gtiz_file_handler.Meta2GeoJSON.checkMeta4geo(options) ) { //options = hash of metadata titles
@@ -676,18 +680,39 @@ gtiz_file_handler.loadFailed = function(msg) {
  */
 gtiz_file_handler.loadTreeText = function(tree, json) {
 	gtiz_tree.initiateLoading("Processing tree file");
-	let metadata_select = document.querySelector('#tree-metadata-select');
-	let node_label_text = document.querySelector('#tree-node-label-text');
-	let metadata_map_select = document.querySelector('#metadata-map-select');
-	if (metadata_select) {
-		metadata_select.innerHTML = '';
-	}
-	if (node_label_text) {
-		node_label_text.innerHTML = '';
-	}
-	if (metadata_map_select) {
-		metadata_map_select.innerHTML = '';
-	}
+
+	gtiz_utils.medatadata_select_nodes.forEach((node) => {
+		let select = document.querySelector(node);
+		if (select) {
+			if (select.id == 'tree-node-label-text') {
+				let value = gtiz_tree.node_label ? gtiz_tree.node_label : category;
+				select.value = value;
+			} else {
+				select.value = category;
+			}
+		}
+	});
+
+	let metadata_select;
+	let node_label_text;
+	let metadata_map_select;
+
+	gtiz_utils.medatadata_select_nodes.forEach((node) => {
+		let select = document.querySelector(node);
+		if (select) {
+			select.innerHTML = '';
+			if (select.id == 'tree-metadata-select') {
+				metadata_select = select;
+			}
+			if (select.id == 'tree-node-label-text') {
+				node_label_text = select;
+			}
+			if (select.id == 'metadata-map-select') {
+				metadata_map_select = select;
+			}
+		}
+	});
+
 	// give time to dialog to display
 	setTimeout(function(){
 		try {

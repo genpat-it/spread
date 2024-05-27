@@ -215,7 +215,7 @@
         </div>
       </div>
       <div class="metadata">
-        <div class="metadata-container card card-component card-metadata">
+        <div class="metadata-container card card-component card-metadata metadata-not-initialized">
           <div class="card-context-tools">
             <div class="card-context-trigger card-context-expand-trigger" data-component="metadata">
               <i class="iconic iconic-maximize"></i>
@@ -226,6 +226,9 @@
           </div>
           <div class="card-form"></div>
           <div id="metadata-grid" class="ag-theme-alpine ag-theme-genpat"></div>
+          <div class="metadata-empty-message">
+            <i class="iconic iconic-warning-triangle"></i> <span data-i18n-key="no_geo_info_message"></span>
+          </div>
         </div>
       </div>
       <div class="legend">
@@ -277,7 +280,7 @@
       <div class="footer-info">
         <div class="info">
           <p><span data-i18n-key="cookies_notice">Questa applicazione non utilizza cookies.</span></p>
-          <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">2024-05-17</span></p>
+          <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">__LAST_UPDATE__</span></p>
           <p class="copyright">&copy; <span class="copyright-year"></span> IZSAM 'G. Caporale'</p>
         </div>
       </div>

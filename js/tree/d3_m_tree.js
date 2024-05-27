@@ -2323,11 +2323,15 @@ D3MSTree.prototype.selectAll=function(){
 	this.force_nodes.forEach(function(n) {n.selected=true;});
 	this._updateSelectionStatus();
 }
-D3MSTree.prototype._updateSelectionStatus = function() {
-	this._addHalos(function(d){return d.selected},5,"red"); 
-	for (var i in this.nodesSelectedListeners){
-		 this.nodesSelectedListeners[i](this);    
-       }
+D3MSTree.prototype._updateSelectionStatus = function(action, pervasive) {
+  if (action == 'clear') {
+    this.clearSelection(pervasive);
+  } else {
+    this._addHalos(function(d){return d.selected},5,"red"); 
+	  for (var i in this.nodesSelectedListeners){
+		  this.nodesSelectedListeners[i](this);    
+    }
+  }
 }
 
 /**

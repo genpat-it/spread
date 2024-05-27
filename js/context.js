@@ -116,7 +116,7 @@ gtiz_context.getMenu = function(type) {
       container.append(box);
       form.append(container);
     }
-    if (item.type == 'button') {
+    if (item.type == 'abutton') {
       let box = document.createElement('div'); 
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
@@ -136,7 +136,7 @@ gtiz_context.getMenu = function(type) {
       box.append(a);
       form.append(box);
     }
-    if (item.type == 'button_optioned') {
+    if (item.type == 'abutton_optioned') {
       let box = document.createElement('div'); 
       box.setAttribute('class', 'button-box button-box-optioned');
       if (item.id) {
@@ -496,6 +496,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
       }
     }
     if (component == 'metadata') {
+      let metadata_container = document.querySelector('.metadata');
       parent.style.zIndex = 9999;
       if (parent_cls.includes('expanded')) {
         parent.style.right = (margin/2 + width)/10 + 'rem';

@@ -13,8 +13,9 @@ toggleSelection = (tree, ids, state) => {
       tree.node_elements[0].filter(o => o.id == id)[0].__data__.selected = state;
     }
   }
-  tree.clearSelection(true);
-  tree._updateSelectionStatus();
+  let action = state ? 'add' : 'clear';
+  // tree.clearSelection(true);
+  tree._updateSelectionStatus(action, true);
 }
 
 D3MSTree.prototype.selectNodesByIds = function(ids) {

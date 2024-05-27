@@ -34,7 +34,7 @@ gtiz_legend.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'legend-menu-select-all',
   label : () => {
     return gtiz_locales.current.select_all_items;
@@ -44,7 +44,7 @@ gtiz_legend.context_menu = [{
     gtiz_legend.selectAll();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'legend-menu-invert-selection',
   label : () => {
     return gtiz_locales.current.invert_selection;
@@ -54,7 +54,7 @@ gtiz_legend.context_menu = [{
     gtiz_legend.invertSelection();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'legend-menu-clean-selection',
   label : () => {
     return gtiz_locales.current.clean_selection;
@@ -262,7 +262,7 @@ gtiz_legend.context_menu = [{
     gtiz_legend.toggleViewMode(value);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'legend-menu-quick-gradient',
   label : () => {
     return gtiz_locales.current.quick_gradient;
@@ -863,8 +863,8 @@ gtiz_legend.resetQualitativeSelection = function() {
     let icon = check.querySelector('i');
     icon.setAttribute('class', 'iconic iconic-check-circle-empty');
   });
-  gtiz_tree.tree.clearSelection();
-  gtiz_tree.tree._updateSelectionStatus();
+  // gtiz_tree.tree.clearSelection();
+  gtiz_tree.tree._updateSelectionStatus('clear');
 }
 
 /**

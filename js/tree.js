@@ -810,26 +810,19 @@ gtiz_tree.hideToolTip = function() {
  */
 gtiz_tree.addMetadataOptions = function (data) {
   let options = gtiz_tree.getMetadataSelectOptions();
-  let metadata_select = document.querySelector("#tree-metadata-select");
-  let node_label_text = document.querySelector("#tree-node-label-text");
-  if (metadata_select) {
-    metadata_select.innerHTML = '';
-    options.forEach(el => {
-      let option = document.createElement('option');
-      option.setAttribute('value', el.value);
-      option.innerHTML = el.label;
-      metadata_select.append(option);
-    });
-  }
-  if (node_label_text) {
-    node_label_text.innerHTML = '';
-    options.forEach(el => {
-      let option = document.createElement('option');
-      option.setAttribute('value', el.value);
-      option.innerHTML = el.label;
-      node_label_text.append(option);
-    });
-  }
+
+  gtiz_utils.medatadata_select_nodes.forEach((node) => {
+		let select = document.querySelector(node);
+		if (select) {
+			select.innerHTML = '';
+      options.forEach(el => {
+        let option = document.createElement('option');
+        option.setAttribute('value', el.value);
+        option.innerHTML = el.label;
+        select.append(option);
+      });
+		}
+	});
 }
 
 /**
@@ -859,10 +852,16 @@ gtiz_tree.treeLoaded = function(tree) {
 
   tree.addDisplayChangedListener(function(type, data) {
     if (type === 'category_changed') {
-      let metadata_select = document.querySelector("#tree-metadata-select");
-      if (metadata_select) {
-        metadata_select.value = data;
-      }
+
+      gtiz_utils.medatadata_select_nodes.forEach((node) => {
+        let select = document.querySelector(node);
+        if (select) {
+          if (select.id != 'tree-node-label-text') {
+            select.value = data;
+          }
+        }
+      });
+      
       if (gtiz_tree.change_counter === 1) {
         gtiz_tree.original_tree.initial_category = data;
       }
@@ -962,25 +961,30 @@ gtiz_tree.treeLoaded = function(tree) {
     }
   };
   
-  let metadata_select = document.querySelector("#tree-metadata-select");
-  let node_label_text = document.querySelector("#tree-node-label-text");
-  
-  if (data['initial_category']) {
-    if (metadata_select) {
-      metadata_select.value = data['initial_category'];
-    }
-    if (node_label_text) {
-      let value = gtiz_tree.node_label ? gtiz_tree.node_label : data['initial_category'];
-			node_label_text.value = value;
-    }
-  } else {
-    if (metadata_select) {
-      metadata_select.value = data['nothing'];
-    }
-    if (node_label_text) {
-      node_label_text.value = data['nothing'];
-    }
-  }
+  gtiz_utils.medatadata_select_nodes.forEach((node) => {
+		let select = document.querySelector(node);
+		if (select) {
+			select.innerHTML = '';
+      options.forEach(el => {
+        let option = document.createElement('option');
+        option.setAttribute('value', el.value);
+        option.innerHTML = el.label;
+        select.append(option);
+      });
+
+      if (data['initial_category']) {
+        if (select.id == 'tree-node-label-text') {
+          let value = gtiz_tree.node_label ? gtiz_tree.node_label : data['initial_category'];
+          select.value = value;
+        } else {
+          select.value = data['initial_category'];
+        }
+      } else {
+        select.value = data['nothing'];
+      }
+
+		}
+	});
 
   if (data['layout_data'] && data['layout_data']['nodes_links']) {
     // setControlPanel(data['layout_data']['nodes_links'])
@@ -1027,18 +1031,13 @@ gtiz_tree.loadMSTree = function(data, json) {
     gtiz_tree.tree.svg.remove();
     gtiz_tree.tree.legend_div[0].remove();
     gtiz_tree.tree.scale_div[0].remove();
-    let metadata_select = document.querySelector('#tree-metadata-select');
-    if (metadata_select) {
-      metadata_select.innerHTML = '';
-    }
-    let metadata_map_select = document.querySelector('#metadata-map-select');
-    if (metadata_map_select) {
-      metadata_map_select.innerHTML = '';
-    }
-    let metadata_grid = document.querySelector('#metadata-div');
-    if (metadata_grid) {
-      metadata_grid.remove();
-    }
+
+    gtiz_utils.medatadata_select_nodes.forEach((node) => {
+      let select = document.querySelector(node);
+      if (select) {
+        select.innerHTML = '';
+      }
+    });
   }
   gtiz_tree.tree = null;
   gtiz_tree.tree = new D3MSTree("graph-div", JSON.parse(JSON.stringify(data)), function(tree, msg) {
@@ -1117,10 +1116,6 @@ gtiz_tree.loadMSTree = function(data, json) {
   if (video) {
     gtiz_video.cfg = video.cfg;
   }
-  /* if (metadata) {
-    gtiz_metadata.show_nodes = metadata.show_nodes;
-    gtiz_metadata.show_hypothetical = metadata.show_hypothetical;
-  } */
   if (locales) {
     gtiz_locales.languages = locales.languages;
     gtiz_locales.current = gtiz_locales.getActiveLanguageTerms();
@@ -1134,8 +1129,9 @@ gtiz_tree.loadMSTree = function(data, json) {
     gtiz_zooms.zooms_prefix = zooms.zooms_prefix,
     gtiz_zooms.zooms = zooms.zooms
   }
-
-  gtiz_metadata.init();
+  if (metadata) {
+    gtiz_metadata.init();
+  }
   gtiz_legend.init();
   gtiz_video.init();
   gtiz_settings.init();
@@ -1181,14 +1177,14 @@ gtiz_tree.initiateLoading = function(msg) {
   if (tree_node) {
     tree_node.innerHTML = '';
   }
-  let metadata_select = document.querySelector('#tree-metadata-select');
-  if (metadata_select) {
-    metadata_select.innerHTML = '';
-  }
-  let metadata_map_select = document.querySelector('#metadata-map-select');
-  if (metadata_map_select) {
-    metadata_map_select.innerHTML = '';
-  }
+
+  gtiz_utils.medatadata_select_nodes.forEach((node) => {
+    let select = document.querySelector(node);
+    if (select) {
+      select.innerHTML = '';
+    }
+  });
+  
   gtiz_tree.metadata_options = {};
   console.log(msg);
 };
@@ -1219,7 +1215,7 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
   let form = document.createElement('div');
   form.setAttribute('class', 'modal-form');
   cfg.forEach(item => {
-    if (item.type == 'button') {
+    if (item.type == 'abutton') {
       let box = document.createElement('div'); 
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
@@ -1360,7 +1356,7 @@ gtiz_tree.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.centre_tree;
   },
@@ -1369,7 +1365,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.treeCenter();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.static_redraw;
   },
@@ -1378,7 +1374,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.treeStaticRedraw();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.original_tree;
   },
@@ -1414,7 +1410,7 @@ gtiz_tree.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.select_all;
   },
@@ -1423,7 +1419,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.selectAll();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.deselect_all;
   },
@@ -1432,9 +1428,9 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.clearSelection();
   }
 }, {
-  type : 'separator'
+  type: 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.collapse_selected_nodes;
   },
@@ -1444,7 +1440,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.collapseSpecificNodes(selected);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.expand_selected_nodes;
   },
@@ -1454,7 +1450,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.collapseSpecificNodes(selected, true);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.expand_all;
   },
@@ -1466,7 +1462,7 @@ gtiz_tree.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.hide_selected_nodes;
   },
@@ -1476,7 +1472,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.delNodes(selected);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.show_selected_subtrees;
   },
@@ -1486,7 +1482,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.delOtherNodes(selected);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.show_whole_tree;
   },
@@ -1497,7 +1493,7 @@ gtiz_tree.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : gtiz_locales.current.save_spread,
   icon : 'iconic-folder',
   function : () => {
@@ -1505,7 +1501,7 @@ gtiz_tree.context_menu = [{
     gtiz_tree.openFileHandlerModal(mode);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : gtiz_locales.current.load_spread,
   icon : 'iconic-file-plus',
   function : () => {
@@ -1515,7 +1511,7 @@ gtiz_tree.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.download_svg;
   },

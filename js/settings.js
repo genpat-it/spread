@@ -5,21 +5,21 @@ gtiz_settings.cfg = [{
   expanded: true,
   visible: true,
   menu: [{
-    type : 'button',
+    type : 'abutton',
     label : gtiz_locales.current.centre_tree,
     icon : 'iconic-target',
     function : () => {
       gtiz_tree.treeCenter();
     }
   }, {
-    type : 'button',
+    type : 'abutton',
     label : gtiz_locales.current.static_redraw,
     icon : 'iconic-edit',
     function : () => {
       gtiz_tree.treeStaticRedraw();
     }
   }, {
-    type : 'button',
+    type : 'abutton',
     label : gtiz_locales.current.original_tree,
     icon : 'iconic-monitor',
     function : () => {
@@ -624,7 +624,7 @@ gtiz_settings.buildForm = function(form, menu) {
         box.append(select);
         form.append(box);
       }
-      if (item.type == 'button') {
+      if (item.type == 'abutton') {
         let box = document.createElement('div'); 
         box.setAttribute('class', 'button-box');
         let a = document.createElement('a');

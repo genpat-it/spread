@@ -1221,7 +1221,7 @@ gtiz_map.context_menu = [{
     gtiz_map.setMapDelta(value);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'map-reset-delta',
   label : gtiz_locales.current.reset_default,
   icon : 'iconic-refresh',
@@ -1261,13 +1261,13 @@ gtiz_map.context_menu = [{
     gtiz_map.setMaxMarkerValue(value);
   }
 }, /* {
-  type : 'button',
+  type : 'abutton',
   id : 'set-map-point-delta-radius',
   label : gtiz_locales.current.set_radius,
   icon : 'iconic-target',
   function : ''
 }, */ {
-  type : 'button',
+  type : 'abutton',
   id : 'map-reset-max-min-radius',
   label : gtiz_locales.current.reset_default,
   icon : 'iconic-refresh',
@@ -1277,7 +1277,7 @@ gtiz_map.context_menu = [{
 }, {
   type : 'separator'
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.select_all;
   },
@@ -1286,7 +1286,7 @@ gtiz_map.context_menu = [{
     gtiz_tree.tree.selectAll();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   label : () => {
     return gtiz_locales.current.deselect_all;
   },
@@ -1295,7 +1295,7 @@ gtiz_map.context_menu = [{
     gtiz_tree.tree.clearSelection();
   }
 }, {
-  type : 'separator'
+  type: 'separator'
 }, {
   type : 'toggle',
   id : 'map-marker-mode-toggle',

@@ -207,39 +207,20 @@ gtiz_layout.showFooter = function() {
 gtiz_layout.uiLoadingManager = function(components, action) {
   if (components) {
     components.forEach(component => {
-      let node = undefined;
+      let selector = '.' + component + '-container';
+      let node = document.querySelector(selector);
+      let cls = component + '-loading';
+
       if (component == 'tree') {
         let body = document.querySelector('body');
 		    body.classList.remove('tree-not-defined');
-        node = document.querySelector('.tree-container');
-        if (action == 'add') {
-          node.classList.add('tree-loading');
-        } else {
-          node.classList.remove('tree-loading');
-        }
       }
-      if (component == 'map') {
-        node = document.querySelector('.map-container');
-      }
-      if (component == 'legend') {
-        node = document.querySelector('.legend .card-legend');
-        if (action == 'add') {
-          node.classList.add('legend-loading');
-        } else {
-          node.classList.remove('legend-loading');
-        }
-      }
-      if (component == 'metadata') {
-        node = document.querySelector('.metadata .metadata-container');
-        if (action == 'add') {
-          node.classList.add('metadata-loading');
-        } else {
-          node.classList.remove('metadata-loading');
-        }
-      }
+
       if (action == 'add') {
+        node.classList.add(cls);
         gtiz_loader.addLoader(node);
       } else {
+        node.classList.remove(cls);
         gtiz_loader.removeLoader(node);
       }
     });
@@ -431,7 +412,7 @@ gtiz_layout.setView = function(obj) {
     gtiz_map.init();
     gtiz_layout.resizeMap();
   }
-  if (gtiz_layout.metadata == 'on') {
+  if (gtiz_layout.metadata == 'on' && gtiz_metadata.initialized) {
     gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
     gtiz_metadata.findNodes();
   }

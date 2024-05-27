@@ -113,7 +113,7 @@ gtiz_zooms.context_menu = [{
     gtiz_zooms.toggleSelectionAlerts(value);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'zooms-menu-select-nodes',
   label : () => {
     return gtiz_locales.current.select_involved_nodes;
@@ -123,7 +123,7 @@ gtiz_zooms.context_menu = [{
     gtiz_zooms.selectInvolvedNodes();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'zooms-menu-clean-selection',
   label : () => {
     return gtiz_locales.current.clean_selection;
@@ -155,7 +155,7 @@ gtiz_zooms.context_menu = [{
       gtiz_zooms.toggleCurrentSettings(value);
     }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'zooms-menu-load-zoomed-tree',
   label : () => {
     return gtiz_locales.current.load_cluster;
@@ -165,7 +165,7 @@ gtiz_zooms.context_menu = [{
     gtiz_zooms.loadZoomedTree();
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'zooms-menu-open-zoomed-tree',
   label : () => {
     return gtiz_locales.current.load_cluster_in_new_tab;
@@ -257,7 +257,7 @@ gtiz_zooms.filtered_context_menu = [{
       gtiz_zooms.toggleCurrentSettings(value);
     }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'zooms-menu-load-zoomed-tree',
   label : () => {
     return gtiz_locales.current.load_cluster;
@@ -267,7 +267,7 @@ gtiz_zooms.filtered_context_menu = [{
     gtiz_zooms.loadZoomedTree(true);
   }
 }, {
-  type : 'button',
+  type : 'abutton',
   id : 'zooms-menu-open-zoomed-tree',
   label : () => {
     return gtiz_locales.current.load_cluster_in_new_tab;
@@ -808,7 +808,7 @@ gtiz_zooms.getFilteredZoomsMenu = function() {
       container.append(box);
       form.append(container);
     }
-    if (item.type == 'button') {
+    if (item.type == 'abutton') {
       let box = document.createElement('div'); 
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
