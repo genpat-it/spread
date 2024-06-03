@@ -397,17 +397,19 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	}
 
 	gtiz_tree.tree.addMetadataOptions(options);	
-
-	gtiz_utils.medatadata_select_nodes.forEach((node) => {
-		let select = document.querySelector(node);
-		if (select) {
-			select.value = category;
-			if (select.id == 'tree-node-label-text') {
-				let value = gtiz_tree.node_label ? gtiz_tree.node_label : category;
-				select.value = value;
+	
+	if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+		gtiz_utils.medatadata_select_nodes.forEach((node) => {
+			let select = document.querySelector(node);
+			if (select) {
+				select.value = category;
+				if (select.id == 'tree-node-label-text') {
+					let value = gtiz_tree.node_label ? gtiz_tree.node_label : category;
+					select.value = value;
+				}
 			}
-		}
-	});
+		});
+	}
 
 	gtiz_tree.tree.addMetadata(meta);
 	// to be changed in this way for parameters &x=title_name_longitute&y=title_name_latitudine
@@ -681,37 +683,27 @@ gtiz_file_handler.loadFailed = function(msg) {
 gtiz_file_handler.loadTreeText = function(tree, json) {
 	gtiz_tree.initiateLoading("Processing tree file");
 
-	gtiz_utils.medatadata_select_nodes.forEach((node) => {
-		let select = document.querySelector(node);
-		if (select) {
-			if (select.id == 'tree-node-label-text') {
-				let value = gtiz_tree.node_label ? gtiz_tree.node_label : category;
-				select.value = value;
-			} else {
-				select.value = category;
-			}
-		}
-	});
-
 	let metadata_select;
 	let node_label_text;
 	let metadata_map_select;
-
-	gtiz_utils.medatadata_select_nodes.forEach((node) => {
-		let select = document.querySelector(node);
-		if (select) {
-			select.innerHTML = '';
-			if (select.id == 'tree-metadata-select') {
-				metadata_select = select;
+	
+	if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+		gtiz_utils.medatadata_select_nodes.forEach((node) => {
+			let select = document.querySelector(node);
+			if (select) {
+				select.innerHTML = '';
+				if (select.id == 'tree-metadata-select') {
+					metadata_select = select;
+				}
+				if (select.id == 'tree-node-label-text') {
+					node_label_text = select;
+				}
+				if (select.id == 'metadata-map-select') {
+					metadata_map_select = select;
+				}
 			}
-			if (select.id == 'tree-node-label-text') {
-				node_label_text = select;
-			}
-			if (select.id == 'metadata-map-select') {
-				metadata_map_select = select;
-			}
-		}
-	});
+		});
+	}
 
 	// give time to dialog to display
 	setTimeout(function(){

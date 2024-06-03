@@ -809,20 +809,22 @@ gtiz_tree.hideToolTip = function() {
  * 
  */
 gtiz_tree.addMetadataOptions = function (data) {
-  let options = gtiz_tree.getMetadataSelectOptions();
+  if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+    let options = gtiz_tree.getMetadataSelectOptions();
 
-  gtiz_utils.medatadata_select_nodes.forEach((node) => {
-		let select = document.querySelector(node);
-		if (select) {
-			select.innerHTML = '';
-      options.forEach(el => {
-        let option = document.createElement('option');
-        option.setAttribute('value', el.value);
-        option.innerHTML = el.label;
-        select.append(option);
-      });
-		}
-	});
+    gtiz_utils.medatadata_select_nodes.forEach((node) => {
+      let select = document.querySelector(node);
+      if (select) {
+        select.innerHTML = '';
+        options.forEach(el => {
+          let option = document.createElement('option');
+          option.setAttribute('value', el.value);
+          option.innerHTML = el.label;
+          select.append(option);
+        });
+      }
+    });
+  }
 }
 
 /**
@@ -852,15 +854,17 @@ gtiz_tree.treeLoaded = function(tree) {
 
   tree.addDisplayChangedListener(function(type, data) {
     if (type === 'category_changed') {
-
-      gtiz_utils.medatadata_select_nodes.forEach((node) => {
-        let select = document.querySelector(node);
-        if (select) {
-          if (select.id != 'tree-node-label-text') {
-            select.value = data;
+      
+      if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+        gtiz_utils.medatadata_select_nodes.forEach((node) => {
+          let select = document.querySelector(node);
+          if (select) {
+            if (select.id != 'tree-node-label-text') {
+              select.value = data;
+            }
           }
-        }
-      });
+        });
+      }
       
       if (gtiz_tree.change_counter === 1) {
         gtiz_tree.original_tree.initial_category = data;
@@ -960,31 +964,36 @@ gtiz_tree.treeLoaded = function(tree) {
       gtiz_video.reset();
     }
   };
+
+  if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+    let options = gtiz_tree.getMetadataSelectOptions();
+
+    gtiz_utils.medatadata_select_nodes.forEach((node) => {
+      let select = document.querySelector(node);
+      if (select) {
+        select.innerHTML = '';
+        options.forEach(el => {
+          let option = document.createElement('option');
+          option.setAttribute('value', el.value);
+          option.innerHTML = el.label;
+          select.append(option);
+        });
   
-  gtiz_utils.medatadata_select_nodes.forEach((node) => {
-		let select = document.querySelector(node);
-		if (select) {
-			select.innerHTML = '';
-      options.forEach(el => {
-        let option = document.createElement('option');
-        option.setAttribute('value', el.value);
-        option.innerHTML = el.label;
-        select.append(option);
-      });
-
-      if (data['initial_category']) {
-        if (select.id == 'tree-node-label-text') {
-          let value = gtiz_tree.node_label ? gtiz_tree.node_label : data['initial_category'];
-          select.value = value;
+        if (data['initial_category']) {
+          if (select.id == 'tree-node-label-text') {
+            let value = gtiz_tree.node_label ? gtiz_tree.node_label : data['initial_category'];
+            select.value = value;
+          } else {
+            select.value = data['initial_category'];
+          }
         } else {
-          select.value = data['initial_category'];
+          select.value = data['nothing'];
         }
-      } else {
-        select.value = data['nothing'];
+  
       }
+    });
 
-		}
-	});
+  }
 
   if (data['layout_data'] && data['layout_data']['nodes_links']) {
     // setControlPanel(data['layout_data']['nodes_links'])
@@ -1031,13 +1040,15 @@ gtiz_tree.loadMSTree = function(data, json) {
     gtiz_tree.tree.svg.remove();
     gtiz_tree.tree.legend_div[0].remove();
     gtiz_tree.tree.scale_div[0].remove();
-
-    gtiz_utils.medatadata_select_nodes.forEach((node) => {
-      let select = document.querySelector(node);
-      if (select) {
-        select.innerHTML = '';
-      }
-    });
+    
+    if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+      gtiz_utils.medatadata_select_nodes.forEach((node) => {
+        let select = document.querySelector(node);
+        if (select) {
+          select.innerHTML = '';
+        }
+      });
+    }
   }
   gtiz_tree.tree = null;
   gtiz_tree.tree = new D3MSTree("graph-div", JSON.parse(JSON.stringify(data)), function(tree, msg) {
@@ -1178,12 +1189,14 @@ gtiz_tree.initiateLoading = function(msg) {
     tree_node.innerHTML = '';
   }
 
-  gtiz_utils.medatadata_select_nodes.forEach((node) => {
-    let select = document.querySelector(node);
-    if (select) {
-      select.innerHTML = '';
-    }
-  });
+  if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
+    gtiz_utils.medatadata_select_nodes.forEach((node) => {
+      let select = document.querySelector(node);
+      if (select) {
+        select.innerHTML = '';
+      }
+    });
+  }
   
   gtiz_tree.metadata_options = {};
   console.log(msg);
