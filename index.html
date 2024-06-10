@@ -37,6 +37,11 @@
         <!-- here custom contents for header, you can define them in themes/theme-name/html/header.html -->
       </div>
       <div class="toolbar">
+        <div class="tool tool-search">
+          <div class="tool-trigger">
+            <i class="iconic iconic-search"></i>
+          </div>
+        </div>
         <div class="tool tool-lang">
           <div class="tool-label"></div>
           <div class="tool-trigger">
@@ -44,7 +49,7 @@
           </div>
         </div><!-- language trigger -->
         <div class="tool">
-          <div class="tool-trigger tool-trigger-aside" onclick="gtiz_layout.showFooter()">
+          <div class="tool-trigger tool-trigger-footer" onclick="gtiz_layout.showFooter()">
             <i class="iconic iconic-information toogle-trigger-img toogle-trigger-img-help"></i>
             <i class="iconic iconic-close-circle toogle-trigger-img toogle-trigger-img-close hidden"></i>
           </div>
@@ -62,114 +67,110 @@
     </section>
 
     <section class="main dashboard-viewport dashboard-grapetree-viewport">
-      <div class="settings">
-        <div class="container container-full">
-          <div class="row">
-            <div class="six columns">
-
-              <div class="card card-expandable card-settings card-tree-layout" data-type="tree-layout">
-                <div class="card-expand-trigger">
-                  <i class="iconic iconic-plus-circle"></i>
-                  <i class="iconic iconic-minus-circle"></i>
-                </div>
-                <div class="card-context-tools">
-                  <div class="card-info-trigger">
-                    <i class="iconic iconic-help-circle"></i>
-                  </div>
-                </div>
-                <h3 class="card-title"><span data-i18n-key="tree_layout">Tree layout</span></h3>
-                <div class="card-form"></div>
-                <div class="card-message"></div>
-              </div><!-- card -->
-  
-              <div class="card card-expandable card-settings card-node-style" data-type="node-style">
-                <div class="card-expand-trigger">
-                  <i class="iconic iconic-plus-circle"></i>
-                  <i class="iconic iconic-minus-circle"></i>
-                </div>
-                <div class="card-context-tools">
-                  <div class="card-info-trigger">
-                    <i class="iconic iconic-help-circle"></i>
-                  </div>
-                </div>
-                <h3 class="card-title"><span data-i18n-key="node_style">Node style</span></h3>
-                <div class="card-form"></div>
-                <div class="card-message"></div>
-              </div><!-- card -->
-  
-              <div class="card card-expandable card-settings card-node-size" data-type="node-size">
-                <div class="card-expand-trigger">
-                  <i class="iconic iconic-plus-circle"></i>
-                  <i class="iconic iconic-minus-circle"></i>
-                </div>
-                <div class="card-context-tools">
-                  <div class="card-info-trigger">
-                    <i class="iconic iconic-help-circle"></i>
-                  </div>
-                </div>
-                <h3 class="card-title"><span data-i18n-key="node_size">Node size</span></h3>
-                <div class="card-form"></div>
-                <div class="card-message"></div>
-              </div><!-- card -->
-  
-            </div><!-- columns -->
-  
-            <div class="six columns">
-  
-              <div class="card card-expandable card-settings card-branch-style" data-type="branch-style">
-                <div class="card-expand-trigger">
-                  <i class="iconic iconic-plus-circle"></i>
-                  <i class="iconic iconic-minus-circle"></i>
-                </div>
-                <div class="card-context-tools">
-                  <div class="card-info-trigger">
-                    <i class="iconic iconic-help-circle"></i>
-                  </div>
-                </div>
-                <h3 class="card-title"><span data-i18n-key="branch_style">Branch style</span></h3>
-                <div class="card-form"></div>
-                <div class="card-message"></div>
-              </div><!-- card -->
-  
-              <div class="card card-expandable card-settings card-branch-cutoffs" data-type="branch-cutoffs">
-                <div class="card-expand-trigger">
-                  <i class="iconic iconic-plus-circle"></i>
-                  <i class="iconic iconic-minus-circle"></i>
-                </div>
-                <div class="card-context-tools">
-                  <div class="card-info-trigger">
-                    <i class="iconic iconic-help-circle"></i>
-                  </div>
-                </div>
-                <h3 class="card-title"><span data-i18n-key="branch_cutoffs">Branch cutoffs</span></h3>
-                <div class="card-form"></div>
-                <div class="card-message"></div>
-              </div><!-- card -->
-
-              <div class="card card-expandable card-settings card-rendering" data-type="rendering">
-                <div class="card-expand-trigger">
-                  <i class="iconic iconic-plus-circle"></i>
-                  <i class="iconic iconic-minus-circle"></i>
-                </div>
-                <div class="card-context-tools">
-                  <div class="card-info-trigger">
-                    <i class="iconic iconic-help-circle"></i>
-                  </div>
-                </div>
-                <h3 class="card-title"><span data-i18n-key="rendering">Rendering</span></h3>
-                <div class="card-form"></div>
-                <div class="card-message"></div>
-              </div><!-- card -->
-              
-            </div><!-- columns -->
+      <div class="settings target">
+        <div class="target-area">
+          <div class="target-tip">
+            <i class="iconic iconic-picture-in-picture"></i>
           </div>
         </div>
+        <div class="card card-expandable card-settings card-node-style draggable" data-type="node-style">
+          <div class="card-expand-trigger">
+            <i class="iconic iconic-plus-circle not-draggable"></i>
+            <i class="iconic iconic-minus-circle not-draggable"></i>
+          </div>
+          <div class="card-context-tools">
+            <div class="card-info-trigger">
+              <i class="iconic iconic-help-circle not-draggable"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="iconic iconic-close-circle not-draggable"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="node_style">Node style</span></h3>
+          <div class="card-form"></div>
+          <div class="card-message"></div>
+        </div><!-- card -->
+
+        <div class="card card-expandable card-settings card-node-size draggable" data-type="node-size">
+          <div class="card-expand-trigger">
+            <i class="iconic iconic-plus-circle not-draggable"></i>
+            <i class="iconic iconic-minus-circle not-draggable"></i>
+          </div>
+          <div class="card-context-tools">
+            <div class="card-info-trigger">
+              <i class="iconic iconic-help-circle not-draggable"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="iconic iconic-close-circle not-draggable"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="node_size">Node size</span></h3>
+          <div class="card-form"></div>
+          <div class="card-message"></div>
+        </div><!-- card -->
+
+        <div class="card card-expandable card-settings card-branch-style draggable" data-type="branch-style">
+          <div class="card-expand-trigger">
+            <i class="iconic iconic-plus-circle not-draggable"></i>
+            <i class="iconic iconic-minus-circle not-draggable"></i>
+          </div>
+          <div class="card-context-tools">
+            <div class="card-info-trigger">
+              <i class="iconic iconic-help-circle not-draggable"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="iconic iconic-close-circle not-draggable"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="branch_style">Branch style</span></h3>
+          <div class="card-form"></div>
+          <div class="card-message"></div>
+        </div><!-- card -->
+
+        <div class="card card-expandable card-settings card-branch-cutoffs draggable" data-type="branch-cutoffs">
+          <div class="card-expand-trigger">
+            <i class="iconic iconic-plus-circle not-draggable"></i>
+            <i class="iconic iconic-minus-circle not-draggable"></i>
+          </div>
+          <div class="card-context-tools">
+            <div class="card-info-trigger">
+              <i class="iconic iconic-help-circle not-draggable"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="iconic iconic-close-circle not-draggable"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="branch_cutoffs">Branch cutoffs</span></h3>
+          <div class="card-form"></div>
+          <div class="card-message"></div>
+        </div><!-- card -->
+
+        <div class="card card-expandable card-settings card-rendering draggable" data-type="rendering">
+          <div class="card-expand-trigger">
+            <i class="iconic iconic-plus-circle not-draggable"></i>
+            <i class="iconic iconic-minus-circle not-draggable"></i>
+          </div>
+          <div class="card-context-tools">
+            <div class="card-info-trigger">
+              <i class="iconic iconic-help-circle not-draggable"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="iconic iconic-close-circle not-draggable"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="rendering">Rendering</span></h3>
+          <div class="card-form"></div>
+          <div class="card-message"></div>
+        </div><!-- card -->
       </div>
       <div class="tree">
         <div class="tree-container card-component card-tree">
           <div class="card-context-tools">
             <div class="card-context-trigger card-context-menu-trigger" data-menu-component="tree" data-menu-type="zooms">
               <span data-i18n-key="available_zooms"></span> <i class="iconic iconic-zoom-in"></i>
+            </div>
+            <div class="card-context-trigger card-context-expand-trigger" data-component="tree">
+              <i class="iconic iconic-maximize"></i>
             </div>
             <div class="card-context-trigger card-context-menu-trigger" data-menu-component="tree" data-menu-type="tree">
               <i class="iconic iconic-dots-vertical"></i>
@@ -205,6 +206,9 @@
       <div class="map">
         <div id="map-div" class="map-container card-component card-map">
           <div class="card-context-tools">
+            <div class="card-context-trigger card-context-expand-trigger" data-component="map">
+              <i class="iconic iconic-maximize"></i>
+            </div>
             <div class="card-context-trigger card-context-menu-trigger" data-menu-component="map" data-menu-type="map">
               <i class="iconic iconic-dots-vertical"></i>
             </div>
@@ -271,6 +275,19 @@
     </div>
   </section>
 
+  <section class="search-engine">
+    <div class="search-engine-close"><i class="iconic iconic-close-circle"></i></div>
+    <div class="search-engine-contents">
+      <div class="search-engine-header">
+        <div class="search-box">
+          <div class="form-label">Search a function</div>
+          <input id="search-functions" type="search" placeholder="Keyword..." autocomplete="off">
+        </div>
+      </div>
+      <div class="search-engine-body"></div>
+    </div>
+  </section>
+
   <footer>
     <div class="footer-contents">
       <div class="footer-close" onclick="gtiz_layout.showFooter()"><i class="iconic iconic-close-circle"></i></div>
@@ -280,7 +297,7 @@
       <div class="footer-info">
         <div class="info">
           <p><span data-i18n-key="cookies_notice">Questa applicazione non utilizza cookies.</span></p>
-          <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">2024-06-03</span></p>
+          <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">__LAST_UPDATE__</span></p>
           <p class="copyright">&copy; <span class="copyright-year"></span> IZSAM 'G. Caporale'</p>
         </div>
       </div>
@@ -318,7 +335,9 @@
   <script src="js/video.js"></script>
   <script src="js/help.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/drag.js"></script>
   <script src="js/zooms.js"></script>
+  <script src="js/search.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

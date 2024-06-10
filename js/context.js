@@ -324,6 +324,7 @@ gtiz_context.closeContextMenu = function(type, card) {
     card.style.removeProperty('z-index');
     let container = card.parentNode;
     if (type == 'tree' || type == 'zooms') {
+      container.style.removeProperty('right');
       container.style.removeProperty('z-index');
       container.style.removeProperty('width');
     }
@@ -331,6 +332,7 @@ gtiz_context.closeContextMenu = function(type, card) {
       container.style.cssText = '';
     }
     if (type == 'map') {
+      container.style.removeProperty('right');
       container.style.removeProperty('transform');
       container.style.removeProperty('z-index');
       container.style.removeProperty('width');
@@ -416,19 +418,25 @@ gtiz_context.showMenu = function(type, component, trigger) {
     let top = y;
     let translate_value = -(width + margin)/10 + 'rem';
     if (type == 'tree' || type == 'zooms') {
-      if (!cls_controller.includes('-l')) {
-        width = 320;
-        translate_value = 0;
-        if (gtiz_context.body.classList.contains('dashboard-grapetree-m') || gtiz_context.body.classList.contains('dashboard-grapetree-mt') || gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
-          left = x + card.offsetWidth + margin;
+      if (!parent_cls.includes('expanded')) {
+        if (!cls_controller.includes('-l')) {
+          width = 320;
+          translate_value = 0;
+          if (gtiz_context.body.classList.contains('dashboard-grapetree-m') || gtiz_context.body.classList.contains('dashboard-grapetree-mt') || gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
+            left = x + card.offsetWidth + margin;
+          } else {
+            left = x + card.offsetWidth + margin - width;
+          }
         } else {
-          left = x + card.offsetWidth + margin - width;
+          let legend_width = document.querySelector('.card-legend').offsetWidth;
+          width = legend_width;
+          translate_value = 0;
+          left = x + card.offsetWidth + margin;
         }
       } else {
-        let legend_width = document.querySelector('.card-legend').offsetWidth;
-        width = legend_width;
-        translate_value = 0;
-        left = x + card.offsetWidth + margin;
+        width = 320;
+        translate_value = width;
+        left = x + card.offsetWidth + margin - width;
       }
     }
     if (type == 'metadata') {
@@ -450,15 +458,21 @@ gtiz_context.showMenu = function(type, component, trigger) {
       }
     }
     if (type == 'map') {
-      if (!cls_controller.includes('-l')) {
-        width = 320;
-        translate_value = 0;
-        left = x + card.offsetWidth + margin - width;
+      if (!parent_cls.includes('expanded')) {
+        if (!cls_controller.includes('-l')) {
+          width = 320;
+          translate_value = 0;
+          left = x + card.offsetWidth + margin - width;
+        } else {
+          let legend_width = document.querySelector('.card-legend').offsetWidth;
+          width = legend_width;
+          translate_value = 0;
+          left = x + card.offsetWidth + margin;
+        }
       } else {
-        let legend_width = document.querySelector('.card-legend').offsetWidth;
-        width = legend_width;
-        translate_value = 0;
-        left = x + card.offsetWidth + margin;
+        width = 320;
+        translate_value = width;
+        left = x + card.offsetWidth + margin - width;
       }
     }
 
@@ -489,10 +503,14 @@ gtiz_context.showMenu = function(type, component, trigger) {
     if (component == 'tree') {
       let tree_container = document.querySelector('.tree');
       tree_container.style.zIndex = 9999;
-      if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
-        // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-        tree_container.style.width = 'auto';
-        tree_container.style.right = (margin/2 + width)/10 + 'rem';
+      if (parent_cls.includes('expanded')) {
+        parent.style.right = (margin/2 + width)/10 + 'rem';
+      } else {
+        if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
+          // card.style.width = (card.offsetWidth - width)/10 + 'rem';
+          tree_container.style.width = 'auto';
+          tree_container.style.right = (margin/2 + width)/10 + 'rem';
+        }
       }
     }
     if (component == 'metadata') {
@@ -510,9 +528,13 @@ gtiz_context.showMenu = function(type, component, trigger) {
     if (component == 'map') {
       let map_container = document.querySelector('.map');
       map_container.style.zIndex = 9999;
-      if (!cls_controller.includes('-l')) {
-        // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-        map_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
+      if (parent_cls.includes('expanded')) {
+        parent.style.right = (margin/2 + width)/10 + 'rem';
+      } else {
+        if (!cls_controller.includes('-l')) {
+          // card.style.width = (card.offsetWidth - width)/10 + 'rem';
+          map_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
+        }
       }
     }
 

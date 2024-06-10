@@ -186,7 +186,7 @@ gtiz_legend.context_menu = [{
     let category = gtiz_tree.tree.display_category;
     gtiz_legend.changeGroupOrder(value, category, true);
   }
-}, , {
+}, {
   type : 'select',
   id : 'legend-menu-color-scheme',
   label : () => {

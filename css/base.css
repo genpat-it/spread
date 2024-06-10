@@ -1334,6 +1334,13 @@ button i {
   font-size: 1.4rem;
 }
 
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
 /* MAIN */
 
 main {

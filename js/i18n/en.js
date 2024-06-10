@@ -58,7 +58,7 @@ gtiz_languages.en = {
   "fetch_error" : "Fetch request failed.",
   "font_size" : "Font size",
   "footer_disclaimer" : "This project is part of the European Joint Programme One Health EJP. This project has received funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No 773830.",
-  "for_branches_longer_than" : "For branches longer than:",
+  "for_branches_longer_than" : "Cut off branches longer than",
   "forbidden_net_geojson_alert" : "It seems that you do not have permission to access the GeoJson indicated in the URL. Please try logging in to <a href='{0}' target='_blank'>{1}</a> and refresh the page.",
   "forbidden_net_metadata_alert" : "It seems that you do not have permission to access Metadata indicated in the URL. Please try logging in to <a href='{0}' target='_blank'>{1}</a> and refresh the page.",
   "forbidden_net_tree_alert" : "It seems that you do not have permission to access the Tree indicated in the URL. Please try logging in to <a href='{0}' target='_blank'>{1}</a> and refresh the page.",

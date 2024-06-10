@@ -182,6 +182,17 @@ gtiz_layout.expandComponent = function(component, trigger) {
   } else {
     trigger.innerHTML = '<i class="iconic iconic-maximize"></i>';
   }
+
+  if (component == 'map') {
+    if (gtiz_map.initialized) {
+      gtiz_map.init();
+      gtiz_layout.resizeMap();
+    }
+  }
+  if (component == 'tree') {
+    gtiz_layout.resizeTree();
+  }
+
 }
 
 /**
@@ -372,6 +383,8 @@ gtiz_layout.setView = function(obj) {
     gtiz_layout.body.setAttribute('class', 'show-notifier dashboard dashboard-grapetree');
   } else if (gtiz_layout.body.classList.contains('show-modal')) {
     gtiz_layout.body.setAttribute('class', 'show-modal dashboard dashboard-grapetree');
+  } else if (gtiz_layout.body.classList.contains('show-search-engine')) {
+    gtiz_layout.body.setAttribute('class', 'show-search-engine dashboard dashboard-grapetree');
   } else {
     gtiz_layout.body.setAttribute('class', 'dashboard dashboard-grapetree');
   }
@@ -406,7 +419,11 @@ gtiz_layout.setView = function(obj) {
     gtiz_layout.setLegendHeight();
   }
   if (gtiz_layout.settings == 'on') {
+    gtiz_layout.settings_node.classList.add('settings-on');
     gtiz_settings.init();
+  }
+  if (gtiz_layout.settings == 'off') {
+    gtiz_layout.settings_node.classList.remove('settings-on');
   }
   if (gtiz_layout.map == 'on' && gtiz_map.initialized) {
     gtiz_map.init();

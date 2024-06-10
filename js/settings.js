@@ -1,32 +1,6 @@
 let gtiz_settings = {};
 
 gtiz_settings.cfg = [{
-  card: 'tree-layout',
-  expanded: true,
-  visible: true,
-  menu: [{
-    type : 'abutton',
-    label : gtiz_locales.current.centre_tree,
-    icon : 'iconic-target',
-    function : () => {
-      gtiz_tree.treeCenter();
-    }
-  }, {
-    type : 'abutton',
-    label : gtiz_locales.current.static_redraw,
-    icon : 'iconic-edit',
-    function : () => {
-      gtiz_tree.treeStaticRedraw();
-    }
-  }, {
-    type : 'abutton',
-    label : gtiz_locales.current.original_tree,
-    icon : 'iconic-monitor',
-    function : () => {
-      gtiz_tree.originalTree();
-    }
-  }]
-}, {
   card: 'node-style',
   expanded: true,
   visible: true,
@@ -53,14 +27,14 @@ gtiz_settings.cfg = [{
     type : 'toggle',
     id : 'tree-show-node-labels',
     options : [{
-        label : gtiz_locales.current.show_labels,
+      label : gtiz_locales.current.show_labels,
+      value : 'shown',
+      icon : 'iconic-eye'
+    }, {
+        label : gtiz_locales.current.hide_labels,
         value : 'hidden',
         icon : 'iconic-eye-off'
-      }, {
-        label : gtiz_locales.current.hide_labels,
-        value : 'shown',
-        icon : 'iconic-eye'
-    }],
+      }],
     selected : () => {
       return  gtiz_tree.show_node_labels;
     },
@@ -125,12 +99,12 @@ gtiz_settings.cfg = [{
     id : 'tree-show-individual-segments',
     options : [{
         label : gtiz_locales.current.individual_segments,
-        value : 'hidden',
-        icon : 'iconic-eye-off'
-      }, {
-        label : gtiz_locales.current.individual_segments,
         value : 'shown',
         icon : 'iconic-eye'
+    }, {
+      label : gtiz_locales.current.individual_segments,
+      value : 'hidden',
+      icon : 'iconic-eye-off'
     }],
     selected : () => {
       return  gtiz_tree.individual_segments;
@@ -141,7 +115,7 @@ gtiz_settings.cfg = [{
   }]
 }, {
   card : 'node-size',
-  expanded : true,
+  expanded : false,
   visible : true,
   menu : [{
     type : 'slider',
@@ -188,19 +162,19 @@ gtiz_settings.cfg = [{
   },]
 }, {
   card : 'branch-style',
-  expanded : true,
+  expanded : false,
   visible : true,
   menu : [{
     type : 'toggle',
     id : 'tree-show-branch-labels',
     options : [{
-        label : gtiz_locales.current.show_labels,
-        value : 'hidden',
-        icon : 'iconic-eye-off'
-      }, {
-        label : gtiz_locales.current.hide_labels,
-        value : 'shown',
-        icon : 'iconic-eye'
+      label : gtiz_locales.current.show_labels,
+      value : 'shown',
+      icon : 'iconic-eye'
+    }, {
+      label : gtiz_locales.current.hide_labels,
+      value : 'hidden',
+      icon : 'iconic-eye-off'
     }],
     selected : () => {
       return  gtiz_tree.show_branch_labels;
@@ -283,13 +257,13 @@ gtiz_settings.cfg = [{
     type : 'toggle',
     id : 'tree-branch-toggle-log-scale',
     options : [{
-        label : gtiz_locales.current.log_scale,
-        value : 'not-active',
-        icon : 'iconic-ban'
-      }, {
-        label : gtiz_locales.current.log_scale,
-        value : 'active',
-        icon : 'iconic-check-circle'
+      label : gtiz_locales.current.log_scale,
+      value : 'active',
+      icon : 'iconic-check-circle'
+    }, {
+      label : gtiz_locales.current.log_scale,
+      value : 'not-active',
+      icon : 'iconic-ban'
     }],
     selected : () => {
       return  gtiz_tree.branch_log_scale;
@@ -300,7 +274,7 @@ gtiz_settings.cfg = [{
   }]
 }, {
   card: 'branch-cutoffs',
-  expanded : true,
+  expanded : false,
   visible : true,
   menu : [{
     type : 'number',
@@ -345,7 +319,7 @@ gtiz_settings.cfg = [{
   }]
 }, {
   card: 'rendering',
-  expanded: true,
+  expanded: false,
   visible: true,
   menu: [{
     type : 'toggle',
@@ -516,9 +490,9 @@ gtiz_settings.exp_triggers.forEach(function (item) {
   item.addEventListener('click', gtiz_settings.expandCard, false);
 });
 
-gtiz_settings.card_titles.forEach(function (item) {
+/* gtiz_settings.card_titles.forEach(function (item) {
   item.addEventListener('click', gtiz_settings.expandCard, false);
-});
+}); */
 
 gtiz_settings.buildForm = function(form, menu) {
   if (form && menu) {
@@ -654,7 +628,7 @@ gtiz_settings.buildForm = function(form, menu) {
         let bar = document.createElement('div');
         bar.setAttribute('class', 'slider-bar');
         let handler = document.createElement('div');
-        handler.setAttribute('class', 'slider-handler');
+        handler.setAttribute('class', 'slider-handler not-draggable');
         if (item.tolerance) {
           handler.setAttribute('data-tolerance', item.tolerance);
         }

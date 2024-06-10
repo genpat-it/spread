@@ -876,10 +876,8 @@ gtiz_tree.treeLoaded = function(tree) {
         }
         // tree.clearSelection();
       }
-      if (gtiz_tree.change_counter > 1) {
-        if (gtiz_map.geojson != '' && gtiz_layout.map == 'on') {
-          gtiz_map.defineMarkers();
-        }
+      if (gtiz_map.geojson != '' && gtiz_layout.map == 'on') {
+        gtiz_map.defineMarkers();
       }
       gtiz_tree.change_counter++;
     }
@@ -1507,7 +1505,9 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'abutton',
-  label : gtiz_locales.current.save_spread,
+  label : () => {
+    return gtiz_locales.current.save_spread
+  },
   icon : 'iconic-folder',
   function : () => {
     let mode = 'save';
@@ -1515,7 +1515,9 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
-  label : gtiz_locales.current.load_spread,
+  label : () => {
+    return gtiz_locales.current.load_spread
+  },
   icon : 'iconic-file-plus',
   function : () => {
     let mode = 'load';
