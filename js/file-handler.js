@@ -368,6 +368,12 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 		gtiz_layout.body.classList.remove('tree-not-defined');
 		return;
 	}
+	
+	// reset metadata
+	gtiz_tree.tree.metadata = {};
+  gtiz_tree.tree.metadata_info = {};
+  gtiz_tree.tree.metadata_map = {};
+
 	let meta = {};
 	let id_name = '';
 	let tree = gtiz_tree.tree;
@@ -787,7 +793,6 @@ gtiz_file_handler.distributeFile = function(text, filename) {
 		let l_action = 'add';
 		let l_components = ['tree', 'map', 'legend'];
 		gtiz_layout.uiLoadingManager(l_components, l_action);
-		let obj = JSON.parse(text);
 		let json = true;
 		gtiz_file_handler.loadTreeText(text, json);
 		let header_tag = document.querySelector('#headertag');

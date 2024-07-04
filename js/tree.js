@@ -358,6 +358,9 @@ gtiz_tree.getCompleteGrapeTreeSettings = function() {
  */
 gtiz_tree.getCompleteGrapeTreeObject = function() {
   let obj = gtiz_tree.tree.getTreeAsObject();
+  obj.gtiz_file_handler = {
+    samples_column : gtiz_file_handler.samples_column
+  };
   obj.gtiz_locales = {
 		languages : gtiz_locales.languages
 	};
@@ -714,7 +717,8 @@ gtiz_tree.getMetadataSelectOptions = function() {
  * 
  */
 gtiz_tree.setMetadata = function(value) {
-  gtiz_tree.tree.changeCategory(value);
+  let category = value in gtiz_tree.tree.metadata_info ? value : Object.keys(gtiz_tree.tree.metadata_info)[0];
+  gtiz_tree.tree.changeCategory(category);
 }
 
 gtiz_tree.setRenderingStaticSelecion = function(value) {
@@ -1054,6 +1058,7 @@ gtiz_tree.loadMSTree = function(data, json) {
   });
 
   // control if data contains configurations
+  let file_handler = data.gtiz_file_handler;
   let layout = data.gtiz_layout;
   let settings = data.gtiz_settings;
   let map = data.gtiz_map;
@@ -1062,6 +1067,9 @@ gtiz_tree.loadMSTree = function(data, json) {
   let video = data.gtiz_video;
   let locales = data.gtiz_locales;
   let zooms = data.gtiz_zooms;
+  if (file_handler) {
+    gtiz_file_handler.samples_column = file_handler.samples_column;
+  }
   if (map) {
     let geoJSON = map.geojson;
     if (geoJSON) {

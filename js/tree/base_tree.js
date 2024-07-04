@@ -907,7 +907,7 @@ function D3BaseTree(element_id,metadata,height,width){
 	this.min_date=null;
 	this.max_date=null;
 	this.date_scale=null;
-	this.calculateDateScale();
+	// this.calculateDateScale();
 	this.treeChangedListeners=[];
 	this.nodesSelectedListeners=[];
 	this.displayChangedListeners=[];

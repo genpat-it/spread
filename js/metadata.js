@@ -6,6 +6,7 @@ gtiz_metadata.show_hypothetical = 'hide_hypo';
 gtiz_metadata.selected_column = '';
 gtiz_metadata.change_metadata_selected_only = 'all';
 gtiz_metadata.color_by_defined_category = 'leave';
+gtiz_metadata.modal_column_select_category;
 
 gtiz_metadata.metadata_node = document.querySelector(".metadata");
 gtiz_metadata.metadata_container = document.querySelector(".metadata-container");
@@ -99,6 +100,17 @@ gtiz_metadata.context_menu = [{
     let mode = 'edit';
     let selected = true;
     gtiz_metadata.changeMetadata(mode, selected);
+  }
+}, {
+  type: 'separator'
+}, {
+  type: 'abutton',
+  label: () => {
+    return gtiz_locales.current.delete_metadata;
+  },
+  icon: 'iconic-trash',
+  function: () => {
+    gtiz_metadata.changeMetadata('remove');
   }
 }, {
   type: 'separator'
@@ -411,6 +423,49 @@ gtiz_metadata.modal_form = {
         gtiz_metadata.addMetadata(selected);
       }
     }]
+  },
+  'remove': {
+    'all': [{
+      type: 'select',
+      id: 'metadata-modal-menu-color-by',
+      label: () => {
+        return gtiz_locales.current.select_column;
+      },
+      icon: '',
+      options: () => {
+        let values = gtiz_metadata.getColorByOptions(true);
+        return values;
+      },
+      default: undefined,
+      get_default: () => {
+        let value = gtiz_metadata.getColorByDefaultValue();
+        return value;
+      },
+      function: (value) => { }
+    }, {
+      type: 'abutton',
+      label: () => {
+        return gtiz_locales.current.add_column;
+      },
+      icon: 'iconic-plus-circle',
+      function: (e) => {
+        gtiz_metadata.addModalColumnSelectBox(e);
+      },
+      hidden: () => {
+        return gtiz_metadata.checkModalColumnSelectBox(1);
+      }
+    }, {
+      type: 'button',
+      id: 'metadata-modal-remove-button',
+      label: gtiz_locales.current.delete,
+      icon: 'iconic-trash',
+      function: () => {
+        gtiz_metadata.removeMetadata();
+      },
+      hidden: () => {
+        return gtiz_metadata.checkModalColumnSelectBox();
+      }
+    }],
   }
 };
 
@@ -506,25 +561,41 @@ gtiz_metadata.toggleColorByDefinedCategory = function(value) {
 /**
  * Update metadata with indicated values and return a tsv formatted string.
  * 
+ * @param {String} mode edit || add || remove
  * @param {Object} metadata Metadata object from tree
  * @param {Array} nodes Array of selected nodes to modify, if empty apply to all nodes
- * @param {String} category Metadata category to add/modify
+ * @param {String || Array} category Metadata category to add/modify, please be aware that 'ID' and 'CMP' are reserved and cannot be removed and that in remove mode category could be an array of categories
  * @param {String} value Metadata value to set
  * @param {String} unselected Metadata value to set for unselected nodes, could not exist
  * @returns 
  */
-gtiz_metadata.updateMetadata = function(metadata, nodes, category, value, unselected) {
+gtiz_metadata.updateMetadata = function(mode, metadata, nodes, category, value, unselected) {
   let tsv = '';
   let head = '';
   for (let key in metadata) {
     if (key === 'CMP' || key === 'ID' || key.includes('_hypo') || key === '') continue;
-    if (nodes.length > 0) {
-      let default_value = unselected === 'optional' || !unselected ? metadata[key][category] : unselected;
-      metadata[key][category] = nodes.includes(metadata[key]['ID']) ? value : default_value;
+
+    if (mode === 'remove') {
+      if (Array.isArray(category)) {
+        category.forEach((cat) => {
+          delete metadata[key][cat];
+        });
+      } else {
+        delete metadata[key][category];
+      }
     } else {
-      metadata[key][category] = value;
+      if (nodes.length > 0) {
+        let default_value = unselected === 'optional' || !unselected ? metadata[key][category] : unselected;
+        metadata[key][category] = nodes.includes(metadata[key]['ID']) ? value : default_value;
+      } else {
+        metadata[key][category] = value;
+      }
     }
-    let obj = gtiz_metadata.filterKeys(metadata[key], ['__Node', 'nothing']);
+    let array_to_exclude = ['__Node', 'nothing'];
+    if (gtiz_file_handler.samples_column !== 'ID') {
+      array_to_exclude.push('ID');
+    }
+    let obj = gtiz_metadata.filterKeys(metadata[key], array_to_exclude);
     if (head === '') {
       head = Object.keys(obj).join('\t') + '\n';
       tsv += head;
@@ -564,15 +635,15 @@ gtiz_metadata.loadMetadata = function (tsv) {
  * @param {Boolean} selected If true apply to selected nodes only
  */
 gtiz_metadata.addMetadata = function (selected) {
+  let mode = 'add';
   let metadata = gtiz_tree.tree.metadata;
   let category = document.getElementById('metadata-modal-add-category-text').value;
   let selected_value = selected ? document.getElementById('metadata-modal-add-values-text-selected').value : document.getElementById('metadata-modal-add-values-text').value;
   let unselected_value = selected ? document.getElementById('metadata-modal-add-values-text-unselected').value : 'optional';
-
   if (category && unselected_value && selected_value) {
     gtiz_modal.closeModal();
     let nodes = selected ? gtiz_tree.tree.getAllSelectedNodesIDs() : [];
-    let tsv = gtiz_metadata.updateMetadata(metadata, nodes, category, selected_value, unselected_value);
+    let tsv = gtiz_metadata.updateMetadata(mode, metadata, nodes, category, selected_value, unselected_value);
     gtiz_metadata.loadMetadata(tsv);
     if (gtiz_metadata.color_by_defined_category == 'color') {
       gtiz_legend.changeCategoryColor(category);
@@ -586,6 +657,46 @@ gtiz_metadata.addMetadata = function (selected) {
 }
 
 /**
+ * Remove metadata function, called by modal form button.
+ * 
+ */
+gtiz_metadata.removeMetadata = function () {
+  let mode = 'remove';
+  let metadata = gtiz_tree.tree.metadata;
+  let select = document.getElementById('metadata-modal-menu-color-by');
+  let parent = select.closest('.modal-form');
+  let selects = parent.querySelectorAll('.select-box');
+  let categories = [];
+  selects.forEach((select) => {
+    let value = select.querySelector('select').value;
+    if (categories.includes(value)) return;
+    categories.push(value);
+  });
+  // if categories includes 'ID' or 'CMP' or 'samples' we cannot remove them, categories array is already filtered by 'ID' and 'CMP' or 'samples' by `gtiz_metadata.getColorByOptions(filtered)`, this is a double check
+  if (categories.includes(gtiz_file_handler.samples_column) || categories.includes('ID') || categories.includes('CMP')) {
+    let feedback = document.querySelector('.modal-feedback');
+    feedback.classList.add('warning');
+    feedback.innerHTML = '<p><i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.cannot_remove_column_message + '</p>';
+    feedback.classList.add('show');
+    return;
+  }
+  if (categories.includes(gtiz_tree.tree.display_category)) {
+    gtiz_tree.tree.display_category = '';
+  }
+  if (categories.length > 0 && metadata) {
+    let nodes = [];
+    let tsv;
+    if (categories.length === 1) {
+      tsv = gtiz_metadata.updateMetadata(mode, metadata, nodes, categories[0]);
+    } else {
+      tsv = gtiz_metadata.updateMetadata(mode, metadata, nodes, categories);
+    }
+    gtiz_metadata.loadMetadata(tsv);
+    gtiz_modal.closeModal();
+  }
+}
+
+/**
  * Edit metadata function, called by modal form button.
  * 
  * @param {String} category Column to edit
@@ -593,6 +704,7 @@ gtiz_metadata.addMetadata = function (selected) {
  * @param {Boolean} selected If true apply to selected rows
  */
 gtiz_metadata.editMetadata = function (value, selected) {
+  let mode = 'edit';
   if (!value) {
     value = document.getElementById('metadata-modal-edit-text').value;
   }
@@ -602,7 +714,7 @@ gtiz_metadata.editMetadata = function (value, selected) {
   if (category && value) {
     gtiz_modal.closeModal();
     let nodes = selected ? gtiz_tree.tree.getAllSelectedNodesIDs() : [];
-    let tsv = gtiz_metadata.updateMetadata(metadata, nodes, category, value);
+    let tsv = gtiz_metadata.updateMetadata(mode, metadata, nodes, category, value);
     gtiz_metadata.loadMetadata(tsv);
     if (gtiz_metadata.color_by_defined_category == 'color') {
       gtiz_legend.changeCategoryColor(category);
@@ -710,9 +822,38 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       let a = document.createElement('a');
       a.setAttribute('class', 'modal-action');
       let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
-      a.innerHTML = icon + item.label;
+      if (typeof item.label === 'string') {
+        a.innerHTML = icon + item.label;
+      } else {
+        if (typeof item.label === 'function') {
+          let label_text = item.label();
+          a.innerHTML = icon + label_text;
+        }
+      }
+      if (typeof item.hidden === 'boolean') {
+        if (item.hidden) {
+          box.setAttribute('style', 'display: none');
+        }
+      } else {
+        if (typeof item.hidden === 'function') {
+          if (item.hidden()) {
+            box.setAttribute('style', 'display: none');
+          }
+        }
+      }
+      if (typeof item.disabled === 'boolean') {
+        if (item.disabled) {
+          a.setAttribute('disabled', true);
+        }
+      } else {
+        if (typeof item.disabled === 'function') {
+          if (item.disabled()) {
+            a.setAttribute('disabled', true);
+          }
+        }
+      }
       a.addEventListener('click', (e) => {
-        item.function();
+        item.function(e);
       });
       box.append(a);
       form.append(box);
@@ -738,8 +879,15 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       if (item.id) {
         select.setAttribute('id', item.id);
       }
+      let options;
       if (Array.isArray(item.options)) {
-        let options = item.options;
+        options = item.options;
+      } else {
+        if (typeof item.options === 'function') {
+          options = item.options();
+        }
+      }
+      if (options.length > 0) {
         options.forEach(el => {
           let option = document.createElement('option');
           option.setAttribute('value', el.value);
@@ -754,22 +902,21 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
           select.append(option);
         });
       } else {
-        if (typeof item.options === 'function') {
-          let options = item.options();
-          options.forEach(el => {
-            let option = document.createElement('option');
-            option.setAttribute('value', el.value);
-            option.innerHTML = el.label;
-            select.append(option);
-          });
-        }
+        let option = document.createElement('option');
+        option.setAttribute('value', '');
+        option.innerHTML = gtiz_locales.current.no_options_available;
+        option.setAttribute('selected', true);
+        select.setAttribute('disabled', true);
+        select.append(option);
       }
-      if (item.default) {
-        select.value = item.default;
-      } else {
-        if (typeof item.get_default === 'function') {
-          let value = item.get_default();
-          select.value = value;
+      if (options.length > 0) {
+        if (item.default) {
+          select.value = item.default;
+        } else {
+          if (typeof item.get_default === 'function') {
+            let value = item.get_default();
+            select.value = value;
+          }
         }
       }
       select.addEventListener('change', (e) => {
@@ -816,13 +963,59 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       box.append(input);
       form.append(box);
     }
+    if (item.type == 'feedback') {
+
+      let feedback = document.querySelector('.modal-feedback');
+      if (item.cls) {
+        feedback.classList.add(item.cls);
+      }
+      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      feedback.innerHTML = '<p>' + icon + item.message + '</p>';
+      if (typeof item.hidden === 'boolean') {
+        if (!item.hidden) {
+          feedback.classList.add('show');
+        }
+      } else {
+        if (typeof item.hidden === 'function') {
+          if (!item.hidden()) {
+            feedback.classList.add('show');
+          }
+        }
+      }
+    }
     if (item.type == 'button') {
       let box = document.createElement('div');
       box.setAttribute('class', 'button-box');
       let button = document.createElement('button');
-      button.setAttribute('class', 'secondary');
+      if (item.cls) {
+        button.setAttribute('class', item.cls);
+      } else {
+        button.setAttribute('class', 'secondary');
+      }
       let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
       button.innerHTML = icon + item.label;
+      if (typeof item.hidden === 'boolean') {
+        if (item.hidden) {
+          box.setAttribute('style', 'display: none');
+        }
+      } else {
+        if (typeof item.hidden === 'function') {
+          if (item.hidden()) {
+            box.setAttribute('style', 'display: none');
+          }
+        }
+      }
+      if (typeof item.disabled === 'boolean') {
+        if (item.disabled) {
+          button.setAttribute('disabled', true);
+        }
+      } else {
+        if (typeof item.disabled === 'function') {
+          if (item.disabled()) {
+            button.setAttribute('disabled', true);
+          }
+        }
+      }
       button.addEventListener('click', function (e) {
         item.function();
       });
@@ -857,6 +1050,9 @@ gtiz_metadata.changeMetadata = function (mode, selected) {
     case 'add':
       title = gtiz_locales.current.add_metadata;
       break;
+    case 'remove':
+      title = gtiz_locales.current.delete_metadata;
+      break;
     default:
       break;
   }
@@ -879,6 +1075,75 @@ gtiz_metadata.changeMetadata = function (mode, selected) {
     contents = gtiz_metadata.buildChangeMetadataModalContents(mode);
   }
   gtiz_modal.buildModal(title, contents, feedback, f_type);
+}
+
+/**
+ * Check if select box is disabled for delete metadata columns is disabled. If returns true element will be hidden.
+ * 
+ * @param {Number} min Minimum number of options available to check
+ * @returns Boolean
+ */ 
+gtiz_metadata.checkModalColumnSelectBox = function (min) {
+  if (!min) {
+    min = 0;
+  }
+  if (gtiz_metadata.modal_column_select_category <= min) {
+    return true; // hidden true
+  } else {
+    return false;
+  }
+}
+
+/**
+ * 
+ * Add a new select box to modal form with metadata columns.
+ * 
+ * @param {event} e
+ *  
+ */
+gtiz_metadata.addModalColumnSelectBox = function (e) {
+  let target = e.currentTarget;
+  let button = target.closest('.button-box');
+  let parent = target.closest('.modal-form');
+  let select_box = parent.querySelector('.select-box');
+  let select = select_box.querySelector('select');
+  let options = select.querySelectorAll('option');
+  let select_boxes = parent.querySelectorAll('.select-box');
+  // duplicate the selected select box and append it after it
+  let clone = select_box.cloneNode(true);
+  let clone_select = clone.querySelector('select');
+  clone_select.removeAttribute('id');
+  // insert before tartget
+  if (options.length === select_boxes.length) {
+    let feedback = document.querySelector('.modal-feedback');
+    feedback.classList.add('info');
+    feedback.innerHTML = '<p><i class="iconic iconic-information"></i> ' + gtiz_locales.current.no_additional_metadata_available + '</p>';
+    feedback.classList.add('show');
+  } else {
+    parent.insertBefore(clone, button);
+  }
+  // add remove button
+  let remove = document.querySelector('#metadata-modal-remove-select-button');
+  if (!remove) {
+    remove = document.createElement('a');
+    remove.setAttribute('class', 'modal-action modal-action-secondary');
+    remove.setAttribute('id', 'metadata-modal-remove-select-button');
+    remove.innerHTML = '<i class="iconic iconic-minus-circle"></i> ' + gtiz_locales.current.remove_column;
+    remove.addEventListener('click', (e) => {
+      let selects = parent.querySelectorAll('.select-box');
+      let feedback = document.querySelector('.modal-feedback');
+      feedback.innerHTML = '';
+      feedback.classList.remove('show');
+      if (selects.length > 1) {
+        // remove last select box
+        selects[selects.length - 1].remove();
+        if (selects.length <= 2) {
+          remove.remove();
+        }
+      }
+    });
+    button.append(remove);
+  }
 }
 
 /**
@@ -948,12 +1213,21 @@ gtiz_metadata.getColorByDefaultValue = function () {
 /**
  * Retreive the metadata category list to populate relative metadata context menu select input.
  * 
+ * @param {Boolean} filtered If true return only filtered categories
  * @returns colors An array of object with value and label of available catgories
  */
-gtiz_metadata.getColorByOptions = function () {
+gtiz_metadata.getColorByOptions = function (filtered) {
   let tree = gtiz_tree.tree;
   let colors = Object.keys(tree.metadata_info)
     .sort()
+    .filter(function (category) {
+      // if filtered is true we return only categories not equal to ID or CMP
+      if (filtered) {
+        return category !== 'ID' && category !== 'CMP' && category !== gtiz_file_handler.samples_column;
+      } else {
+        return true;
+      }
+    })  
     .map(function (category) {
       let label = tree.metadata_info[category]['label'];
       label = label.toLowerCase();
@@ -964,6 +1238,11 @@ gtiz_metadata.getColorByOptions = function () {
       }
       return ar;
     });
+  if (!colors || colors.length === 0) {
+    gtiz_metadata.modal_column_select_category = 0;
+  } else {
+    gtiz_metadata.modal_column_select_category = colors.length;
+  }
   return colors;
 }
 
@@ -1194,6 +1473,9 @@ gtiz_metadata.backupGridData = function () {
  */
 gtiz_metadata.setGrid = function () {
   let fields = Object.keys(gtiz_tree.tree.metadata_info);
+  if (gtiz_file_handler.samples_column != 'ID') {
+    fields = fields.filter(item => item != 'ID');
+  }
   let meta = gtiz_tree.tree.metadata;
   let columns = [];
   let check = {

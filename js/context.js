@@ -620,8 +620,14 @@ gtiz_context.updateContextPosition = function(menu, type) {
 gtiz_context.triggers.forEach(function(trigger) {
   trigger.addEventListener('click', function(e) {
     let type = trigger.getAttribute('data-menu-type');
+    let card = trigger.closest('.card-component');
     let component = trigger.getAttribute('data-menu-component');
-    gtiz_context.showMenu(type, component, trigger);
+    let menu = document.querySelector('.context-menu-' + type);
+    if (menu) {
+      gtiz_context.closeContextMenu(type, card);
+    } else {
+      gtiz_context.showMenu(type, component, trigger);
+    }
   });
 });
 
