@@ -1250,14 +1250,7 @@
 .dashboard-grapetree .card-legend .card-form,
 .dashboard-grapetree .card-context-menu .card-form {
   padding: 0.2rem;
-  overflow: auto;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-/* Hide scrollbar for Chrome, Safari and Opera */
-.dashboard-grapetree .card-legend .card-form::-webkit-scrollbar,
-.dashboard-grapetree .card-context-menu .card-form::-webkit-scrollbar {
-  display: none;
+  position: relative;
 }
 
 .dashboard-grapetree .card-legend.legend-loading .card-form {
@@ -1891,6 +1884,12 @@
   margin-top: 1.3rem;
 }
 
+.dashboard-grapetree .modal-contents p:first-child,
+.dashboard-grapetree .modal-contents ul:first-child,
+.dashboard-grapetree .modal-contents ol:first-child {
+  margin-top: 0;
+}
+
 .dashboard-grapetree .modal-contents button {
   margin-top: 1.3rem;
 }
@@ -1904,13 +1903,7 @@
 .dashboard-grapetree .modal-contents .modal-body {
   margin-top: 1.3rem;
   max-height: calc(90vh - 14rem); /* 14rem is the sum of h3 size, modal-contents paddings and margins and modal-body margins */
-  overflow: auto;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-/* Hide scrollbar for Chrome, Safari and Opera */
-.dashboard-grapetree .modal-contents .modal-body::-webkit-scrollbar {
-  display: none;
+  position: relative;
 }
 
 .dashboard-grapetree .modal-contents .modal-feedback.show {
@@ -2044,16 +2037,11 @@
   z-index: 9998;
   width: 32rem;
   border-radius: 2.4rem;
-  padding: 2.1rem 2.1rem;
-  padding-top: 3.4rem;
-  padding-bottom: 3.4rem;
+  padding: 2.1rem 1.3rem;
   background-color: var(--white);
   top: 1rem;
   right: 1rem;
   max-height: calc(100vh - 9.8rem);
-  overflow-y: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
   opacity: 0;
   -webkit-transform: translateX(calc(100% + 1rem));
   transform: translateX(calc(100% + 1rem));

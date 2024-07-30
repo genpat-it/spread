@@ -3,6 +3,21 @@ let gtiz_modal = {};
 gtiz_modal.body = document.querySelector('body');
 gtiz_modal.close_modal_trigger = document.querySelector('.modal-close');
 
+gtiz_modal.css_vars = gtiz_utils.getAllCssVariables();
+gtiz_modal.scrolly_options = {
+  position: 'absolute',
+  opacity: 0.8,
+  containerColor: gtiz_modal.css_vars['--secondary-light'],
+  barColor: gtiz_modal.css_vars['--secondary-dark'],
+  radius: 1,
+  scaleY : 0.8,
+  side : 'left',
+  offset : -1,
+  width : 0.3,
+  unit : 'rem',
+};
+gtiz_modal.scrolly = new Scrolly(gtiz_modal.scrolly_options);
+
 /**
  * Close all notifiers and clean contents
  * 
@@ -189,9 +204,13 @@ gtiz_modal.buildModal = function(title, contents, feedback, f_type) {
   }
   if (contents.length > 0) {
     let m_body = modal.querySelector('.modal-body');
+    let m_contents = document.createElement('div');
+    m_contents.setAttribute('class', 'modal-body-contents');
     contents.forEach(content => {
-      m_body.append(content);
+      m_contents.append(content);
     });
+    m_body.append(m_contents);
+    gtiz_modal.scrolly.initNode(m_contents);
   }
   if (feedback) {
     let m_feedback = modal.querySelector('.modal-feedback');
@@ -224,4 +243,13 @@ gtiz_modal.closeModal = function () {
 
 gtiz_modal.close_modal_trigger.addEventListener('click', function(e) {
   gtiz_modal.closeModal();
+});
+
+window.addEventListener("resize", function() {
+  setTimeout(() => {
+    let node = document.querySelector('.modal-body-contents');
+    if (node) {
+      gtiz_modal.scrolly.updateNode(node);
+    }
+  }, 300);
 });

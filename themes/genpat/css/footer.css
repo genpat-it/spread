@@ -66,8 +66,8 @@ footer.show {
   background-color: var(--dark);
   bottom: 1rem;
   right: 1rem;
-  max-height: calc(84vh - 4.8rem);
-  overflow-y: auto;
+  max-height: calc(84vh - 8.4rem);
+  overflow: hidden;
   opacity: 0;
   -webkit-transform: translateY(calc(100% + 8.4rem));
   transform: translateY(calc(100% + 8.4rem));

@@ -85,10 +85,10 @@ gtiz_help.getHelp = function(type) {
   let help = gtiz_help.settings.find(setting => setting.card == type);
   if (help) {
     let title = help.title();
-    let contents = [];
-    let content = document.createElement('div');
-    content.innerHTML = help.contents();
-    contents.push(content);
+    let html_string = help.contents();
+    let parser = new DOMParser();
+    let html = parser.parseFromString(html_string, 'text/html');
+    let contents = Array.from(html.body.childNodes);
     let feedback = help.feedback();
     let f_type = 'info';
     gtiz_modal.buildModal(title, contents, feedback, f_type);

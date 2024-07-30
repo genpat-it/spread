@@ -149,6 +149,21 @@ gtiz_layout.legend_node = document.querySelector('.legend');
 gtiz_layout.view_triggers = document.querySelectorAll('[data-view-trigger]');
 gtiz_layout.expand_triggers = document.querySelectorAll('.card-context-expand-trigger');
 
+gtiz_layout.css_vars = gtiz_utils.getAllCssVariables();
+gtiz_layout.scrolly_options = {
+  position: 'absolute',
+  opacity: 0.8,
+  containerColor: gtiz_layout.css_vars['--secondary-light'],
+  barColor: gtiz_layout.css_vars['--secondary-dark'],
+  radius: 1,
+  scaleY : 0.9,
+  side : 'left',
+  offset : -1.3,
+  width : 0.3,
+  unit : 'rem',
+};
+gtiz_layout.scrolly = new Scrolly(gtiz_layout.scrolly_options);
+
 gtiz_layout.getStyleTime = function(node) {
   let styles = window.getComputedStyle(node);
   let duration = styles.getPropertyValue("transition-duration");
@@ -196,19 +211,6 @@ gtiz_layout.expandComponent = function(component, trigger) {
 }
 
 /**
- * Manage footer view.
- * 
- */
-gtiz_layout.showFooter = function() {
-  let footer = document.querySelector('footer');
-  let trigger_help = document.querySelector('.toogle-trigger-img-help');
-  let trigger_close = document.querySelector('.toogle-trigger-img-close');
-  footer.classList.toggle('show');
-  trigger_help.classList.toggle('hidden');
-  trigger_close.classList.toggle('hidden');
-}
-
-/**
  * Manage loading Ui for tree component
  * 
  * @param {Array} component ['tree', 'map', 'legend', 'meetadata'] 
@@ -245,15 +247,19 @@ gtiz_layout.uiLoadingManager = function(components, action) {
  */
 gtiz_layout.setLegendHeight = function(time) {
   let delay = time ? time : 0;
-  setTimeout(() => {
-    let legend_card = document.querySelector('.card-legend');
-    let legend_form = legend_card.querySelector('.card-form');
-    // reset height
-    legend_form.removeAttribute('style');
-    legend_card.style.height = 'auto';
-    let legend_card_h = legend_card.offsetHeight;
+  let legend_card = document.querySelector('.card-legend');
+  let legend_form = legend_card.querySelector('.card-form');
+  let legend_list = legend_form.querySelector('.list-box');
+
+  // reset height
+  legend_form.removeAttribute('style');
+  legend_card.style.height = 'auto';
+  gtiz_layout.scrolly.destroy(legend_list);
+
+  function calculateHeight() {
+    let legend_card_h = parseInt(legend_card.clientHeight);
     let legend_node = legend_card.parentNode;
-    let legend_node_h = legend_node.offsetHeight;
+    let legend_node_h = parseInt(legend_node.clientHeight);
     let legend_player_h = 0;
     let legend_form_top = legend_form.offsetTop;
     if (gtiz_layout.body.classList.contains('video-mode')) {
@@ -272,12 +278,21 @@ gtiz_layout.setLegendHeight = function(time) {
       parseInt(getComputedStyle(legend_card).marginBottom) -
       legend_player_h;
       legend_card.style.height = height/10 + 'rem';
-      legend_form.style.height = (legend_card.offsetHeight - legend_form_top)/10 + 'rem';
+      legend_form.style.height = (legend_card.offsetHeight - legend_form_top - parseInt(getComputedStyle(legend_card).paddingBottom))/10 + 'rem';
     } else {
       legend_card.style.height = 'auto';
       legend_form.removeAttribute('style');
     }
-  }, delay);
+    gtiz_layout.scrolly.initNode(legend_list);
+  }
+
+  if (delay > 0) {
+    setTimeout(() => {
+      calculateHeight();
+    }, delay);
+  } else {
+    calculateHeight();
+  }
 }
 
 /**
@@ -587,7 +602,9 @@ window.addEventListener("resize", function() {
   gtiz_layout.resizeTree(tree_time);
   let legend_cfg = gtiz_layout.cfg.find(element => element.type === 'legend');
   if (legend_cfg.visible) {
-    let legend_time = gtiz_layout.getStyleTime(gtiz_layout.legend_node);
-    gtiz_layout.setLegendHeight(legend_time);
+    setTimeout(() => {
+      let legend_time = gtiz_layout.getStyleTime(gtiz_layout.legend_node);
+      gtiz_layout.setLegendHeight(legend_time);  
+    }, 800);
   }
 });

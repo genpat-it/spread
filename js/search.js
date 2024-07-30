@@ -48,10 +48,24 @@ gtiz_search.metadata.forEach(item => {
 
 gtiz_search.obj = [...gtiz_search.tree, ...gtiz_search.rendering, ...gtiz_search.node_style, ...gtiz_search.node_size, ...gtiz_search.branch_style, ...gtiz_search.branch_cutoffs, ...gtiz_search.legend, ...gtiz_search.map, ...gtiz_search.metadata];
 
+gtiz_search.css_vars = gtiz_utils.getAllCssVariables();
+gtiz_search.scrolly_options = {
+  opacity: 0.8,
+  containerColor: gtiz_search.css_vars['--secondary-light'],
+  barColor: gtiz_search.css_vars['--secondary-dark'],
+  radius: 1,
+  scaleY : 0.95,
+  side : 'left',
+  width : 0.3,
+  unit : 'rem',
+};
+gtiz_search.scrolly = new Scrolly(gtiz_search.scrolly_options);
+
 gtiz_search.engine_node = document.querySelector('.search-engine');
 gtiz_search.trigger = document.querySelector('.tool-search');
 gtiz_search.input = document.getElementById('search-functions');
 gtiz_search.engine_close = document.querySelector('.search-engine-close');
+gtiz_search.engine_contents_node = document.querySelector('.search-engine-contents');
 
 /**
  * Function node to highlight after search
@@ -304,6 +318,8 @@ gtiz_search.buildUi = function(menu) {
     button_box.append(button);
   });
   container.append(results);
+  let scrolly_node = document.querySelector('.search-engine-form');
+  gtiz_search.scrolly.initNode(scrolly_node);
 };
 
 /**
@@ -322,9 +338,13 @@ gtiz_search.toggleSearchEngine = function() {
   } else {
     gtiz_search.input.value = '';
     let results = document.querySelector('.search-results');
+    let scrolly = document.querySelector('.search-engine-form.scrolly');
     if (results) {
       results.remove();
     }
+    if (scrolly) {
+      gtiz_search.scrolly.destroy(scrolly);
+    };
   }
 };
 
@@ -366,6 +386,8 @@ gtiz_search.input.addEventListener('input', function(e) {
     });
     let menu = gtiz_search.getMenu(is_label_present);
     gtiz_search.buildUi(menu);
+    let scrolly_node = document.querySelector('.search-engine-form');
+    gtiz_search.scrolly.updateNode(scrolly_node);
   } else {
     let menu = gtiz_search.getMenu(gtiz_search.obj);
     gtiz_search.buildUi(menu);
@@ -384,4 +406,13 @@ gtiz_search.engine_close.addEventListener('click', function() {
 
 gtiz_search.trigger.addEventListener('click', function() {
   gtiz_search.toggleSearchEngine();
+});
+
+window.addEventListener("resize", function() {
+  setTimeout(() => {
+    let node = document.querySelector('.search-engine-form');
+    if (node) {
+      gtiz_search.scrolly.updateNode(node);
+    }
+  }, 300);
 });

@@ -2,6 +2,7 @@ let gtiz_utils = {};
 
 gtiz_utils.postMessage = undefined;
 gtiz_utils.medatadata_select_nodes = ['#tree-metadata-select', '#tree-node-label-text', '#legend-menu-color-by', '#metadata-menu-color-by', '#metadata-map-select'];
+gtiz_utils.css_vars = {};
 
 /**
  * Uitility to check if an object exist and it is not empty
@@ -19,7 +20,6 @@ gtiz_utils.isObjectNotEmpty = function(obj) {
  * @param {String} input
  * @returns 
  */
-
 gtiz_utils.extractNumbersFromString = function(input) {
   // Use a regular expression to find all sequences of digits
   const matches = input.match(/\d+/g);
@@ -69,6 +69,39 @@ gtiz_utils.setCopyRightYear = function() {
     }
   }
 }
+
+/**
+ * Get all css variables of the document as an object
+ */
+gtiz_utils.getAllCssVariables = function() {
+  if (gtiz_utils.isObjectNotEmpty(gtiz_utils.css_vars)) {
+    return gtiz_utils.css_vars;
+  }
+  // Iterate through all stylesheets
+  for (let stylesheet of document.styleSheets) {
+    try {
+      // Iterate through all rules within each stylesheet
+      for (let rule of stylesheet.cssRules) {
+        // Check if the rule is a CSSStyleRule and its selector is :root
+        if (rule instanceof CSSStyleRule && rule.selectorText === ':root') {
+          // Iterate through all CSS variables in the rule
+          for (let property of rule.style) {
+            if (property.startsWith('--')) {
+              // Get the value of the CSS variable
+              let value = rule.style.getPropertyValue(property).trim();
+              // Store the variable and its value
+              gtiz_utils.css_vars[property] = value;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Catch and log any errors (e.g., CORS issues)
+      console.error("Error accessing stylesheet: ", e);
+    }
+  }
+  return gtiz_utils.css_vars;
+};
 
 window.addEventListener('message', (event) => {
   let url = new URL(window.location.href);

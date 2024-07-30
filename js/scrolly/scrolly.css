@@ -1,0 +1,24 @@
+.scrolly {
+  overflow-y: auto !important;
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrolly::-webkit-scrollbar {
+  display: none !important;
+}
+
+.scrolly-container {
+  transform-origin: 50% 50%;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+*:hover > .scrolly-container {
+  opacity: 1;
+}
+
+.scrolly .scrolly-bar {
+  transition: all 0.1s linear;
+}

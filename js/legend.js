@@ -355,7 +355,6 @@ gtiz_legend.changeCategoryColor = function(value) {
   } else {
     gtiz_legend.resetQualitativeSelection();
   }
-  // gtiz_layout.setLegendHeight(300);
 }
 
 /**
@@ -423,7 +422,6 @@ gtiz_legend.changeMaxGroupNumber = function(value, cat, change) {
     if(change) {
       tree.changeCategory(category);
     }
-    // gtiz_layout.setLegendHeight(300);
 	}
 }
 
@@ -459,7 +457,6 @@ gtiz_legend.changeMinGroupSize = function(value, cat, change) {
 		if(change) {
       tree.changeCategory(category);
     }
-    // gtiz_layout.setLegendHeight(300);
 	}
 }
 

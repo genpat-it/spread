@@ -12,6 +12,21 @@ gtiz_context.legendToggleSelectionMode = function (value) {
   gtiz_legend.toggleSelectionMode(value);
 }
 
+gtiz_context.css_vars = gtiz_utils.getAllCssVariables();
+gtiz_context.scrolly_options = {
+  position: 'absolute',
+  opacity: 0.8,
+  containerColor: gtiz_context.css_vars['--secondary-light'],
+  barColor: gtiz_context.css_vars['--secondary-dark'],
+  radius: 1,
+  scaleY : 0.8,
+  side : 'left',
+  offset : -1.3,
+  width : 0.3,
+  unit : 'rem',
+};
+gtiz_context.scrolly = new Scrolly(gtiz_context.scrolly_options);
+
 /**
  * Build the context menu contents based on the user request
  * 
@@ -21,6 +36,9 @@ gtiz_context.legendToggleSelectionMode = function (value) {
 gtiz_context.getMenu = function(type) {
   let form = document.createElement('div');
   form.setAttribute('class', 'card-form');
+  let contents = document.createElement('div');
+  contents.setAttribute('class', 'card-form-contents');
+  form.append(contents);
   let cfg;
   switch (type) {
     case 'legend':
@@ -114,7 +132,7 @@ gtiz_context.getMenu = function(type) {
         }
       });
       container.append(box);
-      form.append(container);
+      contents.append(container);
     }
     if (item.type == 'abutton') {
       let box = document.createElement('div'); 
@@ -134,7 +152,7 @@ gtiz_context.getMenu = function(type) {
         item.function();
       });
       box.append(a);
-      form.append(box);
+      contents.append(box);
     }
     if (item.type == 'abutton_optioned') {
       let box = document.createElement('div'); 
@@ -187,7 +205,7 @@ gtiz_context.getMenu = function(type) {
       }
       box.append(select);
 
-      form.append(box);
+      contents.append(box);
     }
     if (item.type == 'select') {
       let box = document.createElement('div'); 
@@ -248,7 +266,7 @@ gtiz_context.getMenu = function(type) {
         item.function(select.value);
       });
       box.append(select);
-      form.append(box);
+      contents.append(box);
     }
     if (item.type == 'number') {
       let box = document.createElement('div');
@@ -294,11 +312,11 @@ gtiz_context.getMenu = function(type) {
         });
       });
       box.append(input);
-      form.append(box);
+      contents.append(box);
     }
     if (item.type == 'separator') {
       let hr = document.createElement('hr');
-      form.append(hr);
+      contents.append(hr);
     }
   });
 
@@ -400,168 +418,172 @@ gtiz_context.buildMenuUi = function(type, relation) {
  * 
  */
 gtiz_context.showMenu = function(type, component, trigger) {
-  // let gtiz_context_node = document.querySelector('.context-menu');
-  // if (!gtiz_context_node) {
-    let card = trigger.closest('.card-component');
-    let parent = card.parentNode;
-    let parent_cls = parent.getAttribute('class');
-    gtiz_context.closeContextMenu(type, card);
+  let card = trigger.closest('.card-component');
+  let parent = card.parentNode;
+  let parent_cls = parent.getAttribute('class');
+  gtiz_context.closeContextMenu(type, card);
 
-    let cls_controller = gtiz_context.body.getAttribute('class');
-    let card_style = getComputedStyle(card);
-    let margin = parseInt(card_style.marginRight.replace(/\D/g, ""));
-    let width = card.offsetWidth;
-    let rect = card.getBoundingClientRect();
-    let x = rect.left;
-    let y = rect.top;
-    let left = x;
-    let top = y;
-    let translate_value = -(width + margin)/10 + 'rem';
-    if (type == 'tree' || type == 'zooms') {
-      if (!parent_cls.includes('expanded')) {
-        if (!cls_controller.includes('-l')) {
-          width = 320;
-          translate_value = 0;
-          if (gtiz_context.body.classList.contains('dashboard-grapetree-m') || gtiz_context.body.classList.contains('dashboard-grapetree-mt') || gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
-            left = x + card.offsetWidth + margin;
-          } else {
-            left = x + card.offsetWidth + margin - width;
-          }
-        } else {
-          let legend_width = document.querySelector('.card-legend').offsetWidth;
-          width = legend_width;
-          translate_value = 0;
-          left = x + card.offsetWidth + margin;
-        }
-      } else {
+  let cls_controller = gtiz_context.body.getAttribute('class');
+  let card_style = getComputedStyle(card);
+  let margin = parseInt(card_style.marginRight.replace(/\D/g, ""));
+  let width = card.offsetWidth;
+  let rect = card.getBoundingClientRect();
+  let x = rect.left;
+  let y = rect.top;
+  let left = x;
+  let top = y;
+  let translate_value = -(width + margin)/10 + 'rem';
+  if (type == 'tree' || type == 'zooms') {
+    if (!parent_cls.includes('expanded')) {
+      if (!cls_controller.includes('-l')) {
         width = 320;
-        translate_value = width;
-        left = x + card.offsetWidth + margin - width;
-      }
-    }
-    if (type == 'metadata') {
-      if (!parent_cls.includes('expanded')) {
-        if (!cls_controller.includes('-l')) {
-          width = 320;
-          translate_value = 0;
+        translate_value = 0;
+        if (gtiz_context.body.classList.contains('dashboard-grapetree-m') || gtiz_context.body.classList.contains('dashboard-grapetree-mt') || gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
+          left = x + card.offsetWidth + margin;
+        } else {
           left = x + card.offsetWidth + margin - width;
-        } else {
-          let legend_width = document.querySelector('.card-legend').offsetWidth;
-          width = legend_width;
-          translate_value = 0;
-          left = x + card.offsetWidth + margin;
         }
       } else {
+        let legend_width = document.querySelector('.card-legend').offsetWidth;
+        width = legend_width;
+        translate_value = 0;
+        left = x + card.offsetWidth + margin;
+      }
+    } else {
+      width = 320;
+      translate_value = width;
+      left = x + card.offsetWidth + margin - width;
+    }
+  }
+  if (type == 'metadata') {
+    if (!parent_cls.includes('expanded')) {
+      if (!cls_controller.includes('-l')) {
         width = 320;
-        translate_value = width;
+        translate_value = 0;
         left = x + card.offsetWidth + margin - width;
-      }
-    }
-    if (type == 'map') {
-      if (!parent_cls.includes('expanded')) {
-        if (!cls_controller.includes('-l')) {
-          width = 320;
-          translate_value = 0;
-          left = x + card.offsetWidth + margin - width;
-        } else {
-          let legend_width = document.querySelector('.card-legend').offsetWidth;
-          width = legend_width;
-          translate_value = 0;
-          left = x + card.offsetWidth + margin;
-        }
       } else {
+        let legend_width = document.querySelector('.card-legend').offsetWidth;
+        width = legend_width;
+        translate_value = 0;
+        left = x + card.offsetWidth + margin;
+      }
+    } else {
+      width = 320;
+      translate_value = width;
+      left = x + card.offsetWidth + margin - width;
+    }
+  }
+  if (type == 'map') {
+    if (!parent_cls.includes('expanded')) {
+      if (!cls_controller.includes('-l')) {
         width = 320;
-        translate_value = width;
+        translate_value = 0;
         left = x + card.offsetWidth + margin - width;
-      }
-    }
-
-    let menu_node = document.createElement('div');
-    let cls = 'context-menu context-menu-' + type;
-    menu_node.setAttribute('class', cls);
-    menu_node.setAttribute('data-component', component);
-    menu_node.style.position = 'fixed';
-    menu_node.style.top = top/10 + 'rem';
-    menu_node.style.left = left/10 + 'rem';
-    menu_node.style.bottom = 0;
-    menu_node.style.zIndex = 9998;
-    menu_node.style.width = width/10 + 'rem';
-    menu_node.style.opacity = 0;
-    menu_node.addEventListener('click', (e) => {
-      if (e.target == menu_node) {
-        gtiz_context.closeContextMenu(type, card);
-      }
-    });
-    let menu_content = gtiz_context.buildMenuUi(type, card);
-    menu_node.append(menu_content);
-
-    // card style
-    card.style.transform = `translateX(${translate_value})`;
-    if (component == 'legend') {
-      card.style.zIndex = 9999;
-    }
-    if (component == 'tree') {
-      let tree_container = document.querySelector('.tree');
-      tree_container.style.zIndex = 9999;
-      if (parent_cls.includes('expanded')) {
-        parent.style.right = (margin/2 + width)/10 + 'rem';
       } else {
-        if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
-          // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-          tree_container.style.width = 'auto';
-          tree_container.style.right = (margin/2 + width)/10 + 'rem';
-        }
+        let legend_width = document.querySelector('.card-legend').offsetWidth;
+        width = legend_width;
+        translate_value = 0;
+        left = x + card.offsetWidth + margin;
       }
+    } else {
+      width = 320;
+      translate_value = width;
+      left = x + card.offsetWidth + margin - width;
     }
-    if (component == 'metadata') {
-      let metadata_container = document.querySelector('.metadata');
-      parent.style.zIndex = 9999;
-      if (parent_cls.includes('expanded')) {
-        parent.style.right = (margin/2 + width)/10 + 'rem';
-      } else {
-        if (!cls_controller.includes('-l')) {
-          // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-          metadata_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
-        }
-      }
-    }
-    if (component == 'map') {
-      let map_container = document.querySelector('.map');
-      map_container.style.zIndex = 9999;
-      if (parent_cls.includes('expanded')) {
-        parent.style.right = (margin/2 + width)/10 + 'rem';
-      } else {
-        if (!cls_controller.includes('-l')) {
-          // card.style.width = (card.offsetWidth - width)/10 + 'rem';
-          map_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
-        }
-      }
-    }
+  }
 
-    let specific_cls = 'show-context-menu-' + type;
-    gtiz_context.body.classList.add('show-context-menu');
-    gtiz_context.body.classList.add(specific_cls);
-    gtiz_context.body.append(menu_node);
+  let menu_node = document.createElement('div');
+  let cls = 'context-menu context-menu-' + type;
+  menu_node.setAttribute('class', cls);
+  menu_node.setAttribute('data-component', component);
+  menu_node.style.position = 'fixed';
+  menu_node.style.top = top/10 + 'rem';
+  menu_node.style.left = left/10 + 'rem';
+  menu_node.style.bottom = 0;
+  menu_node.style.zIndex = 9998;
+  menu_node.style.width = width/10 + 'rem';
+  menu_node.style.opacity = 0;
+  menu_node.addEventListener('click', (e) => {
+    if (e.target == menu_node) {
+      gtiz_context.closeContextMenu(type, card);
+    }
+  });
+  let menu_content = gtiz_context.buildMenuUi(type, card);
+  menu_node.append(menu_content);
 
-    let menu_node_h = menu_node.offsetHeight;
-    let menu_content_h = menu_content.offsetHeight;
-    let menu_form = menu_content.querySelector('.card-form');
-    let menu_form_top = menu_form.offsetTop;
-    if (menu_content_h > menu_node_h) {
-      // menu_content.classList.add('card-overflow');
-      let height = menu_node_h - 
+  // card style
+  card.style.transform = `translateX(${translate_value})`;
+  if (component == 'legend') {
+    card.style.zIndex = 9999;
+  }
+  if (component == 'tree') {
+    let tree_container = document.querySelector('.tree');
+    tree_container.style.zIndex = 9999;
+    if (parent_cls.includes('expanded')) {
+      parent.style.right = (margin/2 + width)/10 + 'rem';
+    } else {
+      if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
+        tree_container.style.width = 'auto';
+        tree_container.style.right = (margin/2 + width)/10 + 'rem';
+      }
+    }
+  }
+  if (component == 'metadata') {
+    let metadata_container = document.querySelector('.metadata');
+    parent.style.zIndex = 9999;
+    if (parent_cls.includes('expanded')) {
+      parent.style.right = (margin/2 + width)/10 + 'rem';
+    } else {
+      if (!cls_controller.includes('-l')) {
+        metadata_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
+      }
+    }
+  }
+  if (component == 'map') {
+    let map_container = document.querySelector('.map');
+    map_container.style.zIndex = 9999;
+    if (parent_cls.includes('expanded')) {
+      parent.style.right = (margin/2 + width)/10 + 'rem';
+    } else {
+      if (!cls_controller.includes('-l')) {
+        map_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
+      }
+    }
+  }
+
+  let specific_cls = 'show-context-menu-' + type;
+  gtiz_context.body.classList.add('show-context-menu');
+  gtiz_context.body.classList.add(specific_cls);
+  gtiz_context.body.append(menu_node);
+
+  let menu_form = menu_content.querySelector('.card-form');
+  let menu_form_contents = menu_content.querySelector('.card-form-contents');
+  let menu_form_top = menu_form.offsetTop;
+
+  if (component == 'legend') {
+    let height = menu_node.offsetHeight - parseInt(getComputedStyle(menu_content).paddingTop) -
+    parseInt(getComputedStyle(menu_content).paddingBottom);
+    menu_content.style.maxHeight = height/10 + 'rem';
+    menu_form.style.maxHeight = (height - menu_form_top)/10 + 'rem';
+  } else {
+    let component_card = document.querySelector('.card-' + component);
+    let component_height = component_card.offsetHeight;
+    let component_margin_top = parseInt(getComputedStyle(component_card).marginTop.replace(/\D/g, ""));
+    let component_margin_bottom = parseInt(getComputedStyle(component_card).marginBottom.replace(/\D/g, ""));
+    let component_full_height = component_height + component_margin_top + component_margin_bottom;
+    
+
+    let height = component_full_height - 
       parseInt(getComputedStyle(menu_content).paddingTop) -
-      parseInt(getComputedStyle(menu_content).paddingBottom) -
-      parseInt(getComputedStyle(menu_content).marginTop) -
-      parseInt(getComputedStyle(menu_content).marginBottom);
-      menu_content.style.height = height/10 + 'rem';
-      menu_form.style.height = (menu_content.offsetHeight - menu_form_top)/10 + 'rem';
-    }
+      parseInt(getComputedStyle(menu_content).paddingBottom);
+    menu_content.style.maxHeight = height/10 + 'rem';
+    menu_form.style.maxHeight = (height - menu_form_top)/10 + 'rem';
+  }
 
-    setTimeout(() => {
-      menu_node.style.opacity = 1;
-    }, 0);
-  // }
+  setTimeout(() => {
+    menu_node.style.opacity = 1;
+    gtiz_context.scrolly.initNode(menu_form_contents);
+  }, 0);
 }
 
 /**
@@ -578,11 +600,10 @@ gtiz_context.updateContextPosition = function(menu, type) {
   let parent_cls = parent.getAttribute('class');
   let card_context = menu.querySelector('.card-context-menu');
   let card_form = card_context.querySelector('.card-form');
+  let card_form_contents = card_context.querySelector('.card-form-contents');
   let card_form_top = card_form.offsetTop;
   let component_style = getComputedStyle(component);
-  let menu_h = menu.offsetHeight;
-  let menu_w = menu.offsetWidth;
-  let card_context_h = card_context.offsetHeight;
+  let menu_w = parseInt(menu.style.width.replace(/\D/g, ""));
   let margin_r = parseInt(component_style.marginRight.replace(/\D/g, ""));
   let width = component.offsetWidth;
   let rect = component.getBoundingClientRect();
@@ -590,6 +611,7 @@ gtiz_context.updateContextPosition = function(menu, type) {
   let y = rect.top;
   let left = x;
   let top = y;
+
   // update position
   menu.style.left = (left + width + margin_r)/10 + 'rem';
   menu.style.top  = (top)/10 + 'rem';
@@ -597,24 +619,33 @@ gtiz_context.updateContextPosition = function(menu, type) {
     let translate = -(width + margin_r)/10 + 'rem';
     component.style.transform = `translateX(${translate})`;
   }
+  // update width
   if (!parent_cls.includes('expanded') && body_cls.includes('-l')) {
-    let legend_width = document.querySelector('.main > .legend').offsetWidth;
+    let legend = document.querySelector('.legend-container');
+    // get legend margin left and right
+    let legend_width = legend.offsetWidth;
     menu_w = legend_width;
   }
   menu.style.width = menu_w/10 + 'rem';
 
-  if (card_context_h > menu_h) {
-    let height = menu_h - 
-      parseInt(getComputedStyle(card_context).paddingTop) -
-      parseInt(getComputedStyle(card_context).paddingBottom) -
-      parseInt(getComputedStyle(card_context).marginTop) -
-      parseInt(getComputedStyle(card_context).marginBottom);
-      card_context.style.height = height/10 + 'rem';
-      card_form.style.height = (card_context.offsetHeight - card_form_top)/10 + 'rem';
+  // update height
+  if (type == 'legend') {
+    let height = menu.offsetHeight - parseInt(getComputedStyle(card_context).paddingTop) - parseInt(getComputedStyle(card_context).paddingBottom);
+    card_context.style.maxHeight = height/10 + 'rem';
+    card_form.style.maxHeight = (height - card_form_top)/10 + 'rem';
   } else {
-    card_context.removeAttribute('style');
-    card_form.removeAttribute('style');
+    let component_height = component.offsetHeight;
+    let component_margin_top = parseInt(getComputedStyle(component).marginTop.replace(/\D/g, ""));
+    let component_margin_bottom = parseInt(getComputedStyle(component).marginBottom.replace(/\D/g, ""));
+    let component_full_height = component_height + component_margin_top + component_margin_bottom;
+
+    let height = component_full_height - parseInt(getComputedStyle(card_context).paddingTop) - parseInt(getComputedStyle(card_context).paddingBottom);
+    card_context.style.maxHeight = height/10 + 'rem';
+    card_form.style.maxHeight = (height - card_form_top)/10 + 'rem';
   }
+
+  // update scrolly
+  gtiz_context.scrolly.updateNode(card_form_contents);
 }
 
 gtiz_context.triggers.forEach(function(trigger) {
@@ -679,7 +710,7 @@ window.addEventListener("resize", function() {
     if (type) {
       setTimeout(() => {
         gtiz_context.updateContextPosition(menu, type);   
-      }, 100);
+      }, 800);
     }
   }
 });
