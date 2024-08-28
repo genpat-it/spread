@@ -217,7 +217,11 @@ gtiz_metadata.context_menu = [{
     return 'csv';
   },
   function: (e) => {
-    gtiz_metadata.exportTable(e);
+    let buttuon = e.currentTarget;
+    let box = buttuon.parentElement;
+    let select = box.querySelector('select');
+    let type = select ? select.value : 'csv';
+    gtiz_metadata.exportTable(type);
   }
 }];
 
@@ -1252,15 +1256,13 @@ gtiz_metadata.getColorByOptions = function (filtered) {
  * 
  * We use same function by changing separator value and file name.
  * 
- * @param {event} e Event object
+ * @param {String} type `csv` || `tsv`
  */
-gtiz_metadata.exportTable = function (e) {
-  let buttuon = e.currentTarget;
-  let box = buttuon.parentElement;
-  let select = box.querySelector('select');
-  let value = select ? select.value : 'csv';
-  let separator = value == 'csv' ? ',' : '\t';
+gtiz_metadata.exportTable = function (type) {
+  
+  let separator = type === 'csv' ? ',' : '\t';
   let timestamp = Date.now();
+  let value = type === 'csv' ? 'csv' : 'tsv';
   let name = "metadata" + timestamp + "." + value;
   let columns = gtiz_metadata.options.columnApi.getColumns();
   // we are removing first column dedicated to checkbox

@@ -35,18 +35,16 @@ gtiz_file_handler.save_options = [
 		label : gtiz_locales.current.export_metadata + ' (.tsv)',
 		icon : 'iconic-file-text',
 		function : () => {
-			let text = gtiz_file_handler.tsv_metadata ? gtiz_file_handler.tsv_metadata : undefined;
-			let timestamp =  Date.now();
-    	let name = "metadata" + timestamp + ".tsv";
-			let feedback = document.querySelector('.modal-feedback');
-			if (text) {
-				gtiz_file_handler.saveTextAsFile(text, name);
-				feedback.innerHTML = '';
+      let feedback = document.querySelector('.modal-feedback');
+      if (gtiz_metadata.initialized) {
+        let type = 'tsv';
+        gtiz_metadata.exportTable(type);
+        feedback.innerHTML = '';
 				feedback.classList.remove('show');
-			} else {
-				feedback.innerHTML = '<p>' + gtiz_locales.current.save_feedback_metadata + '</p>';
+      } else {
+        feedback.innerHTML = '<p>' + gtiz_locales.current.save_feedback_metadata + '</p>';
 				feedback.classList.add('show');
-			}
+      }
 		}
 	}, {
 		type : 'abutton',
