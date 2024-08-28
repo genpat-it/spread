@@ -39,7 +39,7 @@ The idea was to extend the original project in order to conducts spatio-temporal
 
 You can download the project and easly running it locally, but we provide also a ready to use version freely available following link below:
 
-* [https://cohesive.izs.it/grapetree/spread/](https://cohesive.izs.it/grapetree/spread/)
+* [https://cohesive.izs.it/spread/](https://cohesive.izs.it/spread/)
 
 Please note, you can load sensitive data, your dataset is visualised client-side in the browser. No data is transmitted, and no tracking cookies are used. The only data downloaded from the internet are the visualisation (JavaScript) code, fonts and map tiles.
 
