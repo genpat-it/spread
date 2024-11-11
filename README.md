@@ -107,8 +107,6 @@ http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metad
 >
 > If you use `longitude` and `latitude` to name coordinates in the `.tsv` file, there is no need to pass them as query string parameters, so simply use: `&metadata=metadata.tsv`
 
-> **Important**
->
 > Please note that for the longitude and latitude values, decimal points should be used as separators instead of commas.
 
 ### Load files
