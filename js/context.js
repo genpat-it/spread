@@ -338,6 +338,9 @@ gtiz_context.closeContextMenu = function(type, card) {
     let specific_cls = 'show-context-menu-' + type;
     gtiz_context.body.classList.remove('show-context-menu');
     gtiz_context.body.classList.remove(specific_cls);
+    if (!card) {
+      card = document.querySelector('.card-component.card-' + type);
+    }
     card.style.removeProperty('transform');
     card.style.removeProperty('z-index');
     let container = card.parentNode;
