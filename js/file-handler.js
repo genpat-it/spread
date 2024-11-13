@@ -165,14 +165,26 @@ gtiz_file_handler.Meta2GeoJSON = {
 
 	addNewPoint: function (geoJson, h) { // id,x,y
 		if (h == undefined || h.id == undefined || h.id.length == 0) {
-			return
-		};
+			return;
+		}
+		if (h.x.includes(',')) {
+			h.x = h.x.replace(',', '.');
+			if (!this.lonCommaAlert) {
+				this.lonCommaAlert = true;
+			}
+		}
+		if (h.y.includes(',')) {
+			h.y = h.y.replace(',', '.');
+			if (!this.latCommaAlert) {
+				this.latCommaAlert = true;
+			}
+		}
 		h.x = Number.parseFloat(h.x);
 		h.y = Number.parseFloat(h.y);
 		if (Number.isNaN(h.x) || Number.isNaN(h.y)) {
 			console.log('Meta2GeoJSON.addNewPoint: lat lon not a number. lon:' + h.x + ' lat:' + h.y);
-			return
-		};
+			return;
+		}
 		geoJson.features.push(this.newPoint(h));
 	},
 
@@ -252,7 +264,6 @@ gtiz_file_handler.getData = async function (url) {
       return obj;
     } else {
 			let text = gtiz_locales.current.fetch_error + " Status: " + response.status + ". Url: " + "<span class=\"notifier-response-url\">" + url + "</span>";
-			console.log(text);
       let obj = {
         text: text,
         error: true,
@@ -392,7 +403,15 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 			options[header] = header;
 		}
 	} else {
-		console.log('WARNING! Header index not defined.');
+		console.log(gtiz_locales.current.header_index_warning);
+		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+		let contents = [];
+		let content = document.createElement('p');
+		content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
+		contents.push(content);
+		let feedback = '<p>' + gtiz_locales.current.header_index_warning + '</p>';
+		let f_type = 'warning';
+		gtiz_modal.buildNotifier(title, contents, feedback, f_type);
 	}
 	if (lines && typeof lines == 'object') {
 		lines.forEach((line) => {
@@ -420,9 +439,27 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	if (gtiz_file_handler.Meta2GeoJSON.checkMeta4geo(options) ) { //options = hash of metadata titles
 		let geoJ = gtiz_file_handler.Meta2GeoJSON.meta2GeoJson(meta);
 		gtiz_map.setMetaGeoJSON(geoJ);
+		if (gtiz_file_handler.Meta2GeoJSON.latCommaAlert || gtiz_file_handler.Meta2GeoJSON.lonCommaAlert) {
+			let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.please_note;
+			let contents = [];
+			let content = document.createElement('p');
+			content.innerHTML = gtiz_locales.current.lon_lat_comma_alert;
+			contents.push(content);
+			let feedback = '<p>' + gtiz_locales.current.lon_lat_comma_alert_feedback + '</p>';
+			let f_type = 'info';
+			gtiz_modal.buildNotifier(title, contents, feedback, f_type);
+		}
 	} else {
 		let message = '(GEO)WARNING: titles not found in metadata:' + gtiz_file_handler.Meta2GeoJSON.xName +', '+ gtiz_file_handler.Meta2GeoJSON.yName;
 		console.log(message);
+		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+		let contents = [];
+		let content = document.createElement('p');
+		content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
+		contents.push(content);
+		let feedback = '<p>' + message + '</p>';
+		let f_type = 'warning';
+		gtiz_modal.buildNotifier(title, contents, feedback, f_type);
 	}
 	gtiz_tree.tree.changeCategory(category);
 	gtiz_tree.tree.setNodeText(category);
@@ -671,10 +708,16 @@ gtiz_file_handler.dropFiles = function(div) {
 }
 
 gtiz_file_handler.loadFailed = function(msg) {
-	// open modal to show loadFailed
-	console.log('-------------------------');
-	console.log('Load failed:');
-	console.log(msg);
+	// open modal to show loadFailed message
+	console.log(gtiz_locales.current.load_failed + ': '+ msg);
+	let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+	let contents = [];
+	let content = document.createElement('p');
+	content.innerHTML = gtiz_locales.current.load_failed;
+	contents.push(content);
+	let feedback = '<p>' + msg + '</p>';
+	let f_type = 'info';
+	gtiz_modal.buildNotifier(title, contents, feedback, f_type);
 }
 
 /**
@@ -906,7 +949,13 @@ gtiz_file_handler.saveGrapeTreeAsJson = function() {
 			feedback.classList.add('show');
 		}
 	} else {
-		console.log('Oops! I was unable to get SPREAD as object.');
+		console.log(gtiz_locales.current.unable_to_get_spread);
+		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+		let contents = [];
+		let content = document.createElement('p');
+		content.innerHTML = gtiz_locales.current.unable_to_get_spread;
+		contents.push(content);
+		gtiz_modal.buildNotifier(title, contents);
 	}
 }
 
