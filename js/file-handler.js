@@ -452,14 +452,6 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	} else {
 		let message = '(GEO)WARNING: titles not found in metadata:' + gtiz_file_handler.Meta2GeoJSON.xName +', '+ gtiz_file_handler.Meta2GeoJSON.yName;
 		console.log(message);
-		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
-		let contents = [];
-		let content = document.createElement('p');
-		content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
-		contents.push(content);
-		let feedback = '<p>' + message + '</p>';
-		let f_type = 'warning';
-		gtiz_modal.buildNotifier(title, contents, feedback, f_type);
 	}
 	gtiz_tree.tree.changeCategory(category);
 	gtiz_tree.tree.setNodeText(category);
