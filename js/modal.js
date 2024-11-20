@@ -253,3 +253,16 @@ window.addEventListener("resize", function() {
     }
   }, 300);
 });
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (gtiz_locales.body.classList.contains('show-modal')) {
+      gtiz_modal.closeModal();
+    } else {
+      let notifier = document.querySelector('.notifier');
+      if (notifier) {
+        gtiz_modal.closeNotifier(notifier, notifier.querySelector('.notifier-contents'));
+      }
+    }
+  }
+});

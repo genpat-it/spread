@@ -717,3 +717,21 @@ window.addEventListener("resize", function() {
     }
   }
 });
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    let menu = document.querySelector('.context-menu');
+    if (menu) {
+      let component = menu.getAttribute('data-component');
+      let type;
+      gtiz_context.menus.forEach(menu => {
+        if (component.includes(menu)) {
+          type = menu;
+        }
+      });
+      if (type) {
+        gtiz_context.closeContextMenu(type);
+      }
+    }
+  }
+});

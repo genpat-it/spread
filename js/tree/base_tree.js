@@ -1472,6 +1472,15 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		value.appendChild(text);
 		li.appendChild(value);
 		legend_list_box.append(li);
+
+		let css_vars = gtiz_utils.getAllCssVariables();
+		let tooltip_cfg = {
+			backgroundColor : css_vars['--secondary-light'],
+			color : css_vars['--text'],
+		};
+
+		gtiz_tooltip.add(text, tooltip_cfg);
+
 	});
 
 	var legend_svg= d3.select(this.legend_div[0]).append('svg').attr("id","legend-svg");
