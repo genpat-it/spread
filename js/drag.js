@@ -120,7 +120,7 @@ gtiz_drag.draggables.forEach(draggable => {
     document.removeEventListener('mouseup', onMouseUp);
   };
   draggable.onmousedown = function(event) {
-    if (event.target.classList.contains('not-draggable')) {
+    if (event.target.classList.contains('not-draggable') || event.target.parentElement.classList.contains('not-draggable')) {
       return;
     }
     // get marign left and right of the element

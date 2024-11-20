@@ -398,7 +398,7 @@ gtiz_context.buildMenuUi = function(type, relation) {
   if (type == 'map') {
     title.innerHTML = gtiz_locales.current.map_tools;
     let help = document.createElement('div');
-    help.setAttribute('class', 'card-info-trigger');
+    help.setAttribute('class', 'help-trigger');
     help.innerHTML = '<i class="iconic iconic-help-circle"></i>';
     help.addEventListener('click', (e) => {
       gtiz_help.getHelp(type);

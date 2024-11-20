@@ -51,8 +51,16 @@
       let parentPaddings = parentPaddingTop + parentPaddingBottom;
       let parentMargins = parentMarginTop + parentMarginBottom;
 
+      let nodePaddingTop = parseInt(window.getComputedStyle(node).getPropertyValue('padding-top'));
+      let nodePaddingBottom = parseInt(window.getComputedStyle(node).getPropertyValue('padding-bottom'));
+      let nodeMarginTop = parseInt(window.getComputedStyle(node).getPropertyValue('margin-top'));
+      let nodeMarginBottom = parseInt(window.getComputedStyle(node).getPropertyValue('margin-bottom'));
+
+      let nodePaddings = nodePaddingTop + nodePaddingBottom;
+      let nodeMargins = nodeMarginTop + nodeMarginBottom;
+
       node.classList.add('scrolly');
-      node.style.maxHeight = (parentHeight - parentPaddings + parentMargins) + 'px';
+      node.style.maxHeight = ((parentHeight - parentPaddings + parentMargins) - (nodePaddings + nodeMargins)) + 'px';
 
       let container = document.createElement('div');
       let containerHeight = (parentHeight - parentPaddings + parentMargins);
@@ -112,7 +120,15 @@
         let parentPaddings = parentPaddingTop + parentPaddingBottom;
         let parentMargins = parentMarginTop + parentMarginBottom;
 
-        node.style.maxHeight = (parentHeight - parentPaddings + parentMargins) + 'px';
+        let nodePaddingTop = parseInt(window.getComputedStyle(node).getPropertyValue('padding-top'));
+        let nodePaddingBottom = parseInt(window.getComputedStyle(node).getPropertyValue('padding-bottom'));
+        let nodeMarginTop = parseInt(window.getComputedStyle(node).getPropertyValue('margin-top'));
+        let nodeMarginBottom = parseInt(window.getComputedStyle(node).getPropertyValue('margin-bottom'));
+
+        let nodePaddings = nodePaddingTop + nodePaddingBottom;
+        let nodeMargins = nodeMarginTop + nodeMarginBottom;
+
+        node.style.maxHeight = ((parentHeight - parentPaddings + parentMargins) - (nodePaddings + nodeMargins)) + 'px';
 
         let container = parent.querySelector('.scrolly-container');
         let containerHeight = (parentHeight - parentPaddings + parentMargins);

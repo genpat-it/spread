@@ -1383,17 +1383,7 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 
 	// remove legend contents
 	let legend_card_form = this.legend_div_new.querySelector('.card-form');
-	let legend_card_title = this.legend_div_new.querySelector('.card-title');
-	if (legend_card_title) {
-		legend_card_title.innerHTML = '';
-		let legend_title = this.metadata_info[title]['label'];
-		if (legend_title) {
-			legend_title = legend_title.toLowerCase();
-			legend_title = legend_title.charAt(0).toUpperCase() + legend_title.slice(1);
-			legend_card_title.removeAttribute('data-i18n-key'); // to avoid translate override
-			legend_card_title.innerHTML = legend_title;
-		}
-	}
+	
 	let legend_list_box = document.createElement('div');
 	legend_list_box.setAttribute('class', 'list-box');
 	if (legend_card_form) {

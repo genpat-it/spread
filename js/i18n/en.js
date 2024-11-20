@@ -154,6 +154,7 @@ gtiz_languages.en = {
   "missing_net_tsv_alert": "It seems there is a problem with the metadata file indicated in the url.",
   "missing_net_zooms_alert": "It seems there is a problem with the zooms file indicated in the url.",
   "missing_tree_alert": "A tree should be loaded first.",
+  "missing_tree_alert_search_engine": "Oops! It is necessary to upload a file to build the tree before using the search function.",
   "move_to_first_position" : "Move to first position",
   "no_additional_metadata_available" : "No additional metadata is available.",
   "no_category": "No category",

@@ -154,6 +154,7 @@ gtiz_languages.it = {
   "missing_net_tsv_alert": "Sembra esserci un problema con il file dei metadati indicato nella url.",
   "missing_net_zooms_alert": "Sembra esserci un problema con il file degli zoom indicato nella url.",
   "missing_tree_alert": "&Egrave; necessario caricare prima un file per la costruzione del Tree.",
+  "missing_tree_alert_search_engine": "Ops! &Egrave; necessario caricare un file per la costruzione del Tree prima di poter utilizzare la funzione di ricerca.",
   "move_to_first_position" : "Sposta in prima posizione",
   "no_additional_metadata_available" : "Nessun altro metadato disponibile.",
   "no_category": "Nessuna categoria",

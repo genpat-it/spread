@@ -1,7 +1,7 @@
 let gtiz_utils = {};
 
 gtiz_utils.postMessage = undefined;
-gtiz_utils.medatadata_select_nodes = ['#tree-metadata-select', '#tree-node-label-text', '#legend-menu-color-by', '#metadata-menu-color-by', '#metadata-map-select'];
+gtiz_utils.medatadata_select_nodes = ['#tree-metadata-select', '#tree-node-label-text', '#legend-menu-color-by', '#metadata-menu-color-by', '#metadata-map-select', '#legend-title-menu-color-by'];
 gtiz_utils.css_vars = {};
 
 /**

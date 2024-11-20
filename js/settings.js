@@ -447,13 +447,34 @@ gtiz_settings.expandCard = function(e) {
     trigger = target;
   }
   let trigger_parent = trigger.closest(".card");
-  trigger_parent.classList.toggle("expanded");
   let card_classes = trigger_parent.getAttribute('class');
-  let cfg = gtiz_settings.cfg.find(setting => card_classes.includes(setting.card));
-  if (cfg.expanded) {
-    cfg.expanded = false;
+
+  if (trigger_parent.classList.contains('dragged')) {
+    trigger_parent.classList.toggle('expanded');
+    let cfg = gtiz_settings.cfg.find(setting => card_classes.includes(setting.card));
+    if (cfg.expanded) {
+      cfg.expanded = false;
+    } else {
+      cfg.expanded = true;
+    }
   } else {
-    cfg.expanded = true;
+    if (trigger_parent.classList.contains("expanded")) {
+      trigger_parent.classList.remove("expanded");
+      let cfg = gtiz_settings.cfg.find(setting => card_classes.includes(setting.card));
+      cfg.expanded = false;
+    } else {
+      let cards = gtiz_settings.container.querySelectorAll('.expanded');
+      cards.forEach(card => {
+        if (!card.classList.contains('dragged')) {
+          card.classList.remove('expanded');
+          let cfg = gtiz_settings.cfg.find(setting => card.getAttribute('class').includes(setting.card));
+          cfg.expanded = false;
+        }
+      });
+      trigger_parent.classList.add("expanded");
+      let cfg = gtiz_settings.cfg.find(setting => card_classes.includes(setting.card));
+      cfg.expanded = true;
+    }
   }
   let styles = window.getComputedStyle(trigger_parent);
   let duration = styles.getPropertyValue("transition-duration");
@@ -502,7 +523,7 @@ gtiz_settings.buildForm = function(form, menu) {
         let container = document.createElement('div');
         container.setAttribute('class', 'tools');
         let box = document.createElement('div'); 
-        box.setAttribute('class', 'toggle-box');
+        box.setAttribute('class', 'toggle-box not-draggable');
         box.setAttribute('data-selection', item.options[0].value);
         box.setAttribute('id', item.id);
         let label = document.createElement('div');
@@ -553,7 +574,7 @@ gtiz_settings.buildForm = function(form, menu) {
       }
       if (item.type == 'select') {
         let box = document.createElement('div'); 
-        box.setAttribute('class', 'select-box');
+        box.setAttribute('class', 'select-box not-draggable');
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
@@ -600,7 +621,7 @@ gtiz_settings.buildForm = function(form, menu) {
       }
       if (item.type == 'abutton') {
         let box = document.createElement('div'); 
-        box.setAttribute('class', 'button-box');
+        box.setAttribute('class', 'button-box not-draggable');
         let a = document.createElement('a');
         a.setAttribute('class', 'card-action');
         let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
@@ -657,7 +678,7 @@ gtiz_settings.buildForm = function(form, menu) {
       }
       if (item.type == 'number') {
         let box = document.createElement('div');
-        box.setAttribute('class', 'input-box input-box-number');
+        box.setAttribute('class', 'input-box input-box-number not-draggable');
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
@@ -726,7 +747,7 @@ gtiz_settings.buildForm = function(form, menu) {
       }
       if (item.type == 'search') {
         let box = document.createElement('div');
-        box.setAttribute('class', 'search-box');
+        box.setAttribute('class', 'search-box not-draggable');
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
@@ -764,7 +785,7 @@ gtiz_settings.buildForm = function(form, menu) {
       }
       if (item.type == 'radio') {
         let box = document.createElement('div');
-        box.setAttribute('class', 'list-box');
+        box.setAttribute('class', 'list-box not-draggable');
         if (item.hidden) {
           box.setAttribute('style', 'display: none;');
         }

@@ -1153,6 +1153,14 @@
   }
 }
 
+.dashboard-grapetree .legend .card-title {
+  width: calc(100% - 29px);
+  margin-top: 0;
+  padding-top: 0;
+  -webkit-transform: translateY(-8px);
+  transform: translateY(-8px);
+}
+
 .dashboard-grapetree .legend .card-player {
   display: none;
 }
@@ -2096,7 +2104,7 @@
   margin-bottom: 0;
 }
 
-.dashboard-grapetree .search-results  a.search-action {
+.dashboard-grapetree .search-results a.search-action {
   color: var(--main);
   font-size: 1.3rem;
   cursor: pointer;
@@ -2104,10 +2112,18 @@
   padding-left: 0.3rem;
 }
 
+.dashboard-grapetree .search-results .search-message-box {
+  padding-right: 2.1rem;
+}
+
 /* DRAGGABLE */
 
 .dashboard-grapetree .draggable {
   cursor: grab;
+}
+
+.dashboard-grapetree .not-draggable {
+  cursor: auto;
 }
 
 .dashboard-grapetree .draggable .reset-draggable {

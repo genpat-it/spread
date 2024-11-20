@@ -725,6 +725,7 @@ gtiz_file_handler.loadTreeText = function(tree, json) {
 	let metadata_select;
 	let node_label_text;
 	let metadata_map_select;
+	let legend_select;
 	
 	if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
 		gtiz_utils.medatadata_select_nodes.forEach((node) => {
@@ -739,6 +740,9 @@ gtiz_file_handler.loadTreeText = function(tree, json) {
 				}
 				if (select.id == 'metadata-map-select') {
 					metadata_map_select = select;
+				}
+				if (select.id == 'legend-title-menu-color-by') {
+					legend_select = select;
 				}
 			}
 		});
@@ -785,6 +789,12 @@ gtiz_file_handler.loadTreeText = function(tree, json) {
 						option.setAttribute('value', cat);
 						option.innerHTML = cat;
 						metadata_map_select.append(option);
+					}
+					if (legend_select) {
+						let option = document.createElement('option');
+						option.setAttribute('value', cat);
+						option.innerHTML = cat;
+						legend_select.append(option);
 					}
 				}
 			}

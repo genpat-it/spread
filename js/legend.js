@@ -883,6 +883,10 @@ gtiz_legend.toggleSelectionMode = function(value) {
   }
 }
 
+/**
+ * Set selection mode
+ * 
+ */
 gtiz_legend.setSelection = function() {
   if (gtiz_legend.selection_map) {
     let selection_mode = gtiz_legend.selection_mode;
@@ -904,6 +908,10 @@ gtiz_legend.setSelection = function() {
   }
 }
 
+/**
+ * Get selection map
+ * 
+ */
 gtiz_legend.getSelectionMap = function() {
   let selection = [];
   let items = document.querySelectorAll('.card-legend .list-row');
@@ -917,6 +925,35 @@ gtiz_legend.getSelectionMap = function() {
   return selection;
 }
 
+/**
+ * Set legend title
+ * 
+ * Here we add an event listener to the select input in order to change the category color. When metadata are not loaded, the select input is empty and we populate it with the available categories.
+ * 
+ * **Please Note:** when metadata are loaded, we use the `gtiz_tree.addMetadataOptions` event to populate the select input with the available categories.
+ * 
+ */
+gtiz_legend.setTitle = function() {
+  let title = document.querySelector('#legend-title-menu-color-by');
+  if (title) {
+    title.addEventListener('change', function(e) {
+			let value = e.target.value;
+			gtiz_legend.changeCategoryColor(value);
+		});
+    if (title.options.length === 0) {
+      let values = gtiz_legend.getColorByOptions();
+      values.forEach(value => {
+        let option = document.createElement('option');
+        option.value = value.value;
+        option.text = value.label;
+        title.add(option);
+      });
+      let default_value = gtiz_legend.getColorByDefaultValue();
+      title.value = default_value;
+    }
+  }
+}
+
 gtiz_legend.init = function() {
   gtiz_legend.toggleViewMode(gtiz_legend.view_mode);
   gtiz_legend.setVisualSelectionToggle(gtiz_legend.selection_mode);
@@ -924,4 +961,5 @@ gtiz_legend.init = function() {
   let category = gtiz_tree.tree.display_category;
   gtiz_legend.changeGroupOrder(order, category, false);
   gtiz_legend.setSelection();
+  gtiz_legend.setTitle();
 }

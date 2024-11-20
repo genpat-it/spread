@@ -1,6 +1,6 @@
 let gtiz_help = {};
 
-gtiz_help.info_triggers = document.querySelectorAll('.card-info-trigger');
+gtiz_help.info_triggers = document.querySelectorAll('.help-trigger');
 
 gtiz_help.settings = [{
   card: 'tree-layout',
@@ -98,8 +98,8 @@ gtiz_help.getHelp = function(type) {
 gtiz_help.info_triggers.forEach(trigger => {
   trigger.addEventListener('click', function(e) {
     let target = e.currentTarget;
-    let card = trigger.closest('.card');
-    let type = card.getAttribute('data-type');
+    let help = trigger.closest('.help');
+    let type = help.getAttribute('data-type');
     gtiz_help.getHelp(type);
   })
 });

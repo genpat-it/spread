@@ -256,67 +256,88 @@ gtiz_search.buildUi = function(menu) {
     results.classList.add('search-results');
     container.append(results);
   }
-  menu.forEach((item, index) => {
-    let result = results.querySelector('.search-result-' + item.category);
+  if (menu) {
+    let header = document.querySelector('.search-engine-header');
+    header.style.display = 'block';
+    menu.forEach((item, index) => {
+      let result = results.querySelector('.search-result-' + item.category);
+      if (!result) {
+        result = document.createElement('div');
+        result.setAttribute('class', 'search-result search-result-' + item.category);
+        results.append(result);
+      }
+      let title = results.querySelector('.search-result-title-' + item.category);
+      if (!title) {
+        title = document.createElement('h3');
+        title.setAttribute('class', 'search-result-title search-result-title-' + item.category);
+        result.append(title);
+        switch (item.category) {
+          case 'tree':
+            title.innerHTML = gtiz_locales.current.tree_tools;
+            break;
+          case 'rendering':
+              title.innerHTML = gtiz_locales.current.rendering;
+              break;
+          case 'node-style':
+            title.innerHTML = gtiz_locales.current.node_style;
+            break;
+          case 'node-size':
+            title.innerHTML = gtiz_locales.current.node_size;
+            break;
+          case 'branch-style':
+            title.innerHTML = gtiz_locales.current.branch_style;
+            break;
+          case 'branch-cutoffs':
+            title.innerHTML = gtiz_locales.current.branch_cutoffs;
+            break;
+          case 'legend':
+            title.innerHTML = gtiz_locales.current.legend_tools;
+            break;
+          case 'map':
+            title.innerHTML = gtiz_locales.current.map_tools;
+            break;
+          case 'metadata':
+            title.innerHTML = gtiz_locales.current.metadata_tools;
+            break;
+        }
+      }
+      let form = results.querySelector('.search-result-form-' + item.category);
+      if (!form) {
+        form = document.createElement('div');
+        form.setAttribute('class', 'search-result-form search-result-form-' + item.category);
+        result.append(form);
+      }
+      let button_box = document.createElement('div');
+      button_box.setAttribute('class', 'button-box');
+      form.append(button_box);
+      let button = document.createElement('a');
+      button.setAttribute('class', 'search-action');
+      let icon = item.icon ? item.icon : 'iconic-arrow-right';
+      button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + item.label;
+      button.addEventListener('click', function(e) {
+        gtiz_search.findFunction(item);
+        gtiz_search.toggleSearchEngine();
+      });
+      button_box.append(button);
+    });
+  } else {
+    let header = document.querySelector('.search-engine-header');
+    header.style.display = 'none';
+    let result = results.querySelector('.search-result-message');
     if (!result) {
       result = document.createElement('div');
-      result.setAttribute('class', 'search-result search-result-' + item.category);
+      result.setAttribute('class', 'search-result-message');
       results.append(result);
     }
-    let title = results.querySelector('.search-result-title-' + item.category);
-    if (!title) {
-      title = document.createElement('h3');
-      title.setAttribute('class', 'search-result-title search-result-title-' + item.category);
-      result.append(title);
-      switch (item.category) {
-        case 'tree':
-          title.innerHTML = gtiz_locales.current.tree_tools;
-          break;
-        case 'rendering':
-            title.innerHTML = gtiz_locales.current.rendering;
-            break;
-        case 'node-style':
-          title.innerHTML = gtiz_locales.current.node_style;
-          break;
-        case 'node-size':
-          title.innerHTML = gtiz_locales.current.node_size;
-          break;
-        case 'branch-style':
-          title.innerHTML = gtiz_locales.current.branch_style;
-          break;
-        case 'branch-cutoffs':
-          title.innerHTML = gtiz_locales.current.branch_cutoffs;
-          break;
-        case 'legend':
-          title.innerHTML = gtiz_locales.current.legend_tools;
-          break;
-        case 'map':
-          title.innerHTML = gtiz_locales.current.map_tools;
-          break;
-        case 'metadata':
-          title.innerHTML = gtiz_locales.current.metadata_tools;
-          break;
-      }
-    }
-    let form = results.querySelector('.search-result-form-' + item.category);
-    if (!form) {
-      form = document.createElement('div');
-      form.setAttribute('class', 'search-result-form search-result-form-' + item.category);
-      result.append(form);
-    }
-    let button_box = document.createElement('div');
-    button_box.setAttribute('class', 'button-box');
-    form.append(button_box);
-    let button = document.createElement('a');
-    button.setAttribute('class', 'search-action');
-    let icon = item.icon ? item.icon : 'iconic-arrow-right';
-    button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + item.label;
-    button.addEventListener('click', function(e) {
-      gtiz_search.findFunction(item);
-      gtiz_search.toggleSearchEngine();
-    });
-    button_box.append(button);
-  });
+    let message_box = document.createElement('div');
+    message_box.setAttribute('class', 'search-message-box');
+    result.append(message_box);
+    let message = document.createElement('div');
+    message.setAttribute('class', 'search-message');
+    let icon = 'iconic-information';
+    message.innerHTML = gtiz_locales.current.missing_tree_alert_search_engine;
+    message_box.append(message);
+  }
   container.append(results);
   let scrolly_node = document.querySelector('.search-engine-form');
   gtiz_search.scrolly.initNode(scrolly_node);
@@ -330,11 +351,15 @@ gtiz_search.toggleSearchEngine = function() {
   let body = document.querySelector('body');
   body.classList.toggle('show-search-engine');
   if (body.classList.contains('show-search-engine')) {
-    setTimeout(function() {
-      gtiz_search.input.focus();
-    }, 600);
-    let menu = gtiz_search.getMenu(gtiz_search.obj);
-    gtiz_search.buildUi(menu);
+    if (body.classList.contains('tree-not-defined')) {
+      gtiz_search.buildUi();
+    } else {
+      setTimeout(function() {
+        gtiz_search.input.focus();
+      }, 600);
+      let menu = gtiz_search.getMenu(gtiz_search.obj);
+      gtiz_search.buildUi(menu);
+    }
   } else {
     gtiz_search.input.value = '';
     let results = document.querySelector('.search-results');
