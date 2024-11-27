@@ -245,8 +245,9 @@ gtiz_search.getMenu = function(obj) {
  * Build the search engine UI
  * 
  * @param {Object} menu 
+ * @param {String} keyword search keyword to highlight
  */
-gtiz_search.buildUi = function(menu) {
+gtiz_search.buildUi = function(menu, keyword) {
   let container = document.querySelector('.search-engine-body');
   let results = container.querySelector('.search-results');
   if (results) {
@@ -313,7 +314,11 @@ gtiz_search.buildUi = function(menu) {
       let button = document.createElement('a');
       button.setAttribute('class', 'search-action');
       let icon = item.icon ? item.icon : 'iconic-arrow-right';
-      button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + item.label;
+      if (keyword) {
+        button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + gtiz_utils.highlightKeyword(item.label, keyword);
+      } else {
+        button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + item.label;
+      }
       button.addEventListener('click', function(e) {
         gtiz_search.findFunction(item);
         gtiz_search.toggleSearchEngine();
@@ -373,9 +378,7 @@ gtiz_search.toggleSearchEngine = function() {
   }
 };
 
-gtiz_search.input.addEventListener('input', function(e) {
-  let parent = e.target.closest('.search-engine-body');
-  let keyword = e.target.value.toLowerCase();
+gtiz_search.search = function(keyword) {
   if (keyword.length >= 3) {
     let matching_keys = Object.entries(gtiz_locales.current).filter(function([key, value]) {
       if (typeof value === 'string') {
@@ -410,19 +413,18 @@ gtiz_search.input.addEventListener('input', function(e) {
       }
     });
     let menu = gtiz_search.getMenu(is_label_present);
-    gtiz_search.buildUi(menu);
+    gtiz_search.buildUi(menu, keyword);
     let scrolly_node = document.querySelector('.search-engine-form');
     gtiz_search.scrolly.updateNode(scrolly_node);
   } else {
     let menu = gtiz_search.getMenu(gtiz_search.obj);
     gtiz_search.buildUi(menu);
   }
-});
+};
 
-gtiz_search.engine_node.addEventListener('click', function(e) {
-  if (e.target == gtiz_search.engine_node) {
-    gtiz_search.toggleSearchEngine();
-  }
+gtiz_search.input.addEventListener('input', function(e) {
+  let keyword = e.target.value.toLowerCase();
+  gtiz_search.search(keyword);
 });
 
 gtiz_search.engine_close.addEventListener('click', function() {
@@ -440,4 +442,12 @@ window.addEventListener("resize", function() {
       gtiz_search.scrolly.updateNode(node);
     }
   }, 300);
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (gtiz_locales.body.classList.contains('show-search-engine')) {
+      gtiz_search.toggleSearchEngine();
+    }
+  }
 });

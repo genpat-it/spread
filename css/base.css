@@ -801,8 +801,21 @@ button i {
   width: 100%;
 }
 
-.highlight {
+.highlight,
+.highlight-keyword {
   color: var(--accent);
+}
+
+.highlight-word {
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  padding-bottom: 0.1rem;
+  background-color: var(--accent-light);
+  border-radius: 1.2rem;
+}
+
+.highlight-word .highlight-keyword {
+  color: var(--white);
 }
 
 .message {

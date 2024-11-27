@@ -346,14 +346,19 @@ gtiz_legend.setContextMenuForm = function(tree) {
  */
 gtiz_legend.changeCategoryColor = function(value) {
   let tree = gtiz_tree.tree;
-  let color = value;
-	tree.changeCategory(color);
-  gtiz_legend.setContextMenuForm(tree);
-  if (gtiz_legend.selection_mode == 'visual') {
-    gtiz_legend.resetVisualSelection();
-    gtiz_legend.highlightSelection();
+  let values = gtiz_legend.getColorByOptions();
+  if (values.find(el => el.value == value)) {
+    let color = value;
+    tree.changeCategory(color);
+    gtiz_legend.setContextMenuForm(tree);
+    if (gtiz_legend.selection_mode == 'visual') {
+      gtiz_legend.resetVisualSelection();
+      gtiz_legend.highlightSelection();
+    } else {
+      gtiz_legend.resetQualitativeSelection();
+    }
   } else {
-    gtiz_legend.resetQualitativeSelection();
+    console.log('Category not found');
   }
 }
 
@@ -598,14 +603,19 @@ gtiz_legend.toggleViewMode = function(value) {
  * 
  */
 gtiz_legend.quickGradient = function() {
-  let order = 'alphabetic';
+  let data_category = gtiz_legend.getDataCategory();
+  let category = gtiz_tree.tree.display_category;
+  let group_order_value = data_category == 'numeric' ? 'size-asc' : 'alphabetic-asc';
   let gradient = 'gradient_cool';
   let gradient_select = document.querySelector('#legend-menu-color-scheme');
-  gradient_select.value = 'gradient_cool';
+  if (gradient_select) {
+    gradient_select.value = 'gradient_cool';
+  }
   let order_select = document.querySelector('#legend-menu-group-order');
-  order_select.value = 'alphabetic-desc';
-  let category = gtiz_tree.tree.display_category;
-  gtiz_legend.changeGroupOrder(order, category, false);
+  if (order_select) {
+    order_select.value = group_order_value;
+  }
+  gtiz_legend.changeGroupOrder(group_order_value, category, false);
   gtiz_legend.changeColorScheme(gradient, category, false);
   gtiz_tree.tree.changeCategory(category);
 }

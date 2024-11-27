@@ -4,6 +4,30 @@ gtiz_utils.postMessage = undefined;
 gtiz_utils.medatadata_select_nodes = ['#tree-metadata-select', '#tree-node-label-text', '#legend-menu-color-by', '#metadata-menu-color-by', '#metadata-map-select', '#legend-title-menu-color-by'];
 gtiz_utils.css_vars = {};
 
+
+/**
+ * Highlight keyword in text
+ * 
+ * @param {String} text text where find keyword to highlight
+ * @param {String} keyword keyword to highlight
+ */
+gtiz_utils.highlightKeyword = function(text, keyword) {
+  // Create a regex to match the whole word containing the keyword
+  const wordRegex = new RegExp(`\\b\\w*${keyword}\\w*\\b`, 'gi');
+  
+  // Replace the whole word with a span
+  return text.replace(wordRegex, (match) => {
+    // Create a regex to match the keyword within the word
+    const keywordRegex = new RegExp(`(${keyword})`, 'gi');
+    
+    // Replace the keyword with a span
+    const highlightedKeyword = match.replace(keywordRegex, '<span class="highlight-keyword">$&</span>');
+    
+    // Wrap the whole word in a span
+    return `<span class="highlight-word">${highlightedKeyword}</span>`;
+  });
+};
+
 /**
  * Uitility to check if an object exist and it is not empty
  * 

@@ -468,6 +468,7 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	}
 	// to use original tree button we need gtiz_tree.tree_raw populated with an object containing also metadata, so we added the following line. Please find more in the README.md file under Dev notes paragraph
 	gtiz_tree.tree_raw = gtiz_tree.tree.getTreeAsObject();
+	gtiz_tree.saveOriginalTree(true);
 	gtiz_metadata.init();
 };
 

@@ -19,6 +19,13 @@ gtiz_locales.change_language_label = document.querySelector('.tool-lang .tool-la
 gtiz_locales.change_language_trigger = document.querySelector('.tool-lang .tool-trigger');
 gtiz_locales.close_modal_trigger = document.querySelector('.modal-close');
 
+gtiz_locales.getActiveLanguageCode = function() {
+  let languages = gtiz_locales.languages;
+  let language = languages.find(element => element.active);
+  let code = language ? language.code : 'en';
+  return code;
+}
+
 gtiz_locales.getActiveLanguageTerms = function() {
   let languages = gtiz_locales.languages;
   let language = languages.find(element => element.active);

@@ -431,40 +431,21 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
 }
 
 /**
- * Update original tree when there are components loading in asynchronous way
- * 
- * @param {String} component 'map' || 'legend' || 'metadata' || 'video' || 'settings'
- */
-gtiz_tree.updateOriginalTree = function(component) {
-  if (Object.keys(gtiz_tree.original_tree).length != 0) {
-    if (component == 'map') {
-      gtiz_tree.original_tree.gtiz_map = {
-        geojson : gtiz_map.geojson
-      };
-      gtiz_tree.original_tree.gtiz_layout.map = gtiz_layout.map;
-      gtiz_tree.original_tree.gtiz_settings.map = {
-        default_delta_type : gtiz_map.delta_type,
-        default_delta : gtiz_map.delta,
-        point_min_radius : gtiz_map.point_min_radius,
-        point_max_radius : gtiz_map.point_max_radius,
-        markers_type : gtiz_map.markers_type
-      }
-    }
-  } else {
-    gtiz_tree.saveOriginalTree();
-  }
-}
-
-/**
  * Save initial(original) tree object to use it for reset tree
  * 
+ * @param {Boolean} update If `true` update existing orignal tree object
  */
-gtiz_tree.saveOriginalTree = function() {
-  let obj = gtiz_tree.getCompleteGrapeTreeObject();
+gtiz_tree.saveOriginalTree = function(update) {
+  
+  if (Object.keys(gtiz_tree.original_tree).length != 0 && !update) {
+    return;
+  }
+
+  let obj = {...gtiz_tree.getCompleteGrapeTreeObject()};
   if (obj) {
-    gtiz_tree.original_tree = {...obj};
+    gtiz_tree.original_tree = obj;
   } else {
-    console.log('Oops! I was unable to get complete tree as object');
+    console.log('Oops! I was unable to get complete tree as object and save it.');
   }
 }
 
@@ -869,11 +850,7 @@ gtiz_tree.treeLoaded = function(tree) {
           }
         });
       }
-      
-      if (gtiz_tree.change_counter === 1) {
-        gtiz_tree.original_tree.initial_category = data;
-      }
-      if (gtiz_tree.change_counter >= 1) {
+      if (gtiz_tree.change_counter > 0) {
         let video_status = gtiz_video.status;
         if (video_status && gtiz_video.status != 'init') {
           gtiz_video.reset();

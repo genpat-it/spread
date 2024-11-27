@@ -1373,7 +1373,7 @@ gtiz_map.init = function() {
             map.fitBounds(pointLayer.getBounds(), {
               padding: [21, 21]
             });
-            gtiz_tree.updateOriginalTree('map');
+            gtiz_tree.saveOriginalTree(true);
           }
         }).catch((err) => {
           console.log(err);
@@ -1409,7 +1409,7 @@ gtiz_map.init = function() {
           map.fitBounds(pointLayer.getBounds(), {
             padding: [21, 21]
           });
-          gtiz_tree.updateOriginalTree('map');
+          gtiz_tree.saveOriginalTree(true);
         } else {
           let map_node = document.querySelector('#map-div');
           map_node.classList.add('map-not-initialized');
@@ -1435,7 +1435,7 @@ gtiz_map.init = function() {
       map.fitBounds(pointLayer.getBounds(), {
         padding: [21, 21]
       });
-      gtiz_tree.updateOriginalTree('map');
+      gtiz_tree.saveOriginalTree(true);
     }
   }, 500);
 

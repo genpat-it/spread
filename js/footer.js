@@ -37,3 +37,12 @@ window.addEventListener("resize", function() {
     }
   }, 300);
 });
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    let footer = document.querySelector('footer');
+    if (footer.classList.contains('show')) {
+      gtiz_footer.showFooter();
+    }
+  }
+});
