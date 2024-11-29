@@ -79,6 +79,17 @@ gtiz_help.settings = [{
   feedback: () => {
     return gtiz_locales.current.helps.feedback;
   }
+}, {
+  card: 'macros',
+  title: () => {
+    return gtiz_locales.current.macros;
+  },
+  contents: () => {
+    return gtiz_locales.current.helps.macros.help;
+  },
+  feedback: () => {
+    return gtiz_locales.current.helps.feedback;
+  }
 }];
 
 gtiz_help.getHelp = function(type) {

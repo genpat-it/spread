@@ -998,6 +998,10 @@ gtiz_zooms.showSelectionNotifier = function() {
 }
 
 gtiz_zooms.showZoomsAvailableNotifier = function() {
+  let notifier = document.querySelector('#zooms-found-notifier');
+  if (notifier) {
+    return;
+  }
   let component = 'tree';
   let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.zooms_found;
   let id = 'zooms-found-notifier';

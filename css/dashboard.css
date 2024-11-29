@@ -2076,12 +2076,13 @@
 }
 
 .dashboard-grapetree .search-engine-close,
-.dashboard-grapetree .macros-close {
+.dashboard-grapetree .macros-close,
+.dashboard-grapetree .macros-help-trigger {
   /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
   position: fixed;
   opacity: 0;
-  right: 2.1rem;
-  top: 2.1rem;
+  right: 1.1rem;
+  top: 0.8rem;
   cursor: pointer;
   z-index: 9999;
   color: var(--text);
@@ -2090,11 +2091,27 @@
 }
 
 .dashboard-grapetree.show-search-engine .search-engine-close,
-.dashboard-grapetree.show-macros .macros-close {
+.dashboard-grapetree.show-macros .macros-close,
+.dashboard-grapetree.show-macros .macros-help-trigger {
   opacity: 1;
   -webkit-transition: opacity 0.3s ease 0.6s;
   transition: opacity 0.3s ease 0.6s;
 }
+
+.dashboard-grapetree.tree-not-defined .macros-help-trigger {
+  display: none;
+}
+
+.dashboard-grapetree .macros-help-trigger {
+  top: 0.8rem;
+  right: 3.4rem;
+}
+
+.dashboard-grapetree .search-engine-close .iconic,
+.dashboard-grapetree .macros-close .iconic,
+.dashboard-grapetree .macros-help-trigger .iconic {
+  cursor: pointer;
+} 
 
 .dashboard-grapetree  .search-result {
   margin-top: 3.4rem;

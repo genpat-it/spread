@@ -1,5 +1,6 @@
 let gtiz_legend = {};
 
+gtiz_legend.initialized = false;
 gtiz_legend.selection_mode = 'qualitative'; // `qualitative` || `visual`
 gtiz_legend.view_mode = 'list'; // `list` || `histogram`
 gtiz_legend.group_order = {
@@ -969,7 +970,13 @@ gtiz_legend.init = function() {
   gtiz_legend.setVisualSelectionToggle(gtiz_legend.selection_mode);
   let order = gtiz_legend.group_order.type + '-' + gtiz_legend.group_order.sort;
   let category = gtiz_tree.tree.display_category;
+  if (gtiz_legend.initialized) {
+    gtiz_legend.changeGroupOrder(order, category, true);
+  } else {
+    gtiz_legend.changeGroupOrder(order, category, false);
+  }
   gtiz_legend.changeGroupOrder(order, category, false);
   gtiz_legend.setSelection();
   gtiz_legend.setTitle();
+  gtiz_legend.initialized = true;
 }

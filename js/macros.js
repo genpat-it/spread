@@ -1,5 +1,8 @@
 let gtiz_macros = {};
 
+gtiz_macros.undo_counter = 0;
+gtiz_macros.undo_versions = {};
+
 gtiz_macros.css_vars = gtiz_utils.getAllCssVariables();
 gtiz_macros.scrolly_options = {
   opacity: 0.8,
@@ -101,6 +104,63 @@ gtiz_macros.macros = [{
 }];
 
 /**
+ * Load tree object from undo object by version provided
+ * 
+ * @param {Number} version 
+ */
+gtiz_macros.loadUndoObject = function(version) {
+  let key = 'v' + version;
+  if (gtiz_macros.undo_versions[key] && gtiz_macros.undo_versions.current != key) {
+    let components = ['tree', 'map', 'metadata', 'legend'];
+    let action = 'add';
+    gtiz_layout.uiLoadingManager(components, action);
+    gtiz_macros.undo_versions.current = key;
+    let text = JSON.stringify(gtiz_macros.undo_versions[key]);
+    gtiz_tree.current_metadata_file = null;
+    gtiz_file_handler.loadTreeText(text, true);
+  } else {
+    if (gtiz_macros.undo_versions.current === key) {
+      console.log('Already at this version');
+    }
+    if (!gtiz_macros.undo_versions[key]) {
+      console.log('No version found');
+    }
+  }
+};
+
+/**
+ * Set current undo version
+ * 
+ * @param {Number} version 
+ */
+gtiz_macros.setCurrentUndoVersion = function(version) {
+  gtiz_macros.undo_versions.current = 'v' + version;
+};
+
+/**
+ * Set undo objects
+ *
+ */
+gtiz_macros.setUndoObjects = function(version) {
+  function deepCopy(obj) {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => deepCopy(item));
+    }
+
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = deepCopy(obj[key]);
+      return acc;
+    }, {});
+  }
+  let key = 'v' + version;
+  gtiz_macros.undo_versions[key] = deepCopy(gtiz_tree.getCompleteGrapeTreeObject());
+};
+
+/**
  * Simulate layout toggle click based on components
  * 
  * @param {*} components 
@@ -129,6 +189,8 @@ gtiz_macros.simulateLayoutToggleClick = function(components) {
  * @param {Object} actions
  */
 gtiz_macros.run = function(actions) {
+  let version = 0;
+  gtiz_macros.setUndoObjects(version);
   actions.forEach((action) => {
     try {
       // Construct the function call as a string
@@ -139,6 +201,9 @@ gtiz_macros.run = function(actions) {
       console.error('Error executing function:', action.name, error);
     }
   });
+  version++;
+  gtiz_macros.setUndoObjects(version);
+  gtiz_macros.setCurrentUndoVersion(version);
 };
 
 /**
@@ -545,6 +610,17 @@ window.addEventListener("resize", function() {
       gtiz_macros.scrolly.updateNode(node);
     }
   }, 300);
+});
+
+document.addEventListener('keydown', function(event) {
+  // Undo (Ctrl + Z)
+  if (event.ctrlKey && event.key === 'z') {
+    gtiz_macros.loadUndoObject(0);
+  }
+  // Redo (Ctrl + Y)
+  if (event.ctrlKey && event.key === 'y') {
+    gtiz_macros.loadUndoObject(1);
+  }
 });
 
 document.addEventListener('keydown', function(e) {
