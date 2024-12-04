@@ -70,6 +70,9 @@ gtiz_map.toggleMarkerType = function(value) {
   if (value) {
     gtiz_map.markers_type = value;
     gtiz_map.defineMarkers();
+    if (gtiz_legend.selection_mode == 'visual') {
+      gtiz_legend.highlightSelection();
+    }
   } else {
     console.log('Oops! Value not defined.');
   }
@@ -79,6 +82,9 @@ gtiz_map.setMaxMarkerValue = function(value) {
   if (value) {
     gtiz_map.point_max_radius = parseInt(value);
     gtiz_map.defineMarkers();
+    if (gtiz_legend.selection_mode == 'visual') {
+      gtiz_legend.highlightSelection();
+    }
   }
 }
 
@@ -86,6 +92,9 @@ gtiz_map.setMinMarkerValue = function(value) {
   if (value) {
     gtiz_map.point_min_radius = parseInt(value);
     gtiz_map.defineMarkers();
+    if (gtiz_legend.selection_mode == 'visual') {
+      gtiz_legend.highlightSelection();
+    }
   }
 }
 

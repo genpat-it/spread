@@ -63,7 +63,15 @@ gtiz_settings.cfg = [{
     id : 'tree-node-label-font-size-slider',
     label : gtiz_locales.current.font_size,
     related : 'tree-node-label-font-size',
-    tolerance : 8
+    min : 5,
+    max : 55,
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.node_label_font_size;
+    },
+    function : (value) => {
+      gtiz_tree.setNodeLabelFontSize(value);
+    }
   }, {
     type : 'number',
     id : 'tree-node-label-font-size',
@@ -122,7 +130,15 @@ gtiz_settings.cfg = [{
     id : 'tree-node-radius-size-slider',
     label : gtiz_locales.current.radius_size,
     related : 'tree-node-radius-size',
-    tolerance : 5
+    min : 20,
+    max : 500,
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.node_radius_size;
+    },
+    function : (value) => {
+      gtiz_tree.setNodeRadiusSize(value);
+    }
   }, {
     type : 'number',
     id : 'tree-node-radius-size',
@@ -143,7 +159,15 @@ gtiz_settings.cfg = [{
     id : 'tree-node-kurtosis-slider',
     label : gtiz_locales.current.kurtosis,
     related : 'tree-node-kurtosis',
-    tolerance : 5
+    min : 30,
+    max : 150,
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.node_kurtosis;
+    },
+    function : (value) => {
+      gtiz_tree.setNodeKurtosis(value);
+    }
   }, {
     type : 'number',
     id : 'tree-node-kurtosis',
@@ -187,7 +211,15 @@ gtiz_settings.cfg = [{
     id : 'tree-branch-label-font-size-slider',
     label : gtiz_locales.current.font_size,
     related : 'tree-branch-label-font-size',
-    tolerance : 8
+    min : 5,
+    max : 55,
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.branch_label_font_size;
+    },
+    function : (value) => {
+      gtiz_tree.setBranchLabelFontSize(value);
+    }
   }, {
     type : 'number',
     id : 'tree-branch-label-font-size',
@@ -210,7 +242,15 @@ gtiz_settings.cfg = [{
     id : 'tree-branch-scaling-slider',
     label : gtiz_locales.current.scaling,
     related : 'tree-branch-scaling',
-    tolerance : 8
+    min : 5,
+    max : 200,
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.branch_scaling;
+    },
+    function : (value) => {
+      gtiz_tree.setBranchScaling(value);
+    }
   }, {
     type : 'number',
     id : 'tree-branch-scaling',
@@ -231,7 +271,19 @@ gtiz_settings.cfg = [{
     id : 'tree-collapse-branches-slider',
     label : gtiz_locales.current.collapse_branches,
     related : 'tree-collapse-branches',
-    tolerance : 0
+    min : 0,
+    max : undefined,
+    get_max : () => {
+      return gtiz_tree.tree.max_link_distance;
+    },
+    step: '1e-6',
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.tree.node_collapsed_value;
+    },
+    function : (value) => {
+      gtiz_tree.collapseBranches(value);
+    }
   }, {
     type : 'number',
     id : 'tree-collapse-branches',
@@ -384,60 +436,6 @@ gtiz_settings.exp_triggers = document.querySelectorAll('.card-expandable .card-e
 gtiz_settings.card_titles = document.querySelectorAll('.card-expandable .card-title');
 gtiz_settings.load_grapetree_btns = document.querySelectorAll('.load-grapetree');
 
-gtiz_settings.setSliderPosition = function(slider, input) {
-  let bar = slider ? slider.previousElementSibling : undefined;
-  let input_max = input ? parseFloat(input.getAttribute('max')) : 100;
-  let max = bar.clientWidth - slider.offsetWidth + 1;
-  let value = input.value;
-  let position = parseFloat((value * max) / input_max);
-  slider.setAttribute('style', 'left: ' + position + 'px;');
-};
-
-/**
- * Mutation handler, effectively perform the action based on the position of the slider in relation with steps calculeted from the max and min values and the width of the slider bar.
- * 
- * @param {Object} mutation Mutation observed
- */
-gtiz_settings.handleMutation = function(mutation) {
-  let slider = mutation.target;
-  let bar = slider.previousElementSibling;
-  let width = bar.clientWidth - slider.offsetWidth;
-  let style = getComputedStyle(slider);
-  let position = parseFloat(style.getPropertyValue('left'));
-  let related_selector = '#' + slider.getAttribute('data-related');
-  let input = related_selector ? document.querySelector(related_selector) : undefined;
-  let input_min = input ? parseFloat(input.getAttribute('min')) : 0;
-  let input_max = input ? parseFloat(input.getAttribute('max')) : 100;
-  let value = ((position * (input_max - input_min)) / width) + input_min;
-  let step = input.getAttribute('step');
-  if (step != 1) {
-    step = parseFloat(step);
-    let decimal = step.toString().split(".")[1].length;
-    input.value = parseFloat(value).toFixed(decimal);
-  } else {
-    input.value = parseInt(value);
-  }
-  let event = new Event('change');
-  input.dispatchEvent(event);
-}
-
-/**
- * Callback function to launch on DOM node under observation
- * 
- * @param {Object} mutationList List of mutations
- * @param {*} observer 
- */
-gtiz_settings.observerCallback = (mutationList, observer) => {
-  if (gtiz_slider.is_dragging) {
-    for (let mutation of mutationList) {
-      if (mutation.type === "attributes") {
-        gtiz_settings.handleMutation(mutation);
-      }
-    }
-  }
-};
-gtiz_settings.observer = new MutationObserver(gtiz_settings.observerCallback);
-
 gtiz_settings.expandCard = function(e) {
   let trigger;
   let target = e.target;
@@ -510,10 +508,6 @@ gtiz_settings.load_grapetree_btns.forEach(btn => {
 gtiz_settings.exp_triggers.forEach(function (item) {
   item.addEventListener('click', gtiz_settings.expandCard, false);
 });
-
-/* gtiz_settings.card_titles.forEach(function (item) {
-  item.addEventListener('click', gtiz_settings.expandCard, false);
-}); */
 
 gtiz_settings.buildForm = function(form, menu) {
   if (form && menu) {
@@ -634,44 +628,67 @@ gtiz_settings.buildForm = function(form, menu) {
       }
       if (item.type == 'slider') {
         let box = document.createElement('div');
-        box.setAttribute('class', 'slider-box');
+        box.setAttribute('class', 'slider-box not-draggable');
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
           label.innerHTML = item.label;
           box.append(label);
         }
-        let slider = document.createElement('div');
+        // let slider = document.createElement('div');
+        // <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        let slider = document.createElement('input');
+        slider.setAttribute('type', 'range');
+        if (item.min) {
+          slider.setAttribute('min', item.min);
+        } else {
+          if (typeof item.get_min === 'function') {
+            let value = item.get_min();
+            slider.setAttribute('min', value);
+          } else {
+            slider.setAttribute('min', '0');
+          }
+        }
+        if (item.max) {
+          slider.setAttribute('max', item.max);
+        } else {
+          if (typeof item.get_max === 'function') {
+            let value = item.get_max();
+            slider.setAttribute('max', value);
+          } else {
+            slider.setAttribute('max', '100');
+          }
+        }
+        if (item.step) {
+          slider.setAttribute('step', item.step);
+        } else {
+          if (typeof item.get_step === 'function') {
+            let value = item.get_step();
+            slider.setAttribute('step', value);
+          } else {
+            slider.setAttribute('step', '1');
+          }
+        }
+        if (item.default) {
+          slider.setAttribute('value', item.default);
+        } else {
+          if (typeof item.get_default === 'function') {
+            let value = item.get_default();
+            slider.setAttribute('value', value);
+          }
+        }
         slider.setAttribute('class', 'slider');
         if (item.id) {
           slider.setAttribute('id', item.id);
         }
-        let bar = document.createElement('div');
-        bar.setAttribute('class', 'slider-bar');
-        let handler = document.createElement('div');
-        handler.setAttribute('class', 'slider-handler not-draggable');
-        if (item.tolerance) {
-          handler.setAttribute('data-tolerance', item.tolerance);
-        }
-        if (item.related) {
-          handler.setAttribute('data-related', item.related);
-        }
-        handler.addEventListener('mousedown', e => {
-          // gtiz_settings.current_slider_frame = gtiz_settings.calculateSliderFrames(handler);
-          gtiz_slider.previous_position = null;
-          let config = { attributes: true, childList: true, subtree: true };
-          gtiz_settings.observer.observe(handler, config);
-          gtiz_slider.handleDragStart(e, handler, bar);
+        slider.addEventListener('input', (e) => {
+          let value = slider.value;
+          item.function(value);
+          if (item.related) {
+            let related = document.querySelector('#' + item.related);
+            related.value = value;
+          }
         });
-        handler.addEventListener('touchstart', e => {
-          // gtiz_settings.current_slider_frame = gtiz_settings.calculateSliderFrames(handler);
-          gtiz_slider.previous_position = null;
-          let config = { attributes: true, childList: true, subtree: true };
-          gtiz_settings.observer.observe(handler, config);
-          gtiz_slider.handleDragStart(e, handler, bar);
-        });
-        slider.append(bar);
-        slider.append(handler);
         box.append(slider);
         box.append(slider);
         form.append(box);
@@ -725,20 +742,14 @@ gtiz_settings.buildForm = function(form, menu) {
             input.value = value;
           }
         }
-        if (item.slider) {
-          let slider = document.querySelector('#' + item.slider);
-          let handler = slider.querySelector('.slider-handler');
-          gtiz_settings.setSliderPosition(handler, input);
-        }
         let events = ['change'];
         events.forEach((event) => {
           input.addEventListener(event, (e) => {
             let value = input.value;
             item.function(value);
-            if (item.slider && !gtiz_slider.is_dragging) {
+            if (item.slider) {
               let slider = document.querySelector('#' + item.slider);
-              let handler = slider.querySelector('.slider-handler');
-              gtiz_settings.setSliderPosition(handler, input);
+              slider.value = value;
             }
           });
         });
@@ -923,13 +934,6 @@ gtiz_settings.setMapCard = function() {
     message_node.innerHTML = gtiz_locales.current.no_geo_info_message;
   }
 }
-
-document.addEventListener('mouseup', e => {
-  gtiz_settings.observer.disconnect();
-});
-document.addEventListener('touchend', e => {
-  gtiz_settings.observer.disconnect();
-});
 
 gtiz_settings.init = function() {
   gtiz_settings.setView(gtiz_settings.cfg);

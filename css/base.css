@@ -1772,11 +1772,6 @@ main {
   padding-bottom: 0;
 }
 
-/*.card-edit button.remove {
-  float: right;
-  margin-right: 0;
-}*/
-
 .card-edit-add .add-mode,
 .card-edit-remove .remove-mode {
   display: block;
@@ -1985,8 +1980,6 @@ aside {
   width: 80%;
   -webkit-transform: translateX(110%);
   transform: translateX(110%);
-  /* -webkit-box-shadow: 1px 0px 55px 0px rgba(0,0,0,0.05);
-  box-shadow: 1px 0px 55px 0px rgba(0,0,0,0.05); */
   -webkit-transition: all 0.6s ease;
   transition: all 0.6s ease;
 }
@@ -2393,11 +2386,6 @@ aside code,
 .notifier-feedback {
   display: block;
 }
-
-/* .notifier-feedback.show {
-  display: block;
-  margin-top: 2.1rem;
-} */
 
 .notifier-feedback p {
   font-size: 1.1rem;

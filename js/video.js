@@ -22,7 +22,6 @@ gtiz_video.cfg = {
     label : '5x',
     active: false
   }],
-  tolerance : 18,
   timing: 0,
   status : 'init'
 };
@@ -30,12 +29,16 @@ gtiz_video.cfg = {
 gtiz_video.timer;
 gtiz_video.seconds = 0;
 gtiz_video.play_trigger = document.querySelector('.play-trigger');
-gtiz_video.slider_handler = document.querySelector('.slider-box-player .slider-handler');
+gtiz_video.slider = document.querySelector('.slider-box-player .slider');
 gtiz_video.slider_previous_position = null;
 gtiz_video.slider_position = 0;
 gtiz_video.slider_direction = 'forward';
 gtiz_video.slider_frames = [];
 
+/**
+ * Reset scroll position of the legend items container
+ *  
+ */ 
 gtiz_video.resetScrollPosition = function() {
   let container = document.querySelector('.card-legend .card-form');
   setTimeout(() => {
@@ -46,8 +49,13 @@ gtiz_video.resetScrollPosition = function() {
   }, gtiz_video.cfg.timing);
 }
 
+/**
+ * Scroll legend items to a specific position
+ * 
+ * @param {Number} position top position 
+ */
 gtiz_video.scrollToPosition = function(position) {
-  let container = document.querySelector('.card-legend .card-form');
+  let container = document.querySelector('.card-legend .list-box');
   let delta = container.offsetHeight / 2;
   setTimeout(() => {
     if (position > delta) {
@@ -69,7 +77,7 @@ gtiz_video.scrollToPosition = function(position) {
  * 
  * @param {Number} current Current position of the slider
  */
-gtiz_video.setSliderDirection = function(current) {
+gtiz_video.getSliderDirection = function(current) {
   if (gtiz_video.slider_previous_position !== null) {
     if (current > gtiz_video.slider_previous_position) {
       // Variable is increasing
@@ -80,6 +88,8 @@ gtiz_video.setSliderDirection = function(current) {
     }
   }
   gtiz_video.slider_previous_position = current;
+
+  return gtiz_video.slider_direction ? gtiz_video.slider_direction : 'forward';
 }
 
 /**
@@ -131,74 +141,18 @@ gtiz_video.legendSetSelection = function(index, direction) {
 }
 
 /**
- * Calculate frames array based on bar widht and itmes number. This should be called on play or on start dragging.
+ * Calculate frames array based on input max value and itmes number. This should be called on play or on start dragging.
  * 
  */
 gtiz_video.calculateSliderFrames = function() {
   let items = document.querySelectorAll('.card-legend .list-row');
   let items_n = items.length;
-  let slider = gtiz_video.slider_handler;
-  let bar = slider ? slider.previousElementSibling : undefined;
-  let max = bar.clientWidth - slider.offsetWidth + 1;
-  let unit = max / items_n;
+  let unit = 100 / items_n;
   gtiz_video.slider_frames = [];
   items.forEach((item, i) => {
     gtiz_video.slider_frames.push(unit * (i + 1));
   });
 };
-
-/**
- * Mutation handler, effectively perform the legend selection based on the position of the slider in relation with step calculeted from the items number and the width of the slider bar.
- * 
- * @param {Object} mutation Mutation observed
- */
-gtiz_video.handleMutation = function(mutation) {
-  // Check if the slider is within range of any desired position
-  let slider = mutation.target;
-  let bar = slider ? slider.previousElementSibling : undefined;
-  let max = bar.clientWidth - slider.offsetWidth + 1;
-  let tolerance = gtiz_video.cfg.tolerance; // Define the range (+/-) around each desired position
-  let style = getComputedStyle(slider);
-  let position = parseInt(style.getPropertyValue('left'));
-  gtiz_video.setSliderDirection(position);
-  let direction = gtiz_video.slider_direction ? gtiz_video.slider_direction : 'forward';
-  let speed = gtiz_video.cfg.speeds.find(el => el.active);
-  let items = document.querySelectorAll('.card-legend .list-row');
-  let items_n = items.length;
-  let duration = items_n / speed.value;
-  gtiz_video.seconds = (duration * position) / max;
-  gtiz_video.slider_position = position;  
-  gtiz_video.slider_frames.forEach((frame, i) => {
-    tolerance = frame/2 > tolerance ? tolerance : frame/2;
-    if (position >= frame - tolerance && position <= frame + tolerance) {
-      gtiz_video.legendSetSelection(i, direction);
-    }
-  });
-}
-
-/**
- * Callback function to launch on DOM node under observation
- * 
- * @param {Object} mutationList List of mutations
- * @param {*} observer 
- */
-gtiz_video.observerCallback = (mutationList, observer) => {
-  for (let mutation of mutationList) {
-    if (mutation.type === "attributes") {
-      gtiz_video.handleMutation(mutation);
-    }
-  }
-};
-gtiz_video.observer = new MutationObserver(gtiz_video.observerCallback);
-
-/**
- * Observer initialization of the video slider, the observer is used to trigger effectively legend selection based on the position of the slider.
- * 
- */
-gtiz_video.initObserver = function() {
-  let config = { attributes: true, childList: true, subtree: true };
-  gtiz_video.observer.observe(gtiz_video.slider_handler, config);
-}
 
 /**
  * Actions to hold end of the playing. 
@@ -213,11 +167,25 @@ gtiz_video.endPlayer = function() {
 }
 
 /**
- * Cleare interval to pause player.
+ * Clear interval to pause player.
  * 
  */
 gtiz_video.pausePlayer = function() {
   clearInterval(gtiz_video.timer);
+}
+
+/**
+ * Fire input event on the slider element
+ * 
+ * @param {Number} value 
+ */
+gtiz_video.fireSliderEvent = function(value) {
+  let event = new Event('input', {
+    bubbles: true,
+    cancelable: true
+  });
+  gtiz_video.slider.value = value;
+  gtiz_video.slider.dispatchEvent(event);
 }
 
 /**
@@ -226,16 +194,17 @@ gtiz_video.pausePlayer = function() {
  * @param {Number} duration The duration interval should have based on the number of legend items and speed value `itmesNumber/speedValue`
  */
 gtiz_video.startPlayer = function(duration) {
-  let slider = gtiz_video.slider_handler;
-  let bar = slider ? slider.previousElementSibling : undefined;
-  let max = bar.clientWidth - slider.offsetWidth + 1;
+  let slider = gtiz_video.slider;
+  let max = slider.getAttribute('max');
   let timing = (duration * 1000)/max;
   gtiz_video.cfg.timing = timing;
   gtiz_video.timer = setInterval(function() {
     if (gtiz_video.slider_position < max) {
       gtiz_video.slider_position += 1;
-      slider.style.left = gtiz_video.slider_position + 'px';
+      gtiz_video.fireSliderEvent(gtiz_video.slider_position);
     } else {
+      slider.value = max;
+      gtiz_video.fireSliderEvent(gtiz_video.slider_position);
       clearInterval(gtiz_video.timer);
       gtiz_video.endPlayer();
     }
@@ -266,18 +235,22 @@ gtiz_video.changePlayBtnUI = function(btn, cls) {
  * @param {String} status Current status of the video player `init`, `playing`, `pause`, `finished`.
  */
 gtiz_video.reset = function(e) {
-  gtiz_video.observer.disconnect();
   let btn = e ? e.currentTarget : gtiz_video.play_trigger;
-  gtiz_video.slider_handler.style.transitionDuration = '0.3s';
-  gtiz_video.slider_handler.style.left = '0%';
   btn.classList.remove('pause');
   btn.classList.add('play');
   let icon = btn.querySelector('i');
   icon.setAttribute('class', 'iconic iconic-play');
-  gtiz_video.slider_position = 0;
   gtiz_video.cfg.status = 'init';
   gtiz_video.cfg.timing = 0;
-  gtiz_video.initObserver();
+
+  let interval = setInterval(() => {
+    gtiz_video.slider_position -= 1;
+    gtiz_video.fireSliderEvent(gtiz_video.slider_position);
+    if (gtiz_video.slider_position == 0) {
+      clearInterval(interval);
+    }
+  }, 1);
+
 }
 
 /**
@@ -318,7 +291,6 @@ gtiz_video.play = function(e, status) {
   let speed = gtiz_video.cfg.speeds.find(el => el.active);
   let duration = items_n / speed.value;
   gtiz_video.calculateSliderFrames();
-  gtiz_video.slider_handler.style.transitionDuration = '0s';
   gtiz_video.startPlayer(duration);
   gtiz_video.cfg.status = 'playing';
 }
@@ -350,7 +322,33 @@ gtiz_context.setSpeedSelector = function() {
   });
 }
 
-gtiz_video.slider_handler.addEventListener('mousedown', e => {
+/**
+ * Effectively perform the legend selection based on the position of the slider in relation with step calculated from the items number.
+ * 
+ * @param {Number} value Input value of the slider
+ */
+gtiz_video.handleMutation = function(value) {
+  let direction = gtiz_video.getSliderDirection(value);
+  let speed = gtiz_video.cfg.speeds.find(el => el.active);
+  let items = document.querySelectorAll('.card-legend .list-row');
+  let items_n = items.length;
+  let duration = items_n / speed.value;
+  let max = gtiz_video.slider.getAttribute('max');
+  gtiz_video.seconds = (duration * value) / max;
+  gtiz_video.slider_position = value;  
+  gtiz_video.slider_frames.forEach((frame, i) => {
+    if (value >= frame - gtiz_video.slider_frames[0] && value <= frame) {
+      gtiz_video.legendSetSelection(i, direction);
+    }
+  });
+}
+
+gtiz_video.slider.addEventListener('input', function(event) {
+  let value = parseInt(event.target.value);
+  gtiz_video.handleMutation(value);
+});
+
+gtiz_video.slider.addEventListener('mousedown', e => {
   gtiz_video.calculateSliderFrames();
   if (gtiz_video.cfg.status == 'playing' || gtiz_video.cfg.status == 'init' || gtiz_video.cfg.status == 'finished') {
     if (gtiz_video.cfg.status == 'init') {
@@ -382,5 +380,4 @@ gtiz_video.play_trigger.addEventListener('click', e => {
 
 gtiz_video.init = function() {
   gtiz_context.setSpeedSelector();
-  gtiz_video.initObserver();
 }

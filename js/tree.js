@@ -524,6 +524,10 @@ gtiz_tree.collapseBranches = function(value) {
   let v = parseFloat(value);
   gtiz_tree.node_collapsed_value = v;
   gtiz_tree.tree.collapseNodes(v);
+  if (gtiz_legend.selection_mode == 'visual') {
+    gtiz_legend.resetVisualSelection();
+    gtiz_legend.highlightSelection();
+  }
 }
 
 gtiz_tree.setBranchScaling = function(value) {
@@ -561,6 +565,10 @@ gtiz_tree.toggleIndividualSegments = function(value) {
     gtiz_tree.tree.showIndividualSegments(true);
   } else {
     gtiz_tree.tree.showIndividualSegments(false);
+  }
+  if (gtiz_legend.selection_mode == 'visual') {
+    gtiz_legend.resetVisualSelection();
+    gtiz_legend.highlightSelection();
   }
 }
 
@@ -700,6 +708,12 @@ gtiz_tree.getMetadataSelectOptions = function() {
 gtiz_tree.setMetadata = function(value) {
   let category = value in gtiz_tree.tree.metadata_info ? value : Object.keys(gtiz_tree.tree.metadata_info)[0];
   gtiz_tree.tree.changeCategory(category);
+  if (gtiz_legend.selection_mode == 'visual') {
+    gtiz_legend.resetVisualSelection();
+    gtiz_legend.highlightSelection();
+  } else {
+    gtiz_legend.resetQualitativeSelection();
+  }
 }
 
 gtiz_tree.setRenderingStaticSelecion = function(value) {
