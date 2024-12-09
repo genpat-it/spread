@@ -132,34 +132,6 @@ In this context, it's possible to indicate to SPREAD the presence of available z
 > **Please note.**
 > Here, we describe how to set up and place the needed newick and metadata files for zooms. However, if you produce these files directly with ReporTree, the structure, composition, and positions are already correct.
 
-# Server
-
-You can use SPREAD with the provided server by running the following command:
-
-```bash
-npm start
-```
-
-This server acts as a proxy, allowing you to download resources using the `withProxy` parameter in the query string. For example:
-
-```
-http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy
-```
-
-You can set custom variables to control the proxy:
-
-- `EXPRESS_JSON_LIMIT=10mb`
-- `EXPRESS_URLENCODED_LIMIT=5mb`
-- `EXPRESS_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
-
-You can also specify your proxy:
-
-```
-http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy=https://myproxy.com
-```
-
-SPREAD will use the following format for the proxy URL: `https://myproxy.com/download?url={url}`
-
 ### Metadata columns and data
 
 Here the minimum metadata mandatory schema:
@@ -230,6 +202,34 @@ then add in the URL one of the following parameters:
 * `zooms_list=@zooms.txt` or `zooms_list=zooms.txt`: the code will use `category` and `sample of interest` by default to find clusters in the general metadata file for zooms indicated by `zooms.txt` file.
 
 > **Please note.** The `prefix` should match the name of the `.nwk` file.
+
+## Server as Proxy
+
+You can use SPREAD with the provided `server.js` by running the following command:
+
+```bash
+npm start
+```
+
+This server acts as a proxy, allowing you to download resources using the `withProxy` parameter in the query string. For example:
+
+```
+http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy
+```
+
+You can set custom variables to control the proxy:
+
+- `EXPRESS_JSON_LIMIT=10mb`
+- `EXPRESS_URLENCODED_LIMIT=5mb`
+- `EXPRESS_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
+
+You can also specify your proxy:
+
+```
+http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy=https://myproxy.com
+```
+
+SPREAD will use the following format for the proxy URL: `https://myproxy.com/download?url={url}`
 
 ## Docker
 
