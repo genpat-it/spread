@@ -203,7 +203,7 @@ then add in the URL one of the following parameters:
 
 > **Please note.** The `prefix` should match the name of the `.nwk` file.
 
-## Server as Proxy
+## Server
 
 You can use SPREAD with the provided `server.js` by running the following command:
 
