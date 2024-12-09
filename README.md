@@ -14,6 +14,7 @@ Previously known as GrapeTree Extended.
   - [Load files](#load-files)
   - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
   - [Zooms for clusters](#zooms-for-clusters)
+- [Server](#server)
 - [Docker](#docker)
 - [Videos](#videos)
 - [Documentation](#documentation)
@@ -127,8 +128,37 @@ SPREAD can be used to visualize results generated with [ReporTree](https://githu
 
 In this context, it's possible to indicate to SPREAD the presence of available zooms using the methods described below.
 
+
 > **Please note.**
 > Here, we describe how to set up and place the needed newick and metadata files for zooms. However, if you produce these files directly with ReporTree, the structure, composition, and positions are already correct.
+
+# Server
+
+You can use SPREAD with the provided server by running the following command:
+
+```bash
+npm start
+```
+
+This server acts as a proxy, allowing you to download resources using the `withProxy` parameter in the query string. For example:
+
+```
+http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy
+```
+
+You can set custom variables to control the proxy:
+
+- `EXPRESS_JSON_LIMIT=10mb`
+- `EXPRESS_URLENCODED_LIMIT=5mb`
+- `EXPRESS_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
+
+You can also specify your proxy:
+
+```
+http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy=https://myproxy.com
+```
+
+SPREAD will use the following format for the proxy URL: `https://myproxy.com/download?url={url}`
 
 ### Metadata columns and data
 
