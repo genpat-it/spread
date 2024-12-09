@@ -6,33 +6,45 @@
 	<title>SPREAD</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="shortcut icon" href="themes/default/img/logo.ico">
-  <link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/skeleton.css">
-  <link rel="stylesheet" href="css/iconic.css">
-  <link rel="stylesheet" href="themes/default/css/vars.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/dashboard.css">
-	<link rel="stylesheet" href="themes/default/css/header.css">
-  <link rel="stylesheet" href="themes/default/css/footer.css">
+  <link rel="stylesheet" href="css/normalize.css" />
+	<link rel="stylesheet" href="css/skeleton.css" />
+  <link rel="stylesheet" href="css/iconic.css" />
+  <link rel="stylesheet" href="themes/default/css/vars.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+	<link rel="stylesheet" href="themes/default/css/header.css" />
+  <link rel="stylesheet" href="themes/default/css/footer.css" />
 
   <!-- libraries -->
   <!-- jquery-ui -->
-  <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
+  <link rel="stylesheet" href="js/jquery-ui-1.11.4/jquery-ui.min.css" type="text/css" />
   <!-- metadata table: ag-grid -->
-  <link rel="stylesheet" href="js/ag-grid/ag-grid.min.css"/>
-  <link rel="stylesheet" href="js/ag-grid/ag-theme-alpine.min.css"/>
-  <link rel="stylesheet" href="js/ag-grid/ag-theme-genpat.css"/>
+  <link rel="stylesheet" href="js/ag-grid/ag-grid.min.css" type="text/css" />
+  <link rel="stylesheet" href="js/ag-grid/ag-theme-alpine.min.css" type="text/css" />
+  <link rel="stylesheet" href="js/ag-grid/ag-theme-genpat.css" type="text/css" />
   <!-- LeafletJS CSS -->
-  <link rel="stylesheet" href="css/leaflet.css" />
-  <link rel="stylesheet" href="css/leaflet-custom.css" />
+  <link rel="stylesheet" href="css/leaflet.css" type="text/css" />
+  <link rel="stylesheet" href="css/leaflet-custom.css" type="text/css" />
   <!-- scrolly -->
-  <link rel="stylesheet" href="js/scrolly/scrolly.css" />
+  <link rel="stylesheet" href="js/scrolly/scrolly.css" type="text/css" />
   <!-- Spectrum -->
-  <link rel="stylesheet" href="css/spectrum.min.css" type="text/css"/>
+  <link rel="stylesheet" href="css/spectrum.min.css" type="text/css" />
+
+  <script>
+    (function() {
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+    
+        if (getQueryParam('withProxy') !== null) {
+            window['SPREAD'] = { withProxy: getQueryParam('withProxy') };
+        }
+    })();
+  </script>
 </head>
 
 <body class="dashboard dashboard-grapetree">
-  
   <header class="header">
     <div class="top-bar">
       <div class="platform-heading">

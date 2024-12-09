@@ -246,12 +246,18 @@ gtiz_file_handler.Meta2GeoJSON = {
  * 
  */
 gtiz_file_handler.getData = async function (url) {
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
+	const usingProxy = typeof window['SPREAD'] !== 'undefined' && typeof window['SPREAD'].withProxy !== 'undefined';
+
+ 	try {
+		const requestUrl = usingProxy ? `${window['SPREAD'].withProxy}/download/?url=${url}` : url;
+		
+		console.log(requestUrl)
+
+		const response = await fetch(requestUrl, {
+		method: "GET",
+		headers: {
+			"X-Requested-With": "XMLHttpRequest"
+		}
     });
 
     if (response.ok) {
@@ -335,11 +341,22 @@ gtiz_file_handler.initTreeDropArea = function() {
 gtiz_file_handler.getJsonFromUrl = function(hashBased) {
 	let params = {};
   let url = location.href;
-  let query_string = url.split('?')[1];
+  let query_string = url.substring(url.indexOf('?') + 1);
   if (query_string) {
-    let param_pairs = query_string.split('&');
+
+	function extractKeyValue(query, paramName) {
+		const regex = new RegExp(`(${paramName}=[^&]+(?:&[^=]+=[^&]*)*)`);
+		const match = query.match(regex);
+		return match ? match[1] : null;
+	}
+	const treeValue = extractKeyValue(query_string, 'tree');
+	const metadataValue = extractKeyValue(query_string, 'metadata');
+	const geojsonValue = extractKeyValue(query_string, 'geojson');
+
+    let param_pairs = [treeValue, metadataValue, geojsonValue].filter(value => value !== null);
+
     param_pairs.forEach(pair => {
-      let [key, value] = pair.split('=');
+      let [key, value] = [pair.split("=")[0], pair.substring(pair.indexOf('=') + 1)];
       let decoded_key = decodeURIComponent(key);
       let decoded_value = decodeURIComponent(value || '');
       if (params.hasOwnProperty(decoded_key)) {
