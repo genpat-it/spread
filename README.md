@@ -224,6 +224,18 @@ You can set custom variables to control the proxy:
 - `SERVER_MAX_DOWNLOAD_SIZE_KB=1024`
 - `SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
 
+Example:
+
+Windows:
+```
+set SERVER_JSON_LIMIT=2mb && set SERVER_URLENCODED_LIMIT=2mb && set SERVER_MAX_DOWNLOAD_SIZE_KB=1024 && node server.js
+```
+
+Linux:
+```
+SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_MAX_DOWNLOAD_SIZE_KB=1024 node server.js
+```
+
 You can also specify your proxy:
 
 ```
