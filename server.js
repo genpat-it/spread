@@ -5,19 +5,20 @@ const url = require('url');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
-
 const app = express();
+
+const MAX_DOWNLOAD_SIZE_KB = parseInt(process.env.SERVER_MAX_DOWNLOAD_SIZE_KB, 10) || 2 * 1024;
 
 // Enable CORS and increase payload limit
 app.use(cors());
 
 app.use(express.json({
-    limit: process.env.EXPRESS_JSON_LIMIT || '10mb'
+    limit: process.env.SERVER_JSON_LIMIT || '2mb'
 }));
 
 app.use(express.urlencoded({
     extended: true,
-    limit: process.env.EXPRESS_URLENCODED_LIMIT || '2mb'
+    limit: process.env.SERVER_URLENCODED_LIMIT || '2mb'
 }));
 
 // Custom axios instance with extended timeout and SSL handling
@@ -59,7 +60,7 @@ app.get('/', (req, res) => {
 app.use(express.static(__dirname));
 
 const ALLOWED_DOMAINS_FOR_DOWNLOAD = new Set(
-    (process.env.EXPRESS_ALLOWED_DOMAINS_FOR_DOWNLOAD || '').split(',')
+    (process.env.SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD || '').split(',')
 );
 
 function isAllowedDomain(fileUrl) {
@@ -90,14 +91,16 @@ app.get('/download', async (req, res) => {
     try {
         console.log(`Attempting to download: ${fileUrl}`);
 
+        // Invia richiesta remota
         let response = await client({
             method: 'GET',
             url: fileUrl,
             responseType: 'stream',
             headers: buildHeaders(fileUrl)
         });
-        // Get filename from content-disposition header or URL
-        let fileName = '';
+
+        // Imposta il nome del file
+        let fileName = path.basename(url.parse(fileUrl).pathname);
         const contentDispositionHeader = response.headers['content-disposition'];
         if (contentDispositionHeader) {
             const match = contentDispositionHeader.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
@@ -105,42 +108,58 @@ app.get('/download', async (req, res) => {
                 fileName = match[1].replace(/['"]/g, '');
             }
         }
-        if (!fileName) {
-            fileName = path.basename(url.parse(fileUrl).pathname);
-        }
 
-        // Set response headers
+        // Imposta intestazioni di risposta
         res.setHeader('Content-Type', response.headers['content-type'] || 'application/octet-stream');
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
 
-        // Copy other relevant headers
-        ['content-length', 'last-modified', 'etag'].forEach(header => {
+        // Copia intestazioni opzionali
+        ['last-modified', 'etag'].forEach(header => {
             if (response.headers[header]) {
                 res.setHeader(header, response.headers[header]);
             }
         });
 
-        // Stream handling with error management
-        const stream = response.data;
+        // Misura la dimensione durante il download
+        let downloadedSizeBytes = 0;
 
-        stream.on('error', (error) => {
+        response.data.on('data', (chunk) => {
+            downloadedSizeBytes += chunk.length;
+
+            // Converti i byte in KB
+            const downloadedSizeKB = downloadedSizeBytes / 1024;
+
+            // Interrompi il download se supera la dimensione massima
+            if (downloadedSizeKB > MAX_DOWNLOAD_SIZE_KB) {
+                console.error(`File exceeds max size during download: ${downloadedSizeKB.toFixed(2)} KB`);
+                res.status(413).json({
+                    error: 'File too large',
+                    details: `Maximum allowed size is ${MAX_DOWNLOAD_SIZE_KB} KB`
+                });
+
+                // Interrompi lo streaming
+                response.data.destroy();
+            }
+        });
+
+        // Gestisci gli errori durante lo streaming
+        response.data.on('error', (error) => {
             console.error('Stream error:', error);
             if (!res.headersSent) {
                 res.status(500).json({ error: 'Stream error', details: error.message });
             }
         });
 
-        // Pipe the response with error handling
-        stream.pipe(res).on('error', (error) => {
+        // Stream il file al client
+        response.data.pipe(res).on('error', (error) => {
             console.error('Pipe error:', error);
             if (!res.headersSent) {
                 res.status(500).json({ error: 'Pipe error', details: error.message });
             }
         });
 
-        // Log successful completion
-        stream.on('end', () => {
-            console.log(`Successfully downloaded: ${fileUrl}`);
+        response.data.on('end', () => {
+            console.log(`Successfully downloaded: ${fileUrl}, Total size: ${(downloadedSizeBytes / 1024).toFixed(2)} KB`);
         });
 
     } catch (error) {

@@ -22,9 +22,10 @@ RUN addgroup -S appuser && adduser -S appuser -G appuser
 # Change ownership of the app directory to the non-root user
 RUN chown -R appuser:appuser /usr/src/app
 
-ENV EXPRESS_JSON_LIMIT=10mb
-ENV EXPRESS_URLENCODED_LIMIT=5mb
-#ENV EXPRESS_ALLOWED_DOMAINS_FOR_DOWNLOAD="domain1.com,domain2.com,domain3.com"
+ENV SERVER_JSON_LIMIT=1mb
+ENV SERVER_URLENCODED_LIMIT=10mb
+ENV SERVER_MAX_DOWNLOAD_SIZE_KB=1024
+#ENV SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD="domain1.com,domain2.com,domain3.com"
 
 USER appuser
 

@@ -219,9 +219,10 @@ http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy
 
 You can set custom variables to control the proxy:
 
-- `EXPRESS_JSON_LIMIT=10mb`
-- `EXPRESS_URLENCODED_LIMIT=5mb`
-- `EXPRESS_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
+- `SERVER_JSON_LIMIT=10mb`
+- `SERVER_URLENCODED_LIMIT=5mb`
+- `SERVER_MAX_DOWNLOAD_SIZE_KB=1024`
+- `SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
 
 You can also specify your proxy:
 
