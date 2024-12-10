@@ -1,5 +1,6 @@
 let gtiz_file_handler = {};
 gtiz_file_handler.tsv_metadata = undefined;
+gtiz_file_handler.expected_params = ['tree', 'metadata', 'geo', 'zooms_list', 'zooms', 'zooms_prefix', 'latitude', 'longitude', 'lang'];
 gtiz_file_handler.files_to_load = [];
 gtiz_file_handler.save_options = [
 	{
@@ -338,73 +339,70 @@ gtiz_file_handler.initTreeDropArea = function() {
  */
 gtiz_file_handler.getJsonFromUrl = function(hashBased) {
 	let params = {};
-  let url = location.href;
+  let url = window.location.href ;
   let query_string = url.substring(url.indexOf('?') + 1);
   if (query_string) {
+    function extractKnownParameters(url, paramList) {
+      const result = {};
+      let currentPos = 0;
+      
+      // Find the first occurrence of ? or & to start parsing
+      const startPos = url.indexOf('?');
+      if (startPos === -1) return result;
+      
+      currentPos = startPos + 1;
+      
+      while (currentPos < url.length) {
+        // Find the next parameter from our list
+        const nextParam = paramList.find(param => 
+          url.substring(currentPos).startsWith(param + '=')
+        );
+        
+        if (!nextParam) {
+          // If no known parameter is found, move to next position
+          currentPos++;
+          continue;
+        }
+        
+        // Move position past parameter name and equals sign
+        currentPos += nextParam.length + 1;
+        
+        // Find the start of the next known parameter or end of string
+        let nextParamPos = url.length;
+        for (const param of paramList) {
+          const pos = url.indexOf('&' + param + '=', currentPos);
+          if (pos !== -1 && pos < nextParamPos) {
+            nextParamPos = pos;
+          }
+        }
+        
+        // Extract the value
+        const value = url.substring(currentPos, nextParamPos);
+        result[nextParam] = value;
+        
+        // Move position to start of next parameter
+        currentPos = nextParamPos + 1;
+      }
+      
+      return result;
+    }
 
-	function extractKnownParameters(url, paramList) {
-		const result = {};
-		let currentPos = 0;
-		
-		// Find the first occurrence of ? or & to start parsing
-		const startPos = url.indexOf('?');
-		if (startPos === -1) return result;
-		
-		currentPos = startPos + 1;
-		
-		while (currentPos < url.length) {
-			// Find the next parameter from our list
-			const nextParam = paramList.find(param => 
-				url.substring(currentPos).startsWith(param + '=')
-			);
-			
-			if (!nextParam) {
-				// If no known parameter is found, move to next position
-				currentPos++;
-				continue;
-			}
-			
-			// Move position past parameter name and equals sign
-			currentPos += nextParam.length + 1;
-			
-			// Find the start of the next known parameter or end of string
-			let nextParamPos = url.length;
-			for (const param of paramList) {
-				const pos = url.indexOf('&' + param + '=', currentPos);
-				if (pos !== -1 && pos < nextParamPos) {
-					nextParamPos = pos;
-				}
-			}
-			
-			// Extract the value
-			const value = url.substring(currentPos, nextParamPos);
-			result[nextParam] = value;
-			
-			// Move position to start of next parameter
-			currentPos = nextParamPos + 1;
-		}
-		
-		return result;
-	}
-
-	const expectedParams = ["tree", "metadata", "geo", "zooms_list", "zooms", "zooms_prefix", "latitude", "longitude", "lang"];
-
-	const param_pairs = extractKnownParameters	(window.location.href, expectedParams);
+    let expected_params = gtiz_file_handler.expected_params;
+    let param_pairs = extractKnownParameters(url, expected_params);
 
     Object.entries(param_pairs).forEach(([key, value]) => {
-		let decoded_key = decodeURIComponent(key);
-		let decoded_value = decodeURIComponent(value || '');
-	  
-		if (params.hasOwnProperty(decoded_key)) {
-		  // Handle duplicate keys by creating arrays
-		  if (Array.isArray(params[decoded_key])) {
-			params[decoded_key].push(decoded_value);
-		  } else {
-			params[decoded_key] = [params[decoded_key], decoded_value];
-		  }
-		} else {
-		  params[decoded_key] = decoded_value;
-		}
+		  let decoded_key = decodeURIComponent(key);
+		  let decoded_value = decodeURIComponent(value || '');
+      if (params.hasOwnProperty(decoded_key)) {
+        // Handle duplicate keys by creating arrays
+        if (Array.isArray(params[decoded_key])) {
+          params[decoded_key].push(decoded_value);
+        } else {
+          params[decoded_key] = [params[decoded_key], decoded_value];
+        }
+      } else {
+        params[decoded_key] = decoded_value;
+      }
 	  });
   }
   return params;

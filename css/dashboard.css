@@ -1448,8 +1448,8 @@
 /* Mozilla browsers (Firefox) */
 .dashboard-grapetree input[type="range"]::-moz-range-thumb {
   cursor: pointer;
-  width: 21px;
-  height: 21px;
+  width: 1.4rem;
+  height: 1.4rem;
   border-radius: 50%;
   border: 0.4rem solid var(--white);
   background-color: var(--main);
@@ -1459,8 +1459,8 @@
 /* Edge */
 .dashboard-grapetree input[type="range"]::-ms-thumb {
   cursor: pointer;
-  width: 21px;
-  height: 21px;
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 50%;
   border: 0.4rem solid var(--white);
   background-color: var(--main);
@@ -1488,7 +1488,7 @@
 }
 
 .dashboard-grapetree .slider-box-player input[type="range"] {
-  width: auto;
+  width: 100%;
   flex-grow: 1;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -1679,6 +1679,7 @@
   border: 0.1rem solid var(--main);
   border-radius: 2.4rem;
   overflow: hidden;
+  flex-shrink: 0;
   -webkit-transform: translateY(-0.2rem);
   transform: translateY(-0.2rem);
   -webkit-transition: all 0.3s ease;
