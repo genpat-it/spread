@@ -246,7 +246,7 @@ SPREAD will use the following format for the proxy URL: `https://myproxy.com/dow
 
 ## Docker
 
-### Building from DockerHub
+### Building from Github Container
 
 ```bash
 docker pull ghcr.io/genpat-it/spread:latest
