@@ -4,7 +4,7 @@
   "description": "Universal file download proxy server",
   "main": "server.js",
   "scripts": {
-    "start": "cross-env SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com node server.js",
+    "start": "cross-env SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=* node server.js",
     "dev": "cross-env SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_MAX_DOWNLOAD_SIZE_KB=1024 SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=* nodemon server.js"
   },
   "dependencies": {

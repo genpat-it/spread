@@ -251,8 +251,6 @@ gtiz_file_handler.getData = async function (url) {
  	try {
 		const requestUrl = usingProxy ? `${window['SPREAD'].withProxy}/download/?url=${url}` : url;
 		
-		console.log(requestUrl)
-
 		const response = await fetch(requestUrl, {
 		method: "GET",
 		headers: {
@@ -393,21 +391,21 @@ gtiz_file_handler.getJsonFromUrl = function(hashBased) {
 
 	const param_pairs = extractKnownParameters	(window.location.href, expectedParams);
 
-    param_pairs.forEach(pair => {
-      let [key, value] = [pair.split("=")[0], pair.substring(pair.indexOf('=') + 1)];
-      let decoded_key = decodeURIComponent(key);
-      let decoded_value = decodeURIComponent(value || '');
-      if (params.hasOwnProperty(decoded_key)) {
-        // If the key already exists, convert the value to an array
-        if (Array.isArray(params[decoded_key])) {
-          params[decoded_key].push(decoded_value);
-        } else {
-          params[decoded_key] = [params[decoded_key], decoded_value];
-        }
-      } else {
-        params[decoded_key] = decoded_value;
-      }
-    });
+    Object.entries(param_pairs).forEach(([key, value]) => {
+		let decoded_key = decodeURIComponent(key);
+		let decoded_value = decodeURIComponent(value || '');
+	  
+		if (params.hasOwnProperty(decoded_key)) {
+		  // Handle duplicate keys by creating arrays
+		  if (Array.isArray(params[decoded_key])) {
+			params[decoded_key].push(decoded_value);
+		  } else {
+			params[decoded_key] = [params[decoded_key], decoded_value];
+		  }
+		} else {
+		  params[decoded_key] = decoded_value;
+		}
+	  });
   }
   return params;
 };
