@@ -341,7 +341,7 @@ gtiz_zooms.loadZoomedTreeInNewTab = function(filtered) {
 
   let tree = 'tree=' + path + zoom + '.nwk';
   let metadata = 'metadata=' + path + zoom + '_metadata_w_partitions.tsv';
-  let geo = 'geo=' + gtiz_file_handler.params.geo;
+  let geo = gtiz_file_handler.params.geo ? 'geo=' + gtiz_file_handler.params.geo : undefined;
   let url = domain + '?' + tree + '&' + metadata;
   if (geo) {
     url += '&' + geo;
