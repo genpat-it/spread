@@ -344,16 +344,54 @@ gtiz_file_handler.getJsonFromUrl = function(hashBased) {
   let query_string = url.substring(url.indexOf('?') + 1);
   if (query_string) {
 
-	function extractKeyValue(query, paramName) {
-		const regex = new RegExp(`(${paramName}=[^&]+(?:&[^=]+=[^&]*)*)`);
-		const match = query.match(regex);
-		return match ? match[1] : null;
+	function extractKnownParameters(url, paramList) {
+		const result = {};
+		let currentPos = 0;
+		
+		// Find the first occurrence of ? or & to start parsing
+		const startPos = url.indexOf('?');
+		if (startPos === -1) return result;
+		
+		currentPos = startPos + 1;
+		
+		while (currentPos < url.length) {
+			// Find the next parameter from our list
+			const nextParam = paramList.find(param => 
+				url.substring(currentPos).startsWith(param + '=')
+			);
+			
+			if (!nextParam) {
+				// If no known parameter is found, move to next position
+				currentPos++;
+				continue;
+			}
+			
+			// Move position past parameter name and equals sign
+			currentPos += nextParam.length + 1;
+			
+			// Find the start of the next known parameter or end of string
+			let nextParamPos = url.length;
+			for (const param of paramList) {
+				const pos = url.indexOf('&' + param + '=', currentPos);
+				if (pos !== -1 && pos < nextParamPos) {
+					nextParamPos = pos;
+				}
+			}
+			
+			// Extract the value
+			const value = url.substring(currentPos, nextParamPos);
+			result[nextParam] = value;
+			
+			// Move position to start of next parameter
+			currentPos = nextParamPos + 1;
+		}
+		
+		return result;
 	}
-	const treeValue = extractKeyValue(query_string, 'tree');
-	const metadataValue = extractKeyValue(query_string, 'metadata');
-	const geojsonValue = extractKeyValue(query_string, 'geojson');
 
-    let param_pairs = [treeValue, metadataValue, geojsonValue].filter(value => value !== null);
+	const expectedParams = ["tree", "metadata", "geo", "zooms_list", "zooms", "zooms_prefix", "latitude", "longitude", "lang"];
+
+	const param_pairs = extractKnownParameters	(window.location.href, expectedParams);
 
     param_pairs.forEach(pair => {
       let [key, value] = [pair.split("=")[0], pair.substring(pair.indexOf('=') + 1)];
