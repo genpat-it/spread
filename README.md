@@ -250,7 +250,7 @@ SPREAD will use the following format for the proxy URL: `https://myproxy.com/dow
 
 ```bash
 docker pull ghcr.io/genpat-it/spread:latest
-docker run -d -p 3000:80 --name spread ghcr.io/genpat-it/spread:latest
+docker run -d -p 3000:8080 --name spread ghcr.io/genpat-it/spread:latest
 ```
 You can surf the spread instance by visiting `http://<IP_ADDRESS_OR_HOSTNAME>:3000`  in your web browser.
 
