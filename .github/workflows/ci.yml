@@ -48,6 +48,6 @@ jobs:
           VERSION=${{ github.event.release.tag_name }}
           IMAGE_NAME=ghcr.io/genpat-it/spread
     
-          docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION
+          docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION --tag $IMAGE_NAME:latest
           docker push $IMAGE_NAME:$VERSION
           docker push $IMAGE_NAME:latest
