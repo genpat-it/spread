@@ -1,10 +1,8 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -47,5 +45,9 @@ jobs:
       
       - name: Build and push Docker image
         run: |
-          docker build . --file Dockerfile --tag ghcr.io/genpat-it/spread:latest
-          docker push ghcr.io/genpat-it/spread:latest
+          VERSION=${{ github.event.release.tag_name }}
+          IMAGE_NAME=ghcr.io/genpat-it/spread
+    
+          docker build . --file Dockerfile --tag $IMAGE_NAME:$VERSION
+          docker push $IMAGE_NAME:$VERSION
+          docker push $IMAGE_NAME:latest
