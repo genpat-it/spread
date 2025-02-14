@@ -1501,9 +1501,11 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.undeleteNodes();
   }
 }, {
-  type : 'separator'
+  type : 'separator',
+  hide_in_read_only: true
 }, {
   type : 'abutton',
+  hide_in_read_only: true,
   label : () => {
     return gtiz_locales.current.save_spread
   },
@@ -1514,6 +1516,7 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  hide_in_read_only: true,
   label : () => {
     return gtiz_locales.current.load_spread
   },
@@ -1523,9 +1526,11 @@ gtiz_tree.context_menu = [{
     gtiz_tree.openFileHandlerModal(mode);
   }
 }, {
-  type : 'separator'
+  type : 'separator',
+  hide_in_read_only: true
 }, {
   type : 'abutton',
+  hide_in_read_only: true,
   label : () => {
     return gtiz_locales.current.download_svg;
   },

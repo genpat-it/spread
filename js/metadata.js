@@ -62,6 +62,7 @@ gtiz_metadata.context_menu = [{
   type: 'separator'
 }, {
   type: 'abutton',
+  hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.add_metadata;
   },
@@ -71,6 +72,7 @@ gtiz_metadata.context_menu = [{
   }
 }, {
   type: 'abutton',
+  hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.edit_metadata;
   },
@@ -79,9 +81,11 @@ gtiz_metadata.context_menu = [{
     gtiz_metadata.changeMetadata('edit');
   }
 }, {
-  type: 'separator'
+  type: 'separator',
+  hide_in_read_only: true
 }, {
   type: 'abutton',
+  hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.add_metadata_for_selection;
   },
@@ -92,6 +96,7 @@ gtiz_metadata.context_menu = [{
   }
 }, {
   type: 'abutton',
+  hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.edit_metadata_for_selection;
   },
@@ -102,9 +107,11 @@ gtiz_metadata.context_menu = [{
     gtiz_metadata.changeMetadata(mode, selected);
   }
 }, {
-  type: 'separator'
+  type: 'separator',
+  hide_in_read_only: true
 }, {
   type: 'abutton',
+  hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.delete_metadata;
   },
@@ -113,7 +120,8 @@ gtiz_metadata.context_menu = [{
     gtiz_metadata.changeMetadata('remove');
   }
 }, {
-  type: 'separator'
+  type: 'separator',
+  hide_in_read_only: true
 }, /* {
   type: 'abutton',
   label: () => {
@@ -198,9 +206,11 @@ gtiz_metadata.context_menu = [{
     gtiz_metadata.toggleShowHypotetical(value);
   }
 }, {
-  type: 'separator'
+  type: 'separator',
+  hide_in_read_only: true
 }, {
   type: 'abutton_optioned',
+  hide_in_read_only: true,
   id: 'metadata-export-button',
   label: () => {
     return gtiz_locales.current.download_table;
@@ -1506,7 +1516,7 @@ gtiz_metadata.setGrid = function () {
         obj = {
           field: fields[key],
           headerName: fields[key],
-          editable: true
+          editable: () => !gtiz_app.cfg.read_only
         }
       }
       columns.push(obj);
@@ -1541,6 +1551,7 @@ gtiz_metadata.init = function () {
   if (gtiz_metadata.options.api) {
     gtiz_metadata.options.api.destroy();
   }
+  gtiz_metadata.options.enableCellTextSelection = !gtiz_app.cfg.read_only;
   new agGrid.Grid(gtiz_metadata.grid_div, gtiz_metadata.options);
   gtiz_metadata.setGrid();
   gtiz_metadata.backupGridData();

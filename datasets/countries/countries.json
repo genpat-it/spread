@@ -1,0 +1,146 @@
+{
+  "albania": {
+    "latitude": 41.3275,
+    "longitude": 19.8189
+  },
+  "austria": {
+    "latitude": 48.2082,
+    "longitude": 16.3738
+  },
+  "belgium": {
+    "latitude": 50.8503,
+    "longitude": 4.3517
+  },
+  "bosnia_and_herzegovina": {
+    "latitude": 43.8563,
+    "longitude": 18.4131
+  },
+  "bulgaria": {
+    "latitude": 42.6977,
+    "longitude": 23.3242
+  },
+  "croatia": {
+    "latitude": 45.8150,
+    "longitude": 15.9819
+  },
+  "czech_republic": {
+    "latitude": 50.0755,
+    "longitude": 14.4378
+  },
+  "denmark": {
+    "latitude": 55.6761,
+    "longitude": 12.5683
+  },
+  "estonia": {
+    "latitude": 59.4370,
+    "longitude": 24.7536
+  },
+  "finland": {
+    "latitude": 60.1695,
+    "longitude": 24.9354
+  },
+  "france": {
+    "latitude": 48.8566,
+    "longitude": 2.3522
+  },
+  "germany": {
+    "latitude": 52.5200,
+    "longitude": 13.4050
+  },
+  "greece": {
+    "latitude": 37.9838,
+    "longitude": 23.7275
+  },
+  "hungary": {
+    "latitude": 47.4979,
+    "longitude": 19.0402
+  },
+  "iceland": {
+    "latitude": 64.1355,
+    "longitude": -21.8954
+  },
+  "ireland": {
+    "latitude": 53.3498,
+    "longitude": -6.2603
+  },
+  "italy": {
+    "latitude": 41.9028,
+    "longitude": 12.4964
+  },
+  "latvia": {
+    "latitude": 56.9496,
+    "longitude": 24.1052
+  },
+  "lithuania": {
+    "latitude": 54.6872,
+    "longitude": 25.2797
+  },
+  "luxembourg": {
+    "latitude": 49.6117,
+    "longitude": 6.1319
+  },
+  "malta": {
+    "latitude": 35.8997,
+    "longitude": 14.5146
+  },
+  "montenegro": {
+    "latitude": 42.4304,
+    "longitude": 19.2594
+  },
+  "netherlands": {
+    "latitude": 52.3676,
+    "longitude": 4.9041
+  },
+  "north_macedonia": {
+    "latitude": 41.9981,
+    "longitude": 21.4254
+  },
+  "norway": {
+    "latitude": 59.9139,
+    "longitude": 10.7522
+  },
+  "poland": {
+    "latitude": 52.2298,
+    "longitude": 21.0122
+  },
+  "portugal": {
+    "latitude": 38.7169,
+    "longitude": -9.1399
+  },
+  "romania": {
+    "latitude": 44.4268,
+    "longitude": 26.1025
+  },
+  "serbia": {
+    "latitude": 44.7866,
+    "longitude": 20.4489
+  },
+  "slovakia": {
+    "latitude": 48.1486,
+    "longitude": 17.1077
+  },
+  "slovenia": {
+    "latitude": 46.0511,
+    "longitude": 14.5051
+  },
+  "spain": {
+    "latitude": 40.4168,
+    "longitude": -3.7038
+  },
+  "sweden": {
+    "latitude": 59.3293,
+    "longitude": 18.0686
+  },
+  "switzerland": {
+    "latitude": 46.9481,
+    "longitude": 7.4474
+  },
+  "ukraine": {
+    "latitude": 50.4501,
+    "longitude": 30.5234
+  },
+  "united_kingdom": {
+    "latitude": 51.5074,
+    "longitude": -0.1278
+  }
+}

@@ -238,6 +238,16 @@ gtiz_legend.context_menu = [{
     gtiz_legend.changeColorScheme(value, category, true);
   }
 }, {
+  type : 'abutton',
+  id : 'legend-menu-quick-gradient',
+  label : () => {
+    return gtiz_locales.current.quick_gradient;
+  },
+  icon : 'iconic-clock',
+  function : () => {
+    gtiz_legend.quickGradient();
+  }
+}, {
   type : 'separator'
 }, {
   type : 'toggle',
@@ -261,16 +271,6 @@ gtiz_legend.context_menu = [{
   },
   function : (value) => {
     gtiz_legend.toggleViewMode(value);
-  }
-}, {
-  type : 'abutton',
-  id : 'legend-menu-quick-gradient',
-  label : () => {
-    return gtiz_locales.current.quick_gradient;
-  },
-  icon : 'iconic-clock',
-  function : () => {
-    gtiz_legend.quickGradient();
   }
 }];
 

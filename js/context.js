@@ -60,6 +60,9 @@ gtiz_context.getMenu = function(type) {
       console.log(`Sorry, we are out of ${type}.`);
   }
   cfg.forEach(item => {
+    if (gtiz_app.cfg.read_only && item.hide_in_read_only) {
+      return;
+    }
     if (item.type == 'toggle') {
       let container = document.createElement('div');
       container.setAttribute('class', 'tools');

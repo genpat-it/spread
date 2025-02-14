@@ -131,6 +131,32 @@ gtiz_file_handler.isValidJSON = function(str) {
   }
 }
 
+gtiz_file_handler.commaAlert = function() {
+	let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.please_note;
+	let contents = [];
+	let content = document.createElement('p');
+	content.innerHTML = gtiz_locales.current.lon_lat_comma_alert;
+	contents.push(content);
+	let feedback = '<p>' + gtiz_locales.current.lon_lat_comma_alert_feedback + '</p>';
+	let f_type = 'info';
+	gtiz_modal.buildNotifier(title, contents, feedback, f_type);
+}
+
+gtiz_file_handler.addLatLonToMetadata = function(metadata, countries, column) {
+	for (let key in metadata) {
+		if (metadata.hasOwnProperty(key)) {
+			let entry = metadata[key];
+			let countryName = entry[column].toLowerCase().replace(/\s+/g, '_'); // Normalize country name
+			if (countries.hasOwnProperty(countryName)) {
+				entry.latitude = countries[countryName].latitude;
+				entry.longitude = countries[countryName].longitude;
+			} else {
+				console.warn(`Country ${entry[column]} not found in countries object`);
+			}
+		}
+	}
+}
+
 /**
  * 
  * Meta2GeoJSON
@@ -168,24 +194,35 @@ gtiz_file_handler.Meta2GeoJSON = {
 		if (h == undefined || h.id == undefined || h.id.length == 0) {
 			return;
 		}
-		if (h.x.includes(',')) {
-			h.x = h.x.replace(',', '.');
-			if (!this.lonCommaAlert) {
-				this.lonCommaAlert = true;
+	
+		// Ensure h.x and h.y are strings before using includes and replace
+		if (h.x !== undefined && h.x !== null) {
+			h.x = h.x.toString();
+			if (h.x.includes(',')) {
+				h.x = h.x.replace(',', '.');
+				if (!this.lonCommaAlert) {
+					this.lonCommaAlert = true;
+				}
 			}
 		}
-		if (h.y.includes(',')) {
-			h.y = h.y.replace(',', '.');
-			if (!this.latCommaAlert) {
-				this.latCommaAlert = true;
+	
+		if (h.y !== undefined && h.y !== null) {
+			h.y = h.y.toString();
+			if (h.y.includes(',')) {
+				h.y = h.y.replace(',', '.');
+				if (!this.latCommaAlert) {
+					this.latCommaAlert = true;
+				}
 			}
 		}
+	
 		h.x = Number.parseFloat(h.x);
 		h.y = Number.parseFloat(h.y);
 		if (Number.isNaN(h.x) || Number.isNaN(h.y)) {
 			console.log('Meta2GeoJSON.addNewPoint: lat lon not a number. lon:' + h.x + ' lat:' + h.y);
 			return;
 		}
+	
 		geoJson.features.push(this.newPoint(h));
 	},
 
@@ -286,7 +323,6 @@ gtiz_file_handler.getData = async function (url) {
     return obj;
   }
 }
-
 
 /**
  * 
@@ -486,23 +522,56 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	}
 
 	gtiz_tree.tree.addMetadata(meta);
+	
 	// to be changed in this way for parameters &x=title_name_longitute&y=title_name_latitudine
 	if (gtiz_file_handler.Meta2GeoJSON.checkMeta4geo(options) ) { //options = hash of metadata titles
 		let geoJ = gtiz_file_handler.Meta2GeoJSON.meta2GeoJson(meta);
 		gtiz_map.setMetaGeoJSON(geoJ);
 		if (gtiz_file_handler.Meta2GeoJSON.latCommaAlert || gtiz_file_handler.Meta2GeoJSON.lonCommaAlert) {
-			let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.please_note;
-			let contents = [];
-			let content = document.createElement('p');
-			content.innerHTML = gtiz_locales.current.lon_lat_comma_alert;
-			contents.push(content);
-			let feedback = '<p>' + gtiz_locales.current.lon_lat_comma_alert_feedback + '</p>';
-			let f_type = 'info';
-			gtiz_modal.buildNotifier(title, contents, feedback, f_type);
+			gtiz_file_handler.commaAlert();
 		}
 	} else {
-		let message = '(GEO)WARNING: titles not found in metadata:' + gtiz_file_handler.Meta2GeoJSON.xName +', '+ gtiz_file_handler.Meta2GeoJSON.yName;
+		let message = '(GEO)INFO: titles not found in metadata:' + gtiz_file_handler.Meta2GeoJSON.xName +', '+ gtiz_file_handler.Meta2GeoJSON.yName;
 		console.log(message);
+		// check if countries are defined
+		if (gtiz_app.cfg.countries) {
+			let column = gtiz_app.cfg.countries.column ? gtiz_app.cfg.countries.column : 'sampling country';
+			let path = gtiz_app.cfg.countries.path ? gtiz_app.cfg.countries.path : 'datasets/countries/countries.json';
+			// leave a message of what is happening
+			let message = '(GEO)INFO: looking for countries in ' + column +' metadata column';
+			console.log(message);
+			// check if the countries column is present in the metadata
+			if (gtiz_tree.tree.metadata_info[column]) {
+				// get json from path
+				gtiz_file_handler.getData(path).then((obj) => {
+					if (obj.error) {
+						console.log(obj.error);
+						let message = '(GEO)WARNING: JSON not found at provided path: ' + path;
+						console.log(message);
+					} else {
+						let countries = JSON.parse(obj.text);
+						gtiz_file_handler.addLatLonToMetadata(meta, countries, column);
+						let longitude = gtiz_app.cfg.countries.longitude ? gtiz_app.cfg.countries.longitude : 'longitude';
+						let latitude = gtiz_app.cfg.countries.latitude ? gtiz_app.cfg.countries.latitude : 'latitude';
+						let geoJ = gtiz_file_handler.Meta2GeoJSON.meta2GeoJsonLonLat(meta, longitude, latitude);
+						gtiz_map.setMetaGeoJSON(geoJ);
+						if (gtiz_file_handler.Meta2GeoJSON.latCommaAlert || gtiz_file_handler.Meta2GeoJSON.lonCommaAlert) {
+							gtiz_file_handler.commaAlert();
+						}
+					}
+				}).catch((err) => {
+					console.log(err);
+					let message = '(GEO)WARNING: problems on retreiving countries JSON on: ' + path;
+					console.log(message);
+				});
+			} else {
+				let message = '(GEO)WARNING: ' + column + ' column not defined in metadata. Please check the metadata file.';
+				console.log(message);
+			}
+		} else {
+			let message = '(GEO)INFO: countries column not provided';
+			console.log(message);
+		}
 	}
 	gtiz_tree.tree.changeCategory(category);
 	gtiz_tree.tree.setNodeText(category);

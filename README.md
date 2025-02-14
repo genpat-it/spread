@@ -88,7 +88,7 @@ In the project you will find a `datasets` folder with some example data to load,
 http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&geo=/datasets/test/points.geojson
 ```
 
-### Load geoJSON or cooridates data
+## Load geoJSON or cooridates data
 
 The dashboard is able to recognize `.geojson` file passed as `geo` parameter by query string:
 
@@ -110,7 +110,43 @@ http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metad
 
 > Please note that for the longitude and latitude values, decimal points should be used as separators instead of commas.
 
-### Load files
+### Using predefined country coordinates
+
+If neither a GeoJSON file nor latitude and longitude values are provided, the application checks for a `countries` object in `app.json`, defined as follows:
+
+```json
+"countries": {
+  "column": "sampling country",
+  "path": "datasets/countries/countries.json",
+  "latitude": "latitude",
+  "longitude": "longitude"
+}
+```
+
+* `column`: Specifies the metadata column containing country names.
+* `path`: Defines the file path to a JSON file that maps country names to their respective coordinates.
+* `latitude` and `longitude`: Define the keys used for latitude and longitude in the JSON mapping file.
+
+The JSON file at the specified `path` should follow this structure:
+
+```json
+"iceland": {
+    "latitude": 64.1355,
+    "longitude": -21.8954
+},
+"ireland": {
+    "latitude": 53.3498,
+    "longitude": -6.2603
+},
+"italy": {
+    "latitude": 41.9028,
+    "longitude": 12.4964
+}
+```
+
+The application compares values in the specified `column` against this mapping and assigns the corresponding coordinates accordingly.
+
+## Load files
 
 You can also directly upload files by dragging them over the tree, over the initial droppable area or using load buttons provided in the UI. In this case you don't need to user parameters in the url. You can drag or load a `.nwk` file followed by a `.tsv` file containing metadata and optionally a `.geojson` file containing geo-saptial information.
 
@@ -118,7 +154,7 @@ You can also directly upload files by dragging them over the tree, over the init
 >
 > .nwk file should be loaded before loading metadata or geoJson files.
 
-### Save or load a compatible JSON file
+## Save or load a compatible JSON file
 
 Dashboard allows you to download a complete JSON file including metadata and configurations. Generated JSON file can be loaded with the same drag or load functionalities seen previously, this is very useful if you want to save your work or share it.
 
@@ -202,6 +238,12 @@ then add in the URL one of the following parameters:
 * `zooms_list=@zooms.txt` or `zooms_list=zooms.txt`: the code will use `category` and `sample of interest` by default to find clusters in the general metadata file for zooms indicated by `zooms.txt` file.
 
 > **Please note.** The `prefix` should match the name of the `.nwk` file.
+
+## Customizing SPREAD
+
+SPREAD allows you to customize some elements of its appearance such as colors, fonts, header elements (logo and title), and footer content.
+
+Please find more information on [wiki](https://github.com/genpat-it/spread/wiki/Customizing-SPREAD)
 
 ## Server
 

@@ -66,5 +66,12 @@
     },
     "version" : "1.0.0"
   }],
+  "read_only" : false,
+  "countries"  : {
+    "column" : "sampling country",
+    "path" : "datasets/countries/countries.json",
+    "latitude" : "latitude",
+    "longitude" : "longitude"
+  },
   "copyright" : "&copy; {__YEAR__} IZSAM G. Caporale"
 }

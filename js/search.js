@@ -156,6 +156,9 @@ gtiz_search.findFunction = function(item) {
 gtiz_search.getMenu = function(obj) {
   let menu = [];
   obj.forEach(item => {
+    if (gtiz_app.cfg.read_only && item.hide_in_read_only) {
+      return;
+    }
     if (item.type !== 'separator') {
       if (item.type === 'toggle') {
         item.options.forEach(option => {
