@@ -14,6 +14,7 @@ Previously known as GrapeTree Extended.
   - [Load files](#load-files)
   - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
   - [Zooms for clusters](#zooms-for-clusters)
+- [Customizing SPREAD](#customizing-SPREAD)
 - [Server](#server)
 - [Docker](#docker)
 - [Videos](#videos)
