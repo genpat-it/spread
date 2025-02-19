@@ -243,6 +243,10 @@ then add in the URL one of the following parameters:
 
 SPREAD allows you to customize some elements of its appearance such as colors, fonts, header elements (logo and title), and footer content.
 
+It is also possible to set SPREAD to **read-only** mode by changing the `read_only` parameter in `app.json` to `true`.
+
+> **Please note:** read-only mode hides download buttons and limits edit functions at the UI level only.
+
 Please find more information on [wiki](https://github.com/genpat-it/spread/wiki/Customizing-SPREAD)
 
 ## Server
