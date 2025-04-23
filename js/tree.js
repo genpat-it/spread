@@ -31,6 +31,7 @@ gtiz_tree.branch_cutoffs_method = 'display'; // or hide or cap
 gtiz_tree.label_to_highlight = ''; // category text to highlight
 gtiz_tree.link_elements_controller = 1000;
 gtiz_tree.performance_choice_done = false;
+gtiz_tree.png_width = 2400;
 
 gtiz_tree.distance_cfg = {
   loopCount: 10000,
@@ -1529,17 +1530,42 @@ gtiz_tree.context_menu = [{
   type : 'separator',
   hide_in_read_only: true
 }, {
-  type : 'abutton',
+  type: 'abutton_optioned',
   hide_in_read_only: true,
-  label : () => {
-    return gtiz_locales.current.download_svg;
+  label: () => {
+    return gtiz_locales.current.download_image;
   },
   icon : 'iconic-photo',
-  function : () => {
+  options: [{
+    label: '.svg',
+    value: 'svg'
+  }, {
+    label: '.png',
+    value: 'png'
+  }],
+  selected: () => {
+    return 'svg';
+  },
+  function: (e) => {
+    let buttuon = e.currentTarget;
+    let box = buttuon.parentElement;
+    let select = box.querySelector('select');
+    let type = select ? select.value : 'svg';
     let text = gtiz_tree.tree.getSVG();
     let timestamp =  Date.now();
-    let name = "spread" + timestamp + ".svg";
-    gtiz_file_handler.saveTextAsFile(text, name);
+    let name = "spread" + timestamp + "." + type;
+    let width = gtiz_tree.png_width ? gtiz_tree.png_width : 2400;
+    switch (type) {
+      case 'svg':
+        gtiz_file_handler.saveTextAsFile(text, name);
+        break;
+      case 'png':
+        gtiz_file_handler.saveSvgAsPng(text, width, name);
+        break;
+      default:
+        gtiz_file_handler.saveTextAsFile(text, name);
+        break;
+    }
   }
 }];
 

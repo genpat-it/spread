@@ -1036,6 +1036,53 @@ gtiz_file_handler.filesDropped = function(files) {
 	});
 }
 
+gtiz_file_handler.saveSvgAsPng = function(svgText, width, filename) {
+  // Create a temporary canvas
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  // Parse the SVG text and extract its dimensions
+  const parser = new DOMParser();
+  const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+  const svgElement = svgDoc.documentElement;
+
+  const originalWidth = parseFloat(svgElement.getAttribute('width'));
+  const originalHeight = parseFloat(svgElement.getAttribute('height'));
+
+  // Calculate the height to maintain the aspect ratio
+  const height = (width / originalWidth) * originalHeight;
+
+  // Set canvas dimensions
+  canvas.width = width;
+  canvas.height = height;
+
+  // Create an image element to render the SVG
+  const img = new Image();
+  const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  img.onload = () => {
+    // Draw the SVG onto the canvas
+    context.drawImage(img, 0, 0, width, height);
+
+    // Convert the canvas to a PNG blob and trigger the download
+    canvas.toBlob((blob) => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+
+    // Clean up the object URL
+    URL.revokeObjectURL(url);
+  };
+
+  img.src = url;
+}
+
 /**
  * Save text as file.
  * 
