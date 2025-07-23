@@ -33,7 +33,7 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Update index.html with current date"
-            git push
+            git push origin HEAD:main
           fi
 
       - name: Login to GitHub Container Registry
