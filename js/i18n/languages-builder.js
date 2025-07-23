@@ -5,6 +5,11 @@ let gtiz_languages = {};
  */
 //@include ./en.js
 /**
+ * Français
+ * 
+ */
+//@include ./fr.js
+/**
  * Italiano
  * 
  */

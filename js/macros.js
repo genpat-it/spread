@@ -27,8 +27,9 @@ gtiz_macros.lang = gtiz_locales.getActiveLanguageCode();
 gtiz_macros.macros = [{
   type : 'macro',
   title : {
-    en : 'Log scale at 10',
-    it : 'Scala logaritmica a 10'
+    en : "Log scale at 10",
+    it : "Scala logaritmica a 10",
+    fr : "&#201;chelle logarithmique en base 10"
   },
   actions : [{
     name : 'gtiz_tree.tree.showNodeLabels',
@@ -50,22 +51,25 @@ gtiz_macros.macros = [{
     args : []
   }],
   description : {
-    en : 'Show node and link labels, set link cut-off to 10 and activate log scale',
-    it : 'Mostra le etichette di nodi e collegamenti, imposta un taglio di 10 per i collegamenti ed attiva la scala logaritmica',
+    en : "Show node and link labels, set link cut-off to 10 and activate log scale",
+    it : "Mostra le etichette di nodi e collegamenti, imposta un taglio di 10 per i collegamenti ed attiva la scala logaritmica",
+    fr : "Il montre les étiquettes des n&#156;uds et des liens, définit un seuil de 10 pour les connexions et active l'échelle logarithmique"
   },
   tag : {
     code : 'tree_settings',
     label : {
       en : 'Tree settings',
-      it : 'Impostazioni tree'
+      it : 'Impostazioni tree',
+      fr : "Paramètres de l'arborescence"
     }
   },
   version : '1.0.0'
 }, {
   type : 'macro',
   title : {
-    en : 'Preset space time',
-    it : 'Preset spazio tempo'
+    en : "Preset space time",
+    it : "Preset spazio tempo",
+    fr : "Préréglage espace-temps"
   },
   actions : [{
     name: 'gtiz_macros.simulateLayoutToggleClick',
@@ -90,14 +94,16 @@ gtiz_macros.macros = [{
     args: []
   }],
   description : {
-    en : 'Open map component, set legend selection to visual mode, change category to \'dataprelievo\' if exists and finally run quick gradient function',
-    it : 'Apre il componente mappa, imposta la selezione della legenda in modalità visuale, cambia categoria in \'dataprelievo\' se esiste ed infine lancia la funzione di gradazione rapida',
+    en : "Open map component, set legend selection to visual mode, change category to 'dataprelievo' if exists and finally run quick gradient function",
+    it : "Apre il componente mappa, imposta la selezione della legenda in modalità visuale, cambia categoria in 'dataprelievo' se esiste ed infine lancia la funzione di gradazione rapida",
+    fr : "Il ouvre le composant carte et définit la sélection de la légende en mode visuel; il change de catégorie vers 'dataprelievo' (si elle existe) et, enfin, il lance la fonction de gradation rapide"
   },
   tag : {
     code : 'spatio_temporal',
     label : {
-      en : 'Spatio-temporal',
-      it : 'Spazio-tempo'
+      en : "Spatio-temporal",
+      it : "Spazio-tempo",
+      fr : "Espace-temps"
     }
   },
   version : '1.0.0'
@@ -243,7 +249,7 @@ gtiz_macros.buildUi = function(macros, keyword, type) {
               break;
             case 'object':
               let lang = gtiz_macros.lang;
-              tag.innerHTML = item.tag.label[lang];
+              tag.innerHTML = item.tag.label[lang] ? item.tag.label[lang] : item.tag.label.en;
               break;
             default:
               tag.innerHTML = 'Unexpected types for tag';
@@ -277,7 +283,7 @@ gtiz_macros.buildUi = function(macros, keyword, type) {
               break;
             case 'object':
               let lang = gtiz_macros.lang;
-              title.innerHTML = item.title[lang];
+              title.innerHTML = item.title[lang] ? item.title[lang] : item.title.en;
               break;
             default:
               title.innerHTML = 'Unexpected types for title';
@@ -305,7 +311,7 @@ gtiz_macros.buildUi = function(macros, keyword, type) {
               break;
             case 'object':
               let lang = gtiz_macros.lang;
-              description.innerHTML = item.description[lang];
+              description.innerHTML = item.description[lang] ? item.description[lang] : item.description.en;
               break;
             default:
               description.innerHTML = 'Unexpected types for description';
@@ -441,7 +447,7 @@ gtiz_macros.defineDictionary = function(macros) {
         title = macro.title();
         break;
       case 'object':
-        title = macro.title[gtiz_macros.lang];
+        title = macro.title[gtiz_macros.lang] ? macro.title[gtiz_macros.lang] : macro.title.en;
         break;
       default:
         title = 'Unexpected types for title';
@@ -457,7 +463,7 @@ gtiz_macros.defineDictionary = function(macros) {
         description = macro.description();
         break;
       case 'object':
-        description = macro.description[gtiz_macros.lang];
+        description = macro.description[gtiz_macros.lang] ? macro.description[gtiz_macros.lang] : macro.description.en;
         break;
       default:
         description = 'Unexpected types for description';
@@ -473,7 +479,7 @@ gtiz_macros.defineDictionary = function(macros) {
         tag = macro.tag.label();
         break;
       case 'object':
-        tag = macro.tag.label[gtiz_macros.lang];
+        tag = macro.tag.label[gtiz_macros.lang] ? macro.tag.label[gtiz_macros.lang] : macro.tag.label.en;
         break;
       default:
         tag = 'Unexpected types for tag';
@@ -571,7 +577,7 @@ gtiz_macros.search = function(keyword) {
             value = item.title();
             break;
           case 'object':
-            value = item.title[gtiz_macros.lang];
+            value = item.title[gtiz_macros.lang] ? item.title[gtiz_macros.lang] : item.title.en;
             break;
           default:
             value = '';

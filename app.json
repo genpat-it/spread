@@ -5,8 +5,7 @@
     "author" : "Alessandro De Luca, IZSAM G. Caporale",
     "logo" : "img/logo.svg",
     "title" : {
-      "it" : "SPREAD",
-      "en" : "SPREAD"
+      "default" : "SPREAD"
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",
@@ -28,7 +27,9 @@
     "logo" : "img/logo.svg",
     "title" : {
       "it" : "Piattaforma GenPat, SPREAD",
-      "en" : "GenPat Platform, SPREAD"
+      "en" : "GenPat Platform, SPREAD",
+      "fr" : "Plateforme GenPat, SPREAD",
+      "default" : "Piattaforma GenPat, SPREAD"
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",
@@ -50,7 +51,9 @@
     "logo" : "img/logo.svg",
     "title" : {
       "it" : "Sistema Informativo COHESIVE, SPREAD",
-      "en" : "COHESIVE Information System, SPREAD"
+      "en" : "COHESIVE Information System, SPREAD",
+      "fr" : "COHESIVE Information System, SPREAD",
+      "default" : "COHESIVE Information System, SPREAD"
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",

@@ -46,7 +46,10 @@ gtiz_app.setTheme = function(theme) {
   let code = language ? language.code : 'en';
   let name = theme.name ? theme.name : 'default';
   let logo = theme.logo;
-  let title = theme.title ? theme.title[code] : undefined;
+  let title;
+  if (theme.title) {
+    title = theme.title[code] ? theme.title[code] : theme.title['default'];
+  }
   let favicon = theme.favicon;
   let modules = theme.modules;
   let header = modules ? modules.header : undefined;

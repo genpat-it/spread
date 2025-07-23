@@ -2,15 +2,7 @@ let gtiz_locales = {};
 
 gtiz_locales.user_lang = undefined;
 
-gtiz_locales.languages = [{
-  code : 'en',
-  description : 'English',
-  active : true
-}, {
-  code : 'it',
-  description : 'Italiano',
-  active : false
-}];
+gtiz_locales.languages = [];
 
 gtiz_locales.current = {};
 
@@ -65,8 +57,24 @@ gtiz_locales.translate = function (container) {
 }
 
 gtiz_locales.setLanguagesCfg = function(lang) {
-  let languages = gtiz_locales.languages;
-  languages.forEach(obj => {
+
+  gtiz_locales.languages = Object.keys(gtiz_languages).map(code => ({
+    code: code,
+    description: gtiz_languages[code]['_description'] || code,
+    active: false
+  }));
+  
+  if (gtiz_locales.languages.length === 0) {
+    console.warn('No languages found in gtiz_languages object.');
+    gtiz_locales.languages = [{
+      code: 'en',
+      description: 'English',
+      active: true
+    }];
+    return;
+  }
+
+  gtiz_locales.languages.forEach(obj => {
     if (lang.includes(obj.code)) {
       obj.active = true;
     } else {
