@@ -142,20 +142,28 @@ gtiz_file_handler.commaAlert = function() {
 	gtiz_modal.buildNotifier(title, contents, feedback, f_type);
 }
 
-gtiz_file_handler.addLatLonToMetadata = function(metadata, countries, column) {
+gtiz_file_handler.addLatLonToMetadata = function (metadata, countries, column) {
+	// Normalize countries keys to lowercase with underscores
+	let normalizedCountries = {};
+	for (let key in countries) {
+		if (countries.hasOwnProperty(key)) {
+			normalizedCountries[key.toLowerCase().replace(/\s+/g, '_')] = countries[key];
+		}
+	}
+
 	for (let key in metadata) {
 		if (metadata.hasOwnProperty(key)) {
 			let entry = metadata[key];
-			let countryName = entry[column].toLowerCase().replace(/\s+/g, '_'); // Normalize country name
-			if (countries.hasOwnProperty(countryName)) {
-				entry.latitude = countries[countryName].latitude;
-				entry.longitude = countries[countryName].longitude;
+			let countryName = entry[column].toLowerCase().replace(/\s+/g, '_');
+			if (normalizedCountries.hasOwnProperty(countryName)) {
+				entry.latitude = normalizedCountries[countryName].latitude;
+				entry.longitude = normalizedCountries[countryName].longitude;
 			} else {
 				console.warn(`Country ${entry[column]} not found in countries object`);
 			}
 		}
 	}
-}
+};
 
 /**
  * 
