@@ -154,12 +154,12 @@ gtiz_file_handler.addLatLonToMetadata = function (metadata, countries, column) {
 	for (let key in metadata) {
 		if (metadata.hasOwnProperty(key)) {
 			let entry = metadata[key];
-			let countryName = entry[column].toLowerCase().replace(/\s+/g, '_');
+			let countryName = entry[column] ? entry[column].toLowerCase().replace(/\s+/g, '_') : null;
 			if (normalizedCountries.hasOwnProperty(countryName)) {
 				entry.latitude = normalizedCountries[countryName].latitude;
 				entry.longitude = normalizedCountries[countryName].longitude;
 			} else {
-				console.warn(`Country ${entry[column]} not found in countries object`);
+				console.log(`Country '${entry[column]}' not found in countries object`);
 			}
 		}
 	}
@@ -510,7 +510,9 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 	}
 	if (lines && typeof lines == 'object') {
 		lines.forEach((line) => {
-			meta[line[id_name]] = line;
+			if (line && !(Object.keys(line).length === 1 && line[Object.keys(line)[0]] === "")) {
+				meta[line[id_name]] = line;
+			}
 		});
 	}
 
