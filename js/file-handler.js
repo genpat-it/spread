@@ -163,7 +163,7 @@ gtiz_file_handler.addLatLonToMetadata = function (metadata, countries, column) {
 			}
 		}
 	}
-};
+}
 
 /**
  * 
