@@ -8,7 +8,7 @@ gtiz_languages.it = {
   "all_fields_required_message": "Ops! Tutti i campi sono obbligatori!",
   "available_zooms": "Zoom disponibili",
   "back_to_full_tree": "Torna all'albero completo",
-  "branch_cutoffs": "Tagli ramo",
+  "branch_cutoffs": "Taglio rami",
   "branch_style": "Stile rami",
   "cannot_remove_column_message": "Non posso rimuovere la colonna indicata; perderesti il collegamento dei metadati con l'albero.",
   "cannot_remove_samples_column_message": "Non è possibile rimuovere colonne dei campioni.",
