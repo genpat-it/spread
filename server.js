@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const url = require('url');
+const { fileURLToPath } = require('url');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
@@ -63,6 +64,12 @@ const ALLOWED_DOMAINS_FOR_DOWNLOAD = new Set(
     (process.env.SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD || '').split(',')
 );
 
+const ALLOWED_LOCAL_ROOTS = (process.env.SERVER_ALLOWED_LOCAL_ROOTS || __dirname)
+    .split(',')
+    .map(entry => entry.trim())
+    .filter(Boolean)
+    .map(entry => path.resolve(entry));
+
 function isAllowedDomain(fileUrl) {
     try {
         const parsedUrl = new URL(fileUrl);
@@ -76,6 +83,14 @@ function isAllowedDomain(fileUrl) {
     }
 }
 
+function isAllowedLocalPath(filePath) {
+    const resolvedPath = path.resolve(filePath);
+    return ALLOWED_LOCAL_ROOTS.some(root => {
+        const relative = path.relative(root, resolvedPath);
+        return !relative.startsWith('..') && !path.isAbsolute(relative);
+    });
+}
+
 // Download endpoint
 app.get('/download', async (req, res) => {
     const { url: fileUrl } = req.query;
@@ -84,12 +99,63 @@ app.get('/download', async (req, res) => {
         return res.status(400).json({ error: 'URL parameter is required' });
     }
 
-    if (!isAllowedDomain(fileUrl)) {
-        return res.status(403).json({ error: 'Domain not allowed' });
-    }
-
     try {
         console.log(`Attempting to download: ${fileUrl}`);
+
+        const parsedUrl = new URL(fileUrl);
+
+        if (parsedUrl.protocol === 'file:') {
+            const localPath = fileURLToPath(fileUrl);
+
+            if (!isAllowedLocalPath(localPath)) {
+                console.error(`Local path not allowed: ${localPath}`);
+                return res.status(403).json({ error: 'Local path not allowed' });
+            }
+
+            const stats = await fs.promises.stat(localPath);
+
+            if (!stats.isFile()) {
+                return res.status(400).json({ error: 'Requested path is not a file' });
+            }
+
+            const fileSizeKB = stats.size / 1024;
+            if (fileSizeKB > MAX_DOWNLOAD_SIZE_KB) {
+                console.error(`Local file exceeds max size: ${fileSizeKB.toFixed(2)} KB`);
+                return res.status(413).json({
+                    error: 'File too large',
+                    details: `Maximum allowed size is ${MAX_DOWNLOAD_SIZE_KB} KB`
+                });
+            }
+
+            const fileName = path.basename(localPath);
+
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Content-Length', stats.size);
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            res.setHeader('Last-Modified', stats.mtime.toUTCString());
+
+            const readStream = fs.createReadStream(localPath);
+
+            readStream.on('error', (error) => {
+                console.error('Local file stream error:', error);
+                if (!res.headersSent) {
+                    res.status(500).json({ error: 'Unable to read local file', details: error.message });
+                } else {
+                    res.end();
+                }
+            });
+
+            readStream.pipe(res);
+            readStream.on('end', () => {
+                console.log(`Successfully served local file: ${localPath}, Total size: ${fileSizeKB.toFixed(2)} KB`);
+            });
+
+            return;
+        }
+
+        if (!isAllowedDomain(fileUrl)) {
+            return res.status(403).json({ error: 'Domain not allowed' });
+        }
 
         // Invia richiesta remota
         let response = await client({

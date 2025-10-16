@@ -270,17 +270,20 @@ You can set custom variables to control the proxy:
 - `SERVER_URLENCODED_LIMIT=5mb`
 - `SERVER_MAX_DOWNLOAD_SIZE_KB=1024`
 - `SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
+- `SERVER_ALLOWED_LOCAL_ROOTS=/absolute/path/one,/absolute/path/two`
+
+`SERVER_ALLOWED_LOCAL_ROOTS` limits which local folders can be served when you request files with a `file://` URL (for example `http://localhost:8080/index.html?tree=file:///path/to/tree.nwk&withProxy`). By default it falls back to the project directory.
 
 Example:
 
 Windows:
 ```
-set SERVER_JSON_LIMIT=2mb && set SERVER_URLENCODED_LIMIT=2mb && set SERVER_MAX_DOWNLOAD_SIZE_KB=1024 && node server.js
+set SERVER_JSON_LIMIT=2mb && set SERVER_URLENCODED_LIMIT=2mb && set SERVER_MAX_DOWNLOAD_SIZE_KB=1024 && set SERVER_ALLOWED_LOCAL_ROOTS=C:\data\spread && node server.js
 ```
 
 Linux:
 ```
-SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_MAX_DOWNLOAD_SIZE_KB=1024 node server.js
+SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_MAX_DOWNLOAD_SIZE_KB=1024 SERVER_ALLOWED_LOCAL_ROOTS=/data/spread node server.js
 ```
 
 You can also specify your proxy:
