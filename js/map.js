@@ -611,7 +611,7 @@ gtiz_map.getPopUpSampleLink = (all, nodes, code, color) => {
   } else {
     cls = 'pu-sample-link warning';
     ctrl = false;
-    link_inner = '<span><i class="iconic iconic-warning-triangle"></i></span> ' + code;
+    link_inner = '<span><i class="tabler tabler-alert-triangle"></i></span> ' + code;
   }
   link.setAttribute('id', id);
   link.setAttribute('data-code', code);
@@ -1200,11 +1200,11 @@ gtiz_map.context_menu = [{
   options : [{
       label : gtiz_locales.current.join_by_coordinates,
       value : 'geographical',
-      icon : 'iconic-pin'
+      icon : 'tabler-map-pin'
     }, {
       label : gtiz_locales.current.join_by_metadata,
       value : 'metadata',
-      icon : 'iconic-file-text'
+      icon : 'tabler-file-text'
   }],
   selected : () => {
     return  gtiz_map.delta_type;
@@ -1233,7 +1233,7 @@ gtiz_map.context_menu = [{
   type : 'abutton',
   id : 'map-reset-delta',
   label : gtiz_locales.current.reset_default,
-  icon : 'iconic-refresh',
+  icon : 'tabler-refresh',
   function : () => {
     gtiz_map.resetMapDelta();
   }
@@ -1273,13 +1273,13 @@ gtiz_map.context_menu = [{
   type : 'abutton',
   id : 'set-map-point-delta-radius',
   label : gtiz_locales.current.set_radius,
-  icon : 'iconic-target',
+  icon : 'tabler-target',
   function : ''
 }, */ {
   type : 'abutton',
   id : 'map-reset-max-min-radius',
   label : gtiz_locales.current.reset_default,
-  icon : 'iconic-refresh',
+  icon : 'tabler-refresh',
   function : () => {
     gtiz_map.resetMinMaxMarkerValues();
   }
@@ -1290,7 +1290,7 @@ gtiz_map.context_menu = [{
   label : () => {
     return gtiz_locales.current.select_all;
   },
-  icon : 'iconic-check-circle',
+  icon : 'tabler-circle-check',
   function : () => {
     gtiz_tree.tree.selectAll();
   }
@@ -1299,7 +1299,7 @@ gtiz_map.context_menu = [{
   label : () => {
     return gtiz_locales.current.deselect_all;
   },
-  icon : 'iconic-minus-circle',
+  icon : 'tabler-circle-minus',
   function : () => {
     gtiz_tree.tree.clearSelection();
   }
@@ -1311,11 +1311,11 @@ gtiz_map.context_menu = [{
   options : [{
       label : gtiz_locales.current.pie_chart_mode,
       value : 'piechart',
-      icon : 'iconic-pie-chart'
+      icon : 'tabler-chart-pie'
     }, {
       label : gtiz_locales.current.heat_map_mode,
       value : 'heatmap',
-      icon : 'iconic-sun'
+      icon : 'tabler-blur'
   }],
   selected : () => {
     return  gtiz_map.markers_type;
@@ -1340,18 +1340,18 @@ gtiz_map.init = function() {
         let geo = gtiz_file_handler.params.geo;
         gtiz_file_handler.getData(geo).then((obj) => {
           if (obj.error) {
-            let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+            let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
             let html = gtiz_locales.current.missing_net_geo_alert;
             if (obj.status) {
               if (obj.status == 403) {
-                title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+                title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
                 let protocol = window.location.protocol;
                 let hostname = window.location.host;
                 let url = protocol + '//' + hostname;
                 html = gtiz_locales.current.forbidden_net_geojson_alert.replace('{0}', url).replace('{1}', url);
               }
               if (obj.status == 404) {
-                title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+                title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
                 html = gtiz_locales.current.not_found_net_geojson_alert;
               }
             }
@@ -1386,7 +1386,7 @@ gtiz_map.init = function() {
           }
         }).catch((err) => {
           console.log(err);
-          let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+          let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
           let contents = [];
           let content = document.createElement('p');
           content.innerHTML = gtiz_locales.current.geojson_file_generic_problem;

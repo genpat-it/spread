@@ -19,14 +19,14 @@ gtiz_metadata.grid_div = document.getElementById("metadata-grid");
 gtiz_metadata.card_menu = [{
   type: 'abutton',
   label: gtiz_locales.current.select_all,
-  icon: 'iconic-check-circle',
+  icon: 'tabler-circle-check',
   function: () => {
     gtiz_metadata.selectAll();
   }
 }, {
   type: 'abutton',
   label: gtiz_locales.current.clean_selection,
-  icon: 'iconic-minus-circle',
+  icon: 'tabler-circle-minus',
   function: () => {
     gtiz_metadata.deselectAll();
   }
@@ -44,13 +44,13 @@ gtiz_metadata.context_menu = [{
       return gtiz_locales.current.selected_only;
     },
     value: 'show_selected',
-    icon: 'iconic-eye'
+    icon: 'tabler-eye'
   }, {
     label: () => {
       return gtiz_locales.current.selected_only;
     },
     value: 'show_all',
-    icon: 'iconic-eye-off'
+    icon: 'tabler-eye-off'
   }],
   selected: () => {
     return gtiz_metadata.show_nodes;
@@ -66,7 +66,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.add_metadata;
   },
-  icon: 'iconic-file-plus',
+  icon: 'tabler-file-plus',
   function: () => {
     gtiz_metadata.changeMetadata('add');
   }
@@ -76,7 +76,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.edit_metadata;
   },
-  icon: 'iconic-edit',
+  icon: 'tabler-pencil',
   function: () => {
     gtiz_metadata.changeMetadata('edit');
   }
@@ -89,7 +89,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.add_metadata_for_selection;
   },
-  icon: 'iconic-file-plus',
+  icon: 'tabler-file-plus',
   function: () => {
     let selected = true;
     gtiz_metadata.changeMetadata('add', selected);
@@ -100,7 +100,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.edit_metadata_for_selection;
   },
-  icon: 'iconic-edit',
+  icon: 'tabler-pencil',
   function: () => {
     let mode = 'edit';
     let selected = true;
@@ -115,7 +115,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.delete_metadata;
   },
-  icon: 'iconic-trash',
+  icon: 'tabler-trash',
   function: () => {
     gtiz_metadata.changeMetadata('remove');
   }
@@ -127,7 +127,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.reset_to_initial_values;
   },
-  icon: 'iconic-redo',
+  icon: 'tabler-refresh',
   function: () => {
     gtiz_metadata.resetGrid();
   }
@@ -157,7 +157,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.move_to_first_position;
   },
-  icon: 'iconic-arrow-left',
+  icon: 'tabler-arrow-left',
   function: () => {
     gtiz_metadata.moveColumn();
   }
@@ -166,7 +166,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.set_as_figure_legend;
   },
-  icon: 'iconic-bookmark',
+  icon: 'tabler-bookmark',
   function: () => {
     gtiz_metadata.setColumnsAsLegend();
   }
@@ -177,7 +177,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.resize_columns;
   },
-  icon: 'iconic-columns-vertical',
+  icon: 'tabler-columns-3',
   function: () => {
     gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
   }
@@ -191,13 +191,13 @@ gtiz_metadata.context_menu = [{
       return gtiz_locales.current.show_hypothetical;
     },
     value: 'show_hypo',
-    icon: 'iconic-eye'
+    icon: 'tabler-eye'
   }, {
     label: () => {
       return gtiz_locales.current.show_hypothetical;
     },
     value: 'hide_hypo',
-    icon: 'iconic-eye-off'
+    icon: 'tabler-eye-off'
   }],
   selected: () => {
     return gtiz_metadata.show_hypothetical;
@@ -215,7 +215,7 @@ gtiz_metadata.context_menu = [{
   label: () => {
     return gtiz_locales.current.download_table;
   },
-  icon: 'iconic-download',
+  icon: 'tabler-download',
   options: [{
     label: '.csv',
     value: 'csv'
@@ -273,7 +273,7 @@ gtiz_metadata.modal_form = {
       type: 'button',
       id: 'metadata-modal-edit-button',
       label: gtiz_locales.current.edit,
-      icon: 'iconic-check',
+      icon: 'tabler-check',
       function: () => {
         gtiz_metadata.editMetadata();
       }
@@ -310,7 +310,7 @@ gtiz_metadata.modal_form = {
       type: 'button',
       id: 'metadata-modal-edit-button',
       label: gtiz_locales.current.edit,
-      icon: 'iconic-check',
+      icon: 'tabler-check',
       function: () => {
         let value = undefined;
         let selected = true;
@@ -347,14 +347,14 @@ gtiz_metadata.modal_form = {
             return gtiz_locales.current.color_by_defined_category;
           },
           value : 'color',
-          icon : 'iconic-information'
+          icon : 'tabler-info-circle'
         },
         {
           label : () => {
             return gtiz_locales.current.color_by_defined_category;
           },
           value : 'leave',
-          icon : 'iconic-ban'
+          icon : 'tabler-ban'
       }],
       selected : () => {
         return  gtiz_metadata.color_by_defined_category;
@@ -366,7 +366,7 @@ gtiz_metadata.modal_form = {
       type: 'button',
       id: 'metadata-modal-add-button',
       label: 'Add',
-      icon: 'iconic-file-plus',
+      icon: 'tabler-file-plus',
       function: () => {
         gtiz_metadata.addMetadata();
       }
@@ -412,14 +412,14 @@ gtiz_metadata.modal_form = {
             return gtiz_locales.current.color_by_defined_category;
           },
           value : 'color',
-          icon : 'iconic-target'
+          icon : 'tabler-target'
         },
         {
           label : () => {
             return gtiz_locales.current.not_color_by_defined_category;
           },
           value : 'leave',
-          icon : 'iconic-ban'
+          icon : 'tabler-ban'
       }],
       selected : () => {
         return  gtiz_metadata.color_by_defined_category;
@@ -431,7 +431,7 @@ gtiz_metadata.modal_form = {
       type: 'button',
       id: 'metadata-modal-add-button',
       label: 'Add',
-      icon: 'iconic-file-plus',
+      icon: 'tabler-file-plus',
       function: () => {
         let selected = true;
         gtiz_metadata.addMetadata(selected);
@@ -461,7 +461,7 @@ gtiz_metadata.modal_form = {
       label: () => {
         return gtiz_locales.current.add_column;
       },
-      icon: 'iconic-plus-circle',
+      icon: 'tabler-circle-plus',
       function: (e) => {
         gtiz_metadata.addModalColumnSelectBox(e);
       },
@@ -472,7 +472,7 @@ gtiz_metadata.modal_form = {
       type: 'button',
       id: 'metadata-modal-remove-button',
       label: gtiz_locales.current.delete,
-      icon: 'iconic-trash',
+      icon: 'tabler-trash',
       function: () => {
         gtiz_metadata.removeMetadata();
       },
@@ -665,7 +665,7 @@ gtiz_metadata.addMetadata = function (selected) {
   } else {
     let feedback = document.querySelector('.modal-feedback');
     feedback.classList.add('warning');
-    feedback.innerHTML = '<p><i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.all_fields_required_message + '</p>';
+    feedback.innerHTML = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.all_fields_required_message + '</p>';
     feedback.classList.add('show');
   }
 }
@@ -690,7 +690,7 @@ gtiz_metadata.removeMetadata = function () {
   if (categories.includes(gtiz_file_handler.samples_column) || categories.includes('ID') || categories.includes('CMP')) {
     let feedback = document.querySelector('.modal-feedback');
     feedback.classList.add('warning');
-    feedback.innerHTML = '<p><i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.cannot_remove_column_message + '</p>';
+    feedback.innerHTML = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.cannot_remove_column_message + '</p>';
     feedback.classList.add('show');
     return;
   }
@@ -736,7 +736,7 @@ gtiz_metadata.editMetadata = function (value, selected) {
   } else {
     let feedback = document.querySelector('.modal-feedback');
     feedback.classList.add('warning');
-    feedback.innerHTML = '<p><i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.all_fields_required_message + '</p>';
+    feedback.innerHTML = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.all_fields_required_message + '</p>';
     feedback.classList.add('show');
   }
 }
@@ -793,7 +793,7 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
         }
         let node = document.createElement('div');
         node.setAttribute('class', 'toggle-option');
-        let icon = option.icon != '' ? '<i class="iconic ' + option.icon + '"></i> ' : '';
+        let icon = option.icon != '' ? '<i class="tabler ' + option.icon + '"></i> ' : '';
         node.innerHTML = icon;
         toggle.append(node);
       });
@@ -835,7 +835,7 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
       a.setAttribute('class', 'modal-action');
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       if (typeof item.label === 'string') {
         a.innerHTML = icon + item.label;
       } else {
@@ -878,7 +878,7 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         if (typeof item.label === 'string') {
           label.innerHTML = icon + item.label;
         } else {
@@ -945,7 +945,7 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         label.innerHTML = icon + item.label;
         box.append(label);
       }
@@ -983,7 +983,7 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       if (item.cls) {
         feedback.classList.add(item.cls);
       }
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       feedback.innerHTML = '<p>' + icon + item.message + '</p>';
       if (typeof item.hidden === 'boolean') {
         if (!item.hidden) {
@@ -1006,7 +1006,7 @@ gtiz_metadata.buildChangeMetadataModalContents = function (mode, selected) {
       } else {
         button.setAttribute('class', 'secondary');
       }
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       button.innerHTML = icon + item.label;
       if (typeof item.hidden === 'boolean') {
         if (item.hidden) {
@@ -1080,7 +1080,7 @@ gtiz_metadata.changeMetadata = function (mode, selected) {
       message.setAttribute('class', 'modal-message');
       message.innerHTML = '<p>' + gtiz_locales.current.oops + '</p>';
       contents.push(message);
-      feedback = '<p><i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.no_item_selected + '</p>';
+      feedback = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.no_item_selected + '</p>';
       f_type = 'warning';
     } else {
       contents = gtiz_metadata.buildChangeMetadataModalContents(mode, selected);
@@ -1131,7 +1131,7 @@ gtiz_metadata.addModalColumnSelectBox = function (e) {
   if (options.length === select_boxes.length) {
     let feedback = document.querySelector('.modal-feedback');
     feedback.classList.add('info');
-    feedback.innerHTML = '<p><i class="iconic iconic-information"></i> ' + gtiz_locales.current.no_additional_metadata_available + '</p>';
+    feedback.innerHTML = '<p><i class="tabler tabler-info-circle"></i> ' + gtiz_locales.current.no_additional_metadata_available + '</p>';
     feedback.classList.add('show');
   } else {
     parent.insertBefore(clone, button);
@@ -1142,7 +1142,7 @@ gtiz_metadata.addModalColumnSelectBox = function (e) {
     remove = document.createElement('a');
     remove.setAttribute('class', 'modal-action modal-action-secondary');
     remove.setAttribute('id', 'metadata-modal-remove-select-button');
-    remove.innerHTML = '<i class="iconic iconic-minus-circle"></i> ' + gtiz_locales.current.remove_column;
+    remove.innerHTML = '<i class="tabler tabler-circle-minus"></i> ' + gtiz_locales.current.remove_column;
     remove.addEventListener('click', (e) => {
       let selects = parent.querySelectorAll('.select-box');
       let feedback = document.querySelector('.modal-feedback');
@@ -1383,7 +1383,7 @@ gtiz_metadata.buildUi = function () {
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
       a.setAttribute('class', 'card-action');
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       a.innerHTML = icon + item.label;
       a.addEventListener('click', (e) => {
         item.function();

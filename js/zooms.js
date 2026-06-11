@@ -100,11 +100,11 @@ gtiz_zooms.context_menu = [{
   options : [{
       label : gtiz_locales.current.show_selection_alerts,
       value : 'show',
-      icon : 'iconic-eye'
+      icon : 'tabler-eye'
     }, {
       label : gtiz_locales.current.hide_selection_alerts,
       value : 'hide',
-      icon : 'iconic-eye-off'
+      icon : 'tabler-eye-off'
   }],
   selected : () => {
     return  gtiz_zooms.selection_alerts;
@@ -118,7 +118,7 @@ gtiz_zooms.context_menu = [{
   label : () => {
     return gtiz_locales.current.select_involved_nodes;
   },
-  icon : 'iconic-check-circle',
+  icon : 'tabler-circle-check',
   function : () => {
     gtiz_zooms.selectInvolvedNodes();
   }
@@ -128,7 +128,7 @@ gtiz_zooms.context_menu = [{
   label : () => {
     return gtiz_locales.current.clean_selection;
   },
-  icon : 'iconic-minus-circle',
+  icon : 'tabler-circle-minus',
   function : () => {
     gtiz_tree.tree.clearSelection();
   }
@@ -142,11 +142,11 @@ gtiz_zooms.context_menu = [{
   options : [{
         label : gtiz_locales.current.use_current_settings,
         value : 'apply',
-        icon : 'iconic-settings-sliders'
+        icon : 'tabler-adjustments-horizontal'
       }, {
         label : gtiz_locales.current.do_not_use_current_settings,
         value : 'not-apply',
-        icon : 'iconic-ban'
+        icon : 'tabler-ban'
     }],
     selected : () => {
       return  gtiz_zooms.apply_settings;
@@ -160,7 +160,7 @@ gtiz_zooms.context_menu = [{
   label : () => {
     return gtiz_locales.current.load_cluster;
   },
-  icon : 'iconic-monitor',
+  icon : 'tabler-affiliate',
   function : () => {
     gtiz_zooms.loadZoomedTree();
   }
@@ -170,7 +170,7 @@ gtiz_zooms.context_menu = [{
   label : () => {
     return gtiz_locales.current.load_cluster_in_new_tab;
   },
-  icon : 'iconic-share',
+  icon : 'tabler-arrow-up-right',
   function : () => {
     gtiz_zooms.loadZoomedTreeInNewTab();
   }
@@ -244,11 +244,11 @@ gtiz_zooms.filtered_context_menu = [{
   options : [{
         label : gtiz_locales.current.use_current_settings,
         value : 'apply',
-        icon : 'iconic-settings-sliders'
+        icon : 'tabler-adjustments-horizontal'
       }, {
         label : gtiz_locales.current.do_not_use_current_settings,
         value : 'not-apply',
-        icon : 'iconic-ban'
+        icon : 'tabler-ban'
     }],
     selected : () => {
       return  gtiz_zooms.apply_settings;
@@ -262,7 +262,7 @@ gtiz_zooms.filtered_context_menu = [{
   label : () => {
     return gtiz_locales.current.load_cluster;
   },
-  icon : 'iconic-monitor',
+  icon : 'tabler-affiliate',
   function : () => {
     gtiz_zooms.loadZoomedTree(true);
   }
@@ -272,7 +272,7 @@ gtiz_zooms.filtered_context_menu = [{
   label : () => {
     return gtiz_locales.current.load_cluster_in_new_tab;
   },
-  icon : 'iconic-share',
+  icon : 'tabler-arrow-up-right',
   function : () => {
     gtiz_zooms.loadZoomedTreeInNewTab(true);
   }
@@ -303,7 +303,7 @@ gtiz_zooms.setBackButton = function() {
     let label = document.createElement('span');
     label.innerHTML = gtiz_locales.current.back_to_full_tree;
     let icon = document.createElement('i');
-    icon.setAttribute('class', 'iconic iconic-refresh');
+    icon.setAttribute('class', 'tabler tabler-refresh');
     button.append(icon);
     button.append(label);
     button.addEventListener('click', (e) => {
@@ -395,18 +395,18 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
   if (tree) {
 		gtiz_file_handler.getData(tree).then((obj) => {
 			if (obj.error) {
-				let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+				let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 				let html = gtiz_locales.current.missing_net_tree_alert;
 				if (obj.status) {
 					if (obj.status == 403) {
-						title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+						title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
 						let protocol = window.location.protocol;
 						let hostname = window.location.host;
 						let url = protocol + '//' + hostname;
 						html = gtiz_locales.current.forbidden_net_tree_alert.replace('{0}', url).replace('{1}', url);
 					}
 					if (obj.status == 404) {
-						title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+						title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
 						html = gtiz_locales.current.not_found_net_tree_alert;
 					}
 				}
@@ -445,18 +445,18 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
           if (metadata) {
 						gtiz_file_handler.getData(metadata).then((obj) => {
 							if (obj.error) {
-								let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+								let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 								let html = gtiz_locales.current.missing_net_tsv_alert;
 								if (obj.status) {
 									if (obj.status == 403) {
-										title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+										title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
 										let protocol = window.location.protocol;
 										let hostname = window.location.host;
 										let url = protocol + '//' + hostname;
 										html = gtiz_locales.current.forbidden_net_metadata_alert.replace('{0}', url).replace('{1}', url);
 									}
 									if (obj.status == 404) {
-										title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+										title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
 										html = gtiz_locales.current.not_found_net_metadata_alert;
 									}
 								}
@@ -481,7 +481,7 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 							}
 						}).catch((err) => {
 							console.log(err);
-							let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+							let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 							let contents = [];
 							let content = document.createElement('p');
 							content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
@@ -508,7 +508,7 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 			}
 		}).catch((err) => {
 			console.log(err);
-			let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+			let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 			let contents = [];
 			let content = document.createElement('p');
 			content.innerHTML = gtiz_locales.current.missing_net_tree_alert;
@@ -536,7 +536,7 @@ gtiz_zooms.selectInvolvedNodes = function() {
   if (codes.length > 0) {
     gtiz_tree.tree.selectNodesByIds(codes);
   } else {
-    let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+    let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
     let contents = [];
     let content = document.createElement('p');
     content.innerHTML = gtiz_locales.current.zooms_clusters_generic_problem;
@@ -771,7 +771,7 @@ gtiz_zooms.getFilteredZoomsMenu = function() {
         }
         let node = document.createElement('div');
         node.setAttribute('class', 'toggle-option');
-        let icon = option.icon != '' ? '<i class="iconic ' + option.icon + '"></i> ' : '';
+        let icon = option.icon != '' ? '<i class="tabler ' + option.icon + '"></i> ' : '';
         node.innerHTML = icon;
         toggle.append(node);
       });
@@ -813,7 +813,7 @@ gtiz_zooms.getFilteredZoomsMenu = function() {
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
       a.setAttribute('class', 'card-action');
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       if (typeof item.label === 'string') {
         a.innerHTML = icon + item.label;
       } else {
@@ -834,7 +834,7 @@ gtiz_zooms.getFilteredZoomsMenu = function() {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         if (typeof item.label === 'string') {
           label.innerHTML = icon + item.label;
         } else {
@@ -895,7 +895,7 @@ gtiz_zooms.getFilteredZoomsMenu = function() {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         if (typeof item.label === 'string') {
           label.innerHTML = icon + item.label;
         } else {
@@ -978,7 +978,7 @@ gtiz_zooms.closeSelectionNotifier = function() {
 gtiz_zooms.showSelectionNotifier = function() {
   if (gtiz_zooms.selection_alerts == 'show') {
     let component = 'tree';
-    let title = '<i class="iconic iconic-sun"></i> ' + gtiz_locales.current.zooms_available_for_selected_nodes;
+    let title = '<i class="tabler tabler-sun"></i> ' + gtiz_locales.current.zooms_available_for_selected_nodes;
     let id = 'selection-message-notifier';
     let contents = [];
     let content = document.createElement('p');
@@ -986,7 +986,7 @@ gtiz_zooms.showSelectionNotifier = function() {
     contents.push(content);
     let actions = [];
     let link = document.createElement('a');
-    link.innerHTML = '<i class="iconic iconic-zoom-in"></i> ' + gtiz_locales.current.see_available_zooms;
+    link.innerHTML = '<i class="tabler tabler-zoom-in"></i> ' + gtiz_locales.current.see_available_zooms;
     link.addEventListener('click', function (e) {
       gtiz_zooms.buildFilterdZoomsSelection(id);
     });
@@ -1003,7 +1003,7 @@ gtiz_zooms.showZoomsAvailableNotifier = function() {
     return;
   }
   let component = 'tree';
-  let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.zooms_found;
+  let title = '<i class="tabler tabler-info-circle"></i> ' + gtiz_locales.current.zooms_found;
   let id = 'zooms-found-notifier';
   let contents = [];
   let content = document.createElement('p');
@@ -1011,7 +1011,7 @@ gtiz_zooms.showZoomsAvailableNotifier = function() {
   contents.push(content);
   let actions = [];
   let link = document.createElement('a');
-  link.innerHTML = '<i class="iconic iconic-zoom-in"></i> ' + gtiz_locales.current.see_available_zooms;
+  link.innerHTML = '<i class="tabler tabler-zoom-in"></i> ' + gtiz_locales.current.see_available_zooms;
   link.addEventListener('click', function (e) {
     let trigger = document.querySelector('[data-menu-type="zooms"]');
     gtiz_context.showMenu('zooms', 'tree', trigger);
@@ -1118,7 +1118,7 @@ gtiz_zooms.setAvailableZooms = function() {
     if (typeof ccm === 'object' && ccm !== null && soi != '') {
       gtiz_zooms.clusters = ccm[soi];
     } else {
-      let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+      let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
       let contents = [];
       let content = document.createElement('p');
       content.innerHTML = gtiz_locales.current.zooms_clusters_generic_problem;
@@ -1181,7 +1181,7 @@ gtiz_zooms.buildZoomsObjects = function() {
       if (gtiz_zooms.msts && gtiz_zooms.msts.length > 0) {
           gtiz_zooms.setAvailableZooms();
       } else {
-        let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+        let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
         let contents = [];
         let content = document.createElement('p');
         content.innerHTML = gtiz_locales.current.zooms_clusters_generic_problem;
@@ -1193,7 +1193,7 @@ gtiz_zooms.buildZoomsObjects = function() {
 
   }, function(err) {
       console.log(err);
-      let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+      let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
       let contents = [];
       let content = document.createElement('p');
       content.innerHTML = gtiz_locales.current.zooms_clusters_generic_problem;
@@ -1279,18 +1279,18 @@ gtiz_zooms.init = function() {
 
       gtiz_file_handler.getData(path).then((obj) => {
         if (obj.error) {
-          let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+          let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
           let html = gtiz_locales.current.missing_net_zooms_alert;
           if (obj.status) {
             if (obj.status == 403) {
-              title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+              title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
               let protocol = window.location.protocol;
               let hostname = window.location.host;
               let url = protocol + '//' + hostname;
               html = gtiz_locales.current.forbidden_net_tree_alert.replace('{0}', url).replace('{1}', url);
             }
             if (obj.status == 404) {
-              title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+              title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
               html = gtiz_locales.current.not_found_net_zooms_alert;
             }
             let contents = [];

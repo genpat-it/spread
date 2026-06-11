@@ -337,7 +337,7 @@ select:focus {
   right: 1rem;
   bottom: 0.7rem;
   display: block;
-  font-family: 'iconic' !important;
+  font-family: 'tabler' !important;
   speak: never;
   font-style: normal;
   font-weight: normal;
@@ -351,19 +351,19 @@ select:focus {
 }
 
 .select-box::after {
-  content: "\e925";
+  content: "\f462";
   -webkit-transform: scale(0.8) translateY(0.1rem);
   transform: scale(0.8) translateY(0.1rem);
 }
 
 .input-box-text::after {
-  content: "\e93a";
+  content: "\f462";
   -webkit-transform: scale(0.8) translateY(0.1rem);
   transform: scale(0.8) translateY(0.1rem);
 }
 
 .input-box-number::after {
-  content: "\e9ca";
+  content: "\f304";
   -webkit-transform-origin: 50%;
   transform-origin: 50%;
   -webkit-transform: scale(0.8) translateY(0rem) rotate(180deg);
@@ -372,11 +372,11 @@ select:focus {
 
 .input-box-text.input-box-disabled::after,
 .input-box-number.input-box-disabled::after {
-  content: "\e9ba";
+  content: "\faa5";
 }
 
 .search-box::after {
-  content: "\e983";
+  content: "\10259";
   -webkit-transform-origin: 50%;
   transform-origin: 50%;
   -webkit-transform: scale(0.8) translateY(0rem);
@@ -918,7 +918,7 @@ button i {
   right: 1rem;
   top: 0.7rem;
   display: block;
-  font-family: 'iconic' !important;
+  font-family: 'tabler' !important;
   speak: never;
   font-style: normal;
   font-weight: normal;
@@ -932,24 +932,24 @@ button i {
 }
 
 .tools .select-box::after {
-  content: "\e986";
+  content: "\f462";
   -webkit-transform: scale(0.8) translateY(0.1rem);
   transform: scale(0.8) translateY(0.1rem);
 }
 .tools .select-box.single-selected::after {
-  content: "\e92e";
+  content: "\f87c";
   -webkit-transform: scale(0.8) translateY(0.1rem);
   transform: scale(0.8) translateY(0.1rem);
 }
 .tools .select-box.multi-selected::after {
-  content: "\e932";
+  content: "\f7e6";
 }
 .tools .select-box.module-selected::after {
-  content: "\e919";
+  content: "\f8c2";
 }
 
 .tools .search-box::after {
-  content: "\e983";
+  content: "\10259";
 }
 
 .tools select,
@@ -1040,7 +1040,7 @@ button i {
 }
 
 .tools a.tag-trigger.selected::after {
-  font-family: 'iconic' !important;
+  font-family: 'tabler' !important;
   speak: never;
   font-style: normal;
   font-weight: normal;
@@ -1052,7 +1052,7 @@ button i {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  content: "\e92c";
+  content: "\faa5";
   display: block;
   position: absolute;
   width: 1.8rem;
@@ -1803,24 +1803,24 @@ main {
   top: 4.4rem;
 }
 
-.card-expand-trigger .iconic-plus-circle {
-  display: block;
+.card-expand-trigger .tabler-circle-plus {
+  display: inline-flex !important;
 }
 
-.card-expand-trigger .iconic-minus-circle {
-  display: none;
+.card-expand-trigger .tabler-circle-minus {
+  display: none !important;
 }
 
 .expanded .card-expand-trigger {
   color: var(--secondary-dark);
 }
 
-.expanded .card-expand-trigger .iconic-plus-circle {
-  display: none;
+.expanded .card-expand-trigger .tabler-circle-plus {
+  display: none !important;
 }
 
-.expanded .card-expand-trigger .iconic-minus-circle {
-  display: block;
+.expanded .card-expand-trigger .tabler-circle-minus {
+  display: inline-flex !important;
 }
 
 .card-expandable .card-context-tools {
@@ -1950,17 +1950,18 @@ main {
 }
 
 .contents blockquote::before {
-  content: "";
+  content: "\f5cc";
   position: absolute;
   top: 0.2rem;
   right: 0.2rem;
   display: block;
   width: 2.9rem;
   height: 2.9rem;
-  background-image: url(../img/iconic/annotation-warning-blu.svg);
-  background-position: center center;
-  background-size: contain;
-  background-repeat: no-repeat;
+  color: var(--main);
+  font-family: 'tabler' !important;
+  font-size: 2.4rem;
+  line-height: 2.9rem;
+  text-align: center;
 }
 
 .contents blockquote p:last-child,
@@ -2010,7 +2011,7 @@ aside {
 }
 
 .a-close {
-  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   display: inline-block;
   width: auto;
   position: absolute;
@@ -2298,7 +2299,7 @@ aside code,
 }
 
 .notifier-close {
-  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   position: absolute;
   right: 1.3rem;
   top: 1.3rem;
@@ -2475,7 +2476,7 @@ aside code,
 }
 
 .modal-close {
-  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   position: absolute;
   right: 1.3rem;
   top: 1.3rem;

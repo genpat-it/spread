@@ -366,7 +366,7 @@ This will expose the application running inside the container on port 3000 of yo
 
 ### Icons
 
-* [https://iconic.app/](https://iconic.app/)
+* [https://tabler.io/icons](https://tabler.io/icons)
 
 ## License
 

@@ -97,7 +97,7 @@ gtiz_modal.buildComponentNotifier = function(component, id, title, contents, act
   }
   let close = document.createElement('div');
   close.setAttribute('class', 'notifier-close');
-  close.innerHTML = '<i class="iconic iconic-close-circle"></i>';
+  close.innerHTML = '<i class="tabler tabler-circle-x"></i>';
   close.addEventListener('click', () => {
     gtiz_modal.closeComponentNotifier(context, notifier, n_contents);
   });
@@ -156,7 +156,7 @@ gtiz_modal.buildNotifier = function(title, contents, feedback, f_type) {
   n_contents.setAttribute('class', 'notifier-contents');
   let close = document.createElement('div');
   close.setAttribute('class', 'notifier-close');
-  close.innerHTML = '<i class="iconic iconic-close-circle"></i>';
+  close.innerHTML = '<i class="tabler tabler-circle-x"></i>';
   close.addEventListener('click', () => {
     gtiz_modal.closeNotifier(notifier, n_contents);
   });

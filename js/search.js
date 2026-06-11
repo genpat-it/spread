@@ -185,7 +185,7 @@ gtiz_search.getMenu = function(obj) {
           category : item.category ? item.category : undefined,
           id : item.id ? item.id : undefined,
           label : typeof item.label === 'function' ? item.label() : item.label,
-          icon : 'iconic-cursor'
+          icon : 'tabler-cursor-text'
         };
         menu.push(obj);
       } else if (item.type === 'number') {
@@ -197,7 +197,7 @@ gtiz_search.getMenu = function(obj) {
           category : item.category ? item.category : undefined,
           id : item.id ? item.id : undefined,
           label : typeof item.label === 'function' ? item.label() : item.label,
-          icon : 'iconic-keyboard'
+          icon : 'tabler-keyboard'
         };
         menu.push(obj);
       } else if (item.type === 'search') {
@@ -209,7 +209,7 @@ gtiz_search.getMenu = function(obj) {
           category : item.category ? item.category : undefined,
           id : item.id ? item.id : undefined,
           label : typeof item.label === 'function' ? item.label() : item.label,
-          icon : 'iconic-search'
+          icon : 'tabler-search'
         };
         menu.push(obj);
       } else if (item.type === 'radio') {
@@ -222,7 +222,7 @@ gtiz_search.getMenu = function(obj) {
             category : item.category ? item.category : undefined,
             id : item.id ? item.id : undefined,
             label : typeof option.label === 'function' ? option.label() : option.label,
-            icon : 'iconic-check-circle'
+            icon : 'tabler-circle-check'
           };
           menu.push(obj);
         });
@@ -235,7 +235,7 @@ gtiz_search.getMenu = function(obj) {
           category : item.category ? item.category : 'Other',
           id : item.id ? item.id : undefined,
           label : typeof item.label === 'function' ? item.label() : item.label,
-          icon : item.icon ? item.icon : 'iconic-cursor'
+          icon : item.icon ? item.icon : 'tabler-cursor-text'
         };
         menu.push(obj);
       }
@@ -316,11 +316,11 @@ gtiz_search.buildUi = function(menu, keyword) {
       form.append(button_box);
       let button = document.createElement('a');
       button.setAttribute('class', 'search-action');
-      let icon = item.icon ? item.icon : 'iconic-arrow-right';
+      let icon = item.icon ? item.icon : 'tabler-arrow-right';
       if (keyword) {
-        button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + gtiz_utils.highlightKeyword(item.label, keyword);
+        button.innerHTML = '<i class="tabler ' + icon + '"></i> ' + gtiz_utils.highlightKeyword(item.label, keyword);
       } else {
-        button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + item.label;
+        button.innerHTML = '<i class="tabler ' + icon + '"></i> ' + item.label;
       }
       button.addEventListener('click', function(e) {
         gtiz_search.findFunction(item);
@@ -342,8 +342,7 @@ gtiz_search.buildUi = function(menu, keyword) {
     result.append(message_box);
     let message = document.createElement('div');
     message.setAttribute('class', 'search-message');
-    let icon = 'iconic-information';
-    message.innerHTML = gtiz_locales.current.missing_tree_alert_search_engine;
+    message.innerHTML = '<i class="tabler tabler-info-circle"></i> ' + gtiz_locales.current.missing_tree_alert_search_engine;
     message_box.append(message);
   }
   container.append(results);

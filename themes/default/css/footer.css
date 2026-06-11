@@ -86,7 +86,7 @@ footer.show .footer-contents {
 }
 
 .footer-close {
-  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   position: absolute;
   right: 1.3rem;
   top: 1.3rem;

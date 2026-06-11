@@ -1326,7 +1326,7 @@
   color: var(--accent);
 }
 
-.dashboard-grapetree .card-context-trigger i.iconic-dots-vertical {
+.dashboard-grapetree .card-context-trigger i.tabler-dots-vertical {
   font-size: 1.4rem;
 }
 
@@ -1698,7 +1698,7 @@
   transition: all 0.3s ease;
 }
 
-.dashboard-grapetree .slider-box-player a.play-trigger i.iconic-play {
+.dashboard-grapetree .slider-box-player a.play-trigger i.tabler-player-play {
   -webkit-transform: translateX(0.1rem);
   transform: translateX(0.1rem);
 }
@@ -1777,7 +1777,7 @@
 }
 
 .component-notifier .notifier-close {
-  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   font-size: 1.3rem;
   color: var(--main);
 }
@@ -2042,7 +2042,7 @@
 .dashboard-grapetree .search-engine-close,
 .dashboard-grapetree .macros-close,
 .dashboard-grapetree .macros-help-trigger {
-  /*PLEASE NOTE: modal close container should include the iconic <i> tag in html*/
+  /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   position: fixed;
   opacity: 0;
   right: 1.1rem;
@@ -2071,9 +2071,9 @@
   right: 3.4rem;
 }
 
-.dashboard-grapetree .search-engine-close .iconic,
-.dashboard-grapetree .macros-close .iconic,
-.dashboard-grapetree .macros-help-trigger .iconic {
+.dashboard-grapetree .search-engine-close .tabler,
+.dashboard-grapetree .macros-close .tabler,
+.dashboard-grapetree .macros-help-trigger .tabler {
   cursor: pointer;
 } 
 

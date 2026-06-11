@@ -1423,7 +1423,7 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		value.setAttribute('class', 'list-value');
 		let check = document.createElement('div');
 		check.setAttribute('class', 'list-check');
-		check.innerHTML = '<i class="iconic iconic-check-circle-empty"></i>';
+		check.innerHTML = '<i class="tabler tabler-circle"></i>';
 		li.appendChild(check);
 		let circle = document.createElement('span');
 		circle.setAttribute('class', 'card-legend-item-circle');
@@ -1540,6 +1540,14 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 	this.legend_div.width(240);
 	var l_height = $("#legend-svg").height();
 	var height = l_height+10;
+	
+	// Fixed: Prevent infinite height growth during collapse operations
+	// Cap maximum height to prevent ui-draggable container from growing uncontrollably
+	var max_reasonable_height = this.height * 0.8; // Max 80% of tree container height
+	if (height > max_reasonable_height) {
+		height = max_reasonable_height;
+	}
+	
 	this.legend_div.css({"max-height":height+"px"});
 	this.legend_div.height(height);
 

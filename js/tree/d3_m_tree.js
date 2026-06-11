@@ -166,7 +166,7 @@ function D3MSTree(element_id,data,callback,height,width){
 				to_collapse = link_distances[20000];
 				alert('Too many nodes. Branches <= '+to_collapse+' are collapsed in initial layout. You can uncollapse them later. ');
 			}
-			delete link_distances;
+			// Fixed: Removed invalid delete operator on local variable - local variables are automatically garbage collected
 		}
 		this._collapseNodes(to_collapse);
 
@@ -1313,9 +1313,13 @@ D3MSTree.prototype._getPieData = function(d, category){
                 }
         }
         if (results.length == 0) {
+                // Hypothetical nodes generated from Newick can survive without a metadata
+                // entry after a TSV reload, so guard the fallback lookup and treat them
+                // as "missing" instead of throwing on this.metadata[d.id][category].
+                var node_metadata = this.metadata[d.id];
                 results = [{
                         value: 1,
-                        type: this.metadata[d.id][category] ? this.metadata[d.id][category] : 'missing',
+                        type: node_metadata && node_metadata[category] ? node_metadata[category] : 'missing',
                         idx:d.id
                 }];
         }
@@ -1429,8 +1433,8 @@ D3MSTree.prototype._addLinks=function(links,ids){
 				target : ids[link.target], 
 			};
 	   })
-	   this.link_distances = {};
-	   this.max_link_distance= new_links.map(function(l){
+	   // Removed unused this.link_distances initialization - property never used
+     this.max_link_distance= new_links.map(function(l){
 		   	return l.value
 	   })
 	   .reduce(function(v1, v2) {

@@ -70,7 +70,7 @@ gtiz_tree.checkBestLinkDistanceUtil = function() {
 
       let icon = document.createElement('div');
       icon.setAttribute('class', 'icon');
-      icon.innerHTML = '<i class="iconic iconic-warning-triangle"></i>'
+      icon.innerHTML = '<i class="tabler tabler-alert-triangle"></i>'
       body.append(icon);
 
       let text = document.createElement('p');
@@ -630,7 +630,7 @@ gtiz_tree.highlightLabels = function(value) {
       item.classList.remove('selected');
       let check = item.querySelector('.list-check');
       let icon = check.querySelector('i');
-      icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+      icon.setAttribute('class', 'tabler tabler-circle');
     });
   }
   
@@ -1231,7 +1231,7 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
       a.setAttribute('class', 'modal-action');
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       a.innerHTML = icon + item.label;
       a.addEventListener('click', (e) => {
         item.function();
@@ -1245,7 +1245,7 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         label.innerHTML = icon + item.label;
         box.append(label);
       }
@@ -1253,7 +1253,7 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
       label.setAttribute('for', 'm-upload-file');
       label.setAttribute('id', 'm-upload-file-label');
       label.setAttribute('class', 'input-file input-file-drag');
-      label.innerHTML = '<i class="iconic iconic-upload"></i> ' + gtiz_locales.current.m_upload_file_label;
+      label.innerHTML = '<i class="tabler tabler-upload"></i> ' + gtiz_locales.current.m_upload_file_label;
       label.addEventListener("drop", (ev) => {
         // Prevent default behavior (Prevent file from being opened)
         ev.stopPropagation();
@@ -1264,11 +1264,11 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
         let files = ev.dataTransfer.files;
         if (files.length === 1) {
           let file_name = files[0].name;
-          label.innerHTML = '<i class="iconic iconic-file"></i> ' + file_name;
+          label.innerHTML = '<i class="tabler tabler-file"></i> ' + file_name;
           item.listener(files);
         } else {
           feedback.classList.add('info');
-          feedback.innerHTML = '<p><i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.dropped_files_alert + '</p>';
+          feedback.innerHTML = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.dropped_files_alert + '</p>';
           feedback.classList.add('show');
         }
       });
@@ -1297,7 +1297,7 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
           let file_name = path.split("\\").pop();
           file_name = file_name.slice(0, 21);
           if (file_name) {
-            label.innerHTML = '<i class="iconic iconic-file"></i> ' + file_name;
+            label.innerHTML = '<i class="tabler tabler-file"></i> ' + file_name;
             item.listener(input.files);
           }
         });
@@ -1307,7 +1307,7 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
       button_box.setAttribute('class', 'button-box');
       let button = document.createElement('button');
       button.setAttribute('class', 'secondary');
-      button.innerHTML = '<i class="iconic iconic-upload"></i> ' + gtiz_locales.current.upload;
+      button.innerHTML = '<i class="tabler tabler-upload"></i> ' + gtiz_locales.current.upload;
       button.addEventListener('click', function(e) {
         item.function();
       });
@@ -1350,13 +1350,13 @@ gtiz_tree.context_menu = [{
       return gtiz_locales.current.show_tooltips;
     },
       value : 'show_tooltips',
-      icon : 'iconic-eye'
+      icon : 'tabler-eye'
     }, {
       label : () => {
         return gtiz_locales.current.show_tooltips;
       },
       value : 'hide_tooltips',
-      icon : 'iconic-eye-off'
+      icon : 'tabler-eye-off'
   }],
   selected : () => {
     return  gtiz_tree.show_node_tooltips;
@@ -1371,7 +1371,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.centre_tree;
   },
-  icon : 'iconic-target',
+  icon : 'tabler-target',
   function : () => {
     gtiz_tree.treeCenter();
   }
@@ -1380,7 +1380,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.static_redraw;
   },
-  icon : 'iconic-edit',
+  icon : 'tabler-pencil',
   function : () => {
     gtiz_tree.treeStaticRedraw();
   }
@@ -1389,7 +1389,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.original_tree;
   },
-  icon : 'iconic-monitor',
+  icon : 'tabler-device-desktop',
   function : () => {
     gtiz_context.closeContextMenu('tree');
     gtiz_tree.originalTree();
@@ -1404,13 +1404,13 @@ gtiz_tree.context_menu = [{
         return gtiz_locales.current.show_hypothetical;
       },
       value : 'show_hypo',
-      icon : 'iconic-eye'
+      icon : 'tabler-eye'
     }, {
       label : () => {
         return gtiz_locales.current.show_hypothetical;
       },
       value : 'hide_hypo',
-      icon : 'iconic-eye-off'
+      icon : 'tabler-eye-off'
   }],
   selected : () => {
     return  gtiz_tree.show_hypothetical;
@@ -1425,7 +1425,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.select_all;
   },
-  icon : 'iconic-check-circle',
+  icon : 'tabler-circle-check',
   function : () => {
     gtiz_tree.tree.selectAll();
   }
@@ -1434,7 +1434,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.deselect_all;
   },
-  icon : 'iconic-minus-circle',
+  icon : 'tabler-circle-minus',
   function : () => {
     gtiz_tree.tree.clearSelection();
   }
@@ -1445,7 +1445,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.collapse_selected_nodes;
   },
-  icon : 'iconic-minimize',
+  icon : 'tabler-arrows-minimize',
   function : () => {
     let selected = gtiz_tree.tree.getSelectedNodeIDs();
     gtiz_tree.tree.collapseSpecificNodes(selected);
@@ -1455,7 +1455,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.expand_selected_nodes;
   },
-  icon : 'iconic-maximize',
+  icon : 'tabler-arrows-maximize',
   function : () => {
     let selected = gtiz_tree.tree.getSelectedNodeIDs();
     gtiz_tree.tree.collapseSpecificNodes(selected, true);
@@ -1465,7 +1465,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.expand_all;
   },
-  icon : 'iconic-check-circle',
+  icon : 'tabler-circle-check',
   function : () => {
     gtiz_tree.tree.manual_collapsing = {};
 		gtiz_tree.tree.collapseNodes(0);
@@ -1477,7 +1477,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.hide_selected_nodes;
   },
-  icon : 'iconic-eye-off',
+  icon : 'tabler-eye-off',
   function : () => {
     let selected = gtiz_tree.tree.getSelectedNodeIDs();
     gtiz_tree.tree.delNodes(selected);
@@ -1487,7 +1487,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.show_selected_subtrees;
   },
-  icon : 'iconic-eye',
+  icon : 'tabler-eye',
   function : () => {
     let selected = gtiz_tree.tree.getSelectedNodeIDs();
     gtiz_tree.tree.delOtherNodes(selected);
@@ -1497,7 +1497,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.show_whole_tree;
   },
-  icon : 'iconic-relation-graph',
+  icon : 'tabler-hierarchy',
   function : () => {
     gtiz_tree.tree.undeleteNodes();
   }
@@ -1510,7 +1510,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.save_spread
   },
-  icon : 'iconic-folder',
+  icon : 'tabler-folder',
   function : () => {
     let mode = 'save';
     gtiz_tree.openFileHandlerModal(mode);
@@ -1521,7 +1521,7 @@ gtiz_tree.context_menu = [{
   label : () => {
     return gtiz_locales.current.load_spread
   },
-  icon : 'iconic-file-plus',
+  icon : 'tabler-file-plus',
   function : () => {
     let mode = 'load';
     gtiz_tree.openFileHandlerModal(mode);
@@ -1535,7 +1535,7 @@ gtiz_tree.context_menu = [{
   label: () => {
     return gtiz_locales.current.download_image;
   },
-  icon : 'iconic-photo',
+  icon : 'tabler-photo',
   options: [{
     label: '.svg',
     value: 'svg'

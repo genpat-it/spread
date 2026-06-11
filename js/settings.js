@@ -29,11 +29,11 @@ gtiz_settings.cfg = [{
     options : [{
       label : gtiz_locales.current.show_labels,
       value : 'shown',
-      icon : 'iconic-eye'
+      icon : 'tabler-eye'
     }, {
         label : gtiz_locales.current.hide_labels,
         value : 'hidden',
-        icon : 'iconic-eye-off'
+        icon : 'tabler-eye-off'
       }],
     selected : () => {
       return  gtiz_tree.show_node_labels;
@@ -108,11 +108,11 @@ gtiz_settings.cfg = [{
     options : [{
         label : gtiz_locales.current.individual_segments,
         value : 'shown',
-        icon : 'iconic-eye'
+        icon : 'tabler-eye'
     }, {
       label : gtiz_locales.current.individual_segments,
       value : 'hidden',
-      icon : 'iconic-eye-off'
+      icon : 'tabler-eye-off'
     }],
     selected : () => {
       return  gtiz_tree.individual_segments;
@@ -194,11 +194,11 @@ gtiz_settings.cfg = [{
     options : [{
       label : gtiz_locales.current.show_labels,
       value : 'shown',
-      icon : 'iconic-eye'
+      icon : 'tabler-eye'
     }, {
       label : gtiz_locales.current.hide_labels,
       value : 'hidden',
-      icon : 'iconic-eye-off'
+      icon : 'tabler-eye-off'
     }],
     selected : () => {
       return  gtiz_tree.show_branch_labels;
@@ -311,11 +311,11 @@ gtiz_settings.cfg = [{
     options : [{
       label : gtiz_locales.current.log_scale,
       value : 'active',
-      icon : 'iconic-check-circle'
+      icon : 'tabler-circle-check'
     }, {
       label : gtiz_locales.current.log_scale,
       value : 'not-active',
-      icon : 'iconic-ban'
+      icon : 'tabler-ban'
     }],
     selected : () => {
       return  gtiz_tree.branch_log_scale;
@@ -379,11 +379,11 @@ gtiz_settings.cfg = [{
     options : [{
         label : gtiz_locales.current.static,
         value : 'static',
-        icon : 'iconic-code'
+        icon : 'tabler-ruler'
       }, {
         label : gtiz_locales.current.dynamic,
         value : 'dynamic',
-        icon : 'iconic-video'
+        icon : 'tabler-atom-2'
     }],
     selected : () => {
       return  gtiz_tree.rendering_mode;
@@ -543,7 +543,7 @@ gtiz_settings.buildForm = function(form, menu) {
           }
           let node = document.createElement('div');
           node.setAttribute('class', 'toggle-option');
-          let icon = option.icon != '' ? '<i class="iconic ' + option.icon + '"></i> ' : '';
+          let icon = option.icon != '' ? '<i class="tabler ' + option.icon + '"></i> ' : '';
           node.innerHTML = icon;
           toggle.append(node);
         });
@@ -572,7 +572,7 @@ gtiz_settings.buildForm = function(form, menu) {
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
-          let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+          let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
           label.innerHTML = icon + item.label;
           box.append(label);
         }
@@ -618,7 +618,7 @@ gtiz_settings.buildForm = function(form, menu) {
         box.setAttribute('class', 'button-box not-draggable');
         let a = document.createElement('a');
         a.setAttribute('class', 'card-action');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         a.innerHTML = icon + item.label;
         a.addEventListener('click', (e) => {
           item.function();
@@ -699,7 +699,7 @@ gtiz_settings.buildForm = function(form, menu) {
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
-          let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+          let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
           label.innerHTML = icon + item.label;
           box.append(label);
         }
@@ -762,7 +762,7 @@ gtiz_settings.buildForm = function(form, menu) {
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
-          let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+          let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
           label.innerHTML = icon + item.label;
           box.append(label);
         }
@@ -806,7 +806,7 @@ gtiz_settings.buildForm = function(form, menu) {
         if (item.label) {
           let label = document.createElement('div');
           label.setAttribute('class', 'form-label');
-          let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+          let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
           label.innerHTML = icon + item.label;
           box.append(label);
         }
@@ -833,7 +833,7 @@ gtiz_settings.buildForm = function(form, menu) {
             row.setAttribute('data-value', option.value);
             let icon = document.createElement('div');
             icon.setAttribute('class', 'list-check');
-            icon.innerHTML = '<i class="iconic iconic-check-circle-empty"></i>';
+            icon.innerHTML = '<i class="tabler tabler-circle"></i>';
             row.append(icon);
             let label = document.createElement('div');
             label.setAttribute('class', 'list-value');
@@ -841,18 +841,18 @@ gtiz_settings.buildForm = function(form, menu) {
             row.append(label);
             if (option.value == selected) {
               row.classList.add('selected');
-              icon.innerHTML = '<i class="iconic iconic-check-circle"></i>';
+              icon.innerHTML = '<i class="tabler tabler-circle-check"></i>';
             }
             row.addEventListener('click', (e) => {
               let rows = box.querySelectorAll('.list-row');
               rows.forEach(el => {
                 el.classList.remove('selected');
                 let check = el.querySelector('.list-check');
-                check.innerHTML = '<i class="iconic iconic-check-circle-empty"></i>';
+                check.innerHTML = '<i class="tabler tabler-circle"></i>';
               });
               let value = row.getAttribute('data-value');
               row.classList.add('selected');
-              icon.innerHTML = '<i class="iconic iconic-check-circle"></i>';
+              icon.innerHTML = '<i class="tabler tabler-circle-check"></i>';
               item.function(value);
             });
             box.append(row);

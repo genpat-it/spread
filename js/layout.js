@@ -19,11 +19,11 @@ gtiz_layout.cfg = [{
   options : [{
       label : gtiz_locales.current.settings,
       value : 'on',
-      icon : 'iconic-settings-sliders'
+      icon : 'tabler-settings'
     }, {
       label : gtiz_locales.current.settings,
       value : 'off',
-      icon : 'iconic-ban'
+      icon : 'tabler-ban'
   }],
   selected : () => {
     return  gtiz_layout.settings;
@@ -40,11 +40,11 @@ gtiz_layout.cfg = [{
   options : [{
       label : gtiz_locales.current.map,
       value : 'on',
-      icon : 'iconic-pin'
+      icon : 'tabler-map-pin'
     }, {
       label : gtiz_locales.current.map,
       value : 'off',
-      icon : 'iconic-ban'
+      icon : 'tabler-ban'
   }],
   selected : () => {
     return  gtiz_layout.map;
@@ -61,11 +61,11 @@ gtiz_layout.cfg = [{
   options : [{
       label : gtiz_locales.current.metadata,
       value : 'on',
-      icon : 'iconic-dashboard'
+      icon : 'tabler-layout-rows'
     }, {
       label : gtiz_locales.current.metadata,
       value : 'off',
-      icon : 'iconic-ban'
+      icon : 'tabler-ban'
   }],
   selected : () => {
     return  gtiz_layout.metadata;
@@ -82,11 +82,11 @@ gtiz_layout.cfg = [{
   options : [{
       label : gtiz_locales.current.legend,
       value : 'on',
-      icon : 'iconic-legend'
+      icon : 'tabler-list-details'
     }, {
       label : gtiz_locales.current.legend,
       value : 'off',
-      icon : 'iconic-ban'
+      icon : 'tabler-ban'
   }],
   selected : () => {
     return  gtiz_layout.legend;
@@ -103,11 +103,11 @@ gtiz_layout.cfg = [{
   options : [{
       label : gtiz_locales.current.video,
       value : 'on',
-      icon : 'iconic-video-camera'
+      icon : 'tabler-video'
     }, {
       label : gtiz_locales.current.video,
       value : 'off',
-      icon : 'iconic-video-camera-off'
+      icon : 'tabler-video-off'
   }],
   selected : () => {
     return  gtiz_layout.video;
@@ -124,11 +124,11 @@ gtiz_layout.cfg = [{
   options : [{
       label : gtiz_locales.current.fullscreen,
       value : 'on',
-      icon : 'iconic-maximize'
+      icon : 'tabler-maximize'
     }, {
       label : gtiz_locales.current.fullscreen,
       value : 'off',
-      icon : 'iconic-minimize'
+      icon : 'tabler-minimize'
   }],
   selected : () => {
     return  gtiz_layout.fullscreen;
@@ -193,9 +193,9 @@ gtiz_layout.expandComponent = function(component, trigger) {
   node.classList.toggle(cls);
   
   if (node.classList.contains(cls)) {
-    trigger.innerHTML = '<i class="iconic iconic-minimize"></i>';
+    trigger.innerHTML = '<i class="tabler tabler-minimize"></i>';
   } else {
-    trigger.innerHTML = '<i class="iconic iconic-maximize"></i>';
+    trigger.innerHTML = '<i class="tabler tabler-maximize"></i>';
   }
 
   if (component == 'map') {
@@ -486,7 +486,7 @@ gtiz_layout.buildToolsUi = function(obj) {
         }
         let node = document.createElement('div');
         node.setAttribute('class', 'toggle-option');
-        let icon = option.icon != '' ? '<i class="iconic ' + option.icon + '"></i> ' : '';
+        let icon = option.icon != '' ? '<i class="tabler ' + option.icon + '"></i> ' : '';
         node.innerHTML = icon;
         toggle.append(node);
       });

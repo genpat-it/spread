@@ -100,7 +100,7 @@ gtiz_context.getMenu = function(type) {
         }
         let node = document.createElement('div');
         node.setAttribute('class', 'toggle-option');
-        let icon = option.icon != '' ? '<i class="iconic ' + option.icon + '"></i> ' : '';
+        let icon = option.icon != '' ? '<i class="tabler ' + option.icon + '"></i> ' : '';
         node.innerHTML = icon;
         toggle.append(node);
       });
@@ -142,7 +142,7 @@ gtiz_context.getMenu = function(type) {
       box.setAttribute('class', 'button-box');
       let a = document.createElement('a');
       a.setAttribute('class', 'card-action');
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       if (typeof item.label === 'string') {
         a.innerHTML = icon + item.label;
       } else {
@@ -165,7 +165,7 @@ gtiz_context.getMenu = function(type) {
       }
       let a = document.createElement('a');
       a.setAttribute('class', 'card-action');
-      let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
       if (typeof item.label === 'string') {
         a.innerHTML = icon + item.label;
       } else {
@@ -216,7 +216,7 @@ gtiz_context.getMenu = function(type) {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         if (typeof item.label === 'string') {
           label.innerHTML = icon + item.label;
         } else {
@@ -277,7 +277,7 @@ gtiz_context.getMenu = function(type) {
       if (item.label) {
         let label = document.createElement('div');
         label.setAttribute('class', 'form-label');
-        let icon = item.icon != '' ? '<i class="iconic ' + item.icon + '"></i> ' : '';
+        let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
         if (typeof item.label === 'string') {
           label.innerHTML = icon + item.label;
         } else {
@@ -378,7 +378,7 @@ gtiz_context.buildMenuUi = function(type, relation) {
   tools.setAttribute('class', 'card-context-tools');
   let close = document.createElement('div');
   close.setAttribute('class', 'card-close-trigger');
-  close.innerHTML = '<i class="iconic iconic-close-circle"></i>';
+  close.innerHTML = '<i class="tabler tabler-circle-x"></i>';
   close.addEventListener('click', (e) => {
     gtiz_context.closeContextMenu(type, relation);
   });
@@ -402,7 +402,7 @@ gtiz_context.buildMenuUi = function(type, relation) {
     title.innerHTML = gtiz_locales.current.map_tools;
     let help = document.createElement('div');
     help.setAttribute('class', 'help-trigger');
-    help.innerHTML = '<i class="iconic iconic-help-circle"></i>';
+    help.innerHTML = '<i class="tabler tabler-help-circle"></i>';
     help.addEventListener('click', (e) => {
       gtiz_help.getHelp(type);
     });

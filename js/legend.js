@@ -17,14 +17,14 @@ gtiz_legend.context_menu = [{
         return gtiz_locales.current.related_nodes_selection;
       },
       value : 'qualitative',
-      icon : 'iconic-information'
+      icon : 'tabler-affiliate'
     },
     {
       label : () => {
         return gtiz_locales.current.visual_selection;
       },
       value : 'visual',
-      icon : 'iconic-sun'
+      icon : 'tabler-brush'
   }],
   selected : () => {
     return  gtiz_legend.selection_mode;
@@ -40,7 +40,7 @@ gtiz_legend.context_menu = [{
   label : () => {
     return gtiz_locales.current.select_all_items;
   },
-  icon : 'iconic-check-circle',
+  icon : 'tabler-circle-check',
   function : () => {
     gtiz_legend.selectAll();
   }
@@ -50,7 +50,7 @@ gtiz_legend.context_menu = [{
   label : () => {
     return gtiz_locales.current.invert_selection;
   },
-  icon : 'iconic-sticker',
+  icon : 'tabler-arrows-shuffle',
   function : () => {
     gtiz_legend.invertSelection();
   }
@@ -60,7 +60,7 @@ gtiz_legend.context_menu = [{
   label : () => {
     return gtiz_locales.current.clean_selection;
   },
-  icon : 'iconic-minus-circle',
+  icon : 'tabler-circle-minus',
   function : () => {
     gtiz_legend.unselectAll();
   }
@@ -243,7 +243,7 @@ gtiz_legend.context_menu = [{
   label : () => {
     return gtiz_locales.current.quick_gradient;
   },
-  icon : 'iconic-clock',
+  icon : 'tabler-clock',
   function : () => {
     gtiz_legend.quickGradient();
   }
@@ -257,14 +257,14 @@ gtiz_legend.context_menu = [{
         return gtiz_locales.current.list_view;
       },
       value : 'list',
-      icon : 'iconic-legend'
+      icon : 'tabler-list-details'
     },
     {
       label : () => {
         return gtiz_locales.current.histogram_view;
       },
       value : 'histogram',
-      icon : 'iconic-chart'
+      icon : 'tabler-chart-bar'
   }],
   selected : () => {
     return  gtiz_legend.view_mode;
@@ -309,9 +309,9 @@ gtiz_legend.toggleItemSelection = function(obj, tree) {
   let icon = check.querySelector('i');
   item.classList.toggle('selected');
   if (item.classList.contains('selected')) {
-    icon.setAttribute('class', 'iconic iconic-check-circle');
+    icon.setAttribute('class', 'tabler tabler-circle-check');
   } else {
-    icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+    icon.setAttribute('class', 'tabler tabler-circle');
   }
   if (selection_mode == 'qualitative') {
     gtiz_legend.nodeSelection(obj, tree);
@@ -743,7 +743,7 @@ gtiz_legend.selectAll = function () {
     item.classList.add('selected');
     let check = item.querySelector('.list-check');
     let icon = check.querySelector('i');
-    icon.setAttribute('class', 'iconic iconic-check-circle');
+    icon.setAttribute('class', 'tabler tabler-circle-check');
   });
   if (selection_mode == 'qualitative') {
     gtiz_legend.nodeSelection();
@@ -763,7 +763,7 @@ gtiz_legend.unselectAll = function () {
     item.classList.remove('selected');
     let check = item.querySelector('.list-check');
     let icon = check.querySelector('i');
-    icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+    icon.setAttribute('class', 'tabler tabler-circle');
   });
   if (selection_mode == 'qualitative') {
     gtiz_legend.nodeSelection();
@@ -784,10 +784,10 @@ gtiz_legend.invertSelection = function () {
     let icon = check.querySelector('i');
     if (item.classList.contains('selected')) {
       item.classList.remove('selected');
-      icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+      icon.setAttribute('class', 'tabler tabler-circle');
     } else {
       item.classList.add('selected');
-      icon.setAttribute('class', 'iconic iconic-check-circle');
+      icon.setAttribute('class', 'tabler tabler-circle-check');
     }
   });
   if (selection_mode == 'qualitative') {
@@ -823,7 +823,7 @@ gtiz_legend.resetVisualSelection = function () {
     item.classList.remove('selected');
     let check = item.querySelector('.list-check');
     let icon = check.querySelector('i');
-    icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+    icon.setAttribute('class', 'tabler tabler-circle');
     let color = item.getAttribute('data-group-colour-izsam');
     let value = item.getAttribute('data-real-group-izsam');
     let group = {
@@ -869,7 +869,7 @@ gtiz_legend.resetQualitativeSelection = function() {
     item.classList.remove('selected');
     let check = item.querySelector('.list-check');
     let icon = check.querySelector('i');
-    icon.setAttribute('class', 'iconic iconic-check-circle-empty');
+    icon.setAttribute('class', 'tabler tabler-circle');
   });
   // gtiz_tree.tree.clearSelection();
   gtiz_tree.tree._updateSelectionStatus('clear');
@@ -908,7 +908,7 @@ gtiz_legend.setSelection = function() {
         item.classList.add('selected');
         let check = item.querySelector('.list-check');
         let icon = check.querySelector('i');
-        icon.setAttribute('class', 'iconic iconic-check-circle');
+        icon.setAttribute('class', 'tabler tabler-circle-check');
       }
     });
     if (selection_mode == 'qualitative') {

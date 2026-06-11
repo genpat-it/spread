@@ -7,7 +7,7 @@ gtiz_file_handler.save_options = [
 		type : 'abutton',
 		id : 'file-handler-save-json',
 		label : gtiz_locales.current.save_as_complete_json + ' (.json)',
-		icon : 'iconic-file',
+		icon : 'tabler-file',
 		function : () => {
 			gtiz_file_handler.saveGrapeTreeAsJson();
 		}
@@ -15,7 +15,7 @@ gtiz_file_handler.save_options = [
 		type : 'abutton',
 		id : 'file-handler-export-nwk',
 		label : gtiz_locales.current.export_newick + ' (.nwk)',
-		icon : 'iconic-file-text',
+		icon : 'tabler-file-text',
 		function : () => {
 			let text = gtiz_tree.tree.getTreeAsNewick();
     	let timestamp =  Date.now();
@@ -34,7 +34,7 @@ gtiz_file_handler.save_options = [
 		type : 'abutton',
 		id : 'file-handler-export-metadata',
 		label : gtiz_locales.current.export_metadata + ' (.tsv)',
-		icon : 'iconic-file-text',
+		icon : 'tabler-file-text',
 		function : () => {
       let feedback = document.querySelector('.modal-feedback');
       if (gtiz_metadata.initialized) {
@@ -51,7 +51,7 @@ gtiz_file_handler.save_options = [
 		type : 'abutton',
 		id : 'file-handler-export-geojson',
 		label : gtiz_locales.current.export_geoJson + ' (.geoJson)',
-		icon : 'iconic-pin',
+		icon : 'tabler-map-pin',
 		function : () => {
 			let text = gtiz_map.geojson;
     	let timestamp =  Date.now();
@@ -73,7 +73,7 @@ gtiz_file_handler.load_options = [
 		type : 'file',
 		id : 'm-upload-file',
 		label : gtiz_locales.current.select_a_file,
-		icon : 'iconic-file',
+		icon : 'tabler-file',
 		listener : (value) => {
 			gtiz_file_handler.modalSetFilesToLoad(value);
 		},
@@ -132,7 +132,7 @@ gtiz_file_handler.isValidJSON = function(str) {
 }
 
 gtiz_file_handler.commaAlert = function() {
-	let title = '<i class="iconic iconic-information"></i> ' + gtiz_locales.current.please_note;
+	let title = '<i class="tabler tabler-info-circle"></i> ' + gtiz_locales.current.please_note;
 	let contents = [];
 	let content = document.createElement('p');
 	content.innerHTML = gtiz_locales.current.lon_lat_comma_alert;
@@ -461,14 +461,20 @@ gtiz_file_handler.getJsonFromUrl = function(hashBased) {
  * 
  */
 gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
-	if( msg === 'Error') {
-		console.log(gtiz_locales.current.malformed_metadata_file_msg);
-		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+	if (msg === 'Malformed' || msg === 'ApplyError') {
+		let error = lines;
+		let error_name = error && error.name ? error.name : 'Error';
+		let error_message = error && error.message ? error.message : String(error);
+		let feedback = '<p>' + error_name + ': ' + error_message + '</p>';
+		let f_type = msg === 'Malformed' ? 'warning' : 'info';
+		let message_key = msg === 'Malformed' ? 'malformed_metadata_file_msg' : 'metadata_application_error_msg';
+		console.log(gtiz_locales.current[message_key]);
+		let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 		let contents = [];
 		let content = document.createElement('p');
-		content.innerHTML = gtiz_locales.current.malformed_metadata_file_msg;
+		content.innerHTML = gtiz_locales.current[message_key];
 		contents.push(content);
-		gtiz_modal.buildNotifier(title, contents);
+		gtiz_modal.buildNotifier(title, contents, feedback, f_type);
 		gtiz_layout.body.classList.remove('tree-not-defined');
 		return;
 	}
@@ -499,7 +505,7 @@ gtiz_file_handler.parseMetadata = function(msg, lines, header_index) {
 		}
 	} else {
 		console.log(gtiz_locales.current.header_index_warning);
-		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+		let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 		let contents = [];
 		let content = document.createElement('p');
 		content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
@@ -612,20 +618,35 @@ gtiz_file_handler.loadMetadataText = function(text) {
 	let return_data = [];
 	try {
 		let lines = text.split(/\r\n|\r|\n/g);
+		if (!lines.length || !lines[0] || !lines[0].trim()) {
+			throw new Error('Metadata TSV is empty or missing a header row.');
+		}
 		let delimiter = (lines[0].indexOf(",") >= 0 ? "," : "\t");
 		let header = lines[0].split(delimiter);
-		lines.forEach(line => {
+		lines.forEach((line, index) => {
+			if (index > 0 && !line.trim()) {
+				return;
+			}
 			let map = {};
 			let arr = line.split(delimiter);
+			if (arr.length !== header.length) {
+				throw new Error('Metadata TSV row ' + (index + 1) + ' has ' + arr.length + ' columns, expected ' + header.length + '.');
+			}
 			for (var col in arr){
 				map[header[col]] = arr[col];
 			}
 			return_data.push(map);
 		});
 		gtiz_file_handler.tsv_metadata = text;
-		gtiz_file_handler.parseMetadata("OK", return_data, header);
+		try {
+			gtiz_file_handler.parseMetadata("OK", return_data, header);
+		} catch (error) {
+			console.error(error);
+			gtiz_file_handler.parseMetadata("ApplyError", error);
+		}
 	} catch(error){
-		gtiz_file_handler.parseMetadata("Error", error.message);
+		console.error(error);
+		gtiz_file_handler.parseMetadata("Malformed", error);
 	}
 };
 
@@ -663,18 +684,18 @@ gtiz_file_handler.loadNetFiles = function() {
 		gtiz_file_handler.getData(tree).then((obj) => {
 			if (obj.error) {
 				gtiz_file_handler.initTreeDropArea();
-				let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+				let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 				let html = gtiz_locales.current.missing_net_tree_alert;
 				if (obj.status) {
 					if (obj.status == 403) {
-						title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+						title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
 						let protocol = window.location.protocol;
 						let hostname = window.location.host;
 						let url = protocol + '//' + hostname;
 						html = gtiz_locales.current.forbidden_net_tree_alert.replace('{0}', url).replace('{1}', url);
 					}
 					if (obj.status == 404) {
-						title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+						title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
 						html = gtiz_locales.current.not_found_net_tree_alert;
 					}
 				}
@@ -708,18 +729,18 @@ gtiz_file_handler.loadNetFiles = function() {
 					if (metadata) {
 						gtiz_file_handler.getData(metadata).then((obj) => {
 							if (obj.error) {
-								let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+								let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 								let html = gtiz_locales.current.missing_net_tsv_alert;
 								if (obj.status) {
 									if (obj.status == 403) {
-										title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+										title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
 										let protocol = window.location.protocol;
 										let hostname = window.location.host;
 										let url = protocol + '//' + hostname;
 										html = gtiz_locales.current.forbidden_net_metadata_alert.replace('{0}', url).replace('{1}', url);
 									}
 									if (obj.status == 404) {
-										title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+										title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
 										html = gtiz_locales.current.not_found_net_metadata_alert;
 									}
 								}
@@ -753,7 +774,7 @@ gtiz_file_handler.loadNetFiles = function() {
 							}
 						}).catch((err) => {
 							console.log(err);
-							let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+							let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 							let contents = [];
 							let content = document.createElement('p');
 							content.innerHTML = gtiz_locales.current.metadata_file_generic_problem;
@@ -789,7 +810,7 @@ gtiz_file_handler.loadNetFiles = function() {
 		}).catch((err) => {
 			console.log(err);
 			gtiz_file_handler.initTreeDropArea();
-			let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+			let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 			let contents = [];
 			let content = document.createElement('p');
 			content.innerHTML = gtiz_locales.current.missing_net_tree_alert;
@@ -833,7 +854,7 @@ gtiz_file_handler.dropFiles = function(div) {
 gtiz_file_handler.loadFailed = function(msg) {
 	// open modal to show loadFailed message
 	console.log(gtiz_locales.current.load_failed + ': '+ msg);
-	let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+	let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 	let contents = [];
 	let content = document.createElement('p');
 	content.innerHTML = gtiz_locales.current.load_failed;
@@ -1130,7 +1151,7 @@ gtiz_file_handler.saveGrapeTreeAsJson = function() {
 		}
 	} else {
 		console.log(gtiz_locales.current.unable_to_get_spread);
-		let title = '<i class="iconic iconic-warning-triangle"></i> ' + gtiz_locales.current.oops;
+		let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 		let contents = [];
 		let content = document.createElement('p');
 		content.innerHTML = gtiz_locales.current.unable_to_get_spread;

@@ -162,7 +162,7 @@ gtiz_video.endPlayer = function() {
   speed_selector.removeAttribute('disabled');
   let btn = gtiz_video.play_trigger;
   let icon = btn.querySelector('i');
-  icon.setAttribute('class', 'iconic iconic-refresh');
+  icon.setAttribute('class', 'tabler tabler-refresh');
   gtiz_video.cfg.status = 'finished';
 }
 
@@ -224,7 +224,7 @@ gtiz_video.changePlayBtnUI = function(btn, cls) {
   btn.classList.toggle('play');
   btn.classList.toggle('pause');
   let icon = btn.querySelector('i');
-  let icon_cls = 'iconic iconic-' + cls;
+  let icon_cls = cls == 'pause' ? 'tabler tabler-player-pause' : 'tabler tabler-player-play';
   icon.setAttribute('class', icon_cls);
 }
 
@@ -239,7 +239,7 @@ gtiz_video.reset = function(e) {
   btn.classList.remove('pause');
   btn.classList.add('play');
   let icon = btn.querySelector('i');
-  icon.setAttribute('class', 'iconic iconic-play');
+  icon.setAttribute('class', 'tabler tabler-player-play');
   gtiz_video.cfg.status = 'init';
   gtiz_video.cfg.timing = 0;
 

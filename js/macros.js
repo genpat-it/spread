@@ -334,8 +334,8 @@ gtiz_macros.buildUi = function(macros, keyword, type) {
         form.append(button_box);
         let button = document.createElement('a');
         button.setAttribute('class', 'button secondary macros-action');
-        let icon = item.icon ? item.icon : 'iconic-fast-forward';
-        button.innerHTML = '<i class="iconic ' + icon + '"></i> ' + gtiz_locales.current.run;
+        let icon = item.icon ? item.icon : 'tabler-player-track-next';
+        button.innerHTML = '<i class="tabler ' + icon + '"></i> ' + gtiz_locales.current.run;
         button.addEventListener('click', function(e) {
           gtiz_macros.run(item.actions);
           gtiz_macros.closeMacros();
@@ -357,8 +357,7 @@ gtiz_macros.buildUi = function(macros, keyword, type) {
     result.append(message_box);
     let message = document.createElement('div');
     message.setAttribute('class', 'macros-message');
-    let icon = 'iconic-information';
-    message.innerHTML = gtiz_locales.current.missing_tree_alert_macros;
+    message.innerHTML = '<i class="tabler tabler-info-circle"></i> ' + gtiz_locales.current.missing_tree_alert_macros;
     message_box.append(message);
   }
   container.append(results);

@@ -115,7 +115,7 @@ gtiz_locales.buildChangeLanguageModal = function() {
   select_box.setAttribute('class', 'select-box');
   let label = document.createElement('div');
   label.setAttribute('class', 'form-label');
-  label.innerHTML = '<i class="iconic iconic-globe"></i>' + gtiz_languages[code].select_language;
+  label.innerHTML = '<i class="tabler tabler-world"></i>' + gtiz_languages[code].select_language;
   select_box.append(label);
   let select = document.createElement('select');
   let option = document.createElement('option');

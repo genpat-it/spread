@@ -21,7 +21,7 @@ gtiz_languages.en = {
   "category2": "Category 2",
   "centre_tree": "Centre tree",
   "change_language": "Change language",
-  "change_language_alert" : "<p><i class=\"iconic iconic-warning-triangle\"></i> By changing language the application will reset.</p>",
+  "change_language_alert" : "<p><i class=\"tabler tabler-alert-triangle\"></i> By changing language the application will reset.</p>",
   "character": "Character",
   "clean_selection": "Clean selection",
   "closest": "Closest",
@@ -149,12 +149,13 @@ gtiz_languages.en = {
   "lon_lat_comma_alert_feedback": "This change may cause issues with map display.",
   "m_upload_file_label": "Upload .json, .nwk or .tsv file...",
   "macros" : "Macros",
-  "malformed_metadata_file_msg": "It seems the metatada file is malformed.",
+  "malformed_metadata_file_msg": "The metadata TSV could not be parsed. Please verify its delimiter and column structure.",
   "map": "Map",
   "map_tools": "Map tools",
   "max_marker_radius": "Max marker radius",
   "maximum_group_number": "Maximum number of groups",
   "metadata": "Metadata",
+  "metadata_application_error_msg": "The metadata file was parsed, but an internal error occurred while applying it to the tree.",
   "metadata_file_generic_problem": "It seems there is a problem with the metadata file.",
   "metadata_geo_problems": "It seems there is a problem on the definition of geographic coordinates (lat, lon) in the metadata file.",
   "metadata_tools": "Metadata tools",
@@ -197,7 +198,7 @@ gtiz_languages.en = {
   "related_nodes_selection" : "Related nodes selection",
   "remove_column": "Remove column",
   "rendering": "Rendering",
-  "reset_default": "Torna alle impostazioni di default",
+  "reset_default": "Reset to default",
   "reset_to_initial_values": "Reset to initial values",
   "resize_columns" : "Resize columns",
   "run" : "Run",
@@ -279,6 +280,7 @@ gtiz_languages.en = {
   "zooms_found_message": "The current tree has a zoom for one or more detail type.",
   "zooms_tools": "Zoom tools"
 };
+
 /**
  * Français
  * 
@@ -301,7 +303,7 @@ gtiz_languages.fr = {
   "category2": "Catégorie 2",
   "centre_tree": "Centrez l'arborescence",
   "change_language": "Changez de langue",
-  "change_language_alert" : "<p><i class=\"iconic iconic-warning-triangle\"></i> En changeant la langue l'application sera réinitialisée.</p>",
+  "change_language_alert" : "<p><i class=\"tabler tabler-alert-triangle\"></i> En changeant la langue l'application sera réinitialisée.</p>",
   "character": "Caractère",
   "clean_selection": "Effacez la sélection",
   "closest": "Closest",
@@ -429,12 +431,13 @@ gtiz_languages.fr = {
   "lon_lat_comma_alert_feedback": "Cette modification pourrait entra&#238;ner des problèmes d'affichage de la carte.",
   "m_upload_file_label": "S'il vous plait, upload un fichier .json, .nwk ou .tsv...",
   "macros" : "Macros",
-  "malformed_metadata_file_msg": "Il semble que le fichier des métadonnées ne soit pas bien formé.",
+  "malformed_metadata_file_msg": "Le fichier TSV des métadonnées n'a pas pu être analysé. Veuillez vérifier le séparateur et la structure des colonnes.",
   "map": "Carte",
   "map_tools": "Outils pour la carte",
   "max_marker_radius": "Rayon maximal du marqueur",
   "maximum_group_number": "Nombre maximal de groupes",
   "metadata": "Métadonnées",
+  "metadata_application_error_msg": "Le fichier des métadonnées a été analysé, mais une erreur interne s'est produite lors de son application à l'arborescence.",
   "metadata_file_generic_problem": "Il semble y avoir un problème avec le fichier des métadonnées.",
   "metadata_geo_problems": "Il semble y avoir un problème avec la définition des coordonnées géographiques (lat, lon) dans le fichier des métadonnées.",
   "metadata_tools": "Outils pour les métadonnées",
@@ -559,6 +562,7 @@ gtiz_languages.fr = {
   "zooms_found_message": "L'arborescence actuelle a des zooms disponibles pour un ou plusieurs types de détail.",
   "zooms_tools": "Outils zoom"
 };
+
 /**
  * Italiano
  * 
@@ -581,7 +585,7 @@ gtiz_languages.it = {
   "category2": "Categoria 2",
   "centre_tree": "Centra albero",
   "change_language": "Cambia lingua",
-  "change_language_alert": "<p><i class=\"iconic iconic-warning-triangle\"></i> Cambiando lingua l'applicazione subirà un reset.</p>",
+  "change_language_alert": "<p><i class=\"tabler tabler-alert-triangle\"></i> Cambiando lingua l'applicazione subirà un reset.</p>",
   "character": "Carattere",
   "clean_selection": "Pulisci selezione",
   "closest": "Closest",
@@ -709,12 +713,13 @@ gtiz_languages.it = {
   "lon_lat_comma_alert_feedback": "Questa modifica potrebbe causare problemi nella visualizzazione della mappa.",
   "m_upload_file_label": "Carica un file .json, .nwk o .tsv..",
   "macros": "Macro",
-  "malformed_metadata_file_msg": "Sembra che il file dei metadati non sia formattato correttamente.",
+  "malformed_metadata_file_msg": "Non è stato possibile leggere il file TSV dei metadati. Verifica delimitatore e struttura delle colonne.",
   "map": "Mappa",
   "map_tools": "Strumenti mappa",
   "max_marker_radius": "Raggio massimo del marcatore",
   "maximum_group_number": "Numero massimo di gruppi",
   "metadata": "Metadati",
+  "metadata_application_error_msg": "Il file dei metadati è stato letto, ma si è verificato un errore interno durante l'applicazione all'albero.",
   "metadata_file_generic_problem": "Sembra esserci un problema con il file dei metadati.",
   "metadata_geo_problems": "Sembra esserci un problema con la definizione delle coordinate geografiche (lat, lon) nel file dei metadati.",
   "metadata_tools": "Strumenti metadati",
@@ -757,7 +762,7 @@ gtiz_languages.it = {
   "related_nodes_selection": "Selezione nodi correlati",
   "remove_column": "Rimuovi colonna",
   "rendering": "Rendering",
-  "reset_default": "Reset to default",
+  "reset_default": "Torna alle impostazioni di default",
   "reset_to_initial_values": "Ripristina ai valori iniziali",
   "resize_columns": "Ridimensiona colonne",
   "run": "Lancia",
@@ -839,3 +844,4 @@ gtiz_languages.it = {
   "zooms_found_message": "L'albero corrente ha degli zoom disponibili per una o più tipologia di dettaglio.",
   "zooms_tools": "Strumenti zoom"
 };
+
