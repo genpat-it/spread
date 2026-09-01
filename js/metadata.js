@@ -1349,23 +1349,32 @@ gtiz_metadata.findNodes = function (nodes) {
       nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
     }
     let selected = new Set(Object.values(nodes).flat());
-    if (gtiz_metadata.options.api) {
-      gtiz_metadata.options.api.forEachNode(node => {
+    let api = gtiz_metadata.options.api;
+    if (api) {
+      // Collect the rows whose selection state actually changes and apply the
+      // change in two batch calls (`setNodesSelected`) instead of one
+      // `node.setSelected()` per row. On large datasets the per-node loop fired
+      // thousands of individual selection events and froze the main thread.
+      let toSelect = [];
+      let toDeselect = [];
+      api.forEachNode(node => {
+        let isSelected = node.isSelected();
         if (selected.has(node.data.ID)) {
-          if (!node.isSelected()) {
-            node.setSelected(true);
-          }
-        } else {
-          if (node.isSelected()) {
-            node.setSelected(false);
-          }
+          if (!isSelected) toSelect.push(node);
+        } else if (isSelected) {
+          toDeselect.push(node);
         }
       });
+      if (toDeselect.length) {
+        api.setNodesSelected({ nodes: toDeselect, newValue: false, source: 'api' });
+      }
+      if (toSelect.length) {
+        api.setNodesSelected({ nodes: toSelect, newValue: true, source: 'api' });
+      }
     }
 
     action = 'remove';
     gtiz_layout.uiLoadingManager(components, action);
-    gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
   }, 0);
 }
 

@@ -544,13 +544,16 @@ gtiz_map.alterMarkers = (colors) => {
   }
 }
 
-gtiz_map.getPopUp = (samples) => {
+gtiz_map.getPopUp = (samples, total) => {
+  // `total` lets callers show the real sample count while the per-sample links
+  // are still being built lazily (samples may be passed empty in that case).
+  let count = (typeof total === 'number') ? total : samples.length;
   let popup = document.createElement('div');
   popup.setAttribute('class', 'point-popup-contents');
   let ul = document.createElement('ul');
-  ul.setAttribute('class', 'point-popup-info');  
+  ul.setAttribute('class', 'point-popup-info');
   let li_first = document.createElement('li');
-  li_first.innerHTML = gtiz_locales.current.total_samples + ' <span class="info-number">' + samples.length + '</span>';
+  li_first.innerHTML = gtiz_locales.current.total_samples + ' <span class="info-number">' + count + '</span>';
   let li_second = document.createElement('li');
   li_second.setAttribute('class', 'point-popup-info-selected');
   ul.append(li_first);
@@ -595,17 +598,61 @@ gtiz_map.getPopUp = (samples) => {
   return popup;
 }
 
+/**
+ * Decorate the popup contents once the per-sample links have been built:
+ * translate, mark samples selected on the tree with `p-selected`, and update the
+ * selected/warning counters. Split out so it can run after the lazy link build.
+ *
+ * @param {HTMLElement} contents The `.point-popup-contents` element
+ */
+gtiz_map.decoratePopupSamples = (contents) => {
+  if (!contents) return;
+  let tree = gtiz_tree.tree;
+  let s_nodes = new Set(tree.getAllSelectedNodesIDs());
+  let a = contents.querySelectorAll('a.pu-sample-link');
+  let ul = contents.querySelector('ul');
+  let selected_info = ul.querySelector(".point-popup-info-selected");
+  let warning_info = ul.querySelector('.point-popup-info-warning');
+  // avoid close button add #close to url
+  let close_button = document.querySelector('.leaflet-popup-close-button');
+  if (close_button) close_button.removeAttribute("href");
+  // translate contents
+  gtiz_locales.translate(contents);
+  a.forEach(el => {
+    let pu_a_code = el.getAttribute('data-code');
+    if (s_nodes.has(pu_a_code)) {
+      el.classList.add('p-selected');
+    }
+  });
+  let selected = contents.querySelectorAll('.p-selected').length;
+  let warnings = contents.querySelectorAll('.warning').length;
+  if (selected && selected > 0) {
+    selected_info.innerHTML = gtiz_locales.current.selected_samples + ' <span class="info-number">' + selected + '</span>';
+  } else {
+    selected_info.innerHTML = gtiz_locales.current.no_sample_selected + '  <span class="info-number"></span>';
+  }
+  if (warnings && warnings > 0) {
+    if (!warning_info) {
+      warning_info = document.createElement("li");
+      warning_info.setAttribute('class', 'point-popup-info-warning');
+      ul.appendChild(warning_info);
+    }
+    warning_info.innerHTML = 'Samples not in SPREAD <span class="info-number">' + warnings + '</span>';
+  }
+}
+
 gtiz_map.getPopUpSampleLink = (all, nodes, code, color) => {
+  // `all` and `nodes` are Sets (see defineMarkers) for O(1) membership.
   let link = document.createElement('a');
   let str_code = code.replaceAll(/[./]/g, '');
   let id = 'p-' + str_code;
   let cls;
   let ctrl = true;
   let link_inner;
-  if (nodes.includes(code)) {
+  if (nodes.has(code)) {
     cls = 'pu-sample-link';
     link_inner = '<span style="background-color: ' + color + '"></span> ' + code;
-  } else if (all.includes(code) && !nodes.includes(code)) {
+  } else if (all.has(code) && !nodes.has(code)) {
     cls = 'pu-sample-link warning warning-filtered';
     link_inner = '<span></span> ' + code;
   } else {
@@ -638,6 +685,11 @@ gtiz_map.defineMarkers = () => {
   } else {
     nodes = all_nodes;
   }
+  // Sets for O(1) membership: these arrays are scanned once per sample per point
+  // via `.includes()`, which turned into O(samples * nodes) (~billions on large
+  // datasets) and made both the first map open and every category switch lag.
+  let all_nodes_set = new Set(all_nodes);
+  let nodes_set = new Set(nodes);
   this.pointLayer.eachLayer((layer) => {
     let icon = layer._icon;
     let div = document.createElement('div');
@@ -648,12 +700,12 @@ gtiz_map.defineMarkers = () => {
     let point_colors_reduced = [];
     let samples_with_colors = [];
     let dictionary = {};
-    let samples_links = [];
-    // retrieve information about sample codes and colors
+    let colorByCode = {};
+    // retrieve information about sample codes and colors (needed for the pie)
     samples.forEach((sample, index) => {
       let code = sample.codice;
       let color = '#ffffff';
-      if (nodes.includes(code)) {
+      if (nodes_set.has(code)) {
         if (metadata[code]) {
           let key_color = metadata[code][category];
           color = colors[key_color] ? colors[key_color] : '#ffffff';
@@ -666,59 +718,40 @@ gtiz_map.defineMarkers = () => {
         gtiz_map.samples_colors_index.push(obj);
         point_colors.push(color);
       }
-      
-      // set also a list of sample links to use in the popup
-      let sample_link = gtiz_map.getPopUpSampleLink(all_nodes, nodes, code, color);
-      samples_links.push(sample_link);
+      // remember the resolved colour so the popup can be built lazily on open
+      colorByCode[code] = color;
     });
 
-    let popup = gtiz_map.getPopUp(samples_links);
+    /**
+     * Lazy popup: build the per-sample links (one <a> + listener each) only when
+     * the popup is first opened, via a bindPopup content function, instead of
+     * eagerly creating tens of thousands of DOM nodes for every point at map
+     * build time. Rebuilding on each open also reflects the current selection.
+     */
+    layer.bindPopup(() => {
+      // Open instantly with the shell + a loader, then build the per-sample
+      // links (heavy for points aggregating many samples) on a later frame and
+      // swap the loader for them. Rebuilt on each open to reflect the current
+      // selection.
+      let popup = gtiz_map.getPopUp([], samples.length);
+      let list_box = popup.querySelector('.pu-samples-list-container');
+      gtiz_loader.addLoader(list_box);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        let frag = document.createDocumentFragment();
+        samples.forEach(s => {
+          frag.append(gtiz_map.getPopUpSampleLink(all_nodes_set, nodes_set, s.codice, colorByCode[s.codice] || '#ffffff'));
+        });
+        gtiz_loader.removeLoader(list_box);
+        list_box.append(frag);
+        gtiz_map.decoratePopupSamples(popup);
+      }));
+      return popup;
+    });
 
-    layer.bindPopup(popup).on('click', function(e) {
-      let contents = e.target._popup._container.querySelector('.point-popup-contents');
-      let s_nodes = tree.getAllSelectedNodesIDs();
-      let a = contents.querySelectorAll('a.pu-sample-link');
-      let ul = contents.querySelector('ul');
-      let selected_info = ul.querySelector(".point-popup-info-selected");
-      let warning_info = ul.querySelector('.point-popup-info-warning');
-      // avoid close button add #close to url
-      let close_button = document.querySelector('.leaflet-popup-close-button');
-      close_button.removeAttribute("href");
-      // translate contents
-      gtiz_locales.translate(contents);
-      /**
-       * We need to detect which of the single sample are selected when pupup is binded, the bind action seems to build popup in that specific moment. So we need to control if samples contained in the popup corresponds to the samples selected on the tree. If yes we assing a `p-selected` class wich defines the ui. In the same for loop we count how many selected samples is in there and also mismatching sample marked with `warning` class in popup construction to give some information and utilities to the users.
-       * 
-       */
-      a.forEach(el => {
-        let pu_a_code = el.getAttribute('data-code');
-        if (s_nodes.includes(pu_a_code)) {
-          el.classList.add('p-selected');
-        }
-      });
-      /**
-       * Here we add information about samples and utilities to work with them.
-       * 
-       */
-      let selected = contents.querySelectorAll('.p-selected').length;
-      let warnings = contents.querySelectorAll('.warning').length;
-      if (selected && selected > 0) {
-        let text = 
-        selected_info.innerHTML = gtiz_locales.current.selected_samples + ' <span class="info-number">' + selected + '</span>';
-      } else {
-        selected_info.innerHTML = gtiz_locales.current.no_sample_selected + '  <span class="info-number"></span>';
-      }
-      if (warnings && warnings > 0) {
-        if (!warning_info) {
-          warning_info = document.createElement("li");
-          warning_info.setAttribute('class', 'point-popup-info-warning');
-          ul.appendChild(warning_info);
-        }
-        warning_info.innerHTML = 'Samples not in SPREAD <span class="info-number">' + warnings + '</span>';
-      }
+    layer.on('click', function(e) {
       /**
        * Center and zoom on point clicked
-       * 
+       *
        */
       let lat = e.latlng.lat;
       let lng = e.latlng.lng;
@@ -768,22 +801,24 @@ gtiz_map.defineMarkers = () => {
     let data = point_data;
 
     // Set the color scale
-    let color = d3.scale.ordinal()
+    let color = d3.scaleOrdinal()
     .domain(Object.keys(data))
     .range(point_colors_reduced);
 
     // Compute the position of each group on the pie
-    let pie = d3.layout.pie()
+    let pie = d3.pie()
     .value(function(d) { return d.value; });
 
-    let data_ready = pie(d3.entries(data));
+    // d3 v6 removed d3.entries; build the same {key, value} array from the object
+    let entries = Object.keys(data).map(function(key) { return { key: key, value: data[key] }; });
+    let data_ready = pie(entries);
 
     // Build the pie chart: Each part of the pie is a path built using the arc function
     svg.selectAll('whatever')
     .data(data_ready)
     .enter()
     .append('path')
-    .attr('d', d3.svg.arc()
+    .attr('d', d3.arc()
       .innerRadius(0)
       .outerRadius(radius))
     .attr('fill', function(d) { return color(d.data.key); })
@@ -839,7 +874,7 @@ gtiz_map.reBuildGeoJSON = () => {
 /*   let d_coordinates;
   let d_data = [];
   let d_code = []; */
-  let ctrl = [];
+  let featureById = new Map(); // coordinate-string -> merged feature (O(1) dedup)
   let clusters = {};
 
   // check if delta type is geographical (then it comes from aggregation select box) or metadata (then it comes from metedata select box), to be improved after test
@@ -885,11 +920,12 @@ gtiz_map.reBuildGeoJSON = () => {
       );
       let lng_average = lng_sum / clusters[key].length;
       let lat_average = lat_sum / clusters[key].length;
-      data.features.forEach(feature => {
-        if (feature.properties.kstr == key) {
-          feature.geometry.coordinates[0] = lng_average;
-          feature.geometry.coordinates[1] = lat_average;
-        }
+      // clusters[key] holds the actual `feature.geometry.coordinates` array
+      // references, so write the average straight into them instead of
+      // re-scanning every feature per cluster (was O(clusters * features)).
+      clusters[key].forEach(coord => {
+        coord[0] = lng_average;
+        coord[1] = lat_average;
       });
     });
   } else {
@@ -936,11 +972,10 @@ gtiz_map.reBuildGeoJSON = () => {
       );
       let lng_average = lng_sum / clusters[key].length;
       let lat_average = lat_sum / clusters[key].length;
-      data.features.forEach(feature => {
-        if (feature.properties.kstr == key) {
-          feature.geometry.coordinates[0] = lng_average;
-          feature.geometry.coordinates[1] = lat_average;
-        }
+      // Write straight into the coordinate references (see geographical branch).
+      clusters[key].forEach(coord => {
+        coord[0] = lng_average;
+        coord[1] = lat_average;
       });
     });
   }
@@ -958,10 +993,15 @@ gtiz_map.reBuildGeoJSON = () => {
      * 
      */
     let d_str = JSON.stringify(feature.geometry.coordinates);
-    // d_str is used to build an array to control duplicates and to give an id to the object
-    // we will use the id later to retreive the existing object and push samples
-    if (!ctrl.includes(d_str)) {
-      ctrl.push(d_str);
+    // d_str is the id of the merged point; look it up in a Map instead of the
+    // previous ctrl.includes() + r_obj.features.findIndex() linear scans, which
+    // made the merge O(features * unique_points).
+    let sample = {
+      "data": feature.properties.data,
+      "codice": feature.properties.codice
+    };
+    let existing = featureById.get(d_str);
+    if (!existing) {
       let obj = {
         "geometry": {
           "coordinates": [],
@@ -976,20 +1016,12 @@ gtiz_map.reBuildGeoJSON = () => {
       // obj.kstr = key;
       obj.kstr = feature.properties.kstr;
       obj.id = d_str;
-      let sample = {
-        "data": feature.properties.data,
-        "codice": feature.properties.codice
-      };
       obj.properties.samples.push(sample);
+      featureById.set(d_str, obj);
       r_obj.features.push(obj);
     } else {
-      // here we use id to get the existing object and push samples that share same coordinates
-      let foundIndex = r_obj.features.findIndex(x => x.id == d_str);
-      let sample = {
-        "data": feature.properties.data,
-        "codice": feature.properties.codice
-      };
-      r_obj.features[foundIndex].properties.samples.push(sample);
+      // point already created: just push the sample sharing these coordinates
+      existing.properties.samples.push(sample);
     }
   });
   this.pointLayer.addData(r_obj);
@@ -1065,6 +1097,11 @@ gtiz_map.findNodesInMap = (selected_groups) => {
 
     if (selected_groups !== 'unselect_all') {
       selected_ids = Object.values(selected_groups).flat();
+      // Set for O(1) membership tests: the previous `selected_ids.includes()`
+      // inside every()/some() was a linear scan repeated per sample per point,
+      // making a large selection (e.g. select all) O(selected * samples) and
+      // freezing the UI for seconds.
+      let selected_set = new Set(selected_ids);
       if (selected_ids.length > 0) {
         this.pointLayer.eachLayer((layer) => {
           let feat_samples = layer.feature.properties.samples;
@@ -1073,10 +1110,10 @@ gtiz_map.findNodesInMap = (selected_groups) => {
             feat_samples_codes.push(feat_samples[i].codice);
           }
           let contains_all = feat_samples_codes.every(element => {
-            return selected_ids.includes(element);
+            return selected_set.has(element);
           });
           let contains_some = feat_samples_codes.some(element => {
-            return selected_ids.includes(element);
+            return selected_set.has(element);
           });
 
           if (contains_all) {
@@ -1331,7 +1368,9 @@ gtiz_map.init = function() {
   gtiz_map.map_container.classList.remove('map-not-initialized');
   gtiz_loader.addLoader(gtiz_map.map_container);
 
-  setTimeout(() => {
+  // Double rAF instead of a fixed 500ms delay: it lets the loader paint before
+  // the (synchronous) build pipeline runs, without the half-second dead wait.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
     if (!gtiz_map.geojson || gtiz_map.geojson == '') {
       // here we give priority to geo file loaded as url instead of coordinates loaded in metadata
       if ('geo' in gtiz_file_handler.params) {
@@ -1446,6 +1485,6 @@ gtiz_map.init = function() {
       });
       gtiz_tree.saveOriginalTree(true);
     }
-  }, 500);
+  }));
 
 }

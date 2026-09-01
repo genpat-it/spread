@@ -1,5 +1,46 @@
 let gtiz_drag = {};
 
+/**
+ * Makes an element freely draggable within its offset parent using vanilla
+ * JavaScript (replacement for jQuery UI `.draggable()`). The element is moved
+ * by updating its `left`/`top` style properties.
+ *
+ * @param {Element} el - The element to make draggable.
+ * @param {Object} [options] - Options.
+ * @param {string} [options.cancel] - CSS selector; pointer down on a matching
+ *   descendant will not start a drag.
+ */
+gtiz_drag.makeFreeDraggable = function(el, options) {
+  options = options || {};
+  el.addEventListener('mousedown', function(event) {
+    if (event.button !== 0) return;
+    if (options.cancel && event.target.closest(options.cancel)) return;
+    event.preventDefault();
+    let rect = el.getBoundingClientRect();
+    let parent = el.offsetParent || document.body;
+    let parentRect = parent.getBoundingClientRect();
+    let startLeft = rect.left - parentRect.left;
+    let startTop = rect.top - parentRect.top;
+    let startX = event.pageX;
+    let startY = event.pageY;
+    // switch positioning to left/top so the element can move freely
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    el.style.left = startLeft + 'px';
+    el.style.top = startTop + 'px';
+    let onMouseMove = function(e) {
+      el.style.left = (startLeft + e.pageX - startX) + 'px';
+      el.style.top = (startTop + e.pageY - startY) + 'px';
+    };
+    let onMouseUp = function() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+};
+
 gtiz_drag.start_mouse_x = 0;
 gtiz_drag.start_mouse_y = 0;
 gtiz_drag.start_offset_left = 0;

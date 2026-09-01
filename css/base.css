@@ -357,22 +357,20 @@ select:focus {
 }
 
 .input-box-text::after {
-  content: "\f462";
+  content: "\f896"; /* tabler-pencil */
   -webkit-transform: scale(0.8) translateY(0.1rem);
   transform: scale(0.8) translateY(0.1rem);
 }
 
 .input-box-number::after {
-  content: "\f304";
-  -webkit-transform-origin: 50%;
-  transform-origin: 50%;
-  -webkit-transform: scale(0.8) translateY(0rem) rotate(180deg);
-  transform: scale(0.8) translateY(0rem) rotate(180deg);
+  content: "\f55e"; /* tabler-calculator */
+  -webkit-transform: scale(0.8) translateY(0.1rem);
+  transform: scale(0.8) translateY(0.1rem);
 }
 
 .input-box-text.input-box-disabled::after,
 .input-box-number.input-box-disabled::after {
-  content: "\faa5";
+  content: "\f08f"; /* tabler-ban */
 }
 
 .search-box::after {
@@ -945,7 +943,7 @@ button i {
   content: "\f7e6";
 }
 .tools .select-box.module-selected::after {
-  content: "\f8c2";
+  content: "\1010b"; /* tabler-grid-dots */
 }
 
 .tools .search-box::after {

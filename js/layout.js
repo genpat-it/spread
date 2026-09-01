@@ -445,8 +445,15 @@ gtiz_layout.setView = function(obj) {
     gtiz_layout.resizeMap();
   }
   if (gtiz_layout.metadata == 'on' && gtiz_metadata.initialized) {
-    gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
-    gtiz_metadata.findNodes();
+    // Show the loader before the (synchronous) column auto-size + selection
+    // sync so the user gets immediate feedback on first open; defer the heavy
+    // work one frame so the spinner actually paints. findNodes removes the
+    // loader when it finishes.
+    gtiz_layout.uiLoadingManager(['metadata'], 'add');
+    requestAnimationFrame(() => {
+      gtiz_metadata.options.columnApi.autoSizeAllColumns(false);
+      gtiz_metadata.findNodes();
+    });
   }
   gtiz_layout.resizeTree();
 

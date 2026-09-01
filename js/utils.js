@@ -39,6 +39,55 @@ gtiz_utils.isObjectNotEmpty = function(obj) {
 }
 
 /**
+ * Measure an element's inner content size (width/height in px), working even
+ * when the element — or one of its ancestors — is hidden via `display:none`.
+ *
+ * This mirrors the behaviour of the former jQuery `.width()` / `.height()`
+ * getters, which temporarily force a layout to measure hidden elements. It is
+ * needed because `#graph-div` is `display:none` while the tree is loading
+ * (`.tree-loading` state), so reading `clientWidth`/`clientHeight` directly
+ * would return `0` and propagate `NaN` into the layout math.
+ *
+ * @param {Element} el The element to measure
+ * @returns {{width: number, height: number}} Inner size in pixels
+ */
+gtiz_utils.measureSize = function(el) {
+  if (el.offsetWidth > 0 || el.offsetHeight > 0) {
+    return { width: el.clientWidth, height: el.clientHeight };
+  }
+  // Element is not rendered (e.g. display:none): briefly force a measurable
+  // layout, read the size, then restore the original inline styles.
+  let style = el.style;
+  let prev = { position: style.position, visibility: style.visibility, display: style.display };
+  style.position = 'absolute';
+  style.visibility = 'hidden';
+  style.display = 'block';
+  let size = { width: el.clientWidth, height: el.clientHeight };
+  style.position = prev.position;
+  style.visibility = prev.visibility;
+  style.display = prev.display;
+  return size;
+}
+
+/**
+ * Normalize any valid CSS color string to a `#rrggbb` hex value, as required
+ * by `<input type="color">`. Falls back to black when the color can not be
+ * resolved.
+ *
+ * @param {String} color A CSS color (hex, rgb, named, ...)
+ * @returns {String} The color as a lowercase `#rrggbb` string
+ */
+gtiz_utils.toHexColor = function(color) {
+  if (!color) return '#000000';
+  if (/^#[0-9a-fA-F]{6}$/.test(color)) return color.toLowerCase();
+  let ctx = document.createElement('canvas').getContext('2d');
+  ctx.fillStyle = '#000000';
+  ctx.fillStyle = color;
+  let resolved = ctx.fillStyle;
+  return /^#[0-9a-fA-F]{6}$/.test(resolved) ? resolved : '#000000';
+}
+
+/**
  * Utility to extract numbers for string and generate array
  * 
  * @param {String} input

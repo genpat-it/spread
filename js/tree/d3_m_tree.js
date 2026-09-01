@@ -66,7 +66,7 @@ function D3MSTree(element_id,data,callback,height,width){
         this.show_link_labels=false;
 		this.show_hypothetical_nodes=false;
         
-        this.distance_scale= d3.scale.linear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]);
+        this.distance_scale= d3.scaleLinear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]);
 
         this.show_individual_segments=false;
         //node sizes and log scale
@@ -77,7 +77,7 @@ function D3MSTree(element_id,data,callback,height,width){
         this.precompute=true;
         
         
-        this.pie = d3.layout.pie().sort(null).value(function(it){
+        this.pie = d3.pie().sort(null).value(function(it){
                 return it.value;
         });
       
@@ -94,22 +94,30 @@ function D3MSTree(element_id,data,callback,height,width){
         this.arc = this._calculateArc();
      
     
-        this.d3_force_directed_graph = d3.layout.force();
-        
+        // d3 v4+: the monolithic d3.layout.force() became d3.forceSimulation()
+        // with separate force modules (configured in startForce). The simulation
+        // auto-runs on creation, so it is stopped immediately until startForce().
+        this.d3_force_directed_graph = d3.forceSimulation();
+        this.d3_force_directed_graph.stop();
+        // persistent link force so its .links() can be (re)bound in startForce
+        this.d3_link_force = d3.forceLink();
+
         //dragging operations
         this.initial_drag_angle=0;
         this.drag_source=0;
         this.drag_link = null;
         this.drag_orig_xy = [0,0];
-        
-        this.force_drag = this.d3_force_directed_graph.drag()
-        .on('dragstart', function(it){
+
+        // d3 v4+: force.drag() was removed; use d3.drag() with (event, datum)
+        // handler signatures (the dragged node is the datum, as before).
+        this.force_drag = d3.drag()
+        .on('start', function(event, it){
               it.id ? self._dragStarted(it) : self._dragStarted(it.target);
         })
-        .on('drag', function(it){
-              it.id ? self._dragging(it) : self._dragging(it.target);
+        .on('drag', function(event, it){
+              it.id ? self._dragging(it, null, event) : self._dragging(it.target, null, event);
         })
-        .on('dragend',function(it){
+        .on('end',function(event, it){
               it.id ? self._dragEnded(it) : self._dragEnded(it.target);
         });
 
@@ -119,8 +127,12 @@ function D3MSTree(element_id,data,callback,height,width){
         this.manual_collapsing = {};
 
         
-        this.force_nodes = this.d3_force_directed_graph.nodes();
-        this.force_links = this.d3_force_directed_graph.links();
+        // d3 v4+: nodes/links are plain arrays owned here and (re)bound to the
+        // simulation in startForce after any in-place mutation.
+        this.force_nodes = [];
+        this.force_links = [];
+        this.d3_force_directed_graph.nodes(this.force_nodes);
+        this.d3_link_force.links(this.force_links);
 
         if (data['nexus'] || data['nwk']){
 			var root = data['nexus'] ? this.parseNexus(data['nexus']) : this.parseNewick(data['nwk']);
@@ -160,14 +172,10 @@ function D3MSTree(element_id,data,callback,height,width){
         if (positions && data['layout_data']['nodes_links']){
 			to_collapse = this.node_collapsed_value=data['layout_data']['nodes_links']['node_collapsed_value'];
 			this.manual_collapsing = data['layout_data']['nodes_links']['manual_collapsing'] ? data['layout_data']['nodes_links']['manual_collapsing'] : {};
-        } else if (this.original_links.length > 20000) {
-       		var link_distances = this.original_links.map(function(l) {return l.distance;}).sort(function(n1, n2) {return n2-n1});
-			if (to_collapse < link_distances[20000]) {
-				to_collapse = link_distances[20000];
-				alert('Too many nodes. Branches <= '+to_collapse+' are collapsed in initial layout. You can uncollapse them later. ');
-			}
-			// Fixed: Removed invalid delete operator on local variable - local variables are automatically garbage collected
 		}
+		// No automatic "too many nodes" collapse: canvas rendering handles large
+		// trees without DOM overload, so we only apply a saved/manual collapse
+		// value (0 = collapse identical, zero-distance nodes only).
 		this._collapseNodes(to_collapse);
 
         if (callback){
@@ -324,59 +332,19 @@ to_Polar = function(coord, center) {
 
 D3MSTree.prototype._start= function(callback,layout_data){
        var self = this;
-       //add the links
-       this.canvas.selectAll('g.link').remove();
-       this.link_elements = this.canvas.selectAll('g.link').data(this.force_links, function(it){
-                return it.source.id + "-" + it.target.id;
-        });
-        var link_enter = this.link_elements.enter().append('g').attr('id', function(it){
-                return it.source.id + "-" + it.target.id;
-        }).attr('class', "link mst-element");
-        
-        link_enter.call(this.force_drag)
-        .on("mouseover",function(d){
-        	if (! self.dragging) {
-                for (var i in self.link_over_listeners){
-                        self.link_over_listeners[i](d);    
-                }
-        	}
-        })
-        .on("mouseout",function(d){
-                 for (var i in self.link_out_listeners){
-                        self.link_out_listeners[i](d);       
-                }
-        }) ;
-        //link_enter.append('line').style('opacity', '0.0').style('stroke-width', 10);
-        link_enter.append('line');
-        
-        this.node_elements = this.canvas.selectAll('.node').data(this.force_nodes, function(it){
-                return it.id;
-        });
-        
-        //nodes
-        this.node_elements.exit().remove();
-        var new_node_elements = this.node_elements.enter().append('g').attr('class', "node mst-element").attr('id', function(it){
-                return it.id;
-        });
-     
-        //new_node_elements.append('text').attr('class', 'link-label').attr('text-anchor', 'middle').attr('font-size', '14px').attr('font-family', 'sans-serif').style('fill', 'gray').style('stroke', 'black').style('stroke-width', '.25px').style('opacity', 1).text(function(it){
-         //       return it.id;
-        //});
-      
-        new_node_elements.call(this.force_drag);
-        
-        //initially update all
-        this.node_elements = this.canvas.selectAll('.node')
-        this.links_to_display = this.link_elements.filter(function(e){return true;});
-        this.nodes_to_display = this.node_elements.filter(function(e){return true;});
-        this.d3_force_directed_graph.on('tick', function(){		
+        // Canvas migration: nodes and links are no longer materialised as SVG
+        // elements. node_elements / link_elements are data-backed selections
+        // (see MstDataSelection) so the existing data-mutating call sites keep
+        // working, while the drawing is delegated to the canvas renderer.
+        this.node_elements = new MstDataSelection(this.force_nodes);
+        this.link_elements = new MstDataSelection(this.force_links);
+        this.links_to_display = this.link_elements;
+        this.nodes_to_display = this.node_elements;
+        // Each simulation tick now just asks the renderer to redraw the scene.
+        this.d3_force_directed_graph.on('tick', function(){
                 if (self.update_graphics){
                         self._updateGraph();
-                }		
-        });
-        
-        this.svg.selectAll('.mst-element').sort(function(a, b){
-                return d3.descending(a.value, b.value);
+                }
         });
 		this.rendering_time=15;
         if (!layout_data){ 
@@ -707,21 +675,39 @@ D3MSTree.prototype._untangleGraph = function(center,interval,callback){
 
 D3MSTree.prototype.startForce = function(use_node_force){
                 var self=this;
-		var link_strength=10;
-                this.d3_force_directed_graph
-                        .gravity(this.gravity)
-                        .linkDistance(function(d){
+                // In d3 v3 a node was pinned via node.fixed; in v4+ a node is
+                // pinned by setting node.fx/node.fy. Translate the flag here so
+                // the rest of the code can keep toggling node.fixed as before.
+                this.force_nodes.forEach(function(n){
+                        if (n.fixed){ n.fx = n.x; n.fy = n.y; }
+                        else { n.fx = null; n.fy = null; }
+                });
+                // d3 v3 linkStrength(10) was a very stiff link; v4+ forceLink applies
+                // the constraint per tick scaled by alpha, so a value of 1 (fully
+                // rigid) is used. Exact link lengths are enforced afterwards by
+                // _correctLinkLengths, so the simulation only needs the rough shape.
+                var link_strength=1;
+                this.d3_link_force
+                        .links(this.force_links)
+                        .distance(function(d){
                                 return d.link_distance;
                         })
-                        .charge(function(d){
+                        .strength(link_strength);
+                // d3 v3 gravity (pull toward the layout centre) maps to forceX/forceY
+                // toward the centre with strength == gravity. size([w,h]) -> centre.
+                this.d3_force_directed_graph
+                        .nodes(this.force_nodes)
+                        .force('link', this.d3_link_force)
+                        .force('charge', d3.forceManyBody().strength(function(d){
                                 if (use_node_force){
                                         return d.charge;
                                 }
-                                return self.charge;			
-                        })
-                        .linkStrength(link_strength)
-                        .size([this.width, this.height])
-                        .start();
+                                return self.charge;
+                        }))
+                        .force('x', d3.forceX(this.width/2).strength(this.gravity))
+                        .force('y', d3.forceY(this.height/2).strength(this.gravity))
+                        .alpha(1)
+                        .restart();
 };
 
 D3MSTree.prototype.stopForce = function(){
@@ -787,7 +773,7 @@ D3MSTree.prototype.setLayout = function(layout_data){
                 this.max_link_length = data.max_link_length?data.max_link_length:10000;
                 this.log_link_scale = data['log_link_scale'];
                 this.link_font_size = data['link_font_size']?data['link_font_size']:this.link_font_size
-                this.distance_scale = d3.scale.linear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]);
+                this.distance_scale = d3.scaleLinear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]);
                 this.show_link_labels =  data['show_link_labels'];
 		        this.node_text_value=data['node_text_value'];
                 this.node_font_size = data['node_font_size']?data['node_font_size']:this.node_font_size
@@ -865,19 +851,12 @@ D3MSTree.prototype.getLayout=function(){
         };	
 };
 
+// Canvas migration: link strokes/dashes/labels are drawn by the renderer from
+// the model (link.value, max_link_length, hide_link_length). This is a redraw.
 D3MSTree.prototype._drawLinks=function(){
-        var self=this;
-        this.link_elements.selectAll("line")
-        .style('stroke', 'black')
-        .style('opacity', function(it){
-			return (it.value > self.hide_link_length) ? '0.0' : '1.0';
-        })
-        .attr('stroke-dasharray', function(it){
-            return (self.max_link_length && it.value > self.max_link_length) ? "3,5" : "";
-        })
-        .attr("stroke-width","1px");
-        
-        this.link_elements.selectAll(".distance-label").attr("font-size",this.link_font_size);
+        if (this.renderer){
+                this.renderer.requestRedraw();
+        }
 }
 
 
@@ -909,6 +888,7 @@ D3MSTree.prototype.toggleHypotheticalNodes=function(){
 */
 
 D3MSTree.prototype.collapseSpecificNodes=function(nodes,uncollapse){
+	var self = this;
 	var val = uncollapse?1:2
 	for (var i in nodes) {
 		var node=nodes[i];
@@ -949,51 +929,40 @@ D3MSTree.prototype.changeCategory= function(category){
                 this.category_colours['missing']=this.default_colour;
         }
         this._changeCategory(category);
-        
-        var self = this;
-        /*var hypo_nodes = this.node_elements.filter(function(d){return d.hypothetical})
-        	.selectAll("circle").data(function(parent){
-        		return [{cx:parent.x,cy:parent.y}];
-            });
-    
-        hypo_nodes.enter().append("circle").attr("r",0).style("fill","black");*/
-        
-        var nodes_existing = this.node_elements//.filter(function(d){return !d.hypothetical})
-								.selectAll('.node-paths').data(function(it){
-										return self._getPieData(it, category);
-								});
-        nodes_existing.enter().append('path').classed("node-paths",true);
-        nodes_existing.exit().remove();
-        
-
-       this.node_elements.selectAll('.node-paths').on("mouseover",function(d, ui){
-                for (var i in self.segment_over_listeners){
-                        self.segment_over_listeners[i](d);    
-                }
-        }).on("mouseout",function(d, ui){
-                 for (var i in self.segment_out_listeners){
-                        self.segment_out_listeners[i](d);    
-                }
-        }).style("stroke","black");      
+        // Canvas migration: instead of binding pie data to SVG <path> elements,
+        // cache the pie composition on each node so the renderer can draw the
+        // wedges. The geometry comes from the unchanged _getPieData.
+        this._computePieData(category);
         this._drawNodes();
         this._setNodeText();
+        // Pie composition changed: invalidate the legend visual-highlight index
+        // so it is rebuilt against the new wedges on next use.
+        if (typeof gtiz_legend !== 'undefined') {
+                gtiz_legend._hl_group_nodes = null;
+        }
+}
+
+/**
+ * Cache the pie-chart composition (wedges with start/end angles, colours and
+ * the segment data used by tooltips) on every node, so the canvas renderer can
+ * draw them without recomputing per frame. Recomputed only when the displayed
+ * category or segment mode changes.
+ * @param {string} category The category passed to changeCategory
+ */
+D3MSTree.prototype._computePieData = function(category){
+        var nodes = this.force_nodes;
+        for (var i = 0; i < nodes.length; i++){
+                nodes[i]._pie = this._getPieData(nodes[i], category);
+        }
 }
 
 
+// Canvas migration: node fills/radii/halos are drawn by the renderer from the
+// model (pie cache, node_radii, halo flags). Drawing nodes is a redraw request.
 D3MSTree.prototype._drawNodes=function(){
-        var self = this;
-        this.node_elements.selectAll('.node-paths').attr('d', this.arc).attr('fill', function(it){
-                return self.category_colours[it.data.type] ? self.category_colours[it.data.type] : self.default_colour;
-        });
-        this.node_elements.selectAll('.halo')
-                .attr("d",function(d){                  
-                       var r  = self.node_radii[d.id];
-                        var arc = d3.svg.arc().innerRadius(r).outerRadius(r+d.halo_thickness).startAngle(0).endAngle(2 * Math.PI);
-                        return arc();
-                })
-                .attr("fill",function(d){
-                        return d.halo_colour;
-                });
+        if (this.renderer){
+                this.renderer.requestRedraw();
+        }
 };
 
 /**
@@ -1033,34 +1002,13 @@ D3MSTree.prototype.getTreeAsNewick=function(){
 	return this.newickTree;
 }
 
+// Canvas migration: node labels are drawn by the renderer (which resolves the
+// text from node_text_value / metadata via its own _nodeLabel helper). This is
+// a redraw request; the label visibility/content is read from the model.
 D3MSTree.prototype._setNodeText = function(){
-        var self=this;
-        var field =this.node_text_value;
-        this.node_elements.selectAll('text').remove();
-        if (! this.show_node_labels){
-                return;
+        if (this.renderer){
+                this.renderer.requestRedraw();
         }
-        var node_text = this.node_elements.filter(function(d){
-                return (!d.hypothetical || self.show_hypothetical_nodes);
-        }).
-        append('text').attr('class', 'node-group-number').
-        attr('dy', ".71em").attr('text-anchor', 'middle').attr('font-size', this.node_font_size).
-        attr('font-family', 'sans-serif').attr('transform', function(it){
-                return "translate(0," + -self.node_font_size / 3 + ")";
-        }).text(function(it){                
-                if (field && field !== "node_id"){
-                        var meta_ids = self.metadata_map[it.id];
-                        if (meta_ids){
-                                var display = self.metadata[meta_ids[0]][field];
-                                return display?display:"ND"; 
-                        }
-                    
-                        else{
-                                return "ND";
-                        }                    
-                }
-                return  it.id
-        });
 };
 
 D3MSTree.prototype.delOtherNodes = function(nodes) {
@@ -1203,7 +1151,7 @@ D3MSTree.prototype.delNodes = function(nodes) {
 
 D3MSTree.prototype._calculateArc=function(){
         var self=this;
-        return d3.svg.arc().outerRadius(function(it){
+        return d3.arc().outerRadius(function(it){
                return self.node_radii[it.data.idx];
         }).innerRadius(0);
 
@@ -1327,35 +1275,24 @@ D3MSTree.prototype._getPieData = function(d, category){
 };
 
 //change position
+// Canvas migration: positions live on the model (node.x/node.y); the renderer
+// reads them directly, so updating the graph is just a redraw request. When
+// `all` is set the call marks a "settled" layout, so the picking quadtrees are
+// rebuilt as well.
 D3MSTree.prototype._updateGraph = function(all){
-        var links  = this.links_to_display;
-        var nodes = this.nodes_to_display;
-        if (all){
-                links = this.link_elements;
-                nodes = this.node_elements;
-        
+        if (this.renderer){
+                if (all){
+                        this.renderer.refreshIndex();
+                } else {
+                        // Per-tick redraw (e.g. dynamic mode): nodes moved, so the
+                        // picking indexes are now stale. Mark them dirty; they are
+                        // rebuilt lazily on the next pick (drag/hover), which keeps
+                        // node dragging working while the simulation runs without
+                        // paying a quadtree rebuild on every frame.
+                        this.renderer.invalidateIndex();
+                }
+                this.renderer.requestRedraw();
         }
-        links.selectAll('text').attr('x', function(it){
-                
-                return (it.source.x + it.target.x) / 2.0;
-                
-        }).attr('y', function(it){
-                return (it.source.y + it.target.y) / 2.0;
-        });
-        
-        links.selectAll('line').attr('x1', function(it){
-                return it.source.x;
-        }).attr('y1', function(it){
-                return it.source.y;
-        }).attr('x2', function(it){
-                return it.target.x;
-        }).attr('y2', function(it){
-                return it.target.y;
-        });
-        
-        nodes.attr('transform', function(it){
-                return "translate(" + it.x + "," + it.y + ")";
-        });
 }
 
 D3MSTree.prototype._updateNodeRadii=function(data){
@@ -1383,7 +1320,11 @@ D3MSTree.prototype._updateNodeRadii=function(data){
 				}
                 data[node.id]=radius;
         }
-    
+        // Canvas migration: node sizes changed, so the renderer's cached maximum
+        // radius (used to bound quadtree picking) must be invalidated.
+        if (this.renderer){
+                this.renderer.invalidateRadius();
+        }
 }
 
 D3MSTree.prototype._addNodes=function(ids){
@@ -1463,7 +1404,7 @@ D3MSTree.prototype._addLinks=function(links,ids){
 	   		l.target.link = l;
 	   });
 
-		this.distance_scale= d3.scale.linear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]);
+		this.distance_scale= d3.scaleLinear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]);
 }
 D3MSTree.prototype._getLink=function(target_node){
         for (var index in this.force_links){
@@ -1567,6 +1508,10 @@ D3MSTree.prototype.clearSelection= function(pervasive){
 		.filter(function(node){delete node.halo_thickness; delete node.halo_colour;return true;})
 		.classed('selected', false).selectAll('.halo').remove();
 	}
+	// Canvas migration: redraw to reflect the cleared halos/selection.
+	if (this.renderer){
+		this.renderer.requestRedraw();
+	}
 	for (var i in this.nodesSelectedListeners){
 		this.nodesSelectedListeners[i](this);
 	}
@@ -1584,7 +1529,7 @@ D3MSTree.prototype.setMaxLinkLength=function(amount){
                 amount = null;
         }
         this.max_link_length=amount;
-        this.distance_scale= d3.scale.linear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]).clamp(true);
+        this.distance_scale= d3.scaleLinear().domain([0,this.max_link_distance]).range([0,this.max_link_scale]).clamp(true);
         this._setLinkDistance();
         this._drawLinks();
                 
@@ -1600,7 +1545,7 @@ D3MSTree.prototype.setMaxLinkLength=function(amount){
 */
 D3MSTree.prototype.setLinkLength=function(max_length){		
         this.max_link_scale=max_length;
-        this.distance_scale= d3.scale.linear().domain([0,this.max_link_distance]).range([0,max_length]);
+        this.distance_scale= d3.scaleLinear().domain([0,this.max_link_distance]).range([0,max_length]);
         this._setLinkDistance();
         if (this.fixed_mode){
                 this.stopForce();        
@@ -1617,8 +1562,12 @@ D3MSTree.prototype.setLinkLength=function(max_length){
 */
 D3MSTree.prototype.setLinkFontSize = function(size){
         this.link_font_size=size;
-        this.link_elements.selectAll('.distance-label').transition()
-                                        .attr('font-size',this.link_font_size+"px");
+        // Canvas migration: link labels are drawn by the renderer reading
+        // link_font_size, so changing it just needs a redraw (the old SVG
+        // .distance-label elements no longer exist).
+        if (this.renderer){
+                this.renderer.requestRedraw();
+        }
 };
 
 /** 
@@ -1645,34 +1594,13 @@ D3MSTree.prototype.showLinkLabels = function(show){
 };
 
 
+// Canvas migration: link distance labels are drawn by the renderer (two-layer
+// text reproducing the white halo + grey fill) from link.original_value. This
+// is a redraw; show_link_labels gates the drawing.
 D3MSTree.prototype._showLinkLabels = function(){
-        var self=this;
-        this.link_elements.selectAll('text').remove();
-        if (! this.show_link_labels){
-                return;
+        if (this.renderer){
+                this.renderer.requestRedraw();
         }
-        this.link_elements.append('text').attr('class', 'distance-label').
-                                        attr('dy', ".71em").attr('text-anchor', 'middle').
-                                        attr('font-size', this.link_font_size).attr('font-family', 'sans-serif').
-                                        style('fill', 'gray').style('stroke', 'white').style('stroke-width', '5px').style('opacity', '0.9').
-                                        text(function(it){
-                                                 return it.original_value >= 1 ? Math.floor(it.original_value) : it.original_value.toPrecision(2);
-                                        });
-        this.link_elements.append('text').attr('class', 'distance-label').
-                                        attr('dy', ".71em").attr('text-anchor', 'middle').
-                                        attr('font-size', this.link_font_size).attr('font-family', 'sans-serif').
-                                        style('fill', '#666666').style('stroke', '#f0f0f0').style('stroke-width', '.2px').
-                                        text(function(it){
-                                                 return it.original_value >= 1 ? Math.floor(it.original_value) : it.original_value.toPrecision(2);
-                                        });
-
-        this.link_elements.selectAll('text').attr('x', function(it){
-                return (it.source.x + it.target.x) / 2.0;
-                
-        }).attr('y', function(it){
-                return (it.source.y + it.target.y) / 2.0;
-        });
-     
 }
 
 
@@ -1822,33 +1750,22 @@ D3MSTree.prototype._correctLinkLengths= function(it){
 }
 
 
+// Canvas migration: a halo is now model state (halo_thickness/halo_colour) that
+// the renderer draws as a ring behind the node. Set the flags on the nodes that
+// match the filter and request a redraw. The previous SVG z-order sort is no
+// longer needed because the renderer draws all halos before the node bodies.
 D3MSTree.prototype._addHalos= function (filter_function,thickness,colour){
-        var self = this;
-        var halos = self.node_elements.filter(filter_function)
-                .append("path")
-                .attr("class","halo")
-                .attr("d",function(d){
+        var nodes = this.force_nodes;
+        for (var i = 0; i < nodes.length; i++){
+                var d = nodes[i];
+                if (filter_function(d, i, nodes)){
                         d.halo_thickness = thickness;
-                        d.halo_colour=colour;
-                        var r  = self.node_radii[d.id];
-                        var arc = d3.svg.arc().innerRadius(r).outerRadius(r+thickness).startAngle(0).endAngle(2 * Math.PI);
-                        return arc();
-                })
-                .attr("fill",colour);
-        
-         self.node_elements.sort(function(a,b){
-         	if (a.halo_thickness) {
-         		if (b.halo_thickness) {
-         			return (a.halo_thickness == b.halo_thickness) ? 0 : (a.halo_thickness > b.halo_thickness ? -1 : 1);
-         		} else {
-         			return 1;
-         		}
-         	} else if (b.halo_thickness) {
-         		return -1;
-         	}
-             return 0;
-         });
-  
+                        d.halo_colour = colour;
+                }
+        }
+        if (this.renderer){
+                this.renderer.requestRedraw();
+        }
 }
 
 
@@ -2091,6 +2008,17 @@ D3MSTree.prototype._tagParent = function(it, flag) {
 D3MSTree.prototype._dragStarted= function(it, pos){
 	var self= this;
        if (! this.fixed_mode){
+              // Dynamic mode: no subtree rotation. Grab the node and pin it to
+              // the pointer (fx/fy) while the force simulation keeps running, so
+              // the neighbours reflow around it; the node rejoins the dynamic
+              // flow when released (classic force-directed drag).
+              this.dragging = true;
+              this.d3_force_directed_graph.alphaTarget(0.3).restart();
+              it.fx = it.x;
+              it.fy = it.y;
+              if (pos){
+                     this.ori_pos = pos;
+              }
               return;
        }
       this.dragging = true;
@@ -2128,11 +2056,30 @@ D3MSTree.prototype._dragStarted= function(it, pos){
        var y_dif = it.y-parent.y;
        this.drag_source=parent;
        this.initial_drag_angle= Math.atan2(y_dif,x_dif);
-       this.drag_radius = Math.sqrt((x_dif*x_dif)+(y_dif*y_dif));               
+       this.drag_radius = Math.sqrt((x_dif*x_dif)+(y_dif*y_dif));
+       // Canvas migration: show the orange drag highlight (tagged/tracked) at
+       // press time; the renderer reads those flags.
+       if (this.renderer){
+              this.renderer.requestRedraw();
+       }
 };
 
-D3MSTree.prototype._dragging= function(it, pos){
+D3MSTree.prototype._dragging= function(it, pos, event){
         if (! this.fixed_mode){
+              // Dynamic mode: move the pinned node by the (data-space) delta and
+              // let the running simulation reflow the rest of the graph.
+              if (it.fx == null){ it.fx = it.x; it.fy = it.y; }
+              if (pos){
+                     it.fx += pos[0] - this.ori_pos[0];
+                     it.fy += pos[1] - this.ori_pos[1];
+                     this.ori_pos = pos;
+              } else {
+                     it.fx += event.dx;
+                     it.fy += event.dy;
+              }
+              it.x = it.fx;
+              it.y = it.fy;
+              this._updateGraph();
               return;
        }
        if (!this.drag_link){
@@ -2146,7 +2093,8 @@ D3MSTree.prototype._dragging= function(it, pos){
        		dx = pos[0] - this.ori_pos[0];
        		dy = pos[1] - this.ori_pos[1];
        } else {
-       		dx =d3.event.dx, dy = d3.event.dy;
+       		// d3 v4+: the drag delta comes from the event argument, not d3.event
+       		dx = event.dx, dy = event.dy;
        }
        it.px += dx;
        it.py += dy;
@@ -2179,9 +2127,19 @@ D3MSTree.prototype._dragEnded=function(it){
        var self = this;
 
        if (! this.fixed_mode){
+              // Dynamic mode: unpin the node so it rejoins the force flow and let
+              // the simulation cool back down.
+              it.fx = null;
+              it.fy = null;
+              this.d3_force_directed_graph.alphaTarget(0);
+              this.dragging = false;
+              if (this.renderer){
+                     this.renderer.invalidateIndex();
+                     this.renderer.requestRedraw();
+              }
               return;
        }
-       if (!this.drag_link){	       
+       if (!this.drag_link){
               return;
        }
        var source  = this.drag_source;
@@ -2208,11 +2166,16 @@ D3MSTree.prototype._dragEnded=function(it){
        it.fixed=true;
        it.tagged=false;
        this._rotateChildren(it,angle_change,source);
-       this._updateGraph();
        this._tagAllChildren(it,false);
        this._tagParent(it, false);
        this.stopForce();
        this.dragging = false;
+       // Canvas migration: positions changed, so rebuild the picking quadtrees
+       // and redraw with the drag highlight (tagged/tracked) now cleared.
+       if (this.renderer){
+              this.renderer.refreshIndex();
+              this.renderer.requestRedraw();
+       }
 }
 
 D3MSTree.prototype.createLinksFromNewick=function(node,parent_id){
@@ -2303,8 +2266,8 @@ D3MSTree.prototype.brushEnded=function(extent){
 			r = self.node_radii[d.id] ? self.node_radii[d.id] : 3;
 			return ( (d.x - extent[0][0])*(d.x - extent[0][0]) + (d.y - extent[0][1])*(d.y - extent[0][1]) <= r*r);
 		});
-		if (selected_nodes[0].length > 0) {
-			var last_node = selected_nodes[0][selected_nodes[0].length-1].id;
+		if (selected_nodes.size() > 0) {
+			var last_node = selected_nodes.nodes()[selected_nodes.size()-1].id;
 			selected_nodes = selected_nodes.filter(function(d) {
 				return d.id == last_node;
 			})
@@ -2313,7 +2276,7 @@ D3MSTree.prototype.brushEnded=function(extent){
         var selected_nodes = this.node_elements.filter(function(d){return (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1])});
 	}
         var not_in_selection = selected_nodes.filter(function(d) {return (! d.selected)});
-        if (not_in_selection[0].length > 0) {
+        if (not_in_selection.size() > 0) {
                 not_in_selection.filter(function(d) {d.selected=true});
         } else {
                 selected_nodes.filter(function(d) {delete d.selected; delete node.halo_colour; delete node.halo_thickness});
@@ -2356,14 +2319,19 @@ D3MSTree.prototype._updateSelectionStatus = function(action, pervasive) {
  */
 
 D3MSTree.prototype.resize = function() {
-  this.width = this.container.width();
-  this.height = this.container.height();
+  var size = gtiz_utils.measureSize(this.container);
+  this.width = size.width;
+  this.height = size.height;
   this.svg.attr('width', this.width).attr('height', this.height);
   this.background_rect.attr('height', this.height).attr('width', this.width);
-  this.legend_div.css({ "top": "0px" });
-  this.legend_div.css({ "left": this.width - 300 });
-  this.scale_div.css({ "bottom": "100px" });
-  this.scale_div.css({ "left": 0 });
+  // Canvas migration: keep the canvas backing store in sync with the container.
+  if (this.renderer){
+    this.renderer.resize(this.width, this.height);
+  }
+  this.legend_div.style.top = '0px';
+  this.legend_div.style.left = (this.width - 300) + 'px';
+  this.scale_div.style.bottom = '100px';
+  this.scale_div.style.left = '0px';
   // this.centerGraph();
 };
 
@@ -2387,11 +2355,13 @@ D3MSTree.prototype.getAllNodesIDs = function() {
 D3MSTree.prototype.getAllSelectedNodesIDs = function() {
   var g_nodes_ids = [];
   var nodes_ids = this.getSelectedNodeIDs();
+  // Flatten once at the end: calling `.flat()` inside the loop re-flattened the
+  // whole growing array on every iteration, making this O(n^2) and freezing the
+  // UI on large selections (e.g. select all).
   for (var i = 0; i < nodes_ids.length; i++) {
     g_nodes_ids.push(this._getIDsForNode(nodes_ids[i]));
-    g_nodes_ids = g_nodes_ids.flat(1);
   }
-  return g_nodes_ids;
+  return g_nodes_ids.flat(1);
 }
 
 /**
@@ -2401,9 +2371,10 @@ D3MSTree.prototype.getAllSelectedNodesIDs = function() {
 D3MSTree.prototype.getAllFilteredNodesIDs = function(nodes) {
   var g_nodes_ids = [];
   var nodes_ids = nodes;
+  // Flatten once at the end (see getAllSelectedNodesIDs): the per-iteration
+  // `.flat()` made this O(n^2).
   for (var i = 0; i < nodes_ids.length; i++) {
     g_nodes_ids.push(this._getIDsForNode(nodes_ids[i]));
-    g_nodes_ids = g_nodes_ids.flat(1);
   }
-  return g_nodes_ids;
+  return g_nodes_ids.flat(1);
 }

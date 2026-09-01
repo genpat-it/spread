@@ -185,7 +185,6 @@ gtiz_languages.en = {
   "original_tree": "Original tree",
   "pie_chart_mode": "Pie Chart mode",
   "please_note": "Please note",
-  "possible_performance_issues_message" : "You might experience performance issues when displaying the expanded tree. I suggest setting the link distance to <strong>{0}</strong>.",
   "publications": "Publications",
   "quick_gradient": "Quick gradient",
   "radius_size": "Radius size (%)",

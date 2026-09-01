@@ -754,7 +754,6 @@ gtiz_file_handler.loadNetFiles = function() {
 								let components = ['tree', 'legend'];
 								let action = 'remove';
 								gtiz_layout.uiLoadingManager(components, action);
-								gtiz_tree.checkBestLinkDistanceUtil();
 								if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
 									let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
 									let apply = gtiz_utils.postMessage.settings.apply;
@@ -764,7 +763,6 @@ gtiz_file_handler.loadNetFiles = function() {
 							} else {
 								gtiz_file_handler.loadMetadataText(obj.text);
 								gtiz_zooms.init();
-								gtiz_tree.checkBestLinkDistanceUtil();
 								if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
 									let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
 									let apply = gtiz_utils.postMessage.settings.apply;
@@ -785,7 +783,6 @@ gtiz_file_handler.loadNetFiles = function() {
 							let components = ['tree', 'legend'];
 							let action = 'remove';
 							gtiz_layout.uiLoadingManager(components, action);
-							gtiz_tree.checkBestLinkDistanceUtil();
 							if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
 								let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
 								let apply = gtiz_utils.postMessage.settings.apply;
@@ -797,7 +794,6 @@ gtiz_file_handler.loadNetFiles = function() {
 						let components = ['tree', 'legend'];
 						let action = 'remove';
 						gtiz_layout.uiLoadingManager(components, action);
-						gtiz_tree.checkBestLinkDistanceUtil();
 						if (gtiz_utils.isObjectNotEmpty(gtiz_utils.postMessage)) {
 							let settings_obj = JSON.parse(gtiz_utils.postMessage.settings.tree_backup);
 							let apply = gtiz_utils.postMessage.settings.apply;
@@ -972,7 +968,6 @@ gtiz_file_handler.loadTreeText = function(tree, json) {
 			if (gtiz_tree.tree.metadata) {
 				gtiz_zooms.init();
 			}
-			gtiz_tree.checkBestLinkDistanceUtil();
 			gtiz_map.init();
 		}
 	},500);
@@ -1115,11 +1110,240 @@ gtiz_file_handler.saveSvgAsPng = function(svgText, width, filename) {
 }
 
 /**
+ * Canvas migration: build a <style> block that embeds the theme font (the CSS
+ * `--font-family`) as base64 @font-face rules, so it can be injected into an SVG
+ * before rasterising. An SVG rasterised from a blob: URL is rendered in an
+ * isolated document and does NOT inherit the page's @font-face fonts, so without
+ * this the legend/scale text would silently fall back to a generic sans-serif
+ * instead of the CSS font. Theme-agnostic: it scans the loaded stylesheets for
+ * the @font-face rules matching the active family. The result is cached.
+ *
+ * @returns {Promise<string>} the CSS text for a <style> block (may be empty)
+ */
+gtiz_file_handler._embeddedFontCss = null;
+gtiz_file_handler.getEmbeddedFontCss = function() {
+  if (gtiz_file_handler._embeddedFontCss !== null) {
+    return Promise.resolve(gtiz_file_handler._embeddedFontCss);
+  }
+  let cssVars = gtiz_utils.getAllCssVariables();
+  let famDecl = (cssVars && cssVars['--font-family']) || '';
+  let primary = famDecl.split(',')[0].replace(/['"]/g, '').trim();
+  if (!primary) {
+    gtiz_file_handler._embeddedFontCss = '';
+    return Promise.resolve('');
+  }
+  // Collect the upright (non-italic) @font-face rules for the active family,
+  // keeping their weight — the legend uses normal text plus a bold title.
+  let faces = [];
+  for (let sheet of document.styleSheets) {
+    let rules;
+    try { rules = sheet.cssRules; } catch (e) { continue; }
+    if (!rules) { continue; }
+    for (let rule of rules) {
+      if (rule.type !== CSSRule.FONT_FACE_RULE) { continue; }
+      let fam = (rule.style.getPropertyValue('font-family') || '').replace(/['"]/g, '').trim();
+      if (fam.toLowerCase() !== primary.toLowerCase()) { continue; }
+      let fStyle = (rule.style.getPropertyValue('font-style') || 'normal').trim();
+      if (fStyle.indexOf('italic') !== -1) { continue; }
+      let weight = (rule.style.getPropertyValue('font-weight') || '400').trim();
+      // The legend/scale text only use the normal (400) and bold (700) weights;
+      // skip the others so the embedded font payload stays small.
+      let wl = weight.toLowerCase();
+      if (weight !== '400' && weight !== '700' && wl !== 'normal' && wl !== 'bold') { continue; }
+      let src = rule.style.getPropertyValue('src') || '';
+      let m = src.match(/url\(\s*['"]?([^'")]+\.woff2)['"]?\s*\)/i) ||
+              src.match(/url\(\s*['"]?([^'")]+\.woff)['"]?\s*\)/i);
+      if (!m) { continue; }
+      let href = rule.parentStyleSheet ? rule.parentStyleSheet.href : window.location.href;
+      let absUrl;
+      try { absUrl = new URL(m[1], href).href; } catch (e) { absUrl = m[1]; }
+      let format = /\.woff2$/i.test(m[1]) ? 'woff2' : 'woff';
+      faces.push({ family: primary, weight: weight, url: absUrl, format: format });
+    }
+  }
+  return Promise.all(faces.map(function(f) {
+    return fetch(f.url).then(function(r) { return r.blob(); }).then(function(blob) {
+      return new Promise(function(res) {
+        let fr = new FileReader();
+        fr.onload = function() {
+          res('@font-face{font-family:"' + f.family + '";font-weight:' + f.weight +
+              ';font-style:normal;src:url(' + fr.result + ') format("' + f.format + '");}');
+        };
+        fr.onerror = function() { res(''); };
+        fr.readAsDataURL(blob);
+      });
+    }).catch(function() { return ''; });
+  })).then(function(parts) {
+    gtiz_file_handler._embeddedFontCss = parts.filter(Boolean).join('');
+    return gtiz_file_handler._embeddedFontCss;
+  });
+};
+
+/**
+ * Canvas migration: rasterise an SVG element (legend, scale bar) into an Image.
+ * Returns a promise resolving to {img, w, h} (native SVG size in px), or null on
+ * error so the export can still complete without that piece.
+ *
+ * @param {SVGElement} svgEl The SVG element to rasterise (or null)
+ * @returns {Promise<{img: HTMLImageElement, w: number, h: number}|null>}
+ */
+gtiz_file_handler.rasteriseSvg = function(svgEl) {
+  return new Promise(function(resolve) {
+    if (!svgEl) {
+      resolve(null);
+      return;
+    }
+    try {
+      let w = parseFloat(svgEl.getAttribute('width')) || svgEl.getBoundingClientRect().width;
+      let h = parseFloat(svgEl.getAttribute('height')) || svgEl.getBoundingClientRect().height;
+      // The legend SVG is capped at 240px wide on screen and its height attribute
+      // can be shorter than the real content (so labels overflow horizontally and
+      // the lower items get clipped vertically in the export). For the raster we
+      // size the SVG to its real content extent (getBBox) on both axes so the
+      // whole legend is captured, then restore the original attributes so the
+      // on-screen legend panel is left untouched.
+      let originalWidthAttr = svgEl.getAttribute('width');
+      let originalHeightAttr = svgEl.getAttribute('height');
+      try {
+        let bb = svgEl.getBBox();
+        let contentW = Math.ceil(bb.x + bb.width + 8);
+        let contentH = Math.ceil(bb.y + bb.height + 8);
+        if (contentW > w) {
+          w = contentW;
+          svgEl.setAttribute('width', w);
+        }
+        if (contentH > h) {
+          h = contentH;
+          svgEl.setAttribute('height', h);
+        }
+      } catch (e) { /* getBBox unavailable (e.g. detached node) — keep attr sizes */ }
+      let svgText = new XMLSerializer().serializeToString(svgEl);
+      if (originalWidthAttr !== null) {
+        svgEl.setAttribute('width', originalWidthAttr);
+      }
+      if (originalHeightAttr !== null) {
+        svgEl.setAttribute('height', originalHeightAttr);
+      }
+      if (svgText.indexOf('xmlns') === -1) {
+        svgText = svgText.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      // Embed the theme font so the rasterised text matches the CSS font instead
+      // of falling back to a generic sans-serif (blob-loaded SVGs ignore the
+      // page's @font-face). Then build the image from the serialised SVG.
+      gtiz_file_handler.getEmbeddedFontCss().then(function(fontCss) {
+        if (fontCss) {
+          svgText = svgText.replace(/(<svg[^>]*>)/, function(open) {
+            return open + '<style>' + fontCss + '</style>';
+          });
+        }
+        let img = new Image();
+        let url = URL.createObjectURL(new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' }));
+        img.onload = function() {
+          URL.revokeObjectURL(url);
+          resolve({ img: img, w: w, h: h });
+        };
+        img.onerror = function() {
+          URL.revokeObjectURL(url);
+          resolve(null);
+        };
+        img.src = url;
+      });
+    } catch (err) {
+      resolve(null);
+    }
+  });
+}
+
+/**
+ * Canvas migration: compose the export PNG with the tree viewport on the LEFT and
+ * the legend in a panel on the RIGHT. The legend is placed beside the tree (not
+ * overlaid), so it is always fully included regardless of the current zoom/pan
+ * (overlaying it made the legend depend on zoom and could clip it). The scale
+ * bar, when present, stays composited on top of the tree exactly where it shows
+ * on screen. The download happens asynchronously once the SVG overlays load.
+ *
+ * @param {HTMLCanvasElement} treeCanvas The rendered tree (already at export scale)
+ * @param {Object|null} scaleOverlay {svg, x, y, s} for the scale bar, or null
+ * @param {SVGElement|null} legendSvg The legend SVG to place on the side, or null
+ * @param {number} s Export scale factor (output px per on-screen px)
+ * @param {String} filename Download file name
+ */
+gtiz_file_handler.saveTreeWithLegend = function(treeCanvas, scaleOverlay, legendSvg, s, filename) {
+  // Horizontal gap between the tree and the legend panel.
+  let gap = Math.round(20 * s);
+  Promise.all([
+    gtiz_file_handler.rasteriseSvg(scaleOverlay ? scaleOverlay.svg : null),
+    gtiz_file_handler.rasteriseSvg(legendSvg)
+  ]).then(function(results) {
+    let scaleImg = results[0];
+    let legendImg = results[1];
+    let legendW = legendImg ? legendImg.w * s : 0;
+    let legendH = legendImg ? legendImg.h * s : 0;
+
+    let out = document.createElement('canvas');
+    out.width = treeCanvas.width + (legendImg ? gap + Math.ceil(legendW) : 0);
+    out.height = Math.max(treeCanvas.height, Math.ceil(legendH));
+    let ctx = out.getContext('2d');
+    // White background so the legend panel matches the tree export background.
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, out.width, out.height);
+    // Tree viewport on the left.
+    ctx.drawImage(treeCanvas, 0, 0);
+    // Scale bar composited on top of the tree, at its on-screen position.
+    if (scaleImg) {
+      ctx.drawImage(scaleImg.img, scaleOverlay.x, scaleOverlay.y, scaleImg.w * s, scaleImg.h * s);
+    }
+    // Legend panel to the right of the tree.
+    if (legendImg) {
+      ctx.drawImage(legendImg.img, treeCanvas.width + gap, 0, legendW, legendH);
+    }
+
+    out.toBlob(function(blob) {
+      let link = document.createElement('a');
+      let url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  });
+}
+
+/**
+ * Save a vector SVG string as a downloadable .svg file. The theme font is
+ * embedded (base64 @font-face) so the legend text keeps the CSS font when the
+ * file is opened outside the app. Download happens once the font is ready.
+ *
+ * @param {String} svgText The full <svg>…</svg> markup
+ * @param {String} filename Download file name (e.g. "spread123.svg")
+ */
+gtiz_file_handler.saveSvg = function(svgText, filename) {
+  gtiz_file_handler.getEmbeddedFontCss().then(function(fontCss) {
+    if (fontCss) {
+      svgText = svgText.replace(/(<svg[^>]*>)/, function(open) {
+        return open + '<style>' + fontCss + '</style>';
+      });
+    }
+    let blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+    let url = URL.createObjectURL(blob);
+    let link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  });
+}
+
+/**
  * Save text as file.
- * 
+ *
  * @param {String} text Text to save as file
  * @param {String} name Suggested name for the file
- * 
+ *
  */
 gtiz_file_handler.saveTextAsFile = function(text, name) {
 	let blob = new Blob([text], { type: 'text/plain' });

@@ -1,10 +1,55 @@
 
- 
+
 //--------------------------------------------------------------------------------------------------
 // http://stackoverflow.com/questions/1303646/check-whether-variable-is-number-or-string-in-javascript
 function isNumber (o) {
   return ! isNaN (o-0);
 }
+
+//--------------------------------------------------------------------------------------------------
+// Data-backed selection shim (canvas migration).
+//
+// The tree no longer materialises one SVG element per node/link, so the old
+// d3 selections this.node_elements / this.link_elements would be empty. Many
+// call sites, however, use those selections only to iterate the DATA and mutate
+// model flags (e.g. brushEnded sets node.selected, _dragStarted reads tagged).
+//
+// This shim wraps the underlying data array and reproduces the subset of the d3
+// selection API those call sites rely on: .filter() still runs its callback over
+// the data (preserving side effects) and returns a smaller selection; iteration
+// helpers (.nodes/.size/.empty/.node/.each) work on the data; all DOM-mutating
+// methods (.selectAll/.append/.attr/.style/.remove/...) become harmless no-ops,
+// because the visible result is now produced by the canvas renderer reading the
+// same model flags. This keeps the existing logic intact with minimal changes.
+function MstDataSelection (data) {
+  this._data = data || [];
+}
+MstDataSelection.prototype.filter = function (fn) {
+  var out = [];
+  for (var i = 0; i < this._data.length; i++) {
+    if (fn.call(this._data[i], this._data[i], i, this._data)) {
+      out.push(this._data[i]);
+    }
+  }
+  return new MstDataSelection(out);
+};
+MstDataSelection.prototype.each = function (fn) {
+  for (var i = 0; i < this._data.length; i++) {
+    fn.call(this._data[i], this._data[i], i, this._data);
+  }
+  return this;
+};
+MstDataSelection.prototype.nodes = function () { return this._data; };
+MstDataSelection.prototype.size = function () { return this._data.length; };
+MstDataSelection.prototype.empty = function () { return this._data.length === 0; };
+MstDataSelection.prototype.node = function () { return this._data.length ? this._data[0] : null; };
+// Chainable no-op methods (the DOM side effects are replaced by canvas drawing).
+['selectAll', 'select', 'data', 'enter', 'exit', 'append', 'insert', 'remove',
+ 'attr', 'style', 'classed', 'property', 'text', 'html', 'on', 'sort', 'order',
+ 'transition', 'merge', 'datum', 'lower', 'raise', 'interrupt', 'call', 'duration',
+ 'delay', 'ease'].forEach(function (m) {
+  MstDataSelection.prototype[m] = function () { return this; };
+});
 
 //--------------------------------------------------------------------------------------------------
 //https://raw.github.com/kvz/phpjs/master/functions/strings/strstr.js
@@ -780,23 +825,31 @@ D3BaseTree.prototype.constructor=D3BaseTree;
 */
 function D3BaseTree(element_id,metadata,height,width){
 	var self=this;
-	this.legend_div=$("<div>").css({"position":"absolute","overflow-x":"hidden"}).css({"top":"0px","right":"0px"}).draggable({ cancel: '.no-drag' });
-	this.scale_div=$("<div>").css({"position":"absolute","overflow-x":"hidden", "overflow-y":"hidden"}).css({"bottom":"100px","left":"20px"}).draggable();
-	this.container = $("#"+element_id)
-				    .css("position","fixed")
-				    .append(this.legend_div)
-				    .append(this.scale_div);
+	this.legend_div = document.createElement('div');
+	this.legend_div.classList.add('tree-legend-div');
+	Object.assign(this.legend_div.style, { position: 'absolute', overflowX: 'hidden', top: '0px', right: '0px' });
+	gtiz_drag.makeFreeDraggable(this.legend_div, { cancel: '.no-drag' });
+	this.scale_div = document.createElement('div');
+	this.scale_div.classList.add('tree-scale-div');
+	Object.assign(this.scale_div.style, { position: 'absolute', overflowX: 'hidden', overflowY: 'hidden', bottom: '100px', left: '20px' });
+	gtiz_drag.makeFreeDraggable(this.scale_div);
+	this.container = document.getElementById(element_id);
+	this.container.style.position = 'fixed';
+	this.container.appendChild(this.legend_div);
+	this.container.appendChild(this.scale_div);
 
 	this.height=height;
 	this.width=width;
 	if (this.width || this.height){
-		this.container.width(width).height(height);	
+		this.container.style.width = width + 'px';
+		this.container.style.height = height + 'px';
 	}
 	else{
-		this.height= this.container.height();
-		this.width=this.container.width();
+		var size = gtiz_utils.measureSize(this.container);
+		this.height = size.height;
+		this.width = size.width;
 	}
-	
+
 	this.metadata={};
 	this.metadata_info = {nothing:{label:"No Category"}};
 	this.grouped_nodes={};
@@ -806,11 +859,30 @@ function D3BaseTree(element_id,metadata,height,width){
 	}
 	this.show_legend=true;
 	
+	// Canvas layer: the mass of nodes and links is rendered here (see
+	// canvas_renderer.js). It sits UNDER the SVG overlay and never receives
+	// pointer events (those go to the SVG background rect that drives zoom).
+	this.render_canvas = document.createElement('canvas');
+	this.render_canvas.setAttribute('id', 'mst-canvas');
+	Object.assign(this.render_canvas.style, { position: 'absolute', top: '0px', left: '0px', zIndex: '1', pointerEvents: 'none' });
+	this.container.appendChild(this.render_canvas);
+
 	this.svg = d3.select("#"+element_id).append('svg')
 	 .attr("width",this.width)
 	.attr("height",this.height)
-	.attr("id","mst-svg");
-	
+	.attr("id","mst-svg")
+	.style("position", "absolute").style("top", "0px").style("left", "0px").style("z-index", "2");
+
+	// Lift the floating panels above both canvas and svg layers.
+	this.legend_div.style.zIndex = '3';
+	this.scale_div.style.zIndex = '3';
+
+	// The renderer is a pure consumer of the tree model (coordinates, radii,
+	// pie composition, colours). It is created here so subclasses (D3MSTree)
+	// can request redraws as soon as the model changes.
+	this.renderer = new D3MSTreeCanvasRenderer(this, this.render_canvas);
+	this.renderer.resize(this.width, this.height);
+
 	this.svg.append('defs').html('<pattern id="pattern" patternUnits="userSpaceOnUse" width="8" height="8"> <image href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI2LjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAzOC40IDM4LjQiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDM4LjQgMzguNDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiNGRkZGRkY7fQoJLnN0MXtmaWxsOiNCREJEQkQ7fQo8L3N0eWxlPgo8cmVjdCB5PSIwIiBjbGFzcz0ic3QwIiB3aWR0aD0iMzguNCIgaGVpZ2h0PSIzOC40Ii8+CjxjaXJjbGUgY2xhc3M9InN0MSIgY3g9IjE5LjIiIGN5PSIxOS4yIiByPSI4LjUiLz4KPHBhdGggY2xhc3M9InN0MSIgZD0iTTM4LjQsOC41VjBIMzBDMzAsNC43LDMzLjcsOC41LDM4LjQsOC41eiIvPgo8cGF0aCBjbGFzcz0ic3QxIiBkPSJNMzguNCwzMGMtNC43LDAtOC41LDMuOC04LjUsOC41aDguNVYzMHoiLz4KPHBhdGggY2xhc3M9InN0MSIgZD0iTTguNSwwSDB2OC41QzQuNyw4LjUsOC41LDQuNyw4LjUsMHoiLz4KPHBhdGggY2xhc3M9InN0MSIgZD0iTTAsMzB2OC41aDguNUM4LjUsMzMuNyw0LjcsMzAsMCwzMHoiLz4KPC9zdmc+Cg==" x="0" y="0" width="8" height="8"> </image> </pattern>');
 	
 	//legend stuff
@@ -818,9 +890,14 @@ function D3BaseTree(element_id,metadata,height,width){
 	this.legend=null;
 	this.legend_background;
 	this.objColors = {};
+	// d3 v4+ removed the categorical palette helpers (scale.category20/20b/20c),
+	// so their original ranges are inlined here to preserve the same colours.
+	var category20 = ["#1f77b4","#aec7e8","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5"];
+	var category20b = ["#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6"];
+	var category20c = ["#3182bd","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"];
 	this.color_schemes = {
-		category: d3.scale.category20().range().concat(
-			d3.scale.category20b().range(), d3.scale.category20c().range(), 
+		category: category20.concat(
+			category20b, category20c,
 			["#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6","#63FFAC","#B79762","#004D43","#8FB0FF","#997D87","#5A0007","#809693","#FEFFE6","#1B4400","#4FC601",
 			 "#3B5DFF","#4A3B53","#FF2F80","#61615A","#BA0900","#6B7900","#00C2A0","#FFAA92","#FF90C9","#B903AA","#D16100","#DDEFFF","#000035","#7B4F4B","#A1C299","#300018","#0AA6D8","#013349","#00846F","#372101",
 			 "#FFB500","#C2FFED","#A079BF","#CC0744","#C0B9B2","#C2FF99","#001E09","#00489C","#6F0062","#0CBD66","#EEC3FF","#456D75","#B77B68","#7A87A1","#788D66","#885578","#FAD09F","#FF8A9A","#D157A0","#BEC459",
@@ -851,13 +928,13 @@ function D3BaseTree(element_id,metadata,height,width){
 			 "#1BE177","#BCB1E5","#76912F","#003109","#0060CD","#D20096","#895563","#29201D","#5B3213","#A76F42","#89412E","#1A3A2A","#494B5A","#A88C85","#F4ABAA","#A3F3AB","#00C6C8","#EA8B66","#958A9F","#BDC9D2",
 			 "#9FA064","#BE4700","#658188","#83A485","#453C23","#47675D","#3A3F00","#061203","#DFFB71","#868E7E","#98D058","#6C8F7D","#D7BFC2","#3C3E6E","#D83D66","#2F5D9B","#6C5E46","#D25B88","#5B656C","#00B57F",
 			 "#545C46","#866097","#365D25","#252F99","#00CCFF","#674E60","#FC009C","#92896B"].concat(
-				d3.scale.category20().range(), d3.scale.category20b().range(), d3.scale.category20c().range(), )
-		, 
-		custom: d3.scale.category20().range().concat(
-			d3.scale.category20b().range(), d3.scale.category20c().range()), 
+				category20, category20b, category20c)
+		,
+		custom: category20.concat(
+			category20b, category20c),
 		gradient_cool: function(num) {
 			var n = num - 1;
-			var scale = d3.scale.linear()
+			var scale = d3.scaleLinear()
 				.domain([0, n/4, n/2, n*3/4, n])
 				.range(["#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#00007D"])
 				.interpolate(d3.interpolateHcl);
@@ -865,7 +942,7 @@ function D3BaseTree(element_id,metadata,height,width){
 		},
 		gradient: function(num) {
 			var n = num - 1;
-			var scale = d3.scale.linear()
+			var scale = d3.scaleLinear()
 				.domain([0, n/4, n*3/4, n])
 				.range(["#FFFF7D", "#FFFF00", "#FF0000", "#7D0000"])
 				.interpolate(d3.interpolateHcl);
@@ -873,7 +950,7 @@ function D3BaseTree(element_id,metadata,height,width){
 		},
 		gradient_rainbow: function(num) {
 			var n = num - 1;
-			var scale = d3.scale.linear()
+			var scale = d3.scaleLinear()
 				.domain([0, n/5, n*2/5, n*3/5, n*4/5, n])
 				.range(["#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#FF00FF"])
 				.interpolate(d3.interpolateHcl);
@@ -881,7 +958,7 @@ function D3BaseTree(element_id,metadata,height,width){
 		},
 		gradient_rainbow2: function(num) {
 			var n = num - 1;
-			var scale = d3.scale.linear()
+			var scale = d3.scaleLinear()
 				.domain([0, n/5, n*2/5, n*3/5, n*4/5, n])
 				.range(["#FFAFAF", "#FFFFAF", "#AFFFAF", "#AFFFFF", "#AFAFFF", "#FFAFFF"])
 				.interpolate(d3.interpolateHcl);
@@ -889,12 +966,43 @@ function D3BaseTree(element_id,metadata,height,width){
 		},
 		gradient_rainbow3: function(num) {
 			var n = num - 1;
-			var scale = d3.scale.linear()
+			var scale = d3.scaleLinear()
 				.domain([0, n/5, n*2/5, n*3/5, n*4/5, n])
 				.range(["#AF0000", "#AFAF00", "#00AF00", "#00AFAF", "#0000AF", "#AF00AF"])
 				.interpolate(d3.interpolateHcl);
 			return Array.apply(null, {length: num}).map(Number.call, Number).map(function(n) {return scale(n);});
 		}
+	};
+	// Generate the categorical palette on demand (distinct HSL hues via
+	// golden-angle rotation) instead of using the fixed array above, so the
+	// legend is never capped at the palette length: every group up to
+	// `category_num` gets its own colour. Deterministic (same count -> same
+	// colours across redraws). The gradient_* schemes are left untouched.
+	this.color_schemes.category = function(num) {
+		var colors = [];
+		var golden = 137.508; // golden angle -> maximally spread, distinct hues
+		var hslToHex = function(h, s, l) {
+			s /= 100; l /= 100;
+			var c = (1 - Math.abs(2 * l - 1)) * s;
+			var x = c * (1 - Math.abs((h / 60) % 2 - 1));
+			var m = l - c / 2;
+			var r = 0, g = 0, b = 0;
+			if (h < 60) { r = c; g = x; }
+			else if (h < 120) { r = x; g = c; }
+			else if (h < 180) { g = c; b = x; }
+			else if (h < 240) { g = x; b = c; }
+			else if (h < 300) { r = x; b = c; }
+			else { r = c; b = x; }
+			var toHex = function(v) { var n = Math.round((v + m) * 255); return ('0' + n.toString(16)).slice(-2); };
+			return '#' + toHex(r) + toHex(g) + toHex(b);
+		};
+		for (var i = 0; i < num; i++) {
+			var hue = (i * golden) % 360;
+			var sat = 65 + (i % 2) * 20;   // alternate 65% / 85% saturation
+			var light = 45 + (i % 3) * 12; // cycle 45% / 57% / 69% lightness
+			colors.push(hslToHex(hue, sat, light));
+		}
+		return colors;
 	};
 	//this.legend_colours = ['default', this.color_schemes.default];
 	this.category_num = 30;
@@ -903,7 +1011,8 @@ function D3BaseTree(element_id,metadata,height,width){
 	this.display_category=null;
 	this.custom_colours={}
 	//date stuff
-	this.timeFormat= d3.time.format("%Y-%m-%d");
+	this.timeFormat= d3.timeFormat("%Y-%m-%d");
+	this.timeParse= d3.timeParse("%Y-%m-%d");
 	this.min_date=null;
 	this.max_date=null;
 	this.date_scale=null;
@@ -916,27 +1025,91 @@ function D3BaseTree(element_id,metadata,height,width){
 	this.scale=1;
 	this.translate=[0,0];
 	
-	var x_zoom_scale=d3.scale.linear().domain([0, this.width]).range([0, this.width]);
-	var y_zoom_scale = d3.scale.linear().domain([0, this.height]).range([0, this.height]);
-	this.zoom = d3.behavior.zoom()
-	     .x(x_zoom_scale)
-	     .y(y_zoom_scale);
-	
+	// d3 v4+ zoom uses a single transform (x, y, k) instead of separate
+	// translate/scale accessors. this.scale / this.translate are kept in sync
+	// from the zoom event so the rest of the code can keep reading them.
+	this.zoom = d3.zoom()
+		// Shift is reserved for the selection brush, so the zoom/pan behaviour
+		// must ignore Shift gestures (otherwise it competes with the brush and
+		// the drag is consumed by the pan). Wheel zoom stays enabled.
+		.filter(function(event){
+			if (event.shiftKey || event.button) {
+				return false;
+			}
+			if (event.type === 'wheel') {
+				// Wheel always zooms, even when the pointer is over a node.
+				return true;
+			}
+			if (event.ctrlKey) {
+				return false;
+			}
+			// On press, let node dragging take precedence when a node is hit;
+			// otherwise the gesture pans the canvas.
+			if (self._nodeUnderEvent && self._nodeUnderEvent(event)) {
+				return false;
+			}
+			return true;
+		})
+		.on('zoom', function(event){
+			var t = event.transform;
+			self.canvas.attr('transform', "translate(" + t.x + "," + t.y + ") scale(" + t.k + ")");
+			self.scale = t.k;
+			self.translate = [t.x, t.y];
+			self.updateScaleDiv();
+			// Keep the canvas layer aligned with the SVG overlay transform.
+			if (self.renderer) {
+				self.renderer.requestRedraw();
+			}
+		});
+
 	this.background_rect = this.svg.append('rect')
 		.attr("pointer-events","all")
 		.style('fill', 'none')
 		.attr("width", this.width)
 		.attr("height", this.height)
-		.call(this.zoom.on('zoom', function(){
-			self.canvas.attr('transform', "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
-			self.scale=d3.event.scale;
-			self.translate=d3.event.translate;
-			self.updateScaleDiv();
-		}))
+		.call(this.zoom)
 		.on("dblclick.zoom", null);
 	
 	this.canvas = this.svg.append("g");
 	this.canvas.attr("id","vis");
+
+	// Canvas interaction layer. The browser no longer hit-tests per-element SVG
+	// shapes, so a quadtree (in the renderer) tells us which node/link is under
+	// the pointer. Node dragging and hover tooltips are routed through it to the
+	// existing handlers; the drag math and selection logic are unchanged.
+	this.node_drag = d3.drag()
+		.filter(function(event){
+			return !event.shiftKey && !event.button && self._nodeUnderEvent(event);
+		})
+		.subject(function(event){
+			return self._nodeUnderEvent(event);
+		})
+		.on('start', function(event){
+			if (event.subject && self._dragStarted) {
+				self._dragStarted(event.subject);
+			}
+		})
+		.on('drag', function(event){
+			// d3.drag deltas are in screen pixels here (the rect is unscaled),
+			// so convert to data units before feeding the existing _dragging.
+			if (event.subject && self._dragging) {
+				self._dragging(event.subject, null, { dx: event.dx / self.scale, dy: event.dy / self.scale });
+			}
+		})
+		.on('end', function(event){
+			if (event.subject && self._dragEnded) {
+				self._dragEnded(event.subject);
+			}
+		});
+	this.background_rect.call(this.node_drag);
+
+	// Hover -> tooltip. Pick the node (then the wedge under the cursor) or a
+	// nearby link, and notify the same listeners the SVG handlers used to call.
+	this.svg.on('mousemove.hover', function(event){
+		self._handleHover(event);
+	}).on('mouseleave.hover', function(){
+		self._fireHoverOut();
+	});
 	//resize
 	/*$(window).resize(function(){
 		setTimeout(function(){
@@ -950,10 +1123,97 @@ function D3BaseTree(element_id,metadata,height,width){
 	d3.select('body').on("keydown",function(e){
 		self._keyDown(e);
 	}).on("keyup",function(e){
+		// tear down the manual brush and any in-flight drag listeners
+		d3.select(window).on("mousemove.brush", null).on("mouseup.brush", null);
 		d3.selectAll(".brush").remove();
 	});
-	
+
 }
+
+/** Request a redraw of the canvas layer (coalesced to one draw per frame). */
+D3BaseTree.prototype.requestRedraw = function(){
+	if (this.renderer){
+		this.renderer.requestRedraw();
+	}
+};
+
+/**
+ * Convert a pointer event to data-space coordinates (the space where node.x /
+ * node.y live), inverting the current zoom/pan transform.
+ */
+D3BaseTree.prototype._pointerData = function(event){
+	var p = d3.pointer(event, this.svg.node());
+	return [(p[0] - this.translate[0]) / this.scale, (p[1] - this.translate[1]) / this.scale];
+};
+
+/** Return the node under a pointer event, or null. Used to arbitrate drag vs pan. */
+D3BaseTree.prototype._nodeUnderEvent = function(event){
+	if (!this.renderer){
+		return null;
+	}
+	var d = this._pointerData(event);
+	return this.renderer.pickNode(d[0], d[1]);
+};
+
+/**
+ * Hover handler: pick a node (and the wedge under the cursor) or a nearby link
+ * and forward to the same listeners the old per-element SVG handlers used.
+ */
+D3BaseTree.prototype._handleHover = function(event){
+	if (this.dragging || !this.renderer){
+		return;
+	}
+	var d = this._pointerData(event);
+	var node = this.renderer.pickNode(d[0], d[1]);
+	if (node){
+		// Fire the "over" listeners only when the hovered node CHANGES (mimicking
+		// the SVG mouseover, which fired once on enter). Firing on every mousemove
+		// would call showToolTip repeatedly, leaking a tooltip div each time.
+		if (this._hover_node === node){
+			return;
+		}
+		this._fireHoverOut();
+		this._hover_node = node;
+		var wedge = this.renderer.pickWedge(node, d[0], d[1]);
+		if (this.segment_over_listeners){
+			for (var i in this.segment_over_listeners){
+				this.segment_over_listeners[i](wedge, event);
+			}
+		}
+		return;
+	}
+	var link = this.renderer.pickLink(d[0], d[1], 4 / this.scale);
+	if (link){
+		if (this._hover_link === link){
+			return;
+		}
+		this._fireHoverOut();
+		this._hover_link = link;
+		if (this.link_over_listeners){
+			for (var j in this.link_over_listeners){
+				this.link_over_listeners[j](link, event);
+			}
+		}
+		return;
+	}
+	this._fireHoverOut();
+};
+
+/** Fire the out listeners for whatever element was last hovered. */
+D3BaseTree.prototype._fireHoverOut = function(){
+	if (this._hover_node && this.segment_out_listeners){
+		for (var i in this.segment_out_listeners){
+			this.segment_out_listeners[i](this._hover_node);
+		}
+	}
+	this._hover_node = null;
+	if (this._hover_link && this.link_out_listeners){
+		for (var j in this.link_out_listeners){
+			this.link_out_listeners[j](this._hover_link);
+		}
+	}
+	this._hover_link = null;
+};
 
 D3BaseTree.prototype.parseNewick =  function (a, taxa_map){
 	this.newickTree = a;
@@ -1100,8 +1360,8 @@ D3BaseTree.prototype.setScale=function(scale,relative){
 	if (relative){
 		scale *= this.scale;
 	}
-	this.zoom.scale(scale);
-	this.zoom.event(this.canvas);
+	var t = d3.zoomIdentity.translate(this.translate[0], this.translate[1]).scale(scale);
+	this.background_rect.call(this.zoom.transform, t);
 };
 
 
@@ -1109,8 +1369,8 @@ D3BaseTree.prototype.setScale=function(scale,relative){
 * @param {array} scale - An array containing the x,y offsets eg [30,-100]
 */
 D3BaseTree.prototype.setTranslate=function(x_y){
-	this.zoom.translate(x_y)
-	this.zoom.event(this.canvas);
+	var t = d3.zoomIdentity.translate(x_y[0], x_y[1]).scale(this.scale);
+	this.background_rect.call(this.zoom.transform, t);
 }
 
 
@@ -1297,10 +1557,10 @@ D3BaseTree.prototype.getAllIDs=function(){
 D3BaseTree.prototype.showLegend= function (show){
 	this.show_legend=show;
 	if (show){
-		this.legend_div.show();
+		this.legend_div.style.display = 'block';
 	}
 	else{
-		this.legend_div.hide();
+		this.legend_div.style.display = 'none';
 	}
 
 };
@@ -1319,24 +1579,29 @@ D3BaseTree.prototype._updateScaleDivSize = function(scaleLength) {
 D3BaseTree.prototype.updateScaleDiv = function() {
 	var self = this;
 	var dim = this._updateScaleDivSize(100);
-	d3.select(this.scale_div[0]).select("svg").remove();
-	var scale_svg = d3.select(this.scale_div[0]).append('svg').attr("id","scale-svg");
+	d3.select(this.scale_div).select("svg").remove();
+	var scale_svg = d3.select(this.scale_div).append('svg').attr("id","scale-svg");
 	var scale = scale_svg.append("g").attr('class', 'scale-bar');
 	scale.selectAll('.scale-title').remove();
-	scale.append('text').attr('class', 'scale-title').attr('x', 30).attr('y', 20).attr('font-weight', 'normal').attr("font-family", "Arial")
+	scale.append('text').attr('class', 'scale-title').attr('x', 30).attr('y', 20).attr('font-weight', 'normal').attr("font-family", (gtiz_utils.getAllCssVariables()["--font-family"] || "Arial"))
 	.text(dim.scaleValue);
 	scale.append('line').attr('x1', 0).attr('y1', 25).attr('x2', dim.scaleLength).attr('y2', 25).attr("stroke-width", 1).attr("stroke", "black");
 	scale.append('line').attr('x1', 0).attr('y1', 20).attr('x2', 0).attr('y2', 25).attr("stroke-width", 1).attr("stroke", "black");
 	scale.append('line').attr('x1', dim.scaleLength).attr('y1', 20).attr('x2', dim.scaleLength).attr('y2', 25).attr("stroke-width", 1).attr("stroke", "black");
-	dim = scale_svg[0][0].getBBox();
-	scale_svg.attr("height", 30).attr('width', dim.width+10);
-	this.scale_div.height(40).width(dim.width+10);
+	var bbox = scale_svg.node().getBBox();
+	// While the tree is loading `#graph-div` is `display:none`, so getBBox()
+	// reports a zero-width box. Fall back to the known scale-bar length so the
+	// container is sized correctly on first render instead of collapsing.
+	var content_width = bbox.width > 0 ? bbox.width : Math.max(dim.scaleLength, 30);
+	scale_svg.attr("height", 30).attr('width', content_width+10);
+	this.scale_div.style.height = '40px';
+	this.scale_div.style.width = (content_width+10) + 'px';
 }
 
 
 D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 	var self = this;
-	d3.select(this.legend_div[0]).select("svg").remove();
+	d3.select(this.legend_div).select("svg").remove();
 
 	/**
 	 * Modified if condition `if (title == 'nothing' || ! this.display_category)` in order to manage **No category** selection and allow legend object to be populated. We added also following code `_changeCategory` method:
@@ -1483,13 +1748,13 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 
 	});
 
-	var legend_svg= d3.select(this.legend_div[0]).append('svg').attr("id","legend-svg");
+	var legend_svg= d3.select(this.legend_div).append('svg').attr("id","legend-svg");
 	var legend = legend_svg.append("g").attr('class', 'legend');
 	var legend_items = legend.selectAll('.legend-item').data(legend_data, function(it){
 		return it.group;
 	});
 	legend_items = legend_items.enter().append('g').attr('class', 'legend-item').attr('transform', function(d, i){
-		return "translate(0," + ((i + 1) * 20 + 10) + ")";
+		return "translate(0," + ((i + 1) * 24 + 10) + ")";
 	}).attr('data-real-group-izsam',  function(it){
 		return it.real_group;
 	}).attr('data-group-colour-izsam',  function(it){
@@ -1498,31 +1763,31 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 	/*
 	Create rect elements with group colours
 	*/
-	legend_items.append('circle').attr('cx', 8).attr('cy',10).attr('r', 8).style('stroke-width', '0.5').style('stroke', 'black').style('fill', function(it){
+	legend_items.append('circle').attr('cx', 11).attr('cy',10).attr('r', 8).style('stroke-width', '0.5').style('stroke', 'black').style('fill', function(it){
 		return it.group_colour;
-	}).on("click",function(data){
+	}).on("click",function(event, data){
 		var obj={
 			category:self.display_category,
 			value:data.group,
 			colour:data.group_colour
 		};
 		self.legendItemCircleClicked(obj)
-	
+
 	});
 	/*
 	Create text elements with group names
 	*/
-	legend_items.append('text').attr('x', 20).attr('y', 9).attr('dy', ".35em").attr("font-family", "Arial").style('text-anchor', 'start').text(function(it){
+	legend_items.append('text').attr('x', 26).attr('y', 9).attr('dy', ".35em").attr("font-family", (gtiz_utils.getAllCssVariables()["--font-family"] || "Arial")).style('text-anchor', 'start').text(function(it){
 		var name = it.group;
 		/*if (name.length >25){
 			name = name.substring(0,25)+"..."
 		}*/
 		return name;
-	}).on("click",function(data){
+	}).on("click",function(event, data){
 		var obj={
 			category:self.display_category,
 			value:data.group,
-			target: $(this),
+			target: this,
 			real: data.real_group,
 			colour:data.group_colour
 		};
@@ -1533,12 +1798,13 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 	Update the legend title
 	*/
 	legend.selectAll('.legend-title').remove();
-	legend.append('text').attr('class', 'legend-title').attr('x', 12).attr('y', 20).attr('font-weight', 'bold').attr("font-family", "Arial")
+	legend.append('text').attr('class', 'legend-title').attr('x', 12).attr('y', 20).attr('font-weight', 'bold').attr("font-family", (gtiz_utils.getAllCssVariables()["--font-family"] || "Arial"))
 	.text(this.metadata_info[title]['label']);
-	var legend_dim = legend_svg[0][0].getBBox();
+	var legend_dim = legend_svg.node().getBBox();
 	legend_svg.attr('width', 240).attr('height', legend_dim.height + 10);
-	this.legend_div.width(240);
-	var l_height = $("#legend-svg").height();
+	this.legend_div.style.width = '240px';
+	var legend_svg_el = document.getElementById('legend-svg');
+	var l_height = legend_svg_el ? legend_svg_el.getBoundingClientRect().height : 0;
 	var height = l_height+10;
 	
 	// Fixed: Prevent infinite height growth during collapse operations
@@ -1548,8 +1814,8 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		height = max_reasonable_height;
 	}
 	
-	this.legend_div.css({"max-height":height+"px"});
-	this.legend_div.height(height);
+	this.legend_div.style.maxHeight = height + 'px';
+	this.legend_div.style.height = height + 'px';
 
 	gtiz_layout.setLegendHeight();
 };
@@ -1575,7 +1841,7 @@ D3BaseTree.prototype.calculateDateScale= function(){
 			if (!this.metadata[strain]['Collection Date']){
 				this.metadata[strain]['Collection Date']='ND';
 			}
-			var date  = this.timeFormat.parse(this.metadata[strain]['Collection Date'] )
+			var date  = this.timeParse(this.metadata[strain]['Collection Date'] )
 			arr.push(date);
 		}
 		var ext = d3.extent(arr);
@@ -1589,8 +1855,8 @@ D3BaseTree.prototype.calculateDateScale= function(){
 			var ms_mid =  ms_min + ((ms_max-ms_min)/2);
 			var mid = new Date(ms_mid);
 			var st_mid = mid.getFullYear+"-"+(mid.getMonth()+1)+"-"+mid.getDate();
-			mid = this.timeFormat.parse(st_mid)
-			this.date_scale = d3.time.scale()
+			mid = this.timeParse(st_mid)
+			this.date_scale = d3.scaleTime()
 			.domain([ext[0],ext[1]])
 			.range(["yellow","red"]);
 		}
@@ -1610,7 +1876,7 @@ D3BaseTree.prototype._getNodeColour = function(key){
 			if (val=== 'ND'){
 				return "#ddd"
 			}
-			return this.date_scale(this.timeFormat.parse(val));
+			return this.date_scale(this.timeParse(val));
 	}
 	
 	return this.category_colours[val];
@@ -1619,32 +1885,62 @@ D3BaseTree.prototype._getNodeColour = function(key){
 
 D3BaseTree.prototype._keyDown= function(e){
 	var self = this;
-	if (d3.event.shiftKey){
-		var brush = this.svg.append("g")
-			.datum(function() { 
-				return {selected: false, previouslySelected: false}; 
-			})
-			.attr("class", "brush");      
-		var brushX=d3.scale.linear().range([0, this.width]);
-		var brushY=d3.scale.linear().range([0, this.height]);
-		brush.call(d3.svg.brush()
-			.x(this.zoom.x())
-			.y(this.zoom.y())
-			.on("brushstart",function(){
-				$(".extent").css( {stroke:"#fff","fill-opacity":".125","shape-rendering": "crispEdges"});
-				self.brushStarted()
-			})
-			.on("brush", function() {
-				var extent = d3.event.target.extent();
-				self.brushing(extent);
-			})
-			.on("brushend", function() {
-				var extent = d3.event.target.extent();
-				self.brushEnded(extent);
-				d3.event.target.clear();
-				d3.select(this).call(d3.event.target);
+	if (e.shiftKey){
+		// keydown auto-repeats while Shift is held: only create the brush once
+		if (!this.svg.select("g.brush").empty()){
+			return;
+		}
+		// Manual rubber-band selection.
+		// d3-brush's internal coordinate mapping (d3.pointer / getScreenCTM)
+		// mis-reads the X axis in this dashboard layout, so the selection is
+		// computed here from getBoundingClientRect + clientX/clientY (robust DOM
+		// APIs unaffected by the SVG CTM). Pixel coords are then converted to the
+		// canvas/data space (where node.x / node.y live) by inverting the current
+		// zoom transform: data = (pixel - translate) / scale.
+		var svgNode = this.svg.node();
+		var brushG = this.svg.append("g").attr("class", "brush");
+		brushG.append("rect").attr("class", "overlay")
+			.attr("x", 0).attr("y", 0)
+			.attr("width", this.width).attr("height", this.height)
+			.style("fill", "none").style("pointer-events", "all").style("cursor", "crosshair");
+		var rect = brushG.append("rect").attr("class", "selection")
+			.style("fill", "#777").style("fill-opacity", 0.3)
+			.style("stroke", "#fff").style("shape-rendering", "crispEdges")
+			.style("display", "none");
 
-			}));      
+		var toData = function(p){
+			return [(p[0] - self.translate[0]) / self.scale, (p[1] - self.translate[1]) / self.scale];
+		};
+		var getXY = function(ev){
+			var r = svgNode.getBoundingClientRect();
+			return [ev.clientX - r.left, ev.clientY - r.top];
+		};
+		var start = null, dragging = false;
+		var onMove = function(ev){
+			if (!dragging) return;
+			var cur = getXY(ev);
+			var x0 = Math.min(start[0], cur[0]), y0 = Math.min(start[1], cur[1]);
+			var x1 = Math.max(start[0], cur[0]), y1 = Math.max(start[1], cur[1]);
+			rect.style("display", null).attr("x", x0).attr("y", y0).attr("width", x1 - x0).attr("height", y1 - y0);
+			self.brushing([toData([x0, y0]), toData([x1, y1])]);
+		};
+		var onUp = function(ev){
+			if (!dragging) return;
+			dragging = false;
+			d3.select(window).on("mousemove.brush", null).on("mouseup.brush", null);
+			var cur = getXY(ev);
+			var x0 = Math.min(start[0], cur[0]), y0 = Math.min(start[1], cur[1]);
+			var x1 = Math.max(start[0], cur[0]), y1 = Math.max(start[1], cur[1]);
+			self.brushEnded([toData([x0, y0]), toData([x1, y1])]);
+			rect.style("display", "none");
+		};
+		brushG.select(".overlay").on("mousedown", function(ev){
+			ev.preventDefault();
+			start = getXY(ev);
+			dragging = true;
+			self.brushStarted();
+			d3.select(window).on("mousemove.brush", onMove).on("mouseup.brush", onUp);
+		});
 	}
 	else{
 		self.keyPressed(e);
@@ -1756,31 +2052,145 @@ D3BaseTree.prototype.getMetadataOptions=function(){
 D3BaseTree.prototype.getSVG=function(){
 	//attach legend to svg
 	//this.legend_div.show();
-	if (gtiz_tree.tree.legend_div.css("display") === 'block') {
-		var ori_pos = gtiz_tree.tree.legend_div.position();
-		var leg = $("g.legend"); // added g to .legend selector because it is causing conflicts with .legend layout div
-		$("#mst-svg").append(leg);
-		leg.attr("transform","translate("+ori_pos.left+","+ori_pos.top+")");
+	var mst_svg = document.getElementById("mst-svg");
+	var leg, sb;
+	if (getComputedStyle(gtiz_tree.tree.legend_div).display === 'block') {
+		var ori_pos = { left: gtiz_tree.tree.legend_div.offsetLeft, top: gtiz_tree.tree.legend_div.offsetTop };
+		leg = document.querySelector("g.legend"); // added g to .legend selector because it is causing conflicts with .legend layout div
+		mst_svg.appendChild(leg);
+		leg.setAttribute("transform","translate("+ori_pos.left+","+ori_pos.top+")");
 	}
-	if (gtiz_tree.tree.scale_div.css("display") === 'block') {
-		var ori_pos = gtiz_tree.tree.scale_div.position();
-		var sb = $(".scale-bar");
-		$("#mst-svg").append(sb);
-		sb.attr("transform","translate("+ori_pos.left+","+ori_pos.top+")");
+	if (getComputedStyle(gtiz_tree.tree.scale_div).display === 'block') {
+		var ori_pos = { left: gtiz_tree.tree.scale_div.offsetLeft, top: gtiz_tree.tree.scale_div.offsetTop };
+		sb = document.querySelector(".scale-bar");
+		mst_svg.appendChild(sb);
+		sb.setAttribute("transform","translate("+ori_pos.left+","+ori_pos.top+")");
 	}
 
-	var svgData = $("#mst-svg")[0].outerHTML;
+	var svgData = mst_svg.outerHTML;
 	var svgData = ['<svg xmlns="http://www.w3.org/2000/svg" ', svgData.substring(5,9999999)].join('');
-	if (gtiz_tree.tree.legend_div.css("display") === 'block') {
-		leg.attr("transform","translate(0,0)");
-		$("#legend-svg").append(leg);
+	if (getComputedStyle(gtiz_tree.tree.legend_div).display === 'block') {
+		leg.setAttribute("transform","translate(0,0)");
+		document.getElementById("legend-svg").appendChild(leg);
 	}
-	if (gtiz_tree.tree.scale_div.css("display") === 'block') {
-		sb.attr("transform","translate(0,0)");
-		$("#scale-svg").append(sb);
+	if (getComputedStyle(gtiz_tree.tree.scale_div).display === 'block') {
+		sb.setAttribute("transform","translate(0,0)");
+		document.getElementById("scale-svg").appendChild(sb);
 	}
 
 	return svgData;
+};
+
+/**
+ * Canvas migration: export the tree as a PNG rendered from the canvas layer
+ * (the node/link SVG that getSVG used to serialise no longer exists). The
+ * current view is rasterised at `width` px (what is visible in the tree pane)
+ * and the legend is added in a panel BESIDE the tree, so it is always fully
+ * included regardless of the current zoom/pan. The scale bar, when shown, stays
+ * composited on top of the tree at its on-screen position. The resulting image
+ * is downloaded with the given filename.
+ *
+ * @param {number} width Output width in pixels
+ * @param {string} filename Download file name (e.g. "spread123.png")
+ */
+D3BaseTree.prototype.exportImage = function(width, filename){
+	var canvas = this.renderer.exportToCanvas(width);
+	var s = canvas.width / this.width;
+	// Scale bar (if visible) stays overlaid on the tree where it appears on screen.
+	var scaleOverlay = null;
+	if (getComputedStyle(this.scale_div).display === 'block'){
+		var ssvg = document.getElementById('scale-svg');
+		if (ssvg){
+			scaleOverlay = { svg: ssvg, x: this.scale_div.offsetLeft * s, y: this.scale_div.offsetTop * s, s: s };
+		}
+	}
+	// Legend (if visible) goes into a side panel to the right of the tree.
+	var legendSvg = null;
+	if (getComputedStyle(this.legend_div).display === 'block'){
+		legendSvg = document.getElementById('legend-svg');
+	}
+	gtiz_file_handler.saveTreeWithLegend(canvas, scaleOverlay, legendSvg, s, filename);
+};
+
+/**
+ * Export the WHOLE tree as a vector SVG (not just the visible viewport like the
+ * PNG). The tree is rebuilt as SVG from the model in data coordinates; the
+ * legend is placed in a panel to the right and the scale bar at the bottom-left,
+ * both recomputed for the full (unzoomed) tree so the scale bar length stays
+ * correct. The file is then downloaded.
+ *
+ * @param {string} filename Download file name (e.g. "spread123.svg")
+ */
+D3BaseTree.prototype.exportSvg = function(filename){
+	var res = this.renderer.exportToSvg();
+	var minX = res.minX, minY = res.minY, maxX = res.maxX, maxY = res.maxY;
+	var treeW = maxX - minX, treeH = maxY - minY;
+
+	function num(n){ var r = Math.round(n * 100) / 100; return r === 0 ? 0 : r; }
+
+	// Overlays (legend, scale bar) are scaled up for big trees so they stay
+	// readable relative to the tree, never smaller than their native size.
+	var overlayScale = Math.max(1, Math.min(treeH / 600, 12));
+	var gap = Math.max(20, treeW * 0.04);
+
+	// ---- legend panel (to the right of the tree) ----
+	// The legend is rendered at half the overlay scale (it was oversized otherwise).
+	var legendScale = overlayScale / 2;
+	var legendG = '', legendW = 0, legendH = 0;
+	if (getComputedStyle(this.legend_div).display === 'block'){
+		var legEl = document.getElementById('legend-svg');
+		if (legEl){
+			var lbb;
+			try { lbb = legEl.getBBox(); } catch (e) { lbb = null; }
+			var lNativeW = lbb ? (lbb.x + lbb.width) : (parseFloat(legEl.getAttribute('width')) || 240);
+			var lNativeH = lbb ? (lbb.y + lbb.height) : (parseFloat(legEl.getAttribute('height')) || 0);
+			legendW = lNativeW * legendScale;
+			legendH = lNativeH * legendScale;
+			var legX = maxX + gap;
+			legendG = '<g class="legend-panel" transform="translate(' + num(legX) + ',' + num(minY) +
+				') scale(' + num(legendScale) + ')">' + legEl.innerHTML + '</g>';
+		}
+	}
+
+	// ---- scale bar (bottom-left), recomputed for the unzoomed tree ----
+	var scaleG = '';
+	if (getComputedStyle(this.scale_div).display === 'block'){
+		var saved_scale = this.scale;
+		this.scale = 1; // compute the bar in data units (k = 1, full tree)
+		var dim = this._updateScaleDivSize(Math.max(40, treeW * 0.12));
+		this.scale = saved_scale;
+		if (dim && isFinite(dim.scaleLength) && dim.scaleLength > 0){
+			var margin = Math.max(20, treeW * 0.02);
+			var sx = minX + margin;
+			var sy = maxY - margin;
+			var tick = 4 * overlayScale;
+			var sw = Math.max(1, overlayScale);
+			var fontFam = (gtiz_utils.getAllCssVariables()['--font-family'] || 'sans-serif');
+			scaleG = '<g class="scale-bar-export">' +
+			'<text x="' + num(sx + dim.scaleLength / 2) + '" y="' + num(sy - 8 * overlayScale) +
+				'" font-family="' + fontFam + '" font-size="' + num(13 * overlayScale) +
+				'" text-anchor="middle" fill="black">' + dim.scaleValue + '</text>' +
+			'<line x1="' + num(sx) + '" y1="' + num(sy) + '" x2="' + num(sx + dim.scaleLength) + '" y2="' + num(sy) +
+				'" stroke="black" stroke-width="' + num(sw) + '"/>' +
+			'<line x1="' + num(sx) + '" y1="' + num(sy - tick) + '" x2="' + num(sx) + '" y2="' + num(sy) +
+				'" stroke="black" stroke-width="' + num(sw) + '"/>' +
+			'<line x1="' + num(sx + dim.scaleLength) + '" y1="' + num(sy - tick) + '" x2="' + num(sx + dim.scaleLength) + '" y2="' + num(sy) +
+				'" stroke="black" stroke-width="' + num(sw) + '"/>' +
+			'</g>';
+		}
+	}
+
+	var totalW = treeW + (legendG ? gap + legendW : 0);
+	var totalH = Math.max(treeH, legendH);
+
+	var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ' +
+		'width="' + num(totalW) + '" height="' + num(totalH) + '" ' +
+		'viewBox="' + num(minX) + ' ' + num(minY) + ' ' + num(totalW) + ' ' + num(totalH) + '">' +
+		'<rect x="' + num(minX) + '" y="' + num(minY) + '" width="' + num(totalW) + '" height="' + num(totalH) + '" fill="white"/>' +
+		res.content + scaleG + legendG +
+		'</svg>';
+
+	gtiz_file_handler.saveSvg(svg, filename);
 };
 
 /** Adds a listener to the tree which is called when the tree is altered in some way

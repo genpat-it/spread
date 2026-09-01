@@ -185,7 +185,6 @@ gtiz_languages.fr = {
   "original_tree": "Arborescence originale",
   "pie_chart_mode": "Mode graphique en secteurs",
   "please_note": "&#192; noter",
-  "possible_performance_issues_message" : "Vous pourriez rencontrer des problèmes de performance en affichant l'arborescence étendue. Je suggère de régler la distance des liens sur <strong>{0}</strong>.",
   "publications": "Publications",
   "quick_gradient": "Gradient rapide",
   "radius_size": "Taille du rayon (%)",

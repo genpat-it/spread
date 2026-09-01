@@ -471,12 +471,10 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 								let action = 'remove';
 								gtiz_layout.uiLoadingManager(components, action);
                 gtiz_tree.applySettings(gtiz_tree.full_tree_backup, gtiz_zooms.apply_settings, false, 'current');
-                gtiz_tree.checkBestLinkDistanceUtil();
                 gtiz_map.init();
 							} else {
 								gtiz_file_handler.loadMetadataText(obj.text);
                 gtiz_tree.applySettings(gtiz_tree.full_tree_backup, gtiz_zooms.apply_settings, true, 'current');
-                gtiz_tree.checkBestLinkDistanceUtil();
                 gtiz_map.init();
 							}
 						}).catch((err) => {
@@ -493,7 +491,6 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 							let action = 'remove';
 							gtiz_layout.uiLoadingManager(components, action);
               gtiz_tree.applySettings(gtiz_tree.full_tree_backup, gtiz_zooms.apply_settings, false, 'current');
-              gtiz_tree.checkBestLinkDistanceUtil();
               gtiz_map.init();
 						});
 					} else {
@@ -501,7 +498,6 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 						let action = 'remove';
 						gtiz_layout.uiLoadingManager(components, action);
             gtiz_tree.applySettings(gtiz_tree.full_tree_backup, gtiz_zooms.apply_settings, false, 'current');
-            gtiz_tree.checkBestLinkDistanceUtil();
             gtiz_map.init();
 					}
 				}

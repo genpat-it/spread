@@ -29,85 +29,7 @@ gtiz_tree.branch_scaling = 100;
 gtiz_tree.branch_log_scale = 'not-active'; // or active
 gtiz_tree.branch_cutoffs_method = 'display'; // or hide or cap
 gtiz_tree.label_to_highlight = ''; // category text to highlight
-gtiz_tree.link_elements_controller = 1000;
-gtiz_tree.performance_choice_done = false;
 gtiz_tree.png_width = 2400;
-
-gtiz_tree.distance_cfg = {
-  loopCount: 10000,
-  svgCircleRadius: 400,
-  performanceThresholds: {
-    high: 30,
-    medium: 70
-  },
-  scaleFactors: {
-    high: 0.2,
-    medium: 0.4,
-    low: 0.8
-  }
-};
-
-/**
- * Check browser performance and suggest a best link distance to collapse branches.
- * 
- * 
- */
-gtiz_tree.checkBestLinkDistanceUtil = function() {
-  let distance = gtiz_tree.tree.max_link_distance;
-  let links = gtiz_tree.tree.link_elements[0].length;
-  if (links > gtiz_tree.link_elements_controller && !gtiz_tree.performance_choice_done) {
-    // Create an instance of LinkDistanceOptimizer
-    let best_distance = gtiz_optimizer.getBestLinkDistance(distance, gtiz_tree.distance_cfg);
-    best_distance = Math.floor(best_distance);
-    if (best_distance != 0 && best_distance != gtiz_tree.node_collapsed_value) {
-      let component = document.querySelector('.tree-container');
-      let container = document.createElement('div');
-      container.setAttribute('class', 'tree-card-message');
-      container.setAttribute('id', 'tree-best-distance-advice');
-
-      let body = document.createElement('div');
-      body.setAttribute('class', 'tree-card-message-body');
-
-      let icon = document.createElement('div');
-      icon.setAttribute('class', 'icon');
-      icon.innerHTML = '<i class="tabler tabler-alert-triangle"></i>'
-      body.append(icon);
-
-      let text = document.createElement('p');
-      let message = gtiz_locales.current.possible_performance_issues_message;
-      text.innerHTML = message.replace('{0}', best_distance);
-      body.append(text);
-      
-      let actions = document.createElement('div');
-      actions.setAttribute('class', 'tree-card-message-actions');
-      
-      let apply = document.createElement('button');
-      apply.innerHTML = gtiz_locales.current.collapse_branches;
-      apply.addEventListener('click', (e) => {
-        gtiz_tree.collapseBranches(best_distance);
-        gtiz_tree.performance_choice_done = true;
-        gtiz_tree.tree.centerGraph();
-        container.remove();
-      });
-
-      let ignore = document.createElement('button');
-      ignore.setAttribute('class', 'secondary');
-      ignore.innerHTML = gtiz_locales.current.im_fine_thanks;
-      ignore.addEventListener('click', (e) => {
-        gtiz_tree.performance_choice_done = true;
-        container.remove();
-      });
-      
-      actions.append(apply);
-      actions.append(ignore);
-
-      container.append(body);
-      container.append(actions);
-
-      component.append(container);
-    }
-  }
-}
 
 /**
  * Apply settings on originall tree.
@@ -318,8 +240,7 @@ gtiz_tree.getCompleteGrapeTreeSettings = function() {
 			branch_scaling : gtiz_tree.branch_scaling,
 			branch_log_scale : gtiz_tree.branch_log_scale,
 			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method,
-      label_to_highlight : gtiz_tree.label_to_highlight,
-      link_elements_controller : gtiz_tree.link_elements_controller
+      label_to_highlight : gtiz_tree.label_to_highlight
 		},
 		map : {
 			default_delta_type : gtiz_map.delta_type,
@@ -395,8 +316,7 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
 			branch_scaling : gtiz_tree.branch_scaling,
 			branch_log_scale : gtiz_tree.branch_log_scale,
 			branch_cutoffs_method : gtiz_tree.branch_cutoffs_method,
-      label_to_highlight : gtiz_tree.label_to_highlight,
-      link_elements_controller : gtiz_tree.link_elements_controller
+      label_to_highlight : gtiz_tree.label_to_highlight
 		},
 		map : {
 			default_delta_type : gtiz_map.delta_type,
@@ -780,12 +700,16 @@ gtiz_tree.toggleNodeToolTipVisibility = function(value) {
 }
 
 gtiz_tree.showToolTip = function(msg, e) {
+  // Remove any existing tooltip first so we never leave an orphaned div behind
+  // (each call appends a new element; only the last reference was tracked).
+  gtiz_tree.hideToolTip();
   gtiz_tree.tree_node_tooltip = d3.select("body")
 			.append("div")
 			.attr("class", "tree-node-tooltip")
 			.style("opacity", 0);
   if (!e) {
-    e = d3.event;
+    // d3 v6+ removed the global d3.event; fall back to the browser's current event
+    e = window.event;
   }
   gtiz_tree.tree_node_tooltip.style("z-index", 9999);
   gtiz_tree.tree_node_tooltip.transition()
@@ -886,10 +810,10 @@ gtiz_tree.treeLoaded = function(tree) {
    * A callback which is called when a segment is mouse overed The functions is supplied the segment e.g. addLinkOverListener(function(segment){...});
    * 
    */
-  tree.addSegmentOverListener(function(d) {
+  tree.addSegmentOverListener(function(d, event) {
     if (gtiz_tree.show_node_tooltips == 'show_tooltips') {
       let display = d.data.type;
-      gtiz_tree.showToolTip(display+ '(' + d.data.value + ')');
+      gtiz_tree.showToolTip(display+ '(' + d.data.value + ')', event);
     }
   });
 
@@ -912,10 +836,10 @@ gtiz_tree.treeLoaded = function(tree) {
    * A callback which is called when the mouse leaves the link The functions is supplied the link e.g. addLinkOverListener(function(link){...});
    * 
    */
-  tree.addLinkOverListener(function(d) {
+  tree.addLinkOverListener(function(d, event) {
     // console.log("Length: " + d.value);
     if (gtiz_tree.show_node_tooltips == 'show_tooltips') {
-      gtiz_tree.showToolTip("length:" + d.value);
+      gtiz_tree.showToolTip("length:" + d.value, event);
     }
   });
 
@@ -937,9 +861,12 @@ gtiz_tree.treeLoaded = function(tree) {
    * 
    */
   tree.legendItemCircleClicked = function(data){
-    gtiz_legend.legend_colour_chooser.spectrum("set", data.colour);
-    gtiz_legend.legend_colour_chooser.data({"value": data.value.split("  [")[0], "category":data.category});
-    setTimeout(function(){gtiz_legend.legend_colour_chooser.spectrum("show");}, 50);
+    var cc = gtiz_legend.legend_colour_chooser;
+    cc.value = gtiz_utils.toHexColor(data.colour);
+    cc.dataset.value = data.value.split("  [")[0];
+    cc.dataset.category = data.category;
+    // open the native color picker (must run within the user gesture)
+    cc.click();
   };
 
   /**
@@ -1032,8 +959,14 @@ gtiz_tree.loadMSTree = function(data, json) {
   gtiz_tree.metadata_options = {};
   if (gtiz_tree.tree) {
     gtiz_tree.tree.svg.remove();
-    gtiz_tree.tree.legend_div[0].remove();
-    gtiz_tree.tree.scale_div[0].remove();
+    gtiz_tree.tree.legend_div.remove();
+    gtiz_tree.tree.scale_div.remove();
+    // Canvas migration: the tree mass is drawn on a <canvas> (base_tree.js
+    // creates this.render_canvas). Remove it too, otherwise the old tree stays
+    // painted under the newly loaded one (e.g. when loading a zoomed cluster).
+    if (gtiz_tree.tree.render_canvas) {
+      gtiz_tree.tree.render_canvas.remove();
+    }
     
     if (gtiz_utils.medatadata_select_nodes && gtiz_utils.medatadata_select_nodes.length > 0) {
       gtiz_utils.medatadata_select_nodes.forEach((node) => {
@@ -1106,7 +1039,6 @@ gtiz_tree.loadMSTree = function(data, json) {
       gtiz_tree.branch_log_scale = settings.tree.branch_log_scale;
       gtiz_tree.branch_cutoffs_method = settings.tree.branch_cutoffs_method;
       gtiz_tree.label_to_highlight = settings.tree.label_to_highlight;
-      gtiz_tree.link_elements_controller = settings.tree.link_elements_controller;
     }
     if (settings.map) {
       gtiz_map.default_delta_type = settings.map.default_delta_type;
@@ -1536,35 +1468,31 @@ gtiz_tree.context_menu = [{
     return gtiz_locales.current.download_image;
   },
   icon : 'tabler-photo',
+  // Canvas migration: the tree is drawn on a <canvas>, so the PNG export is
+  // rasterised from the canvas (current zoom/pan, only the visible portion).
+  // The SVG export is rebuilt as vector from the tree model and always contains
+  // the WHOLE tree (full extent), regardless of the current zoom.
   options: [{
-    label: '.svg',
-    value: 'svg'
-  }, {
     label: '.png',
     value: 'png'
+  }, {
+    label: '.svg',
+    value: 'svg'
   }],
   selected: () => {
-    return 'svg';
+    return 'png';
   },
   function: (e) => {
-    let buttuon = e.currentTarget;
-    let box = buttuon.parentElement;
-    let select = box.querySelector('select');
-    let type = select ? select.value : 'svg';
-    let text = gtiz_tree.tree.getSVG();
+    let box = e.currentTarget.closest('.button-box-optioned');
+    let format = box && box.querySelector('select') ? box.querySelector('select').value : 'png';
     let timestamp =  Date.now();
-    let name = "spread" + timestamp + "." + type;
-    let width = gtiz_tree.png_width ? gtiz_tree.png_width : 2400;
-    switch (type) {
-      case 'svg':
-        gtiz_file_handler.saveTextAsFile(text, name);
-        break;
-      case 'png':
-        gtiz_file_handler.saveSvgAsPng(text, width, name);
-        break;
-      default:
-        gtiz_file_handler.saveTextAsFile(text, name);
-        break;
+    if (format === 'svg') {
+      let name = "spread" + timestamp + ".svg";
+      gtiz_tree.tree.exportSvg(name);
+    } else {
+      let name = "spread" + timestamp + ".png";
+      let width = gtiz_tree.png_width ? gtiz_tree.png_width : 2400;
+      gtiz_tree.tree.exportImage(width, name);
     }
   }
 }];
@@ -1574,37 +1502,57 @@ gtiz_tree.context_menu = [{
  * to be rewritten
  * 
  */
-$("#rotation-icon").draggable({
-  containment: ".dashboard-viewport",
-  scroll: false,
-  start: function(e) {
-    // the_tree._dragStarted(the_tree.force_nodes[0], [$("#rotation-icon").position().left, $("#rotation-icon").position().top]);
-    // USING e.clientX, e.clientY AS INITIAL PARAMETER MAKE THE ICON POSITION RELATIVE
-    gtiz_tree.tree._dragStarted(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
-  },
-  drag: function(e) {
+(function() {
+  var icon = document.getElementById('rotation-icon');
+  if (!icon) return;
+  var helper = null;
+  var icon_x = 0;
+  var icon_y = 0;
+
+  function onMouseMove(e) {
     gtiz_tree.tree._dragging(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
-  },
-  stop: function(e) {
-    gtiz_tree.tree._dragEnded(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
-  },
-  revert: true,
-  revertDuration: 10,
-  helper: function() {
-    return $("<div style='cursor:none'><label id='angle-text'></label></div>")
-  },
-});
-$("#rotation-icon").on("drag", function(event, ui) {
-  var x_dif = ui.helper.position().left - $("#rotation-icon").position().left;
-  var y_dif = $("#rotation-icon").position().top - ui.helper.position().top;
-  var angle = y_dif !== 0 ? Math.atan(x_dif / y_dif) / Math.PI * 180 : (x_dif === 0 ? 0 : (x_dif > 0 ? 90 : -90));
-  if (y_dif < 0) {
-    angle = 180 + angle;
-  } else if (x_dif < 0) {
-    angle = 360 + angle;
+    if (helper) {
+      // helper element follows the cursor and shows the rotation angle
+      helper.style.left = (e.clientX + 10) + 'px';
+      helper.style.top = (e.clientY + 10) + 'px';
+      var x_dif = e.clientX - icon_x;
+      var y_dif = icon_y - e.clientY;
+      var angle = y_dif !== 0 ? Math.atan(x_dif / y_dif) / Math.PI * 180 : (x_dif === 0 ? 0 : (x_dif > 0 ? 90 : -90));
+      if (y_dif < 0) {
+        angle = 180 + angle;
+      } else if (x_dif < 0) {
+        angle = 360 + angle;
+      }
+      helper.textContent = Math.round(angle) + '\xB0';
+    }
   }
-  ui.helper.select('.angle-text').text(Math.round(angle) + '\xB0').css({
-    'font-size': '1.3rem',
-    'font-style': 'bold',
+
+  function onMouseUp(e) {
+    gtiz_tree.tree._dragEnded(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    document.body.classList.remove('no-select');
+    if (helper) {
+      helper.remove();
+      helper = null;
+    }
+  }
+
+  icon.addEventListener('mousedown', function(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    var rect = icon.getBoundingClientRect();
+    icon_x = rect.left + rect.width / 2;
+    icon_y = rect.top + rect.height / 2;
+    gtiz_tree.tree._dragStarted(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
+    helper = document.createElement('div');
+    helper.id = 'angle-text';
+    helper.style.cssText = 'position:fixed;cursor:none;font-size:1.3rem;font-weight:bold;pointer-events:none;z-index:10000;';
+    helper.style.left = (e.clientX + 10) + 'px';
+    helper.style.top = (e.clientY + 10) + 'px';
+    document.body.appendChild(helper);
+    document.body.classList.add('no-select');
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
-});
+})();

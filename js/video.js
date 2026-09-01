@@ -99,45 +99,50 @@ gtiz_video.getSliderDirection = function(current) {
  * @param {String} direction  Calculated value indicating the direction of the slider
  */
 gtiz_video.legendSetSelection = function(index, direction) {
-  let item_nodes = document.querySelectorAll('.card-legend .list-row');
-  let items = Array.from(item_nodes);
+  let items = gtiz_video.getLegendRows();
   let selection_mode = gtiz_legend.selection_mode;
-  let sliced;
-  if (direction == 'forward') {
-    sliced = items.slice(0, index + 1);
-  } else {
-    sliced = items.slice(index);
-  }
-  if (sliced) {
-    sliced.forEach((el, i) => {
-      if (direction == 'forward') {
-        if (!el.classList.contains('selected')) {
-          let obj = {
+  let sliced = direction == 'forward' ? items.slice(0, index + 1) : items.slice(index);
+  // forward selects items 0..index, backward unselects items index..end.
+  let want = direction == 'forward';
+  let changed = false;
+  sliced.forEach((el, i) => {
+    if (el.classList.contains('selected') !== want) {
+      // DOM-only flip; the heavy node/highlight recompute is deferred so it runs
+      // once per input (see handleMutation) instead of once per toggled item.
+      gtiz_legend.setItemSelectedDom(el, want);
+      changed = true;
+      // In qualitative mode each group toggles a distinct set of nodes. Set the
+      // node.selected flags directly via the precomputed group -> node ids index
+      // (O(group) lookup) WITHOUT touching halos here; the halo recompute + redraw
+      // is applied once per input in handleMutation (see refreshSelectionHalos),
+      // so it no longer scales with the number of toggled legend items. Fall back
+      // to the generic path only if the index is missing.
+      if (selection_mode == 'qualitative') {
+        let group = el.getAttribute('data-real-group-izsam');
+        let codes = gtiz_video._group_codes ? gtiz_video._group_codes[group] : null;
+        if (codes) {
+          let node_map = gtiz_tree.tree.node_map;
+          for (let c = 0; c < codes.length; c++) {
+            let node = node_map[codes[c]];
+            if (node) {
+              node.selected = want;
+            }
+          }
+        } else {
+          gtiz_legend.nodeSelection({
             category: el.getAttribute('data-category-izsam'),
             current_target: el,
-            real: el.getAttribute('data-real-group-izsam'),
+            real: group,
             colour: el.getAttribute('data-group-colour-izsam')
-          };
-          gtiz_legend.toggleItemSelection(obj);
-        }
-      } else {
-        if (el.classList.contains('selected')) {
-
-          let obj = {
-            category: el.getAttribute('data-category-izsam'),
-            current_target: el,
-            real: el.getAttribute('data-real-group-izsam'),
-            colour: el.getAttribute('data-group-colour-izsam')
-          };
-          gtiz_legend.toggleItemSelection(obj);
+          });
         }
       }
-      if ((direction === 'forward' && i === index) || (direction !== 'forward' && i === 0)) {
-        let el_top = el.offsetTop;
-        gtiz_video.scrollToPosition(el_top);
-      }
-    });
-  }
+    }
+    if ((direction === 'forward' && i === index) || (direction !== 'forward' && i === 0)) {
+      gtiz_video.scrollToPosition(el.offsetTop);
+    }
+  });
+  return changed;
 }
 
 /**
@@ -145,13 +150,57 @@ gtiz_video.legendSetSelection = function(index, direction) {
  * 
  */
 gtiz_video.calculateSliderFrames = function() {
-  let items = document.querySelectorAll('.card-legend .list-row');
+  let items = Array.from(document.querySelectorAll('.card-legend .list-row'));
+  // Cache the legend rows for the whole interaction: the slider input handler
+  // would otherwise re-query the DOM (several times) on every input event.
+  gtiz_video._legend_rows = items;
+  gtiz_video.buildGroupCodes();
   let items_n = items.length;
   let unit = 100 / items_n;
   gtiz_video.slider_frames = [];
   items.forEach((item, i) => {
     gtiz_video.slider_frames.push(unit * (i + 1));
   });
+};
+
+/**
+ * Return the cached legend rows, refreshing the cache if it is empty or stale
+ * (e.g. the legend was rebuilt and the cached nodes are detached).
+ *
+ * @returns {Array<Node>}
+ */
+gtiz_video.getLegendRows = function() {
+  let rows = gtiz_video._legend_rows;
+  if (rows && rows.length && document.body.contains(rows[0])) {
+    return rows;
+  }
+  gtiz_video._legend_rows = Array.from(document.querySelectorAll('.card-legend .list-row'));
+  return gtiz_video._legend_rows;
+};
+
+/**
+ * Precompute, for the current display category, a map group -> [node ids] with a
+ * single pass over the metadata. The qualitative selection driven by the slider
+ * would otherwise rebuild Object.values(metadata) and filter over ALL samples on
+ * every toggled item, which is the cost that scales with the sample count.
+ * Rebuilt at each interaction start (mousedown / play).
+ */
+gtiz_video.buildGroupCodes = function() {
+  let map = {};
+  let tree = gtiz_tree.tree;
+  if (tree && tree.metadata) {
+    let category = tree.display_category;
+    let metas = Object.values(tree.metadata);
+    for (let i = 0; i < metas.length; i++) {
+      let d = metas[i];
+      let g = d[category];
+      if (g === undefined || g === null) {
+        continue;
+      }
+      (map[g] || (map[g] = [])).push(d.__Node);
+    }
+  }
+  gtiz_video._group_codes = map;
 };
 
 /**
@@ -330,22 +379,51 @@ gtiz_context.setSpeedSelector = function() {
 gtiz_video.handleMutation = function(value) {
   let direction = gtiz_video.getSliderDirection(value);
   let speed = gtiz_video.cfg.speeds.find(el => el.active);
-  let items = document.querySelectorAll('.card-legend .list-row');
+  let items = gtiz_video.getLegendRows();
   let items_n = items.length;
   let duration = items_n / speed.value;
   let max = gtiz_video.slider.getAttribute('max');
   gtiz_video.seconds = (duration * value) / max;
-  gtiz_video.slider_position = value;  
-  gtiz_video.slider_frames.forEach((frame, i) => {
-    if (value >= frame - gtiz_video.slider_frames[0] && value <= frame) {
-      gtiz_video.legendSetSelection(i, direction);
+  gtiz_video.slider_position = value;
+  let frames = gtiz_video.slider_frames;
+  let changed = false;
+  for (let i = 0; i < frames.length; i++) {
+    let frame = frames[i];
+    if (value >= frame - frames[0] && value <= frame) {
+      if (gtiz_video.legendSetSelection(i, direction)) {
+        changed = true;
+      }
     }
-  });
+  }
+  // Apply the heavy visual update once per input (not per toggled item): the
+  // visual-mode highlight and the qualitative halo recompute are both global and
+  // idempotent, so a single pass reflects all the items changed in this frame.
+  if (changed) {
+    if (gtiz_legend.selection_mode == 'visual') {
+      gtiz_legend.highlightSelection();
+    } else {
+      gtiz_tree.tree.refreshSelectionHalos();
+    }
+  }
 }
 
+// Coalesce rapid slider input (manual drag / fast playback) to at most one
+// handleMutation per animation frame, processing only the latest value. This is
+// safe because legendSetSelection sets the whole 0..index range each call, so
+// skipping intermediate values still reaches the correct state.
+gtiz_video._pending_input = null;
+gtiz_video._input_raf = null;
 gtiz_video.slider.addEventListener('input', function(event) {
-  let value = parseInt(event.target.value);
-  gtiz_video.handleMutation(value);
+  gtiz_video._pending_input = parseInt(event.target.value);
+  if (gtiz_video._input_raf === null) {
+    gtiz_video._input_raf = window.requestAnimationFrame(function() {
+      gtiz_video._input_raf = null;
+      let value = gtiz_video._pending_input;
+      if (value !== null && !isNaN(value)) {
+        gtiz_video.handleMutation(value);
+      }
+    });
+  }
 });
 
 gtiz_video.slider.addEventListener('mousedown', e => {

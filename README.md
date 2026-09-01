@@ -13,6 +13,7 @@ Previously known as GrapeTree Extended.
   - [Load geoJSON or cooridates data](#load-geojson-or-cooridates-data)
   - [Load files](#load-files)
   - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
+  - [Download the tree as an image](#download-the-tree-as-an-image)
   - [Zooms for clusters](#zooms-for-clusters)
 - [Customizing SPREAD](#customizing-SPREAD)
 - [Server](#server)
@@ -158,6 +159,17 @@ You can also directly upload files by dragging them over the tree, over the init
 ## Save or load a compatible JSON file
 
 Dashboard allows you to download a complete JSON file including metadata and configurations. Generated JSON file can be loaded with the same drag or load functionalities seen previously, this is very useful if you want to save your work or share it.
+
+## Download the tree as an image
+
+From the tree download menu you can export the current tree as an image in two formats:
+
+* **`.png`** — a raster capture of the canvas as you currently see it, so it reflects the current zoom and pan and includes only the visible portion of the tree.
+* **`.svg`** — a vector rebuild of the **whole** tree, independent of the current zoom and pan. It covers the full extent of the tree and includes links, link labels, node halos, pie wedges and node labels, together with the legend and a scale bar.
+
+Both exports embed the theme font, so text renders with the same typeface outside the browser.
+
+> **Please note:** choose `.svg` when you need a complete, print-quality or further editable figure, and `.png` when you want to capture exactly the view currently on screen.
 
 ## Zooms for clusters
 
@@ -359,10 +371,6 @@ This will expose the application running inside the container on port 3000 of yo
 ### Metadata table
 
 * [https://github.com/ag-grid/ag-grid](https://github.com/ag-grid/ag-grid)
-
-### Legend
-
-* [https://github.com/bgrins/spectrum](https://github.com/bgrins/spectrum)
 
 ### Icons
 

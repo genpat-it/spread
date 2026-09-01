@@ -275,27 +275,29 @@ gtiz_legend.context_menu = [{
 }];
 
 /**
- * Initialize spectrum library (to be converted in vanilla javascript)
- * 
+ * Native color picker used to recolour legend categories.
+ * Replaces the former jQuery Spectrum plugin with a vanilla
+ * `<input type="color">`. It is kept off-screen and triggered
+ * programmatically (see `legendItemCircleClicked` in tree.js).
+ *
  */
-gtiz_legend.legend_colour_chooser = $("<input>").spectrum({
-  //type: "flat",
-  togglePaletteOnly: "true",
-  showInput: "true",
-  showInitial: "true",
-  allowEmpty: "false",
-  showAlpha: "false",
-  change: function(e) {
-    var cc = $(this);
-    gtiz_tree.tree.setColour(cc.data("category"),cc.data("value"),cc.val());
-    gtiz_tree.tree.changeCategory(cc.data("category"));
-    if (gtiz_legend.selection_mode == 'visual') {
-      gtiz_legend.resetVisualSelection();
-      gtiz_legend.highlightSelection();
-    } else {
-      gtiz_legend.resetQualitativeSelection();
-    }
-  }}).hide();
+gtiz_legend.legend_colour_chooser = document.createElement('input');
+gtiz_legend.legend_colour_chooser.type = 'color';
+gtiz_legend.legend_colour_chooser.setAttribute('aria-hidden', 'true');
+gtiz_legend.legend_colour_chooser.style.cssText = 'position:absolute;left:0;top:0;width:0;height:0;padding:0;border:0;opacity:0;pointer-events:none;';
+document.body.appendChild(gtiz_legend.legend_colour_chooser);
+gtiz_legend.legend_colour_chooser.addEventListener('change', function(e) {
+  var category = this.dataset.category;
+  var value = this.dataset.value;
+  gtiz_tree.tree.setColour(category, value, this.value);
+  gtiz_tree.tree.changeCategory(category);
+  if (gtiz_legend.selection_mode == 'visual') {
+    gtiz_legend.resetVisualSelection();
+    gtiz_legend.highlightSelection();
+  } else {
+    gtiz_legend.resetQualitativeSelection();
+  }
+});
 
 /**
  * Change appaerance and class for the selcted legend item
@@ -317,6 +319,26 @@ gtiz_legend.toggleItemSelection = function(obj, tree) {
     gtiz_legend.nodeSelection(obj, tree);
   } else {
     gtiz_legend.highlightSelection();
+  }
+};
+
+/**
+ * Update only the visual (DOM) selected-state of a legend item, without running
+ * the expensive node/highlight recompute. Used by the video player so it can
+ * flip many items and then apply the highlight once (see gtiz_video).
+ *
+ * @param {Node} el The `.list-row` legend item
+ * @param {Boolean} selected Whether the item should be marked selected
+ */
+gtiz_legend.setItemSelectedDom = function(el, selected) {
+  let check = el.querySelector('.list-check');
+  let icon = check ? check.querySelector('i') : null;
+  if (selected) {
+    el.classList.add('selected');
+    if (icon) { icon.setAttribute('class', 'tabler tabler-circle-check'); }
+  } else {
+    el.classList.remove('selected');
+    if (icon) { icon.setAttribute('class', 'tabler tabler-circle'); }
   }
 };
 
@@ -685,9 +707,6 @@ gtiz_legend.highlightSelection = function () {
   let groups = [];
   let colors = [];
   let values = [];
-  let path_parents = [];
-  let paths = document.querySelectorAll('#vis .node-paths');
-  let links = document.querySelectorAll('#vis .link');
   let items = document.querySelectorAll('.card-legend .list-row');
   items.forEach(item => {
     if (item.classList.contains('selected')) {
@@ -702,34 +721,125 @@ gtiz_legend.highlightSelection = function () {
       values.push(value);
     }
   });
-  paths.forEach(path => {
-    let type = path.__data__.data.type;
-    let group = groups.find(el => el.value == type);
-    if (group) {
-      let fill_color = group.color;
-      path.setAttribute('fill', fill_color);
-      path.setAttribute('style', 'stroke: black;');
-      path.setAttribute('opacity', '1');
-      path_parents.push(path.parentElement.id);
-    } else {
-      path.setAttribute('fill', 'url(#pattern)');
-      path.setAttribute('style', 'stroke: rgba(0,0,0,0);');
-      path.setAttribute('opacity', '0');
-    }
-  });
-  links.forEach(link => {
-    let line = link.querySelector('line');
-    let link_id_arr = [];
-    link_id_arr.push(link.__data__.source.id);
-    link_id_arr.push(link.__data__.target.id);
-    if (link_id_arr.every(item => path_parents.includes(item))) {
-      line.setAttribute('style', 'stroke: black; stroke-dasharray: 0;');
-    } else {
-      line.setAttribute('style', 'stroke: rgba(0,0,0,0.2); stroke-dasharray: 2;');
-    }
-  });
-  // gtiz_map.defineMarkers(gtiz_tree.filtered_nodes);
+  // Canvas migration: the visual selection (highlight mode, also driven by the
+  // video) no longer mutates per-node SVG <path> elements (they no longer
+  // exist). Instead we set a highlight state on the tree model that the canvas
+  // renderer reads: a map of selected group value -> colour, plus a per-node
+  // "is any wedge selected" flag used to keep/fade the connecting links.
+  gtiz_legend.applyVisualHighlight(groups);
   gtiz_map.alterMarkers(colors);
+}
+
+/**
+ * Build the tree highlight state from the selected legend groups and request a
+ * canvas redraw. A node is "visible" when at least one of its pie wedges belongs
+ * to a selected group; the renderer draws only those wedges and keeps the links
+ * between two visible nodes solid (others are faded).
+ *
+ * @param {Array} groups Selected groups as {value, color} objects
+ */
+/**
+ * Build the index `group value -> [node refs whose pie has a wedge of that group]`
+ * with a single pass over the nodes, and reset every node highlight counter. The
+ * index lets applyVisualHighlight update only the nodes of the groups that
+ * actually changed, instead of rescanning all nodes on every call (the cost that
+ * made the video struggle with many legend items). Invalidated (set to null)
+ * whenever the pie composition changes (changeCategory) or the visual selection
+ * is reset, and rebuilt lazily on the next applyVisualHighlight.
+ */
+gtiz_legend.buildHighlightIndex = function () {
+  let tree = gtiz_tree.tree;
+  let index = {};
+  if (tree) {
+    let nodes = tree.force_nodes;
+    for (let i = 0; i < nodes.length; i++) {
+      let n = nodes[i];
+      n._hl_count = 0;
+      n._hl_visible = false;
+      let pie = n._pie;
+      if (pie) {
+        let seen = null;
+        for (let w = 0; w < pie.length; w++) {
+          let type = pie[w].data.type;
+          if (type === undefined || type === null) {
+            continue;
+          }
+          // dedupe: a node must appear at most once per group, otherwise its
+          // counter would drift when the group is toggled.
+          if (seen === null) {
+            seen = {};
+          }
+          if (seen[type]) {
+            continue;
+          }
+          seen[type] = true;
+          (index[type] || (index[type] = [])).push(n);
+        }
+      }
+    }
+    gtiz_legend._hl_index_category = tree.display_category;
+    gtiz_legend._hl_index_count = nodes.length;
+  }
+  gtiz_legend._hl_group_nodes = index;
+};
+
+gtiz_legend.applyVisualHighlight = function (groups) {
+  let tree = gtiz_tree.tree;
+  if (!tree) {
+    return;
+  }
+  // Visual selection is always active while in this mode: with no groups
+  // selected the types map is empty, so every wedge is hidden (matching the old
+  // SVG behaviour where switching to visual selection hid all nodes until the
+  // user/video selected groups). The highlight is cleared (nodes shown again)
+  // only by resetVisualSelection, e.g. when leaving visual selection mode.
+  let nodes = tree.force_nodes;
+  let category = tree.display_category;
+  // (Re)build the group -> nodes index when missing or stale (fresh start,
+  // category change or different node set). A rebuild zeroes every node counter,
+  // so the previously applied set must be treated as empty in that case.
+  let rebuilt = false;
+  if (!gtiz_legend._hl_group_nodes ||
+      gtiz_legend._hl_index_category !== category ||
+      gtiz_legend._hl_index_count !== nodes.length) {
+    gtiz_legend.buildHighlightIndex();
+    rebuilt = true;
+  }
+  let index = gtiz_legend._hl_group_nodes;
+  let prev = (rebuilt || !tree._highlight || !tree._highlight.types) ? {} : tree._highlight.types;
+  let types = {};
+  (groups || []).forEach(g => { types[g.value] = g.color; });
+  // Incremental diff: only the nodes of the groups added/removed since the last
+  // call change state, so we touch just those instead of every node per frame.
+  for (let value in prev) {
+    if (!(value in types)) {
+      let arr = index[value];
+      if (arr) {
+        for (let k = 0; k < arr.length; k++) {
+          let n = arr[k];
+          n._hl_count = (n._hl_count || 0) - 1;
+          if (n._hl_count <= 0) {
+            n._hl_count = 0;
+            n._hl_visible = false;
+          }
+        }
+      }
+    }
+  }
+  for (let value in types) {
+    if (!(value in prev)) {
+      let arr = index[value];
+      if (arr) {
+        for (let k = 0; k < arr.length; k++) {
+          let n = arr[k];
+          n._hl_count = (n._hl_count || 0) + 1;
+          n._hl_visible = true;
+        }
+      }
+    }
+  }
+  tree._highlight = { types: types };
+  tree.requestRedraw();
 }
 
 /**
@@ -812,49 +922,23 @@ gtiz_legend.setVisualSelectionToggle = function (value) {
  * 
  */
 gtiz_legend.resetVisualSelection = function () {
-  let groups = [];
-  let colors = [];
-  let values = [];
-  let path_parents = [];
-  let paths = document.querySelectorAll('#vis .node-paths');
-  let links = document.querySelectorAll('#vis .link');
   let items = document.querySelectorAll('.card-legend .list-row');
   items.forEach(item => {
     item.classList.remove('selected');
     let check = item.querySelector('.list-check');
     let icon = check.querySelector('i');
     icon.setAttribute('class', 'tabler tabler-circle');
-    let color = item.getAttribute('data-group-colour-izsam');
-    let value = item.getAttribute('data-real-group-izsam');
-    let group = {
-      value : value,
-      color : color
-    };
-    groups.push(group);
-    colors.push(color);
-    values.push(value);
   });
-  // reset tree nodes
-  paths.forEach(path => {
-    let type = path.__data__.data.type;
-    let group = groups.find(el => el.value == type);
-    if (group) {
-      let fill_color = group.color;
-      path.setAttribute('fill', fill_color);
-      path.setAttribute('style', 'stroke: black;');
-      path.setAttribute('opacity', '1');
-      path_parents.push(path.parentElement.id);
-    } else {
-      path.setAttribute('fill', "#ffffff");
-      path.setAttribute('style', 'stroke: black;');
-      path.setAttribute('opacity', '1');
-    }
-  });
-  // reset tree links
-  links.forEach(link => {
-    let line = link.querySelector('line');
-    line.setAttribute('style', 'stroke: black; stroke-dasharray: 0;');
-  });
+  // Canvas migration: clearing the highlight state makes the renderer fall back
+  // to the normal category colouring (matching the old reset, where unselected
+  // nodes returned to their category colours and links to solid black).
+  let tree = gtiz_tree.tree;
+  if (tree) {
+    tree._highlight = null;
+    tree.requestRedraw();
+  }
+  // force the highlight index (and node counters) to be rebuilt on next use
+  gtiz_legend._hl_group_nodes = null;
   gtiz_tree.filtered_nodes = [];
   gtiz_map.defineMarkers();
 }

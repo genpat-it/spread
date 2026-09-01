@@ -330,6 +330,7 @@
   align-content: center;
   height: calc(100% - 1rem);
   border-radius: 2.4rem;
+  overflow: hidden;
   background-color: var(--white);
   margin-left: 1rem;
   margin-right: 1rem;
@@ -392,13 +393,13 @@
   opacity: 0;
 }
 
-.dashboard-grapetree #graph-div .ui-draggable:first-child {
+.dashboard-grapetree #graph-div .tree-legend-div {
   opacity: 0;
   z-index: -999;
   visibility: hidden;
 }
 
-.dashboard-grapetree #graph-div .ui-draggable-handle[style] {
+.dashboard-grapetree #graph-div .tree-scale-div {
   margin-right: 2.1rem;
   margin-top: 2.1rem;
   margin-left: 2.1rem;
@@ -453,6 +454,7 @@
   font-size: 1.3rem;
   color: var(--main);
   line-height: 1;
+  z-index: 3;
 }
 
 .dashboard-grapetree .tree-container .drop-box {
@@ -1311,6 +1313,7 @@
   display: inline-block;
   border: 0.1rem solid var(--secondary);
   border-radius: 50%;
+  background-color: var(--white);
   font-size: 1rem;
   width: 2.1rem;
   height: 2.1rem;

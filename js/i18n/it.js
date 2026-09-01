@@ -185,7 +185,6 @@ gtiz_languages.it = {
   "original_tree": "Albero iniziale",
   "pie_chart_mode": "Modalità grafico a torta",
   "please_note": "Nota bene",
-  "possible_performance_issues_message": "Potresti avere problemi di performance visualizzando l'albero esteso. Suggerisco di impostare la distanza dei rami su <strong>{0}</strong>.",
   "publications": "Pubblicazioni",
   "quick_gradient": "Gradiente veloce",
   "radius_size": "Dimensione raggio (%)",
