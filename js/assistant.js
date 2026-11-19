@@ -455,6 +455,11 @@ function showPlan(panel, actions) {
 
 function confirm(panel) {
   refreshRegistry();
+  if (!pendingActions.every(validateProposedAction)) {
+    addMessage(panel, 'assistant', copy().invalid);
+    clearPlan(panel);
+    return;
+  }
   try { addMessage(panel, 'assistant', `${copy().done}: ${pendingActions.map(execute).join(', ')}.`); }
   catch (error) { addMessage(panel, 'assistant', `Non ho applicato l’azione: ${error.message}`); }
   clearPlan(panel);
@@ -495,7 +500,6 @@ function mandatoryActions(request) {
   const result = [];
   const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
   const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
-  let handledLogScale = false;
   const refersOnlyToMap = /\b(map|mappa|carte)\b/.test(normalizedRequest) &&
     !/\b(tree|mst|albero|arbre)\b/.test(normalizedRequest);
   if (!refersOnlyToMap && /\b(zoom|zooma|zoomare|ingrandisci|ingrandire|riduci|ridurre)\b/.test(normalizedRequest)) {
@@ -513,20 +517,22 @@ function mandatoryActions(request) {
   }
   if (/\b(tutti|tutte|ogni|all|every|tous|toutes)\b/.test(normalizedRequest) && /\b(valori|values|valeurs)\b/.test(normalizedRequest) && /\b(colonna|column|colonne|metadati|metadata)\b/.test(normalizedRequest)) {
     const entry = actionRegistry.get('assistant:metadata-replace-all');
-    const column = columns.find((value) => normalizedRequest.includes(normalizeTerms(value)));
-    const replacement = String(request).match(/\b(?:a|to|à)\s+(.+?)(?:[.!?]|$)/i);
-    if (entry && column && replacement && replacement[1].trim()) result.push({ id: entry.id, value: { category: column, value: replacement[1].trim() } });
+    const requestedColumn = request.match(/(?:in the (.+?) column to|nella colonna (.+?) tutti i valori a)/i);
+    const column = columns.find((value) => normalizeTerms(value) === normalizeTerms(requestedColumn?.[1] || requestedColumn?.[2]));
+    const replacement = request.match(/(?:\bcolumn to|\bvalori a)\s+(.+)$/i)?.[1].trim();
+    if (entry && column && replacement) result.push({ id: entry.id, value: { category: column, value: replacement.replace(/^"([^"]*)"$/, '$1') } });
   }
   if (/\b(scala|scale)\b/.test(normalizedRequest) && /\b(logaritmica|logarithmic|logarithmique|log)\b/.test(normalizedRequest)) {
-    const disable = /\b(togli|rimuovi|disattiva|senza|remove|disable|turn off|off|enleve|desactive)\b/.test(normalizedRequest);
+    const disable = /\b(togli|rimuovi|disattiva|leva|levare|senza|remove|disable|turn off|off|enleve|desactive)\b/.test(normalizedRequest);
     const entry = [...actionRegistry.values()].find(({ item }) => item.id === 'tree-branch-toggle-log-scale');
     if (entry) {
       result.push({ id: entry.id, value: disable ? 'not-active' : 'active' });
-      handledLogScale = true;
     }
   }
   if (/\b(colora|colore|color)\b/.test(normalizedRequest)) {
-    const column = columns.find((value) => normalizedRequest.includes(normalizeTerms(value)));
+    const requestedColumn = normalizedRequest.match(/\b(?:per|by) (.+)$/)?.[1];
+    const column = columns.find((value) => normalizeTerms(value) === requestedColumn) ||
+      (requestedColumn === 'regione' ? columns.find((value) => normalizeTerms(value) === 'region') : undefined);
     const entry = [...actionRegistry.values()].find(({ item }) => {
       const values = optionsOf(item).map((option) => String(option.value));
       return normalizeTerms(labelOf(item)).includes('color') && values.some((value) => columns.includes(value));
@@ -545,19 +551,6 @@ function mandatoryActions(request) {
       const close = /\b(chiudi|nascondi|close|hide|ferme)\b/.test(normalizedRequest);
       if (entry) result.push({ id: entry.id, value: close ? 'off' : 'on' });
     }
-  }
-  // Macros are first-class SPREAD capabilities.  Select one only when at
-  // least two meaningful words in the request match its title/description;
-  // this keeps e.g. “scala logaritmica” deterministic without guessing.
-  if (!handledLogScale && typeof gtiz_macros !== 'undefined' && Array.isArray(gtiz_macros.macros)) {
-    const words = normalizedRequest.split(' ').filter((word) => word.length >= 4);
-    const match = gtiz_macros.macros.map((macro, index) => {
-      const localized = typeof macro.title === 'object' ? (macro.title.it || macro.title.en || '') : macro.title;
-      const description = typeof macro.description === 'object' ? (macro.description.it || macro.description.en || '') : macro.description;
-      const text = normalizeTerms(`${localized} ${description}`);
-      return { index, score: words.filter((word) => text.includes(word)).length };
-    }).sort((left, right) => right.score - left.score)[0];
-    if (match && match.score >= 2) result.push({ id: `macro:${match.index}` });
   }
   return result;
 }
@@ -607,6 +600,13 @@ function initWorker(panel) {
   worker.postMessage({ type: 'init', modelId: panel.querySelector('.spread-assistant__model').value || DEFAULT_MODEL });
 }
 
+function finishClause(panel, actions, reply) {
+  const search = catalogSearch;
+  search.plan.push(...actions);
+  if (!actions.length) search.unresolved.push({ request: search.request, reply });
+  startNextClause(panel);
+}
+
 function handleAnswer(panel, content, request) {
   const search = catalogSearch;
   if (!search || search.request !== request) return;
@@ -624,28 +624,11 @@ function handleAnswer(panel, content, request) {
       return false;
     }
   }) : [];
-  // A known-safe action derived from the user's explicit wording overrides a
-  // conflicting model value; all other model instructions stay validated.
-  const mandatory = mandatoryActions(request).filter(({ id, value }) => {
-    try { validate(actionRegistry.get(id).item, value); return true; }
-    catch (_) { return false; }
-  });
-  // For a recognised, unambiguous imperative (e.g. “apri la mappa” or
-  // “colora per regione”), execute exactly that plan.  Do not let an otherwise
-  // valid but unrelated model action silently alter another panel.
-  const finalActions = mandatory.length ? mandatory : actions;
-  if (!finalActions.length && search.offset < search.state.actions.length) {
+  if (!actions.length && search.offset < search.state.actions.length) {
     sendCatalogPage(search);
     return;
   }
-  catalogSearch = undefined;
-  // For an exact command, the deterministic plan is the useful response.
-  // Do not expose speculative model prose such as a generic explanation of
-  // logarithmic scales before the user confirms the action.
-  if (mandatory.length) addMessage(panel, 'assistant', `${copy().plan}.`);
-  else if (finalActions.length && typeof answer?.reply === 'string' && answer.reply.trim()) addMessage(panel, 'assistant', answer.reply);
-  if (finalActions.length) showPlan(panel, finalActions);
-  else addMessage(panel, 'assistant', search.reply || (answer ? copy().invalid : copy().malformed));
+  finishClause(panel, actions, search.reply || (answer ? copy().invalid : copy().malformed));
 }
 
 function factualReply(request) {
@@ -679,6 +662,70 @@ function mapCommand(request) {
   return coordinates ? { id: 'map-view:center', value: { latitude: Number(coordinates[1]), longitude: Number(coordinates[2]) } } : null;
 }
 
+function directActions(request) {
+  refreshRegistry();
+  const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
+  const colour = namedColourCommand(request, tree);
+  if (colour) return colour.id ? [{ id: 'assistant:node-colour', value: colour }] : [];
+  const action = videoCommand(request) || mapCommand(request);
+  if (action) return [action];
+  const words = normalizeTerms(request);
+  const simpleZoom = /^zoom(?:a)? \d+(?:[.,]\d+)?\s*x[.!]?$/i.test(request);
+  const simpleCenter = /^(?:recenter|ricentra|centra)(?: (?:the |il )?(?:mst|tree|albero))?$/.test(words);
+  const simpleLayout = /^(?:open|close|show|hide|apri|chiudi|mostra|nascondi) (?:(?:the|la|il|i|le) )?(?:map|mappa|legend|legenda|settings|impostazioni|metadata|metadati|video|full screen|schermo intero)$/.test(words);
+  const simpleMetadata = /^(?:set all values in the .+ column to|riscrivi nella colonna .+ tutti i valori a) .+$/i.test(request);
+  const simpleLogScale = /^(?:attiva|disattiva|togli|rimuovi|abilita|imposta|metti|enable|disable|remove|turn on|turn off|set|devi levare|leva|levare) (?:(?:the|la) )?(?:scala logaritmica|logarithmic scale)$/.test(words);
+  const colorColumn = words.match(/^(?:colora (?:l albero )?per|colou?r (?:the tree )?by) (.+)$/)?.[1];
+  const simpleColorBy = Object.keys(tree?.metadata_info || {}).some((column) =>
+    normalizeTerms(column) === colorColumn || (colorColumn === 'regione' && normalizeTerms(column) === 'region'));
+  if (simpleZoom || simpleCenter || simpleLayout || simpleMetadata || simpleLogScale || simpleColorBy) {
+    return mandatoryActions(request);
+  }
+  return null;
+}
+
+function validateProposedAction(action) {
+  const item = actionRegistry.get(action.id)?.item;
+  if (typeof item?.function !== 'function') return false;
+  try { validate(item, action.value); return true; }
+  catch (_) { return false; }
+}
+
+function startNextClause(panel) {
+  const search = catalogSearch;
+  while (search.clauses.length) {
+    const request = search.clauses.shift();
+    const fact = factualReply(request);
+    if (fact) {
+      addMessage(panel, 'assistant', fact);
+      continue;
+    }
+    const actions = directActions(request);
+    if (actions) {
+      if (actions.length && actions.every(validateProposedAction)) search.plan.push(...actions);
+      else search.unresolved.push({ request, reply: copy().invalid });
+      continue;
+    }
+    search.request = request;
+    search.state = compactState(request);
+    search.history = [...conversation.slice(-6, -1), { role: 'user', content: request }];
+    search.offset = 0;
+    search.reply = '';
+    initWorker(panel);
+    sendCatalogPage(search);
+    return;
+  }
+  catalogSearch = undefined;
+  for (const { request, reply } of search.unresolved) {
+    addMessage(panel, 'assistant', search.multiple ? `“${request}” — ${reply}` : reply);
+  }
+  if (search.plan.length) {
+    refreshRegistry();
+    if (search.plan.every(validateProposedAction)) showPlan(panel, search.plan);
+    else addMessage(panel, 'assistant', copy().invalid);
+  }
+}
+
 function submit(event, panel) {
   event.preventDefault();
   const input = event.currentTarget.querySelector('textarea');
@@ -690,33 +737,16 @@ function submit(event, panel) {
   requestId += 1;
   catalogSearch = undefined;
   input.value = '';
-  const fact = factualReply(message);
-  if (fact) {
-    addMessage(panel, 'assistant', fact);
-    return;
-  }
-  const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
-  const colour = namedColourCommand(message, tree);
-  const directAction = videoCommand(message) || mapCommand(message);
-  const exactCommand = /^(?:zoom(?:a)? \d+(?:[.,]\d+)?\s*x|(?:recenter|ricentra|centra)(?: (?:the |l albero |il )?(?:mst|tree))?|(?:close|open|chiudi|apri) (?:the |la )?(?:legend|legenda)|set all values in the .+ column to .+)[.!]?$/i;
-  if (colour || directAction || exactCommand.test(message)) {
-    refreshRegistry();
-    const actions = colour
-      ? (colour.id && actionRegistry.has('assistant:node-colour') ? [{ id: 'assistant:node-colour', value: colour }] : [])
-      : (directAction ? [directAction] : mandatoryActions(message));
-    if (actions.length === 1) {
-      try {
-        validate(actionRegistry.get(actions[0].id).item, actions[0].value);
-        showPlan(panel, actions);
-      } catch (_) {
-        addMessage(panel, 'assistant', copy().invalid);
-      }
-    } else addMessage(panel, 'assistant', copy().invalid);
-    return;
-  }
-  initWorker(panel);
-  catalogSearch = { request: message, state: compactState(message), history: conversation.slice(-6), offset: 0 };
-  sendCatalogPage(catalogSearch);
+  const parts = message.split(/("[^"]*")/);
+  const separator = /;|\n|\s+\b(?:and then|e poi|puis)\s+|\s+(?:and|e)\s+(?=(?:apri|chiudi|open|close|recenter|ricentra|colora|colou?r|zooma?|play|pause)\b)/i;
+  const clauses = parts.map((part, index) => index % 2 ? [part] : part.split(separator))
+    .reduce((joined, parts) => {
+      joined[joined.length - 1] += parts[0];
+      joined.push(...parts.slice(1));
+      return joined;
+    }, ['']).map((clause) => clause.trim()).filter(Boolean);
+  catalogSearch = { clauses, multiple: clauses.length > 1, plan: [], unresolved: [] };
+  startNextClause(panel);
 }
 
 function mount() {

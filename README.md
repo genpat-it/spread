@@ -89,6 +89,9 @@ registered as bounded actions alongside the menu catalog. The model may only
 propose catalog actions; it cannot execute arbitrary code.
 The assistant sends the catalog to the local model in pages ordered by
 relevance. When a page yields no valid action, it checks the next page.
+Use `and then` or a semicolon to sequence commands. For example,
+`Open the map and then zoom the map by 2x` proposes both actions in order when
+geographic data is loaded.
 
 The `datasets/assistant-demo/` tree and metadata provide a small local fixture
 for testing the assistant:
