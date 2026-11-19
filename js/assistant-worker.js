@@ -3,9 +3,14 @@ let engine;
 
 async function loadEngine(modelId) {
   if (!self.navigator.gpu) throw new Error('WebGPU non è disponibile in questo browser.');
+  const adapter = await self.navigator.gpu.requestAdapter();
+  if (!adapter) throw new Error('Nessun adattatore WebGPU disponibile.');
+  const compatibleModelId = adapter.features.has('shader-f16')
+    ? modelId
+    : modelId.replace('-q4f16_1-MLC', '-q4f32_1-MLC');
   // This is pinned for reproducibility; deployments can host this and model weights locally.
   const { CreateMLCEngine } = await import('https://esm.run/@mlc-ai/web-llm@0.2.80');
-  engine = await CreateMLCEngine(modelId, {
+  engine = await CreateMLCEngine(compatibleModelId, {
     initProgressCallback: (report) => self.postMessage({ type: 'progress', text: report.text })
   });
 }

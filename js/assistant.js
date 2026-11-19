@@ -575,7 +575,7 @@ function sendCatalogPage(search) {
 
 function initWorker(panel) {
   if (worker) return;
-  worker = new Worker(new URL('./assistant-worker.js?v=22', import.meta.url), { type: 'module' });
+  worker = new Worker(new URL('./assistant-worker.js?v=28', import.meta.url), { type: 'module' });
   worker.onmessage = ({ data }) => {
     if (data.type === 'progress') setStatus(panel, data.text || 'Caricamento modello…');
     if (data.type === 'ready') {

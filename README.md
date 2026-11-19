@@ -73,7 +73,9 @@ application files, just as for SPREAD without the assistant.
 
 On first use the browser downloads the selected open model and the WebLLM
 runtime; this can be several hundred MB and requires WebGPU support. Those
-files are normally cached by the browser. To deploy in a completely
+files are normally cached by the browser. The worker selects the 32-bit
+variant of the chosen model if the WebGPU adapter lacks `shader-f16`.
+To deploy in a completely
 air-gapped environment, host the model/runtime assets locally and point the
 worker imports/model URLs at that local mirror. The application data are not
 sent to an AI server by this integration.
