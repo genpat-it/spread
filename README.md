@@ -1,473 +1,374 @@
-# SPREAD, Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard
+# SPREAD local assistant
 
-Previously known as GrapeTree Extended.
+This branch adds a chat assistant to SPREAD that turns plain-language requests
+into SPREAD operations: *"colour by serovar"*, *"select the samples from
+Teramo and hide them"*, *"show me the metadata where region is Abruzzo and
+source is food"*, *"replace Roma with Rieti in the province column"*,
+*"how many samples per region?"*. It works in Italian, English and French, runs
+entirely in the browser and needs no model download, no GPU and no server.
 
-## Table of Contents
+This document explains how the assistant works. For SPREAD itself, see the
+`main` branch.
 
-- [Description](#description)
-- [Use SPREAD](#use-spread)
-- [Local browser assistant](#local-browser-assistant)
-- [Instruction to run it locally](#instruction-to-run-it-locally)
-  - [Prerequisites](#prerequisites)
-  - [Install and use live-server](#install-and-use-live-server)
-  - [Run SPREAD locally](#run-spread-locally)
-  - [Load geoJSON or cooridates data](#load-geojson-or-cooridates-data)
-  - [Load files](#load-files)
-  - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
-  - [Download the tree as an image](#download-the-tree-as-an-image)
-  - [Zooms for clusters](#zooms-for-clusters)
-- [Customizing SPREAD](#customizing-SPREAD)
-- [Server](#server)
-- [Docker](#docker)
-- [Videos](#videos)
-- [Documentation](#documentation)
-- [Credits](#credits)
-- [License](#license)
-- [Citation](#citation)
+## Contents
 
-## Description
+- [How a request is processed](#how-a-request-is-processed)
+- [The parser, step by step](#the-parser-step-by-step)
+- [What it understands](#what-it-understands)
+- [How the parser works](#how-the-parser-works)
+- [The action catalog](#the-action-catalog)
+- [Safety model](#safety-model)
+- [Unresolved requests](#unresolved-requests)
+- [Optional local LLM](#optional-local-llm)
+- [Files](#files)
+- [Trying it](#trying-it)
+- [Tests](#tests)
+- [Extending the assistant](#extending-the-assistant)
+- [Limitations](#limitations)
 
-<p align="center">
-<br>
-<img src="https://github.com/genpat-it/spread/assets/87088754/547ff60b-04ec-4fa3-85b6-5f07f55402a6" width="300">
-<br>
-</p>
+## How a request is processed
 
-# 
-
-The project is based on [GrapeTree](https://github.com/achtman-lab/GrapeTree), a fully interactive, tree visualization program within EnteroBase, which supports facile manipulations of both tree layout and metadata. Please see more info [here](https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html).
-
-The idea was to extend the original project in order to conducts spatio-temporal analyses with an integrated geographic information system (GIS) as well as a data visualization system across time. The web application allows users to upload geographic coordinates and temporal data related to each sample and allows to display them reflecting the selection in the tree on the map and vice versa, and reproducing a timelapse visualization both in the map and in the tree.
-
-## Use SPREAD
-
-You can download the project and easly running it locally, but we provide also a ready to use version freely available following link below:
-
-* [https://cohesive.izs.it/spread/](https://cohesive.izs.it/spread/)
-
-Please note, you can load sensitive data, your dataset is visualised client-side in the browser. No data is transmitted, and no tracking cookies are used. The only data downloaded from the internet are the visualisation (JavaScript) code, fonts and map tiles.
-
-## Local browser assistant
-
-This branch adds an optional chat assistant to SPREAD. It is deliberately
-isolated from the existing visualisation modules:
-
-* `js/assistant.js` is a validated bridge from natural-language requests to
-  SPREAD's existing menu actions and public tree APIs.
-* `js/assistant-worker.js` runs the language model in a Web Worker through
-  WebLLM; it has no access to the page DOM or to arbitrary JavaScript
-  execution.
-* `css/assistant.css` contains the assistant-only interface styles.
-
-The assistant is closed by default. In the English interface, open **Local
-assistant** at the bottom right. Describe a change, review the proposed actions,
-and click **Apply**. SPREAD runs the confirmed actions through its native
-controls and updates the view.
-
-### Privacy and deployment
-
-There is no SPREAD backend or AI API endpoint. The model executes locally in
-the browser via WebGPU, and the assistant operates on the already-loaded
-client-side data. A normal static web server is still required to deliver the
-application files, just as for SPREAD without the assistant.
-
-On first use the browser downloads the selected open model and the WebLLM
-runtime; this can be several hundred MB and requires WebGPU support. Those
-files are normally cached by the browser. The worker selects the 32-bit
-variant of the chosen model if the WebGPU adapter lacks `shader-f16`.
-To deploy in a completely
-air-gapped environment, host the model/runtime assets locally and point the
-worker imports/model URLs at that local mirror. The application data are not
-sent to an AI server by this integration.
-
-### Action mapping
-
-At runtime the bridge builds its catalog from the live SPREAD configuration:
-tree, metadata, metadata cards, legend, map, video, ReporTree zooms, layout,
-settings cards and macros. Values are checked against the current options and
-loaded metadata columns before a plan can be shown. A few viewport operations,
-such as tree zoom, are public tree APIs rather than menu entries and are
-registered as bounded actions alongside the menu catalog. The model may only
-propose catalog actions; it cannot execute arbitrary code.
-The assistant sends the catalog to the local model in pages ordered by
-relevance. When a page yields no valid action, it checks the next page.
-Use `and then` or a semicolon to sequence commands. For example,
-`Open the map and then zoom the map by 2x` proposes both actions in order when
-geographic data is loaded.
-
-The `datasets/assistant-demo/` tree and metadata provide a small local fixture
-for testing the assistant:
-
-```
-?tree=/datasets/assistant-demo/tree.nwk&metadata=/datasets/assistant-demo/metadata.tsv&longitude=longitude&latitude=latitude
+```mermaid
+flowchart LR
+  A[User message] --> B[Split into clauses]
+  B --> C{Fixed commands<br/>video, map view}
+  C -- no --> D{Intent parser<br/>data, selection, colour}
+  D -- no --> E{Menu catalog<br/>resolver}
+  E -- no --> F[Unresolved:<br/>hint + local log]
+  C -- yes --> P[Plan]
+  D -- yes --> P
+  E -- yes --> P
+  P --> V[Validate against live data]
+  V --> U[User clicks Apply]
+  U --> X[Execute step by step<br/>through SPREAD's own functions]
 ```
 
-Example commands:
+1. **Clauses.** A message is split on `;`, new lines, *and then* / *e poi* /
+   *puis*, and on *and* / *e* / *et* when a new verb follows. So *"select
+   Toscana, collapse them and then open the legend"* becomes three clauses.
+   Quoted text is never split.
+2. **Interpretation.** Each clause goes through three deterministic stages.
+   The first stage that produces an action wins:
+   - **fixed commands** for timeline playback and the map viewport;
+   - the **intent parser** for operations that need parameters: metadata
+     edits, selection by condition, colours;
+   - the **catalog resolver** for every other option in SPREAD's menus.
+3. **Plan.** The resulting actions are shown as a numbered plan, for example
+   `1. Select samples: replace province = “Teramo” 2. Hide selected nodes`.
+   Nothing changes until the user clicks **Apply**.
+4. **Execution.** Steps run in order. Each step is validated again just before
+   it runs, against the state the previous step left. A plan can therefore
+   create a column and then colour by it. If a step fails, the steps already
+   done are reported and the rest are skipped.
+   - SPREAD propagates some changes asynchronously, for example the tree
+     selection reaches the table on a timer. Steps therefore yield to the
+     browser between each other, as a user clicking would.
+   - Settings are applied **through their visible controls**. The assistant
+     sets the slider, number box, select, toggle or radio and fires the event
+     SPREAD listens to, so SPREAD's own handler updates its state and every
+     control bound to it. App state and UI never drift apart.
+   - Read-only answers (counts, statistics, macro lists) appear directly in
+     the chat and need no confirmation.
 
-* `Zoom 2x` — doubles the current MST viewport scale.
-* `Recenter MST` — fits and centers the native tree view.
-* `Close the legend` — closes the existing legend panel.
-* `Set all values in the region column to Teramo` — replaces every
-  value in the loaded `region` column after confirmation.
-* `Set the color of sample IT-003 to black` — assigns black to that exact sample ID and
-  switches the tree to the native ID colour category so the result is visible.
-* `Set the color of group ST-12 to black` — assigns black to the ST-12 group
-  in the demo's `lineage` column and shows that category on the tree.
-* `Play the timeline` and `Pause the timeline` control playback.
-* `Set the timeline speed to 1.5x` changes the speed while playback is paused.
-* `Seek the timeline to 50%` moves the timeline slider to its midpoint.
-* `Zoom the map by 2x` changes the current map scale. `Set the map zoom level to 8`
-  sets an absolute Leaflet zoom level.
-* `Center the map at 42.66, 13.70` pans to a latitude and longitude.
-* `Fit the map to all markers` frames the loaded geographic data.
+The same input always produces the same plan.
 
-## Instruction to run it locally
+## The parser, step by step
 
-To run the project locally you need to set a web server, **node packages http-server** or **live-server** works pretty fine.
+Each clause walks down this graph. The first branch that recognises the
+clause produces the result; the edge labels are example prompts that take
+that branch.
 
-### Prerequisites
-
-* **Node js**. Download the latest stable release of NodeJS from [https://nodejs.org](https://nodejs.org) and install it using all the default options.
-
-### Install and use live-server
-
-Now you will be able to install `live-server` globally on your machine using the node package manager `npm` command line tool, this will allow you to run a web server from anywhere on your computer.
-
-```
-npm install live-server -g
-```
-
-To start a web server, in terminal open the directory containing your static web files and start the server with the following command:
-
-```
-live-server
-```
-
-### Run SPREAD locally
-
-Download the .zip of the code from this repository, then unzip on a directory `DIR_SPREAD` (for example: `/tmp/spread`).
-
-**Source files in place**
-
-Produce your newick (`tree.nwk`) and metadata (`meta.tsv`) files and copy them inside `DIR_SPREAD`, then on terminal:
-
-`live-server DIR_SPREAD`
-
-Now you will be able to load data by url in your web browser, for example:
-
-```
-http://localhost:8080?tree=tree.nwk&metadata=metadata.tsv
-```
-
-In the project you will find a `datasets` folder with some example data to load, you can use url to see them as well:
-
-```
-http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&geo=/datasets/test/points.geojson
-```
-
-## Load geoJSON or cooridates data
-
-The dashboard is able to recognize `.geojson` file passed as `geo` parameter by query string:
-
-`&geo=points.geojson`
-
-Alternatively you can integrate in `metadata.tsv` longitute and latitude values and pass them as query string parameters in the place of geoJSON. For example, if in the `.tsv` you define `x` for longitude and `y` for latitude, just add `&longitude=x&latitude=y` in the url in this way:
-
-`&metadata=metadata.tsv&longitude=x&latitude=y`
-
-Using our data example:
-
-```
-http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&longitude=x&latitude=y
-```
-
-> **Important**
->
-> If you use `longitude` and `latitude` to name coordinates in the `.tsv` file, there is no need to pass them as query string parameters, so simply use: `&metadata=metadata.tsv`
-
-> Please note that for the longitude and latitude values, decimal points should be used as separators instead of commas.
-
-### Using predefined country coordinates
-
-If neither a GeoJSON file nor latitude and longitude values are provided, the application checks for a `countries` object in `app.json`, defined as follows:
-
-```json
-"countries": {
-  "column": "sampling country",
-  "path": "datasets/countries/countries.json",
-  "latitude": "latitude",
-  "longitude": "longitude"
-}
+```mermaid
+flowchart TD
+  S([clause]) --> Q0{"help?"}
+  Q0 -- "aiuto · what can you do" --> H[list of capabilities]
+  Q0 --> F0{"fixed command?"}
+  F0 -- "play the timeline · center the map at 42.66, 13.70" --> FA[video / map-view action]
+  F0 --> Z{"zoom?"}
+  Z -- "dezooma 2x · ingrandisci la mappa 3x" --> ZA[tree or map zoom]
+  Z --> SO{"sort the table?"}
+  SO -- "ordina la tabella per data decrescente" --> SOA[metadata sort ↓/↑]
+  SO --> LG{"language?"}
+  LG -- "cambia lingua in inglese" --> LGA["change language (reloads, always asks)"]
+  LG --> MC{"macro?"}
+  MC -- "crea la macro Vista: apri la mappa, chiudi la legenda" --> MD[define from steps]
+  MC -- "registra gli ultimi 3 passaggi come macro Teramo" --> MR[record from history]
+  MC -- "dammi la lista delle macro · esegui / rinomina / elimina la macro X" --> ML[list · run · rename · delete]
+  MC --> ST{"question about the data?"}
+  ST -- "quanti valori distinti in ST? · quanti campioni per regione?<br/>qual è la data più recente? · quanti valori mancanti in cluster?" --> STA[read-only answer in chat]
+  ST --> FI{"filter / count?"}
+  FI -- "dammi i metadati che verificano regione è Lazio e source è food" --> FIA[select + open table + show selected only]
+  FI -- "quanti campioni ci sono in Toscana? · quali campioni hanno outcome negative?" --> FIQ[count / list in chat]
+  FI --> QG{"still a question?"}
+  QG -- "quanto costa un caffè?" --> QE[not understood: never mapped to a menu]
+  QG --> CO{"column operation?"}
+  CO -- "aggiungi la colonna focolaio con valore sì per i selezionati" --> COA[add column]
+  CO -- "rinomina region in regione" --> COR[rename column]
+  CO -- "elimina le colonne cluster e lineage" --> COD[delete columns]
+  CO --> SE{"selection?"}
+  SE -- "seleziona Lazio o Toscana · seleziona dove data dopo il 2026-01-10" --> SEA[select by condition]
+  SE --> CL{"colour?"}
+  CL -- "colora per sierotipo" --> CLA[colour by column]
+  CL -- "colora di rosso la Toscana" --> CLB[colour one group]
+  CL -- "colorali di rosso" --> CLC[highlight column + colour by it + red]
+  CL --> SC{"select-and-act?"}
+  SC -- "nascondi i campioni di Teramo · mostra solo i confermati" --> SCA[select + hide / collapse / show subtrees]
+  SC --> VE{"value edit?"}
+  VE -- "sostituisci Roma con Rieti nella colonna provincia · Firenze diventa Prato" --> VEA[set where column = old]
+  VE -- "imposta outcome a confirmed dove cluster è A" --> VEB[set with condition]
+  VE --> MN{"menu catalog<br/>(TF-IDF over live labels in it/en/fr)"}
+  MN -- "mostra le etichette dei nodi · scala logaritmica<br/>dimensione nodi 200 · mappa di calore" --> MNA[menu option + value]
+  MN --> LLM{"optional LLM enabled?"}
+  LLM -- yes --> LLMA[LLM picks a catalog action]
+  LLM -- no --> U[hint + local unresolved log]
 ```
 
-* `column`: Specifies the metadata column containing country names.
-* `path`: Defines the file path to a JSON file that maps country names to their respective coordinates.
-* `latitude` and `longitude`: Define the keys used for latitude and longitude in the JSON mapping file.
+Conditions inside these branches are parsed by a small grammar:
 
-The JSON file at the specified `path` should follow this structure:
-
-```json
-"iceland": {
-    "latitude": 64.1355,
-    "longitude": -21.8954
-},
-"ireland": {
-    "latitude": 53.3498,
-    "longitude": -6.2603
-},
-"italy": {
-    "latitude": 41.9028,
-    "longitude": 12.4964
-}
+```mermaid
+flowchart LR
+  T["regione è Lazio e source è food o cluster è A"] --> OR["split on o / or / ou"]
+  OR --> A1["regione è Lazio e source è food"] & A2["cluster è A"]
+  A1 --> AND["split on e / and / et"]
+  AND --> C1["regione · è · Lazio"] & C2["source · è · food"]
+  C1 --> R1["column + operator + value<br/>(column found by name, alias or typo;<br/>value checked against the data)"]
+  R1 --> W["{ any: [ { all: [region = Lazio, source = food] }, cluster = A ] }"]
 ```
 
-The application compares values in the specified `column` against this mapping and assigns the corresponding coordinates accordingly.
+## What it understands
 
-## Load files
+Every executable option in SPREAD's menus, plus the data operations below.
+Column names, values and sample IDs are matched against the loaded data,
+case-insensitively and with tolerance for small typos.
 
-You can also directly upload files by dragging them over the tree, over the initial droppable area or using load buttons provided in the UI. In this case you don't need to user parameters in the url. You can drag or load a `.nwk` file followed by a `.tsv` file containing metadata and optionally a `.geojson` file containing geo-saptial information.
+| Area | Examples |
+| --- | --- |
+| Filter the table | `dammi i metadati che verificano regione è Abruzzo e source è food` · `show me the metadata where region is Lazio or cluster is A` · `togli il filtro` |
+| Questions on the data | `quanti valori distinti ci sono nella colonna ST?` · `quanti campioni per regione dove source è food?` · `qual è il sierotipo più frequente?` · `qual è la data più recente?` · `quanti valori mancanti in cluster?` · `quali colonne ci sono?` · `how many samples are there in Toscana?` |
+| Sort the table | `ordina i metadati desc per la colonna sampling_date` · `sort the table by region` · `trie le tableau par date décroissant` |
+| Macros | `crea la macro Panoramica: apri la mappa, apri i metadati e chiudi la legenda` · `registra gli ultimi 3 passaggi come macro Teramo` · `dammi la lista delle macro` · `esegui la macro Panoramica` · `rinomina la macro Panoramica in Vista base` · `elimina la macro Teramo` |
+| Interface | `cambia lingua in inglese` (reloads the page, always asks) · `aiuto` / `what can you do` |
+| Add column | `aggiungi la colonna focolaio con valore sì per i selezionati e no per gli altri` · `add a column named batch with value B1` · `ajoute une colonne nommée lot avec la valeur L1` |
+| Rename / delete column | `rinomina region in regione` · `rename column cluster to group` · `cancella le colonne cluster e lineage` |
+| Replace values | `sovrascrivi i valori di Teramo nella colonna province con il valore Roma` · `cambia Milano in Monza` · `Firenze diventa Prato` · `remplace Roma par Rieti dans la colonne province` |
+| Set values | `imposta outcome a negative per i selezionati` · `set cluster to Z where region is Lazio` · `imposta outcome a negative per IT-001 e IT-002` |
+| Select | `seleziona i campioni del Lazio` · `seleziona Lazio o Toscana` · `select where cluster is A` · `seleziona dove regione è diverso da Lazio` · `seleziona i campioni con data dopo il 2026-01-20` · `seleziona i campioni del 2026` · `aggiungi alla selezione la Toscana` · `deseleziona tutto` |
+| Select and act | `nascondi i campioni di Teramo` · `collassa quelli del Lazio` · `mostra solo i campioni positive` · `seleziona Toscana e nascondili` |
+| Colour | `colora per regione` · `colour by serovar` · `colora di rosso la Toscana` · `make Toscana green` · `colora il campione IT-003 di nero` · `seleziona Teramo e colorali di rosso` |
+| Menus | `mostra le etichette dei nodi` · `hide the branch labels` · `scala logaritmica` · `dimensione nodi 200` · `legenda a istogramma` · `mappa di calore` · `ordina i gruppi per nome` · `scarica la tabella in csv` · `rendering statico` · `taglia i rami più lunghi di 50` |
+| Panels | `apri la mappa` · `chiudi la legenda` · `schermo intero` · `affiche la carte` |
+| Views | `zoom 2x` · `dezooma 2x` · `ingrandisci la mappa 3x` · `ricentra l'albero` · `play the timeline` · `seek the timeline to 50%` · `center the map at 42.66, 13.70` |
 
-> **Important**
->
-> .nwk file should be loaded before loading metadata or geoJson files.
+**Conditions** support `=`, `≠` (*diverso da*, *is not*), `>`, `≥`, `<`, `≤`
+(*dopo*, *prima*, *after*, *before*, *at least*), *contains*, *empty* /
+*not empty*, alternatives (*Lazio o Toscana*) and conjunctions
+(*source è food e region è Abruzzo*). Dates in ISO format and bare years
+work. When no column is named, the parser finds the column that holds the
+value. When two columns hold it, it asks which one.
 
-## Save or load a compatible JSON file
+**Colouring selected samples.** SPREAD colours by category, not node by node.
+*"Colour the selected samples red"* is therefore a three-step plan, and every
+step is visible before Apply: write `rosso` into a highlight column
+(`evidenziati` / `highlight` / `surbrillance`) for the selected samples, colour
+by that column, and give that value the colour red.
 
-Dashboard allows you to download a complete JSON file including metadata and configurations. Generated JSON file can be loaded with the same drag or load functionalities seen previously, this is very useful if you want to save your work or share it.
+**Ambiguity.** When a request fits two options equally, the more common
+panel wins. For example, *"mostra etichette"* means node labels. Naming the
+panel (*"dei rami"*, *"nella tabella"*, *"on the map"*) picks the other one.
+If two options remain genuinely tied, the assistant asks instead of guessing.
 
-## Download the tree as an image
+## How the parser works
 
-From the tree download menu you can export the current tree as an image in two formats:
+The parser is rule-based. It does not understand language in general. It
+recognises a closed domain, the operations SPREAD offers, using three
+sources of knowledge:
 
-* **`.png`** — a raster capture of the canvas as you currently see it, so it reflects the current zoom and pan and includes only the visible portion of the tree.
-* **`.svg`** — a vector rebuild of the **whole** tree, independent of the current zoom and pan. It covers the full extent of the tree and includes links, link labels, node halos, pie wedges and node labels, together with the legend and a scale bar.
+1. **Hand-written vocabularies** for verbs and keywords in each language.
+   *sostituisci / replace / remplace* all mean *replace*, and *colonna / column
+   / colonne* all mean *column*. Words are compared after lower-casing and
+   removing accents. Long words tolerate one or two typos (Levenshtein
+   distance), so *"nelal colonna"* still finds the column.
+2. **The loaded data.** Column names, every distinct value and every sample
+   ID. *"Teramo"* is understood because it is a value of `province`, not
+   because the parser knows it is a city. Common translations of column names
+   (*regione → region*, *sierotipo → serovar*, *esito → outcome*) are built
+   in.
+3. **SPREAD's own translations** (`js/i18n/*.js`). Each menu label in the
+   active language is linked to its Italian, English and French versions, so
+   all three name the same option.
 
-Both exports embed the theme font, so text renders with the same typeface outside the browser.
+In NLP terms, this is **intent classification with slot filling**, done by a
+**rule-based semantic parser**. Each clause becomes a typed command such as
+`{ op: set, column, value, where }`. The `where` part is a small
+WHERE-clause evaluated in the browser.
 
-> **Please note:** choose `.svg` when you need a complete, print-quality or further editable figure, and `.png` when you want to capture exactly the view currently on screen.
+The **catalog resolver** handles everything that is not a data operation. It
+scores each menu option by the words of the request, using TF-IDF-style
+weights: a word that names only one option (*heatmap*, *logaritmica*)
+outweighs a word shared by many (*mostra*, *mappa*). Several bonuses add to
+the score:
+- a multi-word name found verbatim (*"dimensione nodi"*);
+- the request being exactly an option's name;
+- a panel word (*tabella*, *map*);
+- an on/off verb when the option is a switch.
 
-## Zooms for clusters
+It then reads the value from the request: a named option, an on/off verb or a
+number within the allowed range. If the best option cannot take a value from
+the request, it tries the next candidate.
 
-SPREAD can be used to visualize results generated with [ReporTree](https://github.com/insapathogenomics/ReporTree). Very briefly, ReporTree allows the generation of a series of zooms on clusters by specifying samples of interest and parameters such as thresholds and distances.
+## The action catalog
 
-In this context, it's possible to indicate to SPREAD the presence of available zooms using the methods described below.
+The catalog is not hard-coded. It is rebuilt from the live SPREAD
+configuration before every request:
 
+- tree, metadata, legend, map, video and zoom context menus;
+- settings cards (node style, node size, branch style, cut-offs, rendering);
+- layout toggles and macros;
+- tree zoom, node colour, timeline player and map viewport controls;
+- the assistant's typed data operations (`assistant:metadata-add-column`,
+  `-set`, `-rename-column`, `-delete-column`, `assistant:select`).
 
-> **Please note.**
-> Here, we describe how to set up and place the needed newick and metadata files for zooms. However, if you produce these files directly with ReporTree, the structure, composition, and positions are already correct.
+A new SPREAD option therefore becomes available to the assistant
+automatically. Extra synonyms for options that are often described in other
+words live in `SYNONYMS` and `OPTION_SYNONYMS` in `js/assistant.js`.
 
-### Metadata columns and data
+## The panel
 
-Here the minimum metadata mandatory schema:
+- **Floating.** Drag it by the header and resize it from the corner. It
+  remembers its position; double-click the header to reset it.
+- **Docked.** The sidebar button turns it into a full-height side panel.
+  SPREAD's dashboard shrinks to make room, and the left edge sets the width.
+  The dock state lives on `<html>` because SPREAD rewrites the `<body>`
+  classes on every layout change.
+- **Apply immediately.** The switch under the input runs plans without the
+  Apply step. A language change still asks, because it reloads the page.
+- **Examples** are generated from the loaded data: real columns, values and
+  dates, so they always work on the current dataset.
+- **Update notice.** The page polls `js/assistant-version.json`. When a newer
+  build has been deployed, the panel shows *"new version available — reload"*
+  and the launcher gets a dot. `tests/assistant/bump_version.py` bumps the
+  build and the cache keys together.
 
-|ID             |category            |MST-21x1.0 |MST-15x1.0 |MST-7x1.0  |MST-4x1.0 |
-|---------------|--------------------|-----------|-----------|-----------|----------|
-|00.00000.00.00 |sample of interest  |cluster_4  |cluster_11 |cluster_22 |cluster_32|
+## Safety model
 
-### Source files in place
+- **No code execution.** The assistant can only propose actions from the
+  catalog. Values are checked against the live options, numeric ranges and
+  loaded columns.
+- **Confirmation.** Every plan is shown before anything changes, unless the
+  user switched on *Apply immediately*.
+- **Questions never act.** A clause phrased as a question (*quanti*, *quali*,
+  *how many*, *combien*…) is answered or reported as not understood. It is
+  never mapped to a menu action.
+- **Native paths.** Actions run through the same functions as SPREAD's menus.
+  Metadata edits use `gtiz_metadata.updateMetadata` and `loadMetadata`, so the
+  tree, map, legend and table stay consistent.
+- **Protected columns.** `ID`, `CMP` and the sample column cannot be edited,
+  renamed or deleted. Column names cannot contain tabs, line breaks or commas,
+  because a comma in the header would switch SPREAD's reader to CSV.
+- **Privacy.** Data never leaves the browser. There is no backend and no API
+  call.
 
-Insert the folders containing the zooms (a newick and optionally a related .tsv metadata file) at the same level as the general tree. Following the **output generated by ReporTree**, the names of folders and files should adhere to the following conventions:
+## Unresolved requests
 
-* `prefix_threshold-definition_cluster-name`: for example, `Reportree_MST-7x1.0_cluster_334`
-* `prefix_sample-id_closest-name`: for example, `Reportree_sample-01_closest5`
+When a clause cannot be mapped, the user sees a short hint with examples. The
+request is also kept in the browser's `localStorage`: the last 500, never sent
+anywhere. This lets maintainers see what people tried and extend the grammar
+from real usage:
 
+```js
+SPREAD_ASSISTANT.unresolved()       // [{ at, lang, request, reason }, …]
+SPREAD_ASSISTANT.clearUnresolved()
+SPREAD_ASSISTANT.plan('colora per regione e apri la mappa')  // dry run, nothing executed
+```
 
-For a concrete example, the structure should follow this convention:
+## Optional local LLM
+
+The model selector in the panel defaults to **Parser only**, with no
+download. A local model can be selected instead. It runs in a Web Worker
+through WebLLM and WebGPU (Qwen2.5 0.5B / 1.5B / 3B; the first use downloads
+several hundred MB). It is consulted only for clauses the deterministic
+stages could not resolve, and it can only pick catalog actions, which are
+validated like any other.
+
+The trade-off:
+- **LLM benefits:** it handles phrasings the grammar does not anticipate.
+- **LLM costs:** it needs WebGPU, adds latency, and its output varies between
+  runs. A wrong pick can look plausible.
+
+A middle ground for the future is a small multilingual sentence-embedding
+model. It would rank the catalog by meaning while keeping the parser for
+values.
+
+## Files
+
+| File | Role |
+| --- | --- |
+| `js/assistant-intents.js` | Pure parser: clause splitting, intents, conditions, catalog resolver. No DOM access; testable in Node. |
+| `js/assistant.js` | Panel UI, live catalog and context, typed data operations, validation, plan and execution, unresolved log. |
+| `js/assistant-worker.js` | Optional WebLLM worker. |
+| `css/assistant.css` | Panel styles. |
+| `datasets/assistant-demo/` | 8-sample fixture used by the tests. |
+| `datasets/assistant-showcase/` | 60 synthetic *Salmonella*-like samples (Abruzzo and other regions, sources, dates, clusters) for demos. |
+| `tests/assistant/` | Test suites and live-context fixtures. |
+
+## Trying it
+
+Serve the repository with any static web server and open:
 
 ```
-Reportree.nwk
-Reportree_metadata_w_partitions.tsv
-Reportree_MST-7x1.0_cluster_335
-  |__ MST-7x1.0_cluster_335.nwk
-  |__ MST-7x1.0_cluster_335_metadata_w_partitions.tsv
-Reportree_MST-7x1.0_cluster_887
-  |__ MST-7x1.0_cluster_887.nwk
-  |__ MST-7x1.0_cluster_887_metadata_w_partitions.tsv
-...
+/?tree=/datasets/assistant-showcase/tree.nwk&metadata=/datasets/assistant-showcase/metadata.tsv&longitude=longitude&latitude=latitude&lang=it
 ```
 
-### URL parameters
+Open **Assistente locale** / **Local assistant** at the bottom right, type a
+request, review the plan and click **Apply**. `lang=en` or `lang=fr` switches
+the interface language. The assistant understands all three languages
+regardless.
 
-Once the zooms folders are moved as shown, it is necessary to specify some parameters, and this can be done in two ways.
-
-#### 1. All information needed are in the metatada file
-
-There are 2 parameters to specify: `zooms`, which is mandatory, and `zooms_prefix`, which is optional.
-
-* `zooms` parameter can have one of the following syntax:
-  - `zooms=category,sample%20of%20interest@5,7`: the code will find in the general metadata file the clusters for the samples marked as sample of interest for the indicated thresholds.
-  - `zooms=category,sample%20of%20interest@all`: the code will find in the general metadata file the clusters for the samples marked as sample of interest for all thresholds.
-  - `zooms=@7,21`: The code will use `category` and `sample of interest` by default to find clusters in the general metadata file for the indicated thresholds.
-  - `zooms=all`: The code will use `category` and `sample of interest` by default to find clusters in the general metadata file for all thresholds.
-
-> **Please note.** As permitted by ReporTree, different thresholds can be separated by commas (e.g., @5,8,16), but you can also define ranges by specifying them with a hyphen to separate the minimum and maximum (e.g., @5,8,10-20).
-
-* `zooms_prefix` should define a prefix used for files and folders. This is optional, by default application take it from the `.nwk` file name.
-  - `zooms_prefix=zoom` indicates that folder names and file names start with `zoom_`.
-
-#### 2. Provide an index
-
-At the same level as the zoom folders, alternatively, it's possible to insert a .txt file (for example `zooms.txt`) containing a simple list of `prefix_threshold-name_cluster-name` for each zoom folder in the full tree root. By using this index, it is possible to cover a second use case, that of closest zooms, and it is also possible to indicate elements in the list composed as follows: `prefix_sample-name_closest-name`. To give a more concrete example:
-
-```
-Reportree_MST-7x1.0_cluster_335
-Reportree_MST-7x1.0_cluster_510
-Reportree_MST-7x1.0_cluster_519
-Reportree_MST-15x1.0_cluster_556
-Reportree_sample-01_closest5
-Reportree_sample-01_closest10
-Reportree_sample-02_closest5
-Reportree_sample-02_closest10
-```
-
-then add in the URL one of the following parameters:
-
-* `zooms_list=category,sample%20of%20interest@zooms.txt`: the code will find in the general metadata file the clusters for the samples marked as sample of interest for zooms indicated by `zooms.txt` file.
-* `zooms_list=@zooms.txt` or `zooms_list=zooms.txt`: the code will use `category` and `sample of interest` by default to find clusters in the general metadata file for zooms indicated by `zooms.txt` file.
-
-> **Please note.** The `prefix` should match the name of the `.nwk` file.
-
-## Customizing SPREAD
-
-SPREAD allows you to customize some elements of its appearance such as colors, fonts, header elements (logo and title), and footer content.
-
-It is also possible to set SPREAD to **read-only** mode by changing the `read_only` parameter in `app.json` to `true`.
-
-> **Please note:** read-only mode hides download buttons and limits edit functions at the UI level only.
-
-Please find more information on [wiki](https://github.com/genpat-it/spread/wiki/Customizing-SPREAD)
-
-## Server
-
-You can use SPREAD with the provided `server.js` by running the following command:
+## Tests
 
 ```bash
-npm start
+python tests/assistant/dump_context.py   # refresh live-context fixtures (it/en/fr) from the running app
+node tests/assistant/coverage.mjs        # every executable menu option × every language
+node tests/assistant/paraphrases.mjs     # free phrasings: typos, synonyms, word order, compounds
+python tests/assistant/e2e.py            # browser: type, Apply, check SPREAD's real state
 ```
 
-This server acts as a proxy, allowing you to download resources using the `withProxy` parameter in the query string. For example:
+- `coverage.mjs` generates, for every executable option and each UI
+  language, the phrase a user would form from the visible label. It then
+  checks that the request resolves to that option with the right value: 665
+  phrases.
+- `paraphrases.mjs` checks about 100 hand-written free phrasings.
+- `e2e.py` drives the real app in headless Chromium. It types each request,
+  clicks Apply and asserts on the resulting metadata, selection and colour
+  category.
 
-```
-http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy
-```
+The Python scripts need Playwright with a Chromium headless shell.
 
-You can set custom variables to control the proxy:
+## Extending the assistant
 
-- `SERVER_JSON_LIMIT=10mb`
-- `SERVER_URLENCODED_LIMIT=5mb`
-- `SERVER_MAX_DOWNLOAD_SIZE_KB=1024`
-- `SERVER_ALLOWED_DOMAINS_FOR_DOWNLOAD=domain1.com,domain2.com`
-- `SERVER_ALLOWED_LOCAL_ROOTS=/absolute/path/one,/absolute/path/two`
+- **A synonym for a menu option:** add it to `SYNONYMS`, keyed by the menu
+  item id or its English label, or to `OPTION_SYNONYMS` for option values.
+- **A column-name translation:** add it to `COLUMN_ALIASES` in
+  `js/assistant-intents.js`.
+- **A new verb or phrasing:** extend the vocabularies `W`, `CLAUSE_VERBS` and
+  `OPERATORS`.
+- **A new statistic or question:** extend `parseStats` in
+  `js/assistant-intents.js` and `statsMessage` in `js/assistant.js`.
+- **A new parametrised operation:** register a typed action in
+  `registerDataOperations` with a `check` (validation) and a `function`
+  (execution), then add an intent in `parseClause`.
 
-`SERVER_ALLOWED_LOCAL_ROOTS` limits which local folders can be served when you request files with a `file://` URL (for example `http://localhost:8080/index.html?tree=file:///path/to/tree.nwk&withProxy`). By default it falls back to the project directory.
+For each change, add the phrase to `paraphrases.mjs` and run the suites. The
+unresolved log is the best source of new cases.
 
-Example:
+## Limitations
 
-Windows:
-```
-set SERVER_JSON_LIMIT=2mb && set SERVER_URLENCODED_LIMIT=2mb && set SERVER_MAX_DOWNLOAD_SIZE_KB=1024 && set SERVER_ALLOWED_LOCAL_ROOTS=C:\data\spread && node server.js
-```
-
-Linux:
-```
-SERVER_JSON_LIMIT=2mb SERVER_URLENCODED_LIMIT=2mb SERVER_MAX_DOWNLOAD_SIZE_KB=1024 SERVER_ALLOWED_LOCAL_ROOTS=/data/spread node server.js
-```
-
-You can also specify your proxy:
-
-```
-http://localhost:8080/?tree=https://example.com/tree.nwk&withProxy=https://myproxy.com
-```
-
-SPREAD will use the following format for the proxy URL: `https://myproxy.com/download?url={url}`
-
-## Docker
-
-### Building from Github Container
-
-```bash
-docker pull ghcr.io/genpat-it/spread:latest
-docker run -d -p 3000:8080 --name spread ghcr.io/genpat-it/spread:latest
-```
-You can surf the spread instance by visiting `http://<IP_ADDRESS_OR_HOSTNAME>:3000`  in your web browser.
-
-### Building from Source
-
-To build the Docker image from the source code, follow these steps:
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/genpat-it/spread
-```
-
-2. Navigate to the cloned directory:
-
-```bash
-cd spread
-```
-
-3. Build the Docker image using the provided Dockerfile. You can also specify the port using the `PORT` build argument:
-
-```bash
-docker build . -t spread --build-arg PORT=3000
-```
-
-4. Once the image is built, you can run the Docker container:
-
-```bash
-docker run -d spread
-```
-
-This will expose the application running inside the container on port 3000 of your host machine.
-
-## Videos
-
-- **Video Settings:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-settings.mp4) - This video demonstrates the settings configuration in SPREAD.
-
-- **Video Upload:** [Watch Video](https://genpat.izs.it/genpat_wiki/Dashboards/SPREAD/2023-08-04-grapetree-upload.mp4) - This video shows how to upload data in SPREAD.
-
-## Documentation
-
-* [https://cohesive.izs.it/wiki/user/Dashboards/GrapeTree/GrapeTree_extended.html](https://cohesive.izs.it/wiki/user/Dashboards/GrapeTree/GrapeTree_extended.html)
-* [https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html](https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html)
-
-## Credits
-
-### Tree
-
-* [https://github.com/achtman-lab/GrapeTree](https://github.com/achtman-lab/GrapeTree)
-
-### Map
-
-* [https://www.openstreetmap.org/](https://www.openstreetmap.org/)
-* [https://leafletjs.com/](https://leafletjs.com/) 
-
-### Metadata table
-
-* [https://github.com/ag-grid/ag-grid](https://github.com/ag-grid/ag-grid)
-
-### Icons
-
-* [https://tabler.io/icons](https://tabler.io/icons)
-
-## License
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program. If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
-
-## Citation
-
-If you run SPREAD, please cite publications:
-
-de Ruvo, A., De Luca, A., Bucciacchio, A., Castelli, P., Di Lorenzo, A., Radomski, N., Di Pasquale, A. SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard. Veterinaria Italiana, Vol. 60 No. 4 (2024): Special Issue GeoVet23. https://doi.org/10.12834/VetIt.3476.23846.1 
-
-De Luca, A., de Ruvo, A., Di Lorenzo, A., Bucciacchio, A., Di Pasquale, A. GrapeTree integration with spatio-temporal data visualization: a holistic understanding of diseases and the transmission pathways. GeoVet23 (2023). [Poster](https://www.veterinariaitaliana.izs.it/index.php/GEOVET23/article/view/3224)
-
-Also, SPREAD relies on the work of other developers. So, there are other tools that you must cite:
-
-* ReporTree: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-023-01196-1
-* GrapeTree: http://www.genome.org/cgi/doi/10.1101/gr.232397.117
+- The parser recognises the phrasings it was written for. Unusual wording,
+  such as adjectives standing in for values (*"campioni alimentari"* for
+  `source = food`), is reported as unresolved rather than guessed.
+- Values are matched whole. Replacing a substring inside values is not
+  supported.
+- Selection works on tree nodes. Selecting one sample of a node that groups
+  several samples selects the whole node.
+- Menu options that need data that is not loaded, such as ReporTree zooms
+  without zoom files, are not offered.

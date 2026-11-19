@@ -1,0 +1,3561 @@
+{
+ "columns": [
+  "ID",
+  "lineage",
+  "region",
+  "province",
+  "outcome",
+  "sampling_date",
+  "latitude",
+  "longitude",
+  "cluster"
+ ],
+ "catalog": [
+  {
+   "id": "tree:0",
+   "area": "tree",
+   "iid": "tree-tooltip-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "tooltip",
+    "tooltips",
+    "suggerimenti",
+    "info al passaggio",
+    "hover",
+    "popup",
+    "infobulles"
+   ],
+   "options": [
+    {
+     "value": "show_tooltips",
+     "terms": [
+      "show tooltips",
+      "Affichez les info-bulles",
+      "Show tooltips",
+      "Mostra suggerimenti"
+     ],
+     "label": "Affichez les info-bulles"
+    },
+    {
+     "value": "hide_tooltips",
+     "terms": [
+      "hide tooltips",
+      "Affichez les info-bulles",
+      "Show tooltips",
+      "Mostra suggerimenti"
+     ],
+     "label": "Affichez les info-bulles"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "tree:2",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Centrez l'arborescence",
+   "terms": [
+    "Centrez l'arborescence",
+    "Centre tree",
+    "Centra albero",
+    "centra albero",
+    "ricentra",
+    "recenter",
+    "center tree",
+    "fit tree",
+    "inquadra albero",
+    "centrer"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:3",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Rendu statique",
+   "terms": [
+    "Rendu statique",
+    "Static redraw",
+    "Ridisegno statico",
+    "ridisegna",
+    "redraw",
+    "aggiorna disegno",
+    "redessiner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:4",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Arborescence originale",
+   "terms": [
+    "Arborescence originale",
+    "Original tree",
+    "Albero iniziale",
+    "albero originale",
+    "ripristina albero",
+    "reset tree",
+    "original layout",
+    "arbre original"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:6",
+   "area": "tree",
+   "iid": "tree-tooltip-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "nodi ipotetici",
+    "ipotetici",
+    "hypothetical nodes",
+    "hypothetical",
+    "hypo",
+    "noeuds hypothetiques",
+    "hypothetiques"
+   ],
+   "options": [
+    {
+     "value": "show_hypo",
+     "terms": [
+      "show hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    },
+    {
+     "value": "hide_hypo",
+     "terms": [
+      "hide hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "tree:8",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Tout sélectionner",
+   "terms": [
+    "Tout sélectionner",
+    "Select all",
+    "Seleziona tutto",
+    "seleziona tutto",
+    "seleziona tutti",
+    "select all",
+    "tout selectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:9",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Désélectionnez tous",
+   "terms": [
+    "Désélectionnez tous",
+    "Deselect all",
+    "Deseleziona tutti",
+    "deseleziona tutto",
+    "deselect all",
+    "clear selection",
+    "pulisci selezione",
+    "tout deselectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:11",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Repliez les nœuds sélectionnés",
+   "terms": [
+    "Repliez les nœuds sélectionnés",
+    "Collapse selected nodes",
+    "Comprimi nodi selezionati",
+    "collassa selezionati",
+    "collapse selected",
+    "comprimi selezionati",
+    "replier selectionnes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:12",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Développez les nœuds sélectionnés",
+   "terms": [
+    "Développez les nœuds sélectionnés",
+    "Expand selected nodes",
+    "Espandi nodi selezionati",
+    "espandi selezionati",
+    "expand selected",
+    "deplier selectionnes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:13",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Développez tout",
+   "terms": [
+    "Développez tout",
+    "Expand all",
+    "Espandi tutti",
+    "espandi tutto",
+    "espandi tutti",
+    "expand all",
+    "tout deplier"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:15",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Masquez les nœuds sélectionnés",
+   "terms": [
+    "Masquez les nœuds sélectionnés",
+    "Hide selected nodes",
+    "Nascondi nodi selezionati",
+    "nascondi selezionati",
+    "hide selected",
+    "masquer selectionnes",
+    "togli selezionati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:16",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Affichez les sous-arborescences sélectionnées",
+   "terms": [
+    "Affichez les sous-arborescences sélectionnées",
+    "Show selected subtrees",
+    "Mostra i sottoalberi selezionati",
+    "mostra solo selezionati",
+    "solo selezionati",
+    "isola selezionati",
+    "only selected",
+    "show only selected",
+    "sottoalberi"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:17",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Affichez l'arborescence intière",
+   "terms": [
+    "Affichez l'arborescence intière",
+    "Show whole tree",
+    "Mostra albero intero",
+    "mostra tutto albero",
+    "albero intero",
+    "albero completo",
+    "whole tree",
+    "full tree",
+    "mostra tutti i nodi",
+    "ripristina vista",
+    "arbre entier"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:19",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Enregistrez le SPREAD",
+   "terms": [
+    "Enregistrez le SPREAD",
+    "Save SPREAD",
+    "Salva SPREAD",
+    "salva",
+    "save",
+    "salva progetto",
+    "salva sessione",
+    "save session",
+    "esporta json",
+    "enregistrer"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:20",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton",
+   "label": "Chargez SPREAD",
+   "terms": [
+    "Chargez SPREAD",
+    "Load SPREAD",
+    "Carica SPREAD",
+    "carica",
+    "load",
+    "carica progetto",
+    "load session",
+    "charger"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:22",
+   "area": "tree",
+   "iid": null,
+   "type": "abutton_optioned",
+   "label": "Download l'image",
+   "terms": [
+    "Download l'image",
+    "Download image",
+    "Scarica immagine",
+    "scarica immagine",
+    "download image",
+    "esporta immagine",
+    "salva immagine",
+    "export image",
+    "screenshot",
+    "figura",
+    "telecharger image"
+   ],
+   "options": [
+    {
+     "value": "png",
+     "terms": [
+      "png",
+      ".png",
+      "png",
+      "immagine raster"
+     ],
+     "label": ".png"
+    },
+    {
+     "value": "svg",
+     "terms": [
+      "svg",
+      ".svg",
+      "svg",
+      "vettoriale",
+      "vector"
+     ],
+     "label": ".svg"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:0",
+   "area": "metadata",
+   "iid": "metadata-selected-only",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "tabella solo selezionati",
+    "righe selezionate",
+    "only selected rows",
+    "selected rows",
+    "lignes selectionnees",
+    "filtra tabella",
+    "tabella solo selezionati",
+    "righe selezionate",
+    "only selected rows",
+    "selected rows",
+    "lignes selectionnees",
+    "filtra tabella"
+   ],
+   "options": [
+    {
+     "value": "show_selected",
+     "terms": [
+      "show selected",
+      "Seulement les sélectionnés",
+      "Selected only",
+      "Solo selezionati",
+      "solo selezionati",
+      "only selected",
+      "selected only",
+      "selezionate"
+     ],
+     "label": "Seulement les sélectionnés"
+    },
+    {
+     "value": "show_all",
+     "terms": [
+      "show all",
+      "Seulement les sélectionnés",
+      "Selected only",
+      "Solo selezionati",
+      "tutti",
+      "tutte",
+      "all",
+      "everything",
+      "toutes"
+     ],
+     "label": "Seulement les sélectionnés"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:2",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Ajoutez des métadonnées",
+   "terms": [
+    "Ajoutez des métadonnées",
+    "Add metadata",
+    "Aggiungi metadati",
+    "finestra aggiungi metadati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:3",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Modifiez les métadonnées",
+   "terms": [
+    "Modifiez les métadonnées",
+    "Edit metadata",
+    "Modifica metadati",
+    "finestra modifica metadati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:5",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Ajoutez des métadonnées pour la sélection",
+   "terms": [
+    "Ajoutez des métadonnées pour la sélection",
+    "Add metadata for selection",
+    "Aggiungi metadati per selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:6",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Modifiez les métadonnées pou la sélection",
+   "terms": [
+    "Modifiez les métadonnées pou la sélection",
+    "Edit metadata for selection",
+    "Modifica metadati per selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:8",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Supprimez les métadonnées",
+   "terms": [
+    "Supprimez les métadonnées",
+    "Delete metadata",
+    "Elimina metadati",
+    "finestra elimina metadati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:10",
+   "area": "metadata",
+   "iid": "metadata-menu-color-by",
+   "type": "select",
+   "label": "Sélectionnez une colonne",
+   "terms": [
+    "Sélectionnez une colonne",
+    "Select column",
+    "Seleziona colonna"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:11",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Déplacez en première position",
+   "terms": [
+    "Déplacez en première position",
+    "Move to the first position",
+    "Sposta in prima posizione",
+    "sposta in prima posizione",
+    "prima colonna",
+    "move first"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:12",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Définissez comme légende de la figure",
+   "terms": [
+    "Définissez comme légende de la figure",
+    "Set as figure legend",
+    "Imposta come legenda della figura",
+    "imposta come legenda",
+    "figure legend",
+    "legenda figura"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:14",
+   "area": "metadata",
+   "iid": null,
+   "type": "abutton",
+   "label": "Redimensionnez les colonnes",
+   "terms": [
+    "Redimensionnez les colonnes",
+    "Resize columns",
+    "Ridimensiona colonne",
+    "ridimensiona colonne",
+    "adatta colonne",
+    "resize columns",
+    "autosize"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:16",
+   "area": "metadata",
+   "iid": "metadata-show-hypo",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "nodi ipotetici tabella",
+    "ipotetici",
+    "hypothetical",
+    "hypo",
+    "hypothetiques",
+    "nodi ipotetici tabella",
+    "ipotetici",
+    "hypothetical",
+    "hypo",
+    "hypothetiques",
+    "nodi ipotetici",
+    "ipotetici",
+    "hypothetical nodes",
+    "hypothetical",
+    "hypo",
+    "noeuds hypothetiques",
+    "hypothetiques"
+   ],
+   "options": [
+    {
+     "value": "show_hypo",
+     "terms": [
+      "show hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    },
+    {
+     "value": "hide_hypo",
+     "terms": [
+      "hide hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:18",
+   "area": "metadata",
+   "iid": "metadata-export-button",
+   "type": "abutton_optioned",
+   "label": "Download la table",
+   "terms": [
+    "Download la table",
+    "Download table",
+    "Download tabella",
+    "scarica tabella",
+    "download table",
+    "esporta tabella",
+    "export table",
+    "esporta metadati",
+    "scarica metadati",
+    "telecharger tableau",
+    "scarica tabella",
+    "download table",
+    "esporta tabella",
+    "export table",
+    "esporta metadati",
+    "scarica metadati",
+    "telecharger tableau"
+   ],
+   "options": [
+    {
+     "value": "csv",
+     "terms": [
+      "csv",
+      ".csv",
+      "csv",
+      "virgole"
+     ],
+     "label": ".csv"
+    },
+    {
+     "value": "tsv",
+     "terms": [
+      "tsv",
+      ".tsv",
+      "tsv",
+      "tabulazioni",
+      "tab"
+     ],
+     "label": ".tsv"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata-card:0",
+   "area": "metadata-card",
+   "iid": null,
+   "type": "abutton",
+   "label": "Tout sélectionner",
+   "terms": [
+    "Tout sélectionner",
+    "Select all",
+    "Seleziona tutto",
+    "seleziona tutto",
+    "seleziona tutti",
+    "select all",
+    "tout selectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata-card:1",
+   "area": "metadata-card",
+   "iid": null,
+   "type": "abutton",
+   "label": "Effacez la sélection",
+   "terms": [
+    "Effacez la sélection",
+    "Clean selection",
+    "Pulisci selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:0",
+   "area": "legend",
+   "iid": "legend-menu-selection-mode",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "modalita selezione legenda",
+    "selection mode",
+    "mode de selection",
+    "modalita selezione legenda",
+    "selection mode",
+    "mode de selection"
+   ],
+   "options": [
+    {
+     "value": "qualitative",
+     "terms": [
+      "qualitative",
+      "Sélection des nœuds associés",
+      "Related nodes selection",
+      "Selezione nodi correlati",
+      "qualitativa",
+      "qualitativo",
+      "qualitative"
+     ],
+     "label": "Sélection des nœuds associés"
+    },
+    {
+     "value": "visual",
+     "terms": [
+      "visual",
+      "Sélection visuelle",
+      "Visual selection",
+      "Selezione visiva",
+      "visiva",
+      "visuale",
+      "visual",
+      "visuelle"
+     ],
+     "label": "Sélection visuelle"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:2",
+   "area": "legend",
+   "iid": "legend-menu-select-all",
+   "type": "abutton",
+   "label": "Sélectionnez tous les éléments",
+   "terms": [
+    "Sélectionnez tous les éléments",
+    "Select all items",
+    "Seleziona tutti gli elementi",
+    "seleziona tutti i gruppi",
+    "select all groups",
+    "seleziona tutti i gruppi",
+    "select all groups"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:3",
+   "area": "legend",
+   "iid": "legend-menu-invert-selection",
+   "type": "abutton",
+   "label": "Inversez la sélection",
+   "terms": [
+    "Inversez la sélection",
+    "Invert selection",
+    "Inverti selezione",
+    "inverti selezione",
+    "invert selection",
+    "inverser la selection",
+    "inverti selezione",
+    "invert selection",
+    "inverser la selection"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:4",
+   "area": "legend",
+   "iid": "legend-menu-clean-selection",
+   "type": "abutton",
+   "label": "Effacez la sélection",
+   "terms": [
+    "Effacez la sélection",
+    "Clean selection",
+    "Pulisci selezione",
+    "pulisci selezione legenda",
+    "clear legend selection",
+    "pulisci selezione legenda",
+    "clear legend selection"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:6",
+   "area": "legend",
+   "iid": "legend-menu-color-by",
+   "type": "select",
+   "label": "Colorez par",
+   "terms": [
+    "Colorez par",
+    "Color by",
+    "Colora per",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:7",
+   "area": "legend",
+   "iid": "legend-menu-maximum-group-number",
+   "type": "number",
+   "label": "Nombre maximal de groupes",
+   "terms": [
+    "Nombre maximal de groupes",
+    "Maximum number of groups",
+    "Numero massimo di gruppi",
+    "numero massimo gruppi",
+    "massimo gruppi",
+    "max groups",
+    "maximum groups",
+    "nombre maximum de groupes",
+    "numero massimo gruppi",
+    "massimo gruppi",
+    "max groups",
+    "maximum groups",
+    "nombre maximum de groupes"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 100000,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:8",
+   "area": "legend",
+   "iid": "legend-menu-minimum-group-size",
+   "type": "number",
+   "label": "Taille minimale du groupe",
+   "terms": [
+    "Taille minimale du groupe",
+    "Mininimum group size",
+    "Grandezza minima gruppo",
+    "dimensione minima gruppo",
+    "minimum group size",
+    "min group size",
+    "taille minimale groupe",
+    "dimensione minima gruppo",
+    "minimum group size",
+    "min group size",
+    "taille minimale groupe"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 100000,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:10",
+   "area": "legend",
+   "iid": "legend-menu-data-category",
+   "type": "select",
+   "label": "Catégorie de données",
+   "terms": [
+    "Catégorie de données",
+    "Data category",
+    "Categoria dati",
+    "tipo dati",
+    "data type",
+    "categoria dati",
+    "type de donnees",
+    "tipo colonna",
+    "tipo dati",
+    "data type",
+    "categoria dati",
+    "type de donnees",
+    "tipo colonna"
+   ],
+   "options": [
+    {
+     "value": "character",
+     "terms": [
+      "character",
+      "Caractère",
+      "Character",
+      "Carattere",
+      "testo",
+      "categorico",
+      "categoriale",
+      "caratteri",
+      "character",
+      "text",
+      "categorical",
+      "texte",
+      "stringa"
+     ],
+     "label": "Caractère"
+    },
+    {
+     "value": "numeric",
+     "terms": [
+      "numeric",
+      "Numérique",
+      "Numeric",
+      "Numerico",
+      "numerico",
+      "numerici",
+      "numeric",
+      "number",
+      "numbers",
+      "numerique",
+      "numeri"
+     ],
+     "label": "Numérique"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:11",
+   "area": "legend",
+   "iid": "legend-menu-group-order",
+   "type": "select",
+   "label": "Ordre du groupe",
+   "terms": [
+    "Ordre du groupe",
+    "Group order",
+    "Ordine gruppo",
+    "ordine gruppi",
+    "ordina gruppi",
+    "group order",
+    "sort groups",
+    "ordre des groupes",
+    "ordina legenda",
+    "ordina",
+    "ordine gruppi",
+    "ordina gruppi",
+    "group order",
+    "sort groups",
+    "ordre des groupes",
+    "ordina legenda",
+    "ordina"
+   ],
+   "options": [
+    {
+     "value": "size-desc",
+     "terms": [
+      "size desc",
+      "Taille décroissante",
+      "Size descending",
+      "Grandezza discendente",
+      "dimensione decrescente",
+      "piu grandi prima",
+      "size descending",
+      "largest first",
+      "decrescente",
+      "descending",
+      "grandezza"
+     ],
+     "label": "Taille décroissante"
+    },
+    {
+     "value": "size-asc",
+     "terms": [
+      "size asc",
+      "Taille ascendente",
+      "Size ascending",
+      "Grandezza ascendente",
+      "dimensione crescente",
+      "piu piccoli prima",
+      "size ascending",
+      "smallest first",
+      "crescente",
+      "ascending"
+     ],
+     "label": "Taille ascendente"
+    },
+    {
+     "value": "alphabetic-asc",
+     "terms": [
+      "alphabetic asc",
+      "Nom ascendant",
+      "Name ascending",
+      "Nome ascendente",
+      "per nome",
+      "by name",
+      "alphabetically",
+      "par nom",
+      "alfabetico",
+      "alfabetica",
+      "alfabeticamente",
+      "alphabetical",
+      "alphabetic",
+      "alphabetique",
+      "az"
+     ],
+     "label": "Nom ascendant"
+    },
+    {
+     "value": "alphabetic-desc",
+     "terms": [
+      "alphabetic desc",
+      "Nom descendant",
+      "Name descending",
+      "Nome discendente",
+      "alfabetico inverso",
+      "alfabetica inversa",
+      "reverse alphabetical",
+      "za",
+      "inverso"
+     ],
+     "label": "Nom descendant"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:12",
+   "area": "legend",
+   "iid": "legend-menu-color-scheme",
+   "type": "select",
+   "label": "Schéma de couleurs",
+   "terms": [
+    "Schéma de couleurs",
+    "Color scheme",
+    "Schema colore",
+    "schema colori",
+    "palette",
+    "colour scheme",
+    "color scheme",
+    "tavolozza",
+    "schema de couleurs",
+    "colori",
+    "schema colori",
+    "palette",
+    "colour scheme",
+    "color scheme",
+    "tavolozza",
+    "schema de couleurs",
+    "colori"
+   ],
+   "options": [
+    {
+     "value": "category",
+     "terms": [
+      "category",
+      "Catégorie",
+      "Category",
+      "Categoria",
+      "categorico",
+      "categorie",
+      "category",
+      "categorical",
+      "categories"
+     ],
+     "label": "Catégorie"
+    },
+    {
+     "value": "gradient",
+     "terms": [
+      "gradient",
+      "Gradient chaud",
+      "Warm gradient",
+      "Gradiente caldo",
+      "gradiente",
+      "sfumatura",
+      "gradient",
+      "degrade"
+     ],
+     "label": "Gradient chaud"
+    },
+    {
+     "value": "gradient_cool",
+     "terms": [
+      "gradient cool",
+      "Gradient froid",
+      "Cold gradient",
+      "Gradiente freddo",
+      "freddo",
+      "fredda",
+      "cool",
+      "froid"
+     ],
+     "label": "Gradient froid"
+    },
+    {
+     "value": "gradient_rainbow",
+     "terms": [
+      "gradient rainbow",
+      "Arc-en-ciel",
+      "Rainbow",
+      "Arcobaleno",
+      "arcobaleno",
+      "rainbow",
+      "arc en ciel"
+     ],
+     "label": "Arc-en-ciel"
+    },
+    {
+     "value": "gradient_rainbow2",
+     "terms": [
+      "gradient rainbow2",
+      "Arc-en-ciel clair",
+      "Bright rainbow",
+      "Arcobaleno chiaro",
+      "arcobaleno 2",
+      "rainbow 2"
+     ],
+     "label": "Arc-en-ciel clair"
+    },
+    {
+     "value": "gradient_rainbow3",
+     "terms": [
+      "gradient rainbow3",
+      "Arc-en-ciel sombre",
+      "Dark rainbow",
+      "Arcobaleno scuro",
+      "arcobaleno 3",
+      "rainbow 3"
+     ],
+     "label": "Arc-en-ciel sombre"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:13",
+   "area": "legend",
+   "iid": "legend-menu-quick-gradient",
+   "type": "abutton",
+   "label": "Gradient rapide",
+   "terms": [
+    "Gradient rapide",
+    "Quick gradient",
+    "Gradiente veloce",
+    "gradiente rapido",
+    "quick gradient",
+    "degrade rapide",
+    "gradiente rapido",
+    "quick gradient",
+    "degrade rapide"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:15",
+   "area": "legend",
+   "iid": "legend-menu-view-mode",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "vista legenda",
+    "legend view",
+    "visualizzazione legenda",
+    "affichage legende",
+    "vista legenda",
+    "legend view",
+    "visualizzazione legenda",
+    "affichage legende"
+   ],
+   "options": [
+    {
+     "value": "list",
+     "terms": [
+      "list",
+      "Vue à liste",
+      "List view",
+      "Visualizzazione a lista",
+      "lista",
+      "elenco",
+      "list",
+      "liste"
+     ],
+     "label": "Vue à liste"
+    },
+    {
+     "value": "histogram",
+     "terms": [
+      "histogram",
+      "Vue en histogramme",
+      "Histogram view",
+      "Visualizzazione a istogramma",
+      "istogramma",
+      "histogram",
+      "histogramme",
+      "barre",
+      "bar"
+     ],
+     "label": "Vue en histogramme"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:0",
+   "area": "map",
+   "iid": "map-aggregation-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "aggregazione",
+    "aggrega",
+    "aggregation",
+    "aggregate",
+    "raggruppa marcatori",
+    "regroupement",
+    "aggregazione",
+    "aggrega",
+    "aggregation",
+    "aggregate",
+    "raggruppa marcatori",
+    "regroupement"
+   ],
+   "options": [
+    {
+     "value": "geographical",
+     "terms": [
+      "geographical",
+      "Agrégez par coordonnées",
+      "Join by coordinates",
+      "Aggrega per coordinate",
+      "geografica",
+      "geografico",
+      "geographical",
+      "geographic",
+      "coordinate",
+      "geographique"
+     ],
+     "label": "Agrégez par coordonnées"
+    },
+    {
+     "value": "metadata",
+     "terms": [
+      "metadata",
+      "Agrégez par métadonnées",
+      "Join by metadata",
+      "Aggrega per metadati",
+      "metadati",
+      "metadata",
+      "metadonnees"
+     ],
+     "label": "Agrégez par métadonnées"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:1",
+   "area": "map",
+   "iid": "map-delta-select",
+   "type": "select",
+   "label": "Définissez la valeur",
+   "terms": [
+    "Définissez la valeur",
+    "Set value",
+    "Imposta valore",
+    "delta",
+    "precisione",
+    "precision",
+    "decimali",
+    "decimals",
+    "cifre",
+    "aggregazione geografica",
+    "delta",
+    "precisione",
+    "precision",
+    "decimali",
+    "decimals",
+    "cifre",
+    "aggregazione geografica"
+   ],
+   "options": [
+    {
+     "value": 1,
+     "terms": [
+      "1",
+      "1"
+     ],
+     "label": "1"
+    },
+    {
+     "value": 2,
+     "terms": [
+      "2",
+      "2"
+     ],
+     "label": "2"
+    },
+    {
+     "value": 3,
+     "terms": [
+      "3",
+      "3"
+     ],
+     "label": "3"
+    },
+    {
+     "value": 4,
+     "terms": [
+      "4",
+      "4"
+     ],
+     "label": "4"
+    },
+    {
+     "value": 5,
+     "terms": [
+      "5",
+      "5"
+     ],
+     "label": "5"
+    },
+    {
+     "value": 6,
+     "terms": [
+      "6",
+      "6"
+     ],
+     "label": "6"
+    },
+    {
+     "value": 7,
+     "terms": [
+      "7",
+      "7"
+     ],
+     "label": "7"
+    },
+    {
+     "value": 8,
+     "terms": [
+      "8",
+      "8"
+     ],
+     "label": "8"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:2",
+   "area": "map",
+   "iid": "map-reset-delta",
+   "type": "abutton",
+   "label": "Revenez aux paramètres par défaut",
+   "terms": [
+    "Revenez aux paramètres par défaut",
+    "Reset to default",
+    "Torna alle impostazioni di default",
+    "ripristina delta",
+    "reset delta",
+    "ripristina delta",
+    "reset delta"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:4",
+   "area": "map",
+   "iid": "map-point-min-radius",
+   "type": "number",
+   "label": "Rayon minimal du marqueur",
+   "terms": [
+    "Rayon minimal du marqueur",
+    "Min marker radius",
+    "Raggio minimo del marcatore",
+    "raggio minimo",
+    "min radius",
+    "minimum radius",
+    "rayon minimum",
+    "marcatori minimi",
+    "raggio minimo",
+    "min radius",
+    "minimum radius",
+    "rayon minimum",
+    "marcatori minimi"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:5",
+   "area": "map",
+   "iid": "map-point-max-radius",
+   "type": "number",
+   "label": "Rayon maximal du marqueur",
+   "terms": [
+    "Rayon maximal du marqueur",
+    "Max marker radius",
+    "Raggio massimo del marcatore",
+    "raggio massimo",
+    "max radius",
+    "maximum radius",
+    "rayon maximum",
+    "marcatori massimi",
+    "raggio massimo",
+    "max radius",
+    "maximum radius",
+    "rayon maximum",
+    "marcatori massimi"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:6",
+   "area": "map",
+   "iid": "map-reset-max-min-radius",
+   "type": "abutton",
+   "label": "Revenez aux paramètres par défaut",
+   "terms": [
+    "Revenez aux paramètres par défaut",
+    "Reset to default",
+    "Torna alle impostazioni di default",
+    "ripristina raggio",
+    "reset radius",
+    "ripristina raggio",
+    "reset radius"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:8",
+   "area": "map",
+   "iid": null,
+   "type": "abutton",
+   "label": "Tout sélectionner",
+   "terms": [
+    "Tout sélectionner",
+    "Select all",
+    "Seleziona tutto",
+    "seleziona tutto",
+    "seleziona tutti",
+    "select all",
+    "tout selectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:9",
+   "area": "map",
+   "iid": null,
+   "type": "abutton",
+   "label": "Désélectionnez tous",
+   "terms": [
+    "Désélectionnez tous",
+    "Deselect all",
+    "Deseleziona tutti",
+    "deseleziona tutto",
+    "deselect all",
+    "clear selection",
+    "pulisci selezione",
+    "tout deselectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:11",
+   "area": "map",
+   "iid": "map-marker-mode-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "marcatori",
+    "marker",
+    "markers",
+    "modalita marcatori",
+    "marker mode",
+    "marqueurs",
+    "visualizzazione mappa",
+    "marcatori",
+    "marker",
+    "markers",
+    "modalita marcatori",
+    "marker mode",
+    "marqueurs",
+    "visualizzazione mappa"
+   ],
+   "options": [
+    {
+     "value": "piechart",
+     "terms": [
+      "piechart",
+      "Mode graphique en secteurs",
+      "Pie Chart mode",
+      "Modalità grafico a torta",
+      "torta",
+      "torte",
+      "grafico a torta",
+      "pie",
+      "pie chart",
+      "camembert",
+      "secteurs"
+     ],
+     "label": "Mode graphique en secteurs"
+    },
+    {
+     "value": "heatmap",
+     "terms": [
+      "heatmap",
+      "Mode heatmap",
+      "Heatmap mode",
+      "Modalità heatmap",
+      "heatmap",
+      "mappa di calore",
+      "calore",
+      "heat",
+      "densita",
+      "density",
+      "chaleur"
+     ],
+     "label": "Mode heatmap"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map-view:zoom",
+   "area": "map",
+   "iid": null,
+   "type": "number",
+   "label": "Map zoom factor / Fattore di zoom della mappa / Facteur de zoom de la carte",
+   "terms": [
+    "Map zoom factor / Fattore di zoom della mappa / Facteur de zoom de la carte"
+   ],
+   "options": [],
+   "min": 0.1,
+   "max": 10,
+   "valueRequired": true
+  },
+  {
+   "id": "map-view:level",
+   "area": "map",
+   "iid": null,
+   "type": "number",
+   "label": "Map zoom level / Livello di zoom della mappa / Niveau de zoom de la carte",
+   "terms": [
+    "Map zoom level / Livello di zoom della mappa / Niveau de zoom de la carte"
+   ],
+   "options": [],
+   "min": -Infinity,
+   "max": 18,
+   "valueRequired": true
+  },
+  {
+   "id": "map-view:center",
+   "area": "map",
+   "iid": null,
+   "type": "assistant_map_coordinates",
+   "label": "Center map at coordinates / Centra la mappa alle coordinate / Centrer la carte aux coordonnées",
+   "terms": [
+    "Center map at coordinates / Centra la mappa alle coordinate / Centrer la carte aux coordonnées"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map-view:fit",
+   "area": "map",
+   "iid": null,
+   "type": "abutton",
+   "label": "Fit map to all markers / Inquadra tutti i marcatori / Afficher tous les marqueurs",
+   "terms": [
+    "Fit map to all markers / Inquadra tutti i marcatori / Afficher tous les marqueurs"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "video-player:play",
+   "area": "video",
+   "iid": null,
+   "type": "abutton",
+   "label": "Play timeline / Riproduci video / Lire la vidéo",
+   "terms": [
+    "Play timeline / Riproduci video / Lire la vidéo"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "video-player:pause",
+   "area": "video",
+   "iid": null,
+   "type": "abutton",
+   "label": "Pause timeline / Metti in pausa il video / Mettre la vidéo en pause",
+   "terms": [
+    "Pause timeline / Metti in pausa il video / Mettre la vidéo en pause"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "video-player:speed",
+   "area": "video",
+   "iid": null,
+   "type": "select",
+   "label": "Timeline playback speed / Velocità del video / Vitesse de lecture",
+   "terms": [
+    "Timeline playback speed / Velocità del video / Vitesse de lecture"
+   ],
+   "options": [
+    {
+     "value": 0.5,
+     "terms": [
+      "0.5",
+      "0.5x"
+     ],
+     "label": "0.5x"
+    },
+    {
+     "value": 1,
+     "terms": [
+      "1",
+      "1x"
+     ],
+     "label": "1x"
+    },
+    {
+     "value": 1.5,
+     "terms": [
+      "1.5",
+      "1.5x"
+     ],
+     "label": "1.5x"
+    },
+    {
+     "value": 2,
+     "terms": [
+      "2",
+      "2x"
+     ],
+     "label": "2x"
+    },
+    {
+     "value": 5,
+     "terms": [
+      "5",
+      "5x"
+     ],
+     "label": "5x"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "video-player:seek",
+   "area": "video",
+   "iid": null,
+   "type": "number",
+   "label": "Timeline position (%) / Posizione del video (%) / Position de lecture (%)",
+   "terms": [
+    "Timeline position (%) / Posizione del video (%) / Position de lecture (%)"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 100,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:0",
+   "area": "zooms",
+   "iid": "zooms-menu-zoom-type",
+   "type": "select",
+   "label": "Sélectionnez le type de zoom",
+   "terms": [
+    "Sélectionnez le type de zoom",
+    "Select zoom type",
+    "Seleziona tipo di zoom",
+    "tipo zoom",
+    "zoom type",
+    "reportree",
+    "tipo zoom",
+    "zoom type",
+    "reportree"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:1",
+   "area": "zooms",
+   "iid": "zooms-menu-category",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:2",
+   "area": "zooms",
+   "iid": "zooms-menu-zoomed-tree",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:4",
+   "area": "zooms",
+   "iid": "zooms-menu-selection-alerts",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "avvisi selezione",
+    "selection alerts",
+    "alert",
+    "avvisi",
+    "alertes",
+    "avvisi selezione",
+    "selection alerts",
+    "alert",
+    "avvisi",
+    "alertes"
+   ],
+   "options": [
+    {
+     "value": "show",
+     "terms": [
+      "show",
+      "Affichez les alertes de sélection",
+      "Show selection alerts",
+      "Mostra avvisi di selezione",
+      "mostra",
+      "show"
+     ],
+     "label": "Affichez les alertes de sélection"
+    },
+    {
+     "value": "hide",
+     "terms": [
+      "hide",
+      "Masquez les alertes de sélection",
+      "Hide selection alerts",
+      "Nascondi avvisi di selezione",
+      "nascondi",
+      "hide",
+      "masque",
+      "togli"
+     ],
+     "label": "Masquez les alertes de sélection"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:5",
+   "area": "zooms",
+   "iid": "zooms-menu-select-nodes",
+   "type": "abutton",
+   "label": "Sélectionnez les nœuds interessés",
+   "terms": [
+    "Sélectionnez les nœuds interessés",
+    "Select involved nodes",
+    "Seleziona nodi coinvolti",
+    "seleziona nodi del cluster",
+    "select cluster nodes",
+    "seleziona nodi del cluster",
+    "select cluster nodes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms:6",
+   "area": "zooms",
+   "iid": "zooms-menu-clean-selection",
+   "type": "abutton",
+   "label": "Effacez la sélection",
+   "terms": [
+    "Effacez la sélection",
+    "Clean selection",
+    "Pulisci selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms:8",
+   "area": "zooms",
+   "iid": "zooms-menu-current-settings",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels",
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels"
+   ],
+   "options": [
+    {
+     "value": "apply",
+     "terms": [
+      "apply",
+      "Utilisez les paramètres actuels",
+      "Use current settings",
+      "Usa impostazioni correnti",
+      "applica",
+      "apply",
+      "mantieni",
+      "keep"
+     ],
+     "label": "Utilisez les paramètres actuels"
+    },
+    {
+     "value": "not-apply",
+     "terms": [
+      "not apply",
+      "Ne pas utiliser les paramètres actuels",
+      "Do not use current settings",
+      "Non usare impostazioni correnti",
+      "non applicare",
+      "ignora",
+      "ignore",
+      "default"
+     ],
+     "label": "Ne pas utiliser les paramètres actuels"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:9",
+   "area": "zooms",
+   "iid": "zooms-menu-load-zoomed-tree",
+   "type": "abutton",
+   "label": "Chargez le cluster",
+   "terms": [
+    "Chargez le cluster",
+    "Load cluster",
+    "Carica cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms:10",
+   "area": "zooms",
+   "iid": "zooms-menu-open-zoomed-tree",
+   "type": "abutton",
+   "label": "Ouvrez dans un nouvel onglet",
+   "terms": [
+    "Ouvrez dans un nouvel onglet",
+    "Load in new tab",
+    "Apri in nuova scheda",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms-filtered:0",
+   "area": "zooms-filtered",
+   "iid": "zooms-filtered-menu-zoom-type",
+   "type": "select",
+   "label": "Sélectionnez le type de zoom",
+   "terms": [
+    "Sélectionnez le type de zoom",
+    "Select zoom type",
+    "Seleziona tipo di zoom"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:1",
+   "area": "zooms-filtered",
+   "iid": "zooms-filtered-menu-category",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:2",
+   "area": "zooms-filtered",
+   "iid": "zooms-filtered-menu-zoomed-tree",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:4",
+   "area": "zooms-filtered",
+   "iid": "zooms-menu-current-settings",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels",
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels"
+   ],
+   "options": [
+    {
+     "value": "apply",
+     "terms": [
+      "apply",
+      "Utilisez les paramètres actuels",
+      "Use current settings",
+      "Usa impostazioni correnti",
+      "applica",
+      "apply",
+      "mantieni",
+      "keep"
+     ],
+     "label": "Utilisez les paramètres actuels"
+    },
+    {
+     "value": "not-apply",
+     "terms": [
+      "not apply",
+      "Ne pas utiliser les paramètres actuels",
+      "Do not use current settings",
+      "Non usare impostazioni correnti",
+      "non applicare",
+      "ignora",
+      "ignore",
+      "default"
+     ],
+     "label": "Ne pas utiliser les paramètres actuels"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:5",
+   "area": "zooms-filtered",
+   "iid": "zooms-menu-load-zoomed-tree",
+   "type": "abutton",
+   "label": "Chargez le cluster",
+   "terms": [
+    "Chargez le cluster",
+    "Load cluster",
+    "Carica cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms-filtered:6",
+   "area": "zooms-filtered",
+   "iid": "zooms-menu-open-zoomed-tree",
+   "type": "abutton",
+   "label": "Ouvrez dans un nouvel onglet",
+   "terms": [
+    "Ouvrez dans un nouvel onglet",
+    "Load in new tab",
+    "Apri in nuova scheda",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "layout:0",
+   "area": "layout",
+   "iid": null,
+   "type": "settings",
+   "label": "",
+   "terms": [
+    "impostazioni",
+    "settings",
+    "opzioni",
+    "parametri",
+    "parametres",
+    "reglages",
+    "pannello impostazioni"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Paramètres",
+      "Settings",
+      "Impostazioni",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Paramètres"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Paramètres",
+      "Settings",
+      "Impostazioni",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide"
+     ],
+     "label": "Paramètres"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:1",
+   "area": "layout",
+   "iid": null,
+   "type": "map",
+   "label": "",
+   "terms": [
+    "mappa",
+    "map",
+    "carte",
+    "gis",
+    "cartina"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Carte",
+      "Map",
+      "Mappa",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Carte"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Carte",
+      "Map",
+      "Mappa",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide"
+     ],
+     "label": "Carte"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:2",
+   "area": "layout",
+   "iid": null,
+   "type": "metadata",
+   "label": "",
+   "terms": [
+    "metadati",
+    "metadata",
+    "tabella",
+    "table",
+    "metadonnees",
+    "tableau",
+    "griglia"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Métadonnées",
+      "Metadata",
+      "Metadati",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Métadonnées"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Métadonnées",
+      "Metadata",
+      "Metadati",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide"
+     ],
+     "label": "Métadonnées"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:3",
+   "area": "layout",
+   "iid": null,
+   "type": "legend",
+   "label": "",
+   "terms": [
+    "legenda",
+    "legend",
+    "legende"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Légende",
+      "Legend",
+      "Legenda",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Légende"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Légende",
+      "Legend",
+      "Legenda",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide"
+     ],
+     "label": "Légende"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:4",
+   "area": "layout",
+   "iid": null,
+   "type": "video",
+   "label": "",
+   "terms": [
+    "video",
+    "timeline",
+    "linea temporale",
+    "timelapse",
+    "filmato"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Vidéo",
+      "Video",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Vidéo"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Vidéo",
+      "Video",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide"
+     ],
+     "label": "Vidéo"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:5",
+   "area": "layout",
+   "iid": null,
+   "type": "full-screen",
+   "label": "",
+   "terms": [
+    "schermo intero",
+    "full screen",
+    "fullscreen",
+    "tutto schermo",
+    "plein ecran"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Plein écran",
+      "Full screen",
+      "Schermo intero",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Plein écran"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Plein écran",
+      "Full screen",
+      "Schermo intero",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide"
+     ],
+     "label": "Plein écran"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:0",
+   "area": "settings/node-style",
+   "iid": "tree-metadata-select",
+   "type": "select",
+   "label": "Colorez par",
+   "terms": [
+    "Colorez par",
+    "Color by",
+    "Colora per",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par",
+    "colori per",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par",
+    "colori per"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:2",
+   "area": "settings/node-style",
+   "iid": "tree-show-node-labels",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "etichette nodi",
+    "etichette dei nodi",
+    "node labels",
+    "labels",
+    "etichette",
+    "nomi dei nodi",
+    "etiquettes des noeuds",
+    "etiquettes",
+    "etichette nodi",
+    "etichette dei nodi",
+    "node labels",
+    "labels",
+    "etichette",
+    "nomi dei nodi",
+    "etiquettes des noeuds",
+    "etiquettes"
+   ],
+   "options": [
+    {
+     "value": "shown",
+     "terms": [
+      "shown",
+      "Affichez les étiquettes",
+      "Show labels",
+      "Mostra etichette"
+     ],
+     "label": "Affichez les étiquettes"
+    },
+    {
+     "value": "hidden",
+     "terms": [
+      "hidden",
+      "Masquez les étiquettes",
+      "Hide labels",
+      "Nascondi etichette"
+     ],
+     "label": "Masquez les étiquettes"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:3",
+   "area": "settings/node-style",
+   "iid": "tree-node-label-text",
+   "type": "select",
+   "label": "Étiquettes",
+   "terms": [
+    "Étiquettes",
+    "Labels",
+    "Etichette",
+    "testo etichette",
+    "label text",
+    "etichetta per",
+    "usa come etichetta",
+    "label by",
+    "etichette con",
+    "texte des etiquettes",
+    "testo etichette",
+    "label text",
+    "etichetta per",
+    "usa come etichetta",
+    "label by",
+    "etichette con",
+    "texte des etiquettes"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:5",
+   "area": "settings/node-style",
+   "iid": "tree-node-label-font-size",
+   "type": "number",
+   "label": "Taille de police",
+   "terms": [
+    "Taille de police",
+    "Font size",
+    "Dimensione carattere",
+    "dimensione font etichette",
+    "font etichette nodi",
+    "grandezza testo etichette",
+    "dimensione testo nodi",
+    "node label font size",
+    "label size",
+    "taille police etiquettes"
+   ],
+   "options": [],
+   "min": 5,
+   "max": 55,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:6",
+   "area": "settings/node-style",
+   "iid": "tree-highlight-labels",
+   "type": "search",
+   "label": "Mettez en surbrillance les étiquettes",
+   "terms": [
+    "Mettez en surbrillance les étiquettes",
+    "Highlight labels",
+    "Evidenzia etichette",
+    "evidenzia etichetta",
+    "evidenzia",
+    "highlight",
+    "cerca",
+    "trova",
+    "search",
+    "find",
+    "surligner",
+    "chercher",
+    "evidenzia etichetta",
+    "evidenzia",
+    "highlight",
+    "cerca",
+    "trova",
+    "search",
+    "find",
+    "surligner",
+    "chercher"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:8",
+   "area": "settings/node-style",
+   "iid": "tree-show-individual-segments",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "segmenti individuali",
+    "individual segments",
+    "segmenti",
+    "spicchi",
+    "pie segments",
+    "segments",
+    "segmenti individuali",
+    "individual segments",
+    "segmenti",
+    "spicchi",
+    "pie segments",
+    "segments"
+   ],
+   "options": [
+    {
+     "value": "shown",
+     "terms": [
+      "shown",
+      "Segments individuels",
+      "Individual segments",
+      "Segmenti individuali"
+     ],
+     "label": "Segments individuels"
+    },
+    {
+     "value": "hidden",
+     "terms": [
+      "hidden",
+      "Segments individuels",
+      "Individual segments",
+      "Segmenti individuali"
+     ],
+     "label": "Segments individuels"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-size:1",
+   "area": "settings/node-size",
+   "iid": "tree-node-radius-size",
+   "type": "number",
+   "label": "Taille du rayon (%)",
+   "terms": [
+    "Taille du rayon (%)",
+    "Radius size (%)",
+    "Dimensione raggio (%)",
+    "nodi piu grandi",
+    "nodi piu piccoli",
+    "nodi grandi",
+    "nodi piccoli",
+    "bigger nodes",
+    "smaller nodes",
+    "larger nodes",
+    "dimensione nodi",
+    "grandezza nodi",
+    "raggio nodi",
+    "node size",
+    "node radius",
+    "nodes size",
+    "taille des noeuds",
+    "nodi"
+   ],
+   "options": [],
+   "min": 20,
+   "max": 500,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-size:3",
+   "area": "settings/node-size",
+   "iid": "tree-node-kurtosis",
+   "type": "number",
+   "label": "Kurtose (%)",
+   "terms": [
+    "Kurtose (%)",
+    "Kurtosis (%)",
+    "Curtosi (%)",
+    "curtosi",
+    "kurtosis",
+    "kurtosi",
+    "kurtose"
+   ],
+   "options": [],
+   "min": 30,
+   "max": 150,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:0",
+   "area": "settings/branch-style",
+   "iid": "tree-show-branch-labels",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "etichette rami",
+    "etichette dei rami",
+    "branch labels",
+    "distanze sui rami",
+    "etiquettes des branches",
+    "etichette rami",
+    "etichette dei rami",
+    "branch labels",
+    "distanze sui rami",
+    "etiquettes des branches"
+   ],
+   "options": [
+    {
+     "value": "shown",
+     "terms": [
+      "shown",
+      "Affichez les étiquettes",
+      "Show labels",
+      "Mostra etichette"
+     ],
+     "label": "Affichez les étiquettes"
+    },
+    {
+     "value": "hidden",
+     "terms": [
+      "hidden",
+      "Masquez les étiquettes",
+      "Hide labels",
+      "Nascondi etichette"
+     ],
+     "label": "Masquez les étiquettes"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:2",
+   "area": "settings/branch-style",
+   "iid": "tree-branch-label-font-size",
+   "type": "number",
+   "label": "Taille de police",
+   "terms": [
+    "Taille de police",
+    "Font size",
+    "Dimensione carattere",
+    "font etichette rami",
+    "dimensione testo rami",
+    "branch label font size",
+    "branch font",
+    "taille police branches"
+   ],
+   "options": [],
+   "min": 5,
+   "max": 55,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:5",
+   "area": "settings/branch-style",
+   "iid": "tree-branch-scaling",
+   "type": "number",
+   "label": "Ajustement à l'échelle (%)",
+   "terms": [
+    "Ajustement à l'échelle (%)",
+    "Scaling (%)",
+    "Adattamento in scala (%)",
+    "scala rami",
+    "scaling rami",
+    "lunghezza rami",
+    "branch scaling",
+    "branch length scale",
+    "allunga rami",
+    "echelle des branches",
+    "rami"
+   ],
+   "options": [],
+   "min": 5,
+   "max": 200,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:7",
+   "area": "settings/branch-style",
+   "iid": "tree-collapse-branches",
+   "type": "number",
+   "label": "Repliez les branches",
+   "terms": [
+    "Repliez les branches",
+    "Collapse branches",
+    "Comprimi rami",
+    "collassa rami",
+    "collapse branches",
+    "collassa sotto",
+    "soglia collasso",
+    "raggruppa nodi entro",
+    "collapse threshold",
+    "replier les branches",
+    "collassa a distanza",
+    "collassa"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:9",
+   "area": "settings/branch-style",
+   "iid": "tree-branch-toggle-log-scale",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "scala logaritmica",
+    "logaritmica",
+    "log scale",
+    "logarithmic",
+    "log",
+    "echelle logarithmique",
+    "scala logaritmica",
+    "logaritmica",
+    "log scale",
+    "logarithmic",
+    "log",
+    "echelle logarithmique"
+   ],
+   "options": [
+    {
+     "value": "active",
+     "terms": [
+      "active",
+      "Échelle logarithmique",
+      "Log scale",
+      "Scala logaritmica"
+     ],
+     "label": "Échelle logarithmique"
+    },
+    {
+     "value": "not-active",
+     "terms": [
+      "not active",
+      "Échelle logarithmique",
+      "Log scale",
+      "Scala logaritmica"
+     ],
+     "label": "Échelle logarithmique"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-cutoffs:0",
+   "area": "settings/branch-cutoffs",
+   "iid": "tree-branch-length",
+   "type": "number",
+   "label": "Coupez les branches plus longues que",
+   "terms": [
+    "Coupez les branches plus longues que",
+    "Cut off branches longer than",
+    "Taglia rami più lunghi di",
+    "taglia rami",
+    "rami piu lunghi di",
+    "cutoff",
+    "cut off",
+    "soglia rami lunghi",
+    "long branches",
+    "branches longues",
+    "rami lunghi",
+    "taglia rami",
+    "rami piu lunghi di",
+    "cutoff",
+    "cut off",
+    "soglia rami lunghi",
+    "long branches",
+    "branches longues",
+    "rami lunghi"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-cutoffs:1",
+   "area": "settings/branch-cutoffs",
+   "iid": "tree-branch-length-method",
+   "type": "radio",
+   "label": "",
+   "terms": [
+    "metodo rami lunghi",
+    "long branch method",
+    "rami lunghi",
+    "long branches",
+    "branches longues",
+    "metodo rami lunghi",
+    "long branch method",
+    "rami lunghi",
+    "long branches",
+    "branches longues"
+   ],
+   "options": [
+    {
+     "value": "display",
+     "terms": [
+      "display",
+      "Affichez",
+      "Display",
+      "Mostra",
+      "mostra",
+      "visualizza",
+      "display",
+      "affiche",
+      "lascia"
+     ],
+     "label": "Affichez"
+    },
+    {
+     "value": "hide",
+     "terms": [
+      "hide",
+      "Masquez",
+      "Hide",
+      "Nascondi",
+      "nascondi",
+      "hide",
+      "masque",
+      "togli"
+     ],
+     "label": "Masquez"
+    },
+    {
+     "value": "cap",
+     "terms": [
+      "cap",
+      "Raccourcissez",
+      "Shorten",
+      "Riduci",
+      "tronca",
+      "limita",
+      "cap",
+      "taglia",
+      "plafonne",
+      "accorcia"
+     ],
+     "label": "Raccourcissez"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:0",
+   "area": "settings/rendering",
+   "iid": "tree-rendering-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "rendering",
+    "disegno",
+    "modalita rendering",
+    "layout albero",
+    "rendu",
+    "disposizione",
+    "rendering",
+    "disegno",
+    "modalita rendering",
+    "layout albero",
+    "rendu",
+    "disposizione"
+   ],
+   "options": [
+    {
+     "value": "static",
+     "terms": [
+      "static",
+      "Statique",
+      "Static",
+      "Statico",
+      "statico",
+      "statica",
+      "static",
+      "statique",
+      "fermo"
+     ],
+     "label": "Statique"
+    },
+    {
+     "value": "dynamic",
+     "terms": [
+      "dynamic",
+      "Dynamique",
+      "Dynamic",
+      "Dinamico",
+      "dinamico",
+      "dinamica",
+      "dynamic",
+      "dynamique",
+      "force",
+      "animato"
+     ],
+     "label": "Dynamique"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:2",
+   "area": "settings/rendering",
+   "iid": "tree-rendering-dynamic-selected-only",
+   "type": "radio",
+   "label": "",
+   "terms": [
+    "rendering dinamico solo selezionati",
+    "dynamic selected only",
+    "dinamico selezionati",
+    "rendering dinamico solo selezionati",
+    "dynamic selected only",
+    "dinamico selezionati"
+   ],
+   "options": [
+    {
+     "value": "selected_only",
+     "terms": [
+      "selected only",
+      "Seulement les sélectionnés",
+      "Selected only",
+      "Solo selezionati",
+      "solo selezionati",
+      "selected only",
+      "only selected",
+      "seulement selectionnes"
+     ],
+     "label": "Seulement les sélectionnés"
+    },
+    {
+     "value": "all",
+     "terms": [
+      "all",
+      "Tous",
+      "All",
+      "Tutti",
+      "tutti",
+      "tutto",
+      "all",
+      "tous"
+     ],
+     "label": "Tous"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:3",
+   "area": "settings/rendering",
+   "iid": "tree-rendering-static-real-branch-length",
+   "type": "radio",
+   "label": "",
+   "terms": [
+    "lunghezza reale rami",
+    "real branch length",
+    "lunghezze reali",
+    "longueur reelle",
+    "lunghezza reale rami",
+    "real branch length",
+    "lunghezze reali",
+    "longueur reelle"
+   ],
+   "options": [
+    {
+     "value": "unreal",
+     "terms": [
+      "unreal",
+      "Longueur de la branche non réelle",
+      "Unreal branch length",
+      "Lunghezza del ramo non reale",
+      "non reale",
+      "non reali",
+      "proporzionale",
+      "unreal",
+      "fittizia"
+     ],
+     "label": "Longueur de la branche non réelle"
+    },
+    {
+     "value": "real",
+     "terms": [
+      "real",
+      "Longueur de la branche réelle",
+      "Real branch length",
+      "Lunghezza del ramo reale",
+      "reale",
+      "reali",
+      "real",
+      "reelle"
+     ],
+     "label": "Longueur de la branche réelle"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "macro:0",
+   "area": "macro",
+   "iid": null,
+   "type": "macro",
+   "label": "Échelle logarithmique en base 10",
+   "terms": [
+    "Échelle logarithmique en base 10"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "macro:1",
+   "area": "macro",
+   "iid": null,
+   "type": "macro",
+   "label": "Préréglage espace-temps",
+   "terms": [
+    "Préréglage espace-temps"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  }
+ ],
+ "rows": [
+  {
+   "ID": "IT-001",
+   "lineage": "ST-10",
+   "region": "Lazio",
+   "province": "Roma",
+   "outcome": "positive",
+   "sampling_date": "2026-01-05",
+   "latitude": "41.9028",
+   "longitude": "12.4964",
+   "cluster": "A",
+   "__Node": "IT-001"
+  },
+  {
+   "ID": "IT-002",
+   "lineage": "ST-10",
+   "region": "Lazio",
+   "province": "Roma",
+   "outcome": "positive",
+   "sampling_date": "2026-01-07",
+   "latitude": "41.9028",
+   "longitude": "12.4964",
+   "cluster": "A",
+   "__Node": "IT-002"
+  },
+  {
+   "ID": "IT-003",
+   "lineage": "ST-12",
+   "region": "Lombardia",
+   "province": "Milano",
+   "outcome": "negative",
+   "sampling_date": "2026-01-12",
+   "latitude": "45.4642",
+   "longitude": "9.1900",
+   "cluster": "B",
+   "__Node": "IT-003"
+  },
+  {
+   "ID": "IT-004",
+   "lineage": "ST-12",
+   "region": "Lombardia",
+   "province": "Milano",
+   "outcome": "positive",
+   "sampling_date": "2026-01-14",
+   "latitude": "45.4642",
+   "longitude": "9.1900",
+   "cluster": "B",
+   "__Node": "IT-004"
+  },
+  {
+   "ID": "IT-005",
+   "lineage": "ST-15",
+   "region": "Emilia-Romagna",
+   "province": "Bologna",
+   "outcome": "positive",
+   "sampling_date": "2026-01-19",
+   "latitude": "44.4949",
+   "longitude": "11.3426",
+   "cluster": "C",
+   "__Node": "IT-005"
+  },
+  {
+   "ID": "IT-006",
+   "lineage": "ST-15",
+   "region": "Veneto",
+   "province": "Padova",
+   "outcome": "negative",
+   "sampling_date": "2026-01-22",
+   "latitude": "45.4064",
+   "longitude": "11.8768",
+   "cluster": "C",
+   "__Node": "IT-006"
+  },
+  {
+   "ID": "IT-007",
+   "lineage": "ST-18",
+   "region": "Toscana",
+   "province": "Firenze",
+   "outcome": "positive",
+   "sampling_date": "2026-01-27",
+   "latitude": "43.7696",
+   "longitude": "11.2558",
+   "cluster": "D",
+   "__Node": "IT-007"
+  },
+  {
+   "ID": "IT-008",
+   "lineage": "ST-18",
+   "region": "Toscana",
+   "province": "Firenze",
+   "outcome": "positive",
+   "sampling_date": "2026-01-30",
+   "latitude": "43.7696",
+   "longitude": "11.2558",
+   "cluster": "D",
+   "__Node": "IT-008"
+  }
+ ],
+ "displayCategory": "lineage",
+ "protectedColumns": [
+  "ID",
+  "CMP",
+  "nothing",
+  "__Node",
+  "ID"
+ ]
+}

@@ -1,18 +1,128 @@
-.spread-assistant-launcher { appearance: none; background: var(--secondary, #1f6f8b); border: 0; border-radius: 50%; bottom: 1.5rem; color: #fff; cursor: pointer; height: 3.5rem; pointer-events: auto; position: fixed; right: 1.5rem; width: 3.5rem; z-index: 2147483647; }
-.spread-assistant { background: #fff; border: 1px solid #d5dce2; border-radius: .75rem; bottom: 5.75rem; box-shadow: 0 .75rem 2rem rgba(26, 42, 57, .22); display: flex; flex-direction: column; max-height: min(42rem, calc(100vh - 7rem)); position: fixed; right: 1.5rem; width: min(26rem, calc(100vw - 2rem)); z-index: 1200; }
+/* SPREAD local assistant panel, styled like SPREAD's own cards (white,
+   2.4rem radius, soft shadow, Titillium, --main accents) and using SPREAD's
+   native .button / .button-secondary for actions.  Sizes are px from a fixed
+   base because SPREAD scales the root font size.  The panel floats: drag it
+   by the header, resize it from the bottom-right corner. */
+
+.spread-assistant-launcher {
+  align-items: center; appearance: none; background: var(--main, #0066cc); border: 0; border-radius: 50%;
+  bottom: 24px; box-shadow: 0 0 34px rgba(0, 0, 0, .16); color: var(--white, #fff); cursor: pointer; display: flex;
+  font-size: 24px; height: 56px; justify-content: center; line-height: 1; padding: 0; pointer-events: auto; position: fixed;
+  right: 24px; transition: background .2s ease; width: 56px; z-index: 2147483647;
+}
+.spread-assistant-launcher:hover, .spread-assistant-launcher:focus { background: var(--light, #408ad5); }
+.spread-assistant-launcher[aria-expanded="true"] { display: none; }
+
+.spread-assistant {
+  background: var(--white, #fff); border-radius: 24px; box-shadow: 0 0 34px rgba(0, 0, 0, .14); color: var(--text, #17324d);
+  display: flex; flex-direction: column; font-family: var(--font-family, 'Titillium', sans-serif); font-size: 14px;
+  height: 560px; max-height: calc(100vh - 16px); max-width: calc(100vw - 16px); min-height: 320px; min-width: 300px;
+  overflow: hidden; position: fixed; resize: both; width: 380px; z-index: 1200;
+}
 .spread-assistant[hidden] { display: none; }
-.spread-assistant__header { align-items: center; border-bottom: 1px solid #e5e9ed; display: flex; gap: .5rem; padding: .8rem 1rem; }
-.spread-assistant__header h2 { font-size: 1rem; margin: 0 auto 0 0; }
-.spread-assistant__status { color: #607080; font-size: .75rem; padding: .4rem 1rem; }
-.spread-assistant__messages { display: flex; flex: 1; flex-direction: column; gap: .75rem; min-height: 12rem; overflow-y: auto; padding: 1rem; }
-.spread-assistant__message { border-radius: .6rem; font-size: .9rem; line-height: 1.35; max-width: 92%; padding: .65rem .75rem; white-space: pre-wrap; }
-.spread-assistant__message--user { align-self: flex-end; background: #e8f1f5; }
-.spread-assistant__message--assistant { align-self: flex-start; background: #f1f3f5; }
-.spread-assistant__plan { border-top: 1px solid #e5e9ed; padding: .75rem 1rem; }
-.spread-assistant__plan p { font-size: .8rem; margin: 0 0 .5rem; }
-.spread-assistant__actions { display: flex; gap: .5rem; }
-.spread-assistant__form { border-top: 1px solid #e5e9ed; display: flex; gap: .5rem; padding: .75rem; }
-.spread-assistant__form textarea { min-height: 2.5rem; resize: vertical; }
-.spread-assistant button { cursor: pointer; }
-.spread-assistant__model { border: 0; color: inherit; font-size: .75rem; max-width: 9rem; }
-@media (max-width: 560px) { .spread-assistant { bottom: 0; max-height: 80vh; right: 0; width: 100vw; } .spread-assistant-launcher { bottom: 1rem; right: 1rem; } }
+.spread-assistant.is-dragging { opacity: .92; user-select: none; }
+.spread-assistant button, .spread-assistant select, .spread-assistant textarea { font-family: inherit; letter-spacing: normal; }
+
+/* Header (drag handle) */
+.spread-assistant__header {
+  align-items: center; border-bottom: 1px solid var(--secondary-light, #e6e9f2); cursor: move; display: flex; flex: none;
+  gap: 10px; padding: 14px 14px 12px 16px; touch-action: none;
+}
+.spread-assistant__avatar {
+  align-items: center; background: var(--secondary-ultra-light, #f2f5ff); border-radius: 12px; color: var(--main, #0066cc);
+  display: flex; flex: none; font-size: 18px; height: 34px; justify-content: center; width: 34px;
+}
+.spread-assistant__heading { flex: 1; min-width: 0; }
+.spread-assistant__heading h2 { color: var(--text, #17324d); font-size: 16px; font-weight: 600; line-height: 1.2; margin: 0; }
+.spread-assistant__status { color: var(--secondary-dark, #919399); font-size: 12px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spread-assistant .spread-assistant__model {
+  background: var(--secondary-ultra-light, #f2f5ff); border: 0; border-radius: 8px; color: var(--main, #0066cc); cursor: pointer;
+  font-size: 12px; font-weight: 600; height: 28px; line-height: 28px; margin: 0; max-width: 110px; padding: 0 6px; width: auto;
+}
+.spread-assistant .spread-assistant__close {
+  align-items: center; background: var(--secondary-ultra-light, #f2f5ff); border: 0; border-radius: 10px; color: var(--main, #0066cc);
+  cursor: pointer; display: flex; flex: none; font-size: 18px; font-weight: 400; height: 30px; justify-content: center; line-height: 1;
+  margin: 0; padding: 0; width: 30px;
+}
+.spread-assistant .spread-assistant__close:hover, .spread-assistant .spread-assistant__close:focus { background: var(--ultra-light, #dbe7ed); color: var(--main, #0066cc); }
+
+/* Conversation */
+.spread-assistant__messages { display: flex; flex: 1; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; padding: 16px; }
+.spread-assistant__message { border-radius: 15px; font-size: 14px; line-height: 1.45; max-width: 88%; overflow-wrap: anywhere; padding: 9px 13px; white-space: pre-wrap; }
+.spread-assistant__message--user { align-self: flex-end; background: var(--main, #0066cc); border-bottom-right-radius: 4px; color: var(--white, #fff); }
+.spread-assistant__message--assistant { align-self: flex-start; background: var(--secondary-ultra-light, #f2f5ff); border-bottom-left-radius: 4px; }
+.spread-assistant__message--success { box-shadow: inset 3px 0 0 var(--accent, #39beba); }
+.spread-assistant__message--warning { box-shadow: inset 3px 0 0 var(--red, #f83e5a); }
+
+.spread-assistant__examples { display: flex; flex-direction: column; gap: 6px; }
+.spread-assistant__examples-title { color: var(--secondary-dark, #919399); font-size: 12px; margin-top: 2px; }
+.spread-assistant .spread-assistant__chip {
+  background: var(--white, #fff); border: 1px solid var(--ultra-light, #dbe7ed); border-radius: 10px; color: var(--main, #0066cc);
+  cursor: pointer; font-size: 13px; font-weight: 400; height: auto; line-height: 1.35; margin: 0; overflow-wrap: anywhere; padding: 7px 11px; text-align: left; white-space: normal; width: 100%;
+}
+.spread-assistant .spread-assistant__chip:hover, .spread-assistant .spread-assistant__chip:focus { background: var(--secondary-ultra-light, #f2f5ff); border-color: var(--light, #408ad5); color: var(--main, #0066cc); }
+
+/* Plan awaiting confirmation */
+.spread-assistant__plan { flex: none; padding: 0 16px 12px; }
+.spread-assistant__plan-box { background: var(--secondary-ultra-light, #f2f5ff); border-radius: 15px; padding: 12px 14px; }
+.spread-assistant__plan-title { color: var(--secondary-darker, #555659); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.spread-assistant__plan ol { counter-reset: step; list-style: none; margin: 0 0 10px; max-height: 150px; overflow-y: auto; padding: 0; }
+.spread-assistant__plan li { counter-increment: step; font-size: 13px; line-height: 1.4; margin: 0; padding: 3px 0 3px 28px; position: relative; }
+.spread-assistant__plan li::before {
+  align-items: center; background: var(--main, #0066cc); border-radius: 50%; color: var(--white, #fff); content: counter(step);
+  display: flex; font-size: 11px; font-weight: 600; height: 19px; justify-content: center; left: 0; position: absolute; top: 3px; width: 19px;
+}
+.spread-assistant__actions { display: flex; gap: 8px; }
+.spread-assistant__actions .button { flex: 1; font-size: 14px; line-height: 36px; margin: 0; padding: 0 12px; }
+
+/* Composer */
+.spread-assistant__form { align-items: flex-end; border-top: 1px solid var(--secondary-light, #e6e9f2); display: flex; flex: none; gap: 8px; padding: 12px 14px 14px; }
+.spread-assistant .spread-assistant__form textarea {
+  background: var(--secondary-ultra-light, #f2f5ff); border: 1px solid transparent; border-radius: 13px; box-sizing: border-box;
+  color: var(--text, #17324d); flex: 1; font-size: 14px; font-weight: 400; height: 42px; line-height: 1.35; margin: 0; max-height: 140px;
+  min-height: 42px; outline: none; padding: 10px 12px; resize: none;
+}
+.spread-assistant .spread-assistant__form textarea:focus { background: var(--white, #fff); border-color: var(--light, #408ad5); }
+.spread-assistant .spread-assistant__send {
+  align-items: center; background: var(--main, #0066cc); border: 0; border-radius: 13px; color: var(--white, #fff); cursor: pointer;
+  display: flex; flex: none; font-size: 17px; height: 42px; justify-content: center; line-height: 1; margin: 0; padding: 0; width: 42px;
+}
+.spread-assistant .spread-assistant__send:hover, .spread-assistant .spread-assistant__send:focus { background: var(--light, #408ad5); color: var(--white, #fff); }
+
+@media (max-width: 560px) {
+  .spread-assistant { border-radius: 24px 24px 0 0; bottom: 0 !important; height: 85vh !important; left: 0 !important; resize: none; right: auto; top: auto !important; width: 100vw !important; }
+  .spread-assistant__header { cursor: default; }
+  .spread-assistant-launcher { bottom: 16px; right: 16px; }
+}
+
+/* Auto-apply switch and update notice */
+.spread-assistant__auto { align-items: center; color: var(--secondary-darker, #555659); cursor: pointer; display: flex; flex: none; font-size: 12px; font-weight: 400; gap: 6px; line-height: 1.3; margin: -6px 0 0; padding: 0 16px 12px; }
+.spread-assistant__auto input { accent-color: var(--main, #0066cc); height: 14px; margin: 0; width: 14px; }
+.spread-assistant__update { align-items: center; background: var(--secondary-ultra-light, #f2f5ff); border-radius: 13px; display: flex; flex: none; font-size: 13px; gap: 10px; justify-content: space-between; margin: 0 16px 10px; padding: 8px 10px 8px 14px; }
+.spread-assistant__update[hidden] { display: none; }
+.spread-assistant__update .button { font-size: 13px; line-height: 30px; margin: 0; padding: 0 12px; }
+.spread-assistant-launcher.has-update::after { background: var(--red, #f83e5a); border: 2px solid var(--white, #fff); border-radius: 50%; content: ''; height: 12px; position: absolute; right: 4px; top: 4px; width: 12px; }
+
+/* Centre the icon glyph exactly (the icon font has its own baseline). */
+.spread-assistant-launcher i, .spread-assistant__avatar i, .spread-assistant__send i { display: block; height: 1em; line-height: 1; width: 1em; }
+.spread-assistant-launcher i::before, .spread-assistant__avatar i::before, .spread-assistant__send i::before { display: block; line-height: 1; }
+
+/* Header icon buttons */
+.spread-assistant .spread-assistant__icon {
+  align-items: center; background: var(--secondary-ultra-light, #f2f5ff); border: 0; border-radius: 10px; color: var(--main, #0066cc);
+  cursor: pointer; display: flex; flex: none; font-size: 16px; height: 30px; justify-content: center; line-height: 1; margin: 0; padding: 0; width: 30px;
+}
+.spread-assistant .spread-assistant__icon:hover, .spread-assistant .spread-assistant__icon:focus { background: var(--ultra-light, #dbe7ed); color: var(--main, #0066cc); }
+.spread-assistant__icon i { display: block; height: 1em; line-height: 1; width: 1em; }
+.spread-assistant__icon i::before { display: block; line-height: 1; }
+
+/* Docked side panel: SPREAD's page makes room on the right. */
+.spread-assistant__edge { display: none; }
+.spread-assistant.is-docked {
+  border-radius: 24px 0 0 24px; bottom: 0; height: 100vh !important; left: auto !important; max-height: none; max-width: none;
+  resize: none; right: 0; top: 0 !important; width: var(--spread-assistant-width, 380px) !important;
+}
+.spread-assistant.is-docked .spread-assistant__header { cursor: default; }
+.spread-assistant.is-docked .spread-assistant__edge { bottom: 0; cursor: ew-resize; display: block; left: 0; position: absolute; top: 0; width: 6px; z-index: 2; }
+.spread-assistant.is-docked .spread-assistant__edge:hover { background: var(--ultra-light, #dbe7ed); }
+html.spread-assistant-docked body > header, html.spread-assistant-docked body > main, html.spread-assistant-docked body > footer { margin-right: var(--spread-assistant-width, 380px); }
