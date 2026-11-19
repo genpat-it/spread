@@ -109,6 +109,10 @@ Example commands:
 * `Play the timeline` and `Pause the timeline` control playback.
 * `Set the timeline speed to 1.5x` changes the speed while playback is paused.
 * `Seek the timeline to 50%` moves the timeline slider to its midpoint.
+* `Zoom the map by 2x` changes the current map scale. `Set the map zoom level to 8`
+  sets an absolute Leaflet zoom level.
+* `Center the map at 42.66, 13.70` pans to a latitude and longitude.
+* `Fit the map to all markers` frames the loaded geographic data.
 
 ## Instruction to run it locally
 

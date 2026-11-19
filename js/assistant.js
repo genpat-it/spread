@@ -104,6 +104,43 @@ function registerVideoPlayer() {
   }
 }
 
+function registerMapViewport() {
+  if (typeof gtiz_map === 'undefined' || !gtiz_map.initialized) return;
+  const leaflet = window.map;
+  if (!leaflet || typeof leaflet.getZoom !== 'function') return;
+  const controls = [
+    ['zoom', {
+      type: 'number',
+      label: 'Map zoom factor / Fattore di zoom della mappa / Facteur de zoom de la carte',
+      min: 0.1,
+      max: 10,
+      function: (factor) => leaflet.setZoom(leaflet.getScaleZoom(factor), { animate: false })
+    }],
+    ['level', {
+      type: 'number',
+      label: 'Map zoom level / Livello di zoom della mappa / Niveau de zoom de la carte',
+      min: leaflet.getMinZoom(),
+      max: leaflet.getMaxZoom(),
+      function: (level) => leaflet.setZoom(level, { animate: false })
+    }],
+    ['center', {
+      type: 'assistant_map_coordinates',
+      label: 'Center map at coordinates / Centra la mappa alle coordinate / Centrer la carte aux coordonnées',
+      function: ({ latitude, longitude }) => leaflet.panTo([latitude, longitude], { animate: false })
+    }]
+  ];
+  const markerBounds = window.pointLayer?.getBounds();
+  if (markerBounds?.isValid()) controls.push(['fit', {
+    type: 'abutton',
+    label: 'Fit map to all markers / Inquadra tutti i marcatori / Afficher tous les marqueurs',
+    function: () => leaflet.fitBounds(markerBounds, { padding: [21, 21], animate: false })
+  }]);
+  for (const [control, item] of controls) {
+    const id = 'map-view:' + control;
+    actionRegistry.set(id, { id, area: 'map', item });
+  }
+}
+
 function refreshRegistry() {
   actionRegistry = new Map();
   if (typeof gtiz_tree !== 'undefined') {
@@ -164,6 +201,7 @@ function refreshRegistry() {
   }
   if (typeof gtiz_legend !== 'undefined') registerMenu('legend', gtiz_legend.context_menu);
   if (typeof gtiz_map !== 'undefined') registerMenu('map', gtiz_map.context_menu);
+  registerMapViewport();
   if (typeof gtiz_video !== 'undefined') registerMenu('video', gtiz_video.context_menu);
   registerVideoPlayer();
   if (typeof gtiz_zooms !== 'undefined') {
@@ -275,6 +313,7 @@ function compactState(request) {
     if (Number.isFinite(item.max)) tuple.push(item.max);
     if (item.type === 'assistant_metadata_replace_all') tuple.push('$columns + replacement text');
     if (item.type === 'assistant_node_colour') tuple.push('$columns + group value or sample ID + CSS hex colour');
+    if (item.type === 'assistant_map_coordinates') tuple.push({ latitude: 'number [-90, 90]', longitude: 'number [-180, 180]' });
     return tuple;
   });
   return {
@@ -320,6 +359,14 @@ function namedColourCommand(request, tree) {
 }
 
 function validate(item, value) {
+  if (item.type === 'assistant_map_coordinates') {
+    const { latitude, longitude } = value || {};
+    if (!Number.isFinite(latitude) || Math.abs(latitude) > 90 ||
+        !Number.isFinite(longitude) || Math.abs(longitude) > 180) {
+      throw new Error('Expected valid latitude and longitude in decimal degrees.');
+    }
+    return { latitude, longitude };
+  }
   if (item.type === 'assistant_node_colour') {
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Servono ID del campione e colore.');
     const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
@@ -398,7 +445,8 @@ function showPlan(panel, actions) {
     const label = labelOf(actionRegistry.get(action.id).item);
     if (action.value === undefined) return label;
     if (action.value && typeof action.value === 'object') {
-      const { category, id, colour, value } = action.value;
+      const { category, id, colour, value, latitude, longitude } = action.value;
+      if (latitude !== undefined) return `${label}: ${latitude}, ${longitude}`;
       return id === undefined ? `${label}: ${category} = ${value}` : `${label}: ${category || 'ID'} / ${id} = ${colour}`;
     }
     return `${label} = ${action.value}`;
@@ -449,7 +497,9 @@ function mandatoryActions(request) {
   const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
   const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
   let handledLogScale = false;
-  if (/\b(zoom|zooma|zoomare|ingrandisci|ingrandire|riduci|ridurre)\b/.test(normalizedRequest)) {
+  const refersOnlyToMap = /\b(map|mappa|carte)\b/.test(normalizedRequest) &&
+    !/\b(tree|mst|albero|arbre)\b/.test(normalizedRequest);
+  if (!refersOnlyToMap && /\b(zoom|zooma|zoomare|ingrandisci|ingrandire|riduci|ridurre)\b/.test(normalizedRequest)) {
     const entry = actionRegistry.get('assistant:tree-zoom');
     const amount = request.match(/\b(\d+(?:[,.]\d+)?)\s*(?:x|volte|times)?\b/i);
     if (entry && amount) {
@@ -458,7 +508,7 @@ function mandatoryActions(request) {
       if (Number.isFinite(factor) && factor >= entry.item.min && factor <= entry.item.max) result.push({ id: entry.id, value: factor });
     }
   }
-  if (/\b(ricentra|ricentrare|centra|centrare|recenter|center|centre)\b/.test(normalizedRequest)) {
+  if (!refersOnlyToMap && /\b(ricentra|ricentrare|centra|centrare|recenter|center|centre)\b/.test(normalizedRequest)) {
     const entry = [...actionRegistry.values()].find(({ item }) => /\b(centra|center|centre)\b/.test(normalizeTerms(labelOf(item))) && item.type === 'abutton');
     if (entry) result.push({ id: entry.id });
   }
@@ -593,6 +643,20 @@ function videoCommand(request) {
   return null;
 }
 
+function mapCommand(request) {
+  const words = normalizeTerms(request);
+  if (/^(?:fit (?:the )?map to all markers|inquadra tutti i marcatori|ricentra (?:la )?mappa)$/.test(words)) return { id: 'map-view:fit' };
+  const factor = request.match(/^(?:zoom(?:a)? (?:the |la )?(?:map|mappa)(?: by)?|zoom (in|out) on (?:the )?map) (\d+(?:[.,]\d+)?)\s*x[.!]?$/i);
+  if (factor) {
+    const value = Number(factor[2].replace(',', '.'));
+    return { id: 'map-view:zoom', value: factor[1]?.toLowerCase() === 'out' ? 1 / value : value };
+  }
+  const level = request.match(/^(?:set (?:the )?map zoom (?:level )?to|imposta lo zoom della mappa a) (\d+(?:[.,]\d+)?)[.!]?$/i);
+  if (level) return { id: 'map-view:level', value: Number(level[1].replace(',', '.')) };
+  const coordinates = request.match(/^(?:cent(?:er|re) (?:the )?map (?:at|on)|centra (?:la )?mappa a) (-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)[.!]?$/i);
+  return coordinates ? { id: 'map-view:center', value: { latitude: Number(coordinates[1]), longitude: Number(coordinates[2]) } } : null;
+}
+
 function submit(event, panel) {
   event.preventDefault();
   const input = event.currentTarget.querySelector('textarea');
@@ -610,13 +674,13 @@ function submit(event, panel) {
   }
   const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
   const colour = namedColourCommand(message, tree);
-  const video = videoCommand(message);
+  const directAction = videoCommand(message) || mapCommand(message);
   const exactCommand = /^(?:zoom(?:a)? \d+(?:[.,]\d+)?\s*x|(?:recenter|ricentra|centra)(?: (?:the |l albero |il )?(?:mst|tree))?|(?:close|open|chiudi|apri) (?:the |la )?(?:legend|legenda)|set all values in the .+ column to .+)[.!]?$/i;
-  if (colour || video || exactCommand.test(message)) {
+  if (colour || directAction || exactCommand.test(message)) {
     refreshRegistry();
     const actions = colour
       ? (colour.id && actionRegistry.has('assistant:node-colour') ? [{ id: 'assistant:node-colour', value: colour }] : [])
-      : (video ? [video] : mandatoryActions(message));
+      : (directAction ? [directAction] : mandatoryActions(message));
     if (actions.length === 1) {
       try {
         validate(actionRegistry.get(actions[0].id).item, actions[0].value);
