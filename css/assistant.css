@@ -1,0 +1,18 @@
+.spread-assistant-launcher { appearance: none; background: var(--secondary, #1f6f8b); border: 0; border-radius: 50%; bottom: 1.5rem; color: #fff; cursor: pointer; height: 3.5rem; pointer-events: auto; position: fixed; right: 1.5rem; width: 3.5rem; z-index: 2147483647; }
+.spread-assistant { background: #fff; border: 1px solid #d5dce2; border-radius: .75rem; bottom: 5.75rem; box-shadow: 0 .75rem 2rem rgba(26, 42, 57, .22); display: flex; flex-direction: column; max-height: min(42rem, calc(100vh - 7rem)); position: fixed; right: 1.5rem; width: min(26rem, calc(100vw - 2rem)); z-index: 1200; }
+.spread-assistant[hidden] { display: none; }
+.spread-assistant__header { align-items: center; border-bottom: 1px solid #e5e9ed; display: flex; gap: .5rem; padding: .8rem 1rem; }
+.spread-assistant__header h2 { font-size: 1rem; margin: 0 auto 0 0; }
+.spread-assistant__status { color: #607080; font-size: .75rem; padding: .4rem 1rem; }
+.spread-assistant__messages { display: flex; flex: 1; flex-direction: column; gap: .75rem; min-height: 12rem; overflow-y: auto; padding: 1rem; }
+.spread-assistant__message { border-radius: .6rem; font-size: .9rem; line-height: 1.35; max-width: 92%; padding: .65rem .75rem; white-space: pre-wrap; }
+.spread-assistant__message--user { align-self: flex-end; background: #e8f1f5; }
+.spread-assistant__message--assistant { align-self: flex-start; background: #f1f3f5; }
+.spread-assistant__plan { border-top: 1px solid #e5e9ed; padding: .75rem 1rem; }
+.spread-assistant__plan p { font-size: .8rem; margin: 0 0 .5rem; }
+.spread-assistant__actions { display: flex; gap: .5rem; }
+.spread-assistant__form { border-top: 1px solid #e5e9ed; display: flex; gap: .5rem; padding: .75rem; }
+.spread-assistant__form textarea { min-height: 2.5rem; resize: vertical; }
+.spread-assistant button { cursor: pointer; }
+.spread-assistant__model { border: 0; color: inherit; font-size: .75rem; max-width: 9rem; }
+@media (max-width: 560px) { .spread-assistant { bottom: 0; max-height: 80vh; right: 0; width: 100vw; } .spread-assistant-launcher { bottom: 1rem; right: 1rem; } }

@@ -6,6 +6,7 @@ Previously known as GrapeTree Extended.
 
 - [Description](#description)
 - [Use SPREAD](#use-spread)
+- [Local browser assistant](#local-browser-assistant)
 - [Instruction to run it locally](#instruction-to-run-it-locally)
   - [Prerequisites](#prerequisites)
   - [Install and use live-server](#install-and-use-live-server)
@@ -45,6 +46,56 @@ You can download the project and easly running it locally, but we provide also a
 * [https://cohesive.izs.it/spread/](https://cohesive.izs.it/spread/)
 
 Please note, you can load sensitive data, your dataset is visualised client-side in the browser. No data is transmitted, and no tracking cookies are used. The only data downloaded from the internet are the visualisation (JavaScript) code, fonts and map tiles.
+
+## Local browser assistant
+
+This branch adds an optional chat assistant to SPREAD. It is deliberately
+isolated from the existing visualisation modules:
+
+* `js/assistant.js` is a validated bridge from natural-language requests to
+  SPREAD's existing menu actions and public tree APIs.
+* `js/assistant-worker.js` runs the language model in a Web Worker through
+  WebLLM; it has no access to the page DOM or to arbitrary JavaScript
+  execution.
+* `css/assistant.css` contains the assistant-only interface styles.
+
+The assistant is closed by default. Open it using **Assistente locale** at the
+bottom right, describe a change, inspect the proposed SPREAD actions and press
+**Applica**. Nothing changes until that explicit confirmation. On application,
+the same underlying SPREAD control/API used by the normal interface is called,
+so the visual interface updates immediately. For example, `zooma 2x` invokes
+the tree's native relative scale operation and doubles the current tree view.
+
+### Privacy and deployment
+
+There is no SPREAD backend or AI API endpoint. The model executes locally in
+the browser via WebGPU, and the assistant operates on the already-loaded
+client-side data. A normal static web server is still required to deliver the
+application files, just as for SPREAD without the assistant.
+
+On first use the browser downloads the selected open model and the WebLLM
+runtime; this can be several hundred MB and requires WebGPU support. Those
+files are normally cached by the browser. To deploy in a completely
+air-gapped environment, host the model/runtime assets locally and point the
+worker imports/model URLs at that local mirror. The application data are not
+sent to an AI server by this integration.
+
+### Action mapping
+
+At runtime the bridge builds its catalog from the live SPREAD configuration:
+tree, metadata, metadata cards, legend, map, video, ReporTree zooms, layout,
+settings cards and macros. Values are checked against the current options and
+loaded metadata columns before a plan can be shown. A few viewport operations,
+such as tree zoom, are public tree APIs rather than menu entries and are
+registered as bounded actions alongside the menu catalog. The model may only
+propose catalog actions; it cannot execute arbitrary code.
+
+The `datasets/assistant-demo/` tree and metadata provide a small local fixture
+for testing the assistant:
+
+```
+?tree=/datasets/assistant-demo/tree.nwk&metadata=/datasets/assistant-demo/metadata.tsv&longitude=longitude&latitude=latitude
+```
 
 ## Instruction to run it locally
 
