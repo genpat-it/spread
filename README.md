@@ -87,6 +87,8 @@ loaded metadata columns before a plan can be shown. A few viewport operations,
 such as tree zoom, are public tree APIs rather than menu entries and are
 registered as bounded actions alongside the menu catalog. The model may only
 propose catalog actions; it cannot execute arbitrary code.
+The assistant sends the catalog to the local model in pages ordered by
+relevance. When a page yields no valid action, it checks the next page.
 
 The `datasets/assistant-demo/` tree and metadata provide a small local fixture
 for testing the assistant:

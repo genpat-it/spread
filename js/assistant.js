@@ -20,6 +20,8 @@ let pendingActions = [];
 let lastProposedActions = [];
 let conversation = [];
 let requestId = 0;
+let catalogSearch;
+const ACTIONS_PER_PAGE = 24;
 
 function copy() {
   const code = typeof gtiz_locales !== 'undefined' ? gtiz_locales.getActiveLanguageCode() : 'en';
@@ -293,10 +295,7 @@ function candidateEntries(request) {
     });
     return { entry, score };
   });
-  const matches = scored.filter(({ score }) => score > 0).sort((left, right) => right.score - left.score).map(({ entry }) => entry);
-  // A request with unfamiliar wording still exposes everything rather than
-  // silently making a capability unavailable.
-  return matches.length ? matches.slice(0, 28) : [...actionRegistry.values()];
+  return scored.sort((left, right) => right.score - left.score).map(({ entry }) => entry);
 }
 
 function compactState(request) {
@@ -304,9 +303,9 @@ function compactState(request) {
   const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
   const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
   const sameValues = (left, right) => left.length === right.length && left.every((value, index) => String(value) === String(right[index]));
-  const actions = candidateEntries(request).map(({ id, item }) => {
+  const actions = candidateEntries(request).map(({ id, area, item }) => {
     const values = optionsOf(item).map((option) => option.value);
-    const tuple = [id, id.split(':')[0], String(labelOf(item)), item.type];
+    const tuple = [id, area, String(labelOf(item)), item.type];
     if (values.length) tuple.push(sameValues(values, columns) ? '$columns' : values);
     else if (Number.isFinite(item.min) || Number.isFinite(item.max)) tuple.push(null);
     if (Number.isFinite(item.min)) tuple.push(item.min);
@@ -563,15 +562,22 @@ function mandatoryActions(request) {
   return result;
 }
 
-function systemPrompt(request) {
-  refreshRegistry();
-  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"category":"exact loaded column","id":"exact group value or sample ID","colour":"#RRGGBB"}. The catalog is locally filtered for relevance but all actions remain available in the app. Propose only listed IDs and values. If impossible, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(compactState(request))}`;
+function systemPrompt(request, page) {
+  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"category":"exact loaded column","id":"exact group value or sample ID","colour":"#RRGGBB"}. This is one page of the action catalog. Propose only listed IDs and values. If this page has no matching action, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(page)}`;
 }
 
 function postChat(messages, request) {
   const job = { type: 'chat', messages, request, requestId };
   if (workerReady) worker.postMessage(job);
   else queuedMessages.push(job);
+}
+
+function sendCatalogPage(search) {
+  const actions = search.state.actions.slice(search.offset, search.offset + ACTIONS_PER_PAGE);
+  search.visibleIds = new Set(actions.map(([id]) => id));
+  search.offset += actions.length;
+  const page = { ...search.state, actions };
+  postChat([{ role: 'system', content: systemPrompt(search.request, page) }, ...search.history], search.request);
 }
 
 function initWorker(panel) {
@@ -585,7 +591,16 @@ function initWorker(panel) {
       queuedMessages.splice(0).filter((job) => job.requestId === requestId).forEach((job) => worker.postMessage(job));
     }
     if (data.requestId != null && data.requestId !== requestId) return;
-    if (data.type === 'error') { setStatus(panel, copy().modelError); addMessage(panel, 'assistant', data.message); }
+    if (data.type === 'error') {
+      catalogSearch = undefined;
+      if (!workerReady) {
+        worker.terminate();
+        worker = undefined;
+        queuedMessages = [];
+      }
+      setStatus(panel, copy().modelError);
+      addMessage(panel, 'assistant', data.message);
+    }
     if (data.type === 'answer') handleAnswer(panel, data.content, data.request);
   };
   setStatus(panel, copy().downloading);
@@ -593,37 +608,44 @@ function initWorker(panel) {
 }
 
 function handleAnswer(panel, content, request) {
+  const search = catalogSearch;
+  if (!search || search.request !== request) return;
   let answer;
   try { answer = JSON.parse(content); }
-  catch (_) { addMessage(panel, 'assistant', copy().malformed); return; }
-  const rejected = [];
-  const actions = Array.isArray(answer.actions) ? answer.actions.filter((action) => {
-    if (!action || typeof action.id !== 'string' || !actionRegistry.has(action.id)) {
-      rejected.push('azione sconosciuta');
-      return false;
-    }
+  catch (_) { answer = null; }
+  if (typeof answer?.reply === 'string' && answer.reply.trim() && !search.reply) search.reply = answer.reply;
+  refreshRegistry();
+  const actions = Array.isArray(answer?.actions) ? answer.actions.filter((action) => {
+    if (!action || !search.visibleIds.has(action.id) || !actionRegistry.has(action.id)) return false;
     try {
       validate(actionRegistry.get(action.id).item, action.value);
       return true;
-    } catch (error) {
-      rejected.push(error.message);
+    } catch (_) {
       return false;
     }
   }) : [];
   // A known-safe action derived from the user's explicit wording overrides a
   // conflicting model value; all other model instructions stay validated.
-  const mandatory = mandatoryActions(request);
+  const mandatory = mandatoryActions(request).filter(({ id, value }) => {
+    try { validate(actionRegistry.get(id).item, value); return true; }
+    catch (_) { return false; }
+  });
   // For a recognised, unambiguous imperative (e.g. “apri la mappa” or
   // “colora per regione”), execute exactly that plan.  Do not let an otherwise
   // valid but unrelated model action silently alter another panel.
   const finalActions = mandatory.length ? mandatory : actions;
+  if (!finalActions.length && search.offset < search.state.actions.length) {
+    sendCatalogPage(search);
+    return;
+  }
+  catalogSearch = undefined;
   // For an exact command, the deterministic plan is the useful response.
   // Do not expose speculative model prose such as a generic explanation of
   // logarithmic scales before the user confirms the action.
   if (mandatory.length) addMessage(panel, 'assistant', `${copy().plan}.`);
-  else if (typeof answer.reply === 'string' && answer.reply.trim()) addMessage(panel, 'assistant', answer.reply);
+  else if (finalActions.length && typeof answer?.reply === 'string' && answer.reply.trim()) addMessage(panel, 'assistant', answer.reply);
   if (finalActions.length) showPlan(panel, finalActions);
-  else if (rejected.length) addMessage(panel, 'assistant', copy().invalid);
+  else addMessage(panel, 'assistant', search.reply || (answer ? copy().invalid : copy().malformed));
 }
 
 function factualReply(request) {
@@ -666,6 +688,7 @@ function submit(event, panel) {
   addMessage(panel, 'user', message);
   conversation.push({ role: 'user', content: message });
   requestId += 1;
+  catalogSearch = undefined;
   input.value = '';
   const fact = factualReply(message);
   if (fact) {
@@ -692,7 +715,8 @@ function submit(event, panel) {
     return;
   }
   initWorker(panel);
-  postChat([{ role: 'system', content: systemPrompt(message) }, ...conversation.slice(-6)], message);
+  catalogSearch = { request: message, state: compactState(message), history: conversation.slice(-6), offset: 0 };
+  sendCatalogPage(catalogSearch);
 }
 
 function mount() {
