@@ -1,6 +1,6 @@
 /* global gtiz_tree, gtiz_metadata, gtiz_legend, gtiz_map, gtiz_settings, gtiz_video, gtiz_layout, gtiz_zooms, gtiz_macros */
 
-import { interpret, splitClauses, matchRows, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=12';
+import { interpret, splitClauses, matchRows, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=58';
 
 // This bridge derives its catalog from SPREAD's actual menu configuration and
 // resolves requests with the deterministic parser in assistant-intents.js.
@@ -1485,7 +1485,8 @@ function browsePrompts(textarea, direction) {
 function submit(event, panel) {
   event.preventDefault();
   const input = event.currentTarget.querySelector('textarea');
-  const message = input.value.trim();
+  // Typographic quotes and apostrophes (macOS/iOS autocorrect) read as plain ones.
+  const message = input.value.replace(/[’‘ʼ]/g, "'").trim();
   if (!message) return;
   if (/^(?:pulisci|svuota|cancella|azzera|clear|reset|empty|efface|vide)\s+(?:la\s+|the\s+|la\s+)?(?:chat|conversazione|conversation|cronologia della chat|messaggi|messages)\s*[.!]?$/i.test(message)) {
     input.value = '';
