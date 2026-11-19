@@ -75,10 +75,10 @@ function refreshRegistry() {
       const item = {
         id: 'assistant-node-colour',
         type: 'assistant_node_colour',
-        label: () => ({ it: 'Colora un campione per ID', en: 'Colour one sample by ID', fr: 'Colorer un échantillon par ID' }[(typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en']),
-        function: ({ id, colour }) => {
-          gtiz_tree.tree.setColour('ID', id, colour);
-          gtiz_tree.tree.changeCategory('ID');
+        label: () => ({ it: 'Imposta colore', en: 'Set colour', fr: 'Définir la couleur' }[(typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en']),
+        function: ({ category, id, colour }) => {
+          gtiz_tree.tree.setColour(category, id, colour);
+          gtiz_tree.tree.changeCategory(category);
           if (typeof gtiz_legend !== 'undefined') {
             if (gtiz_legend.selection_mode === 'visual') {
               gtiz_legend.resetVisualSelection();
@@ -159,7 +159,7 @@ function describe(entry) {
   }
   if (item.type === 'assistant_node_colour') {
     result.value_required = true;
-    result.value_schema = { id: 'exact loaded sample ID', colour: 'CSS hex colour' };
+    result.value_schema = { category: 'exact loaded column', id: 'exact sample ID or group value', colour: 'CSS hex colour' };
   }
   return result;
 }
@@ -222,7 +222,7 @@ function compactState(request) {
     if (Number.isFinite(item.min)) tuple.push(item.min);
     if (Number.isFinite(item.max)) tuple.push(item.max);
     if (item.type === 'assistant_metadata_replace_all') tuple.push('$columns + replacement text');
-    if (item.type === 'assistant_node_colour') tuple.push('$sample IDs + CSS hex colour');
+    if (item.type === 'assistant_node_colour') tuple.push('$columns + group value or sample ID + CSS hex colour');
     return tuple;
   });
   return {
@@ -234,16 +234,50 @@ function compactState(request) {
   };
 }
 
+function colourValues(tree, category) {
+  if (!tree?.metadata || !Object.hasOwn(tree.metadata_info || {}, category)) return [];
+  const column = tree.metadata_info[category];
+  const values = new Set();
+  for (const row of Object.values(tree.metadata)) {
+    if (tree.node_map && !Object.hasOwn(tree.node_map, row.ID)) continue;
+    const value = row[category];
+    if (!value && value !== 0) continue;
+    values.add(String(column?.coltype === 'numeric' && !Number.isNaN(Number(value)) ? Number.parseFloat(value) : value));
+  }
+  return [...values];
+}
+
+function namedColourCommand(request, tree) {
+  const english = request.match(/^set the colou?r of (sample |group )?(.+?) to ([\w#]+)[.!]?$/i);
+  const italian = request.match(/^(?:metti|imposta) (?:il )?colore ([\w#]+) (?:a|al|per) (.+?)[.!]?$/i);
+  if (!english && !italian) return null;
+  const target = (english ? english[2] : italian[2]).trim().toLowerCase();
+  const colourName = (english ? english[3] : italian[1]).toLowerCase();
+  const aliases = { nero: 'black', bianco: 'white', rosso: 'red', verde: 'green', blu: 'blue', giallo: 'yellow', grigio: 'gray', viola: 'purple', arancione: 'orange', rosa: 'pink' };
+  const parsed = d3.color(Object.hasOwn(aliases, colourName) ? aliases[colourName] : colourName);
+  if (!parsed || parsed.opacity !== 1) return {};
+  const scope = english?.[1]?.trim().toLowerCase();
+  const columns = Object.keys(tree?.metadata_info || {}).filter((category) =>
+    category !== 'nothing' && (scope !== 'sample' || category === 'ID') && (scope !== 'group' || category !== 'ID'));
+  const matches = columns.flatMap((category) => colourValues(tree, category)
+    .filter((id) => id.toLowerCase() === target)
+    .map((id) => ({ category, id, colour: parsed.formatHex() })));
+  const active = matches.filter(({ category }) => category === tree.display_category);
+  if (active.length === 1) return active[0];
+  return matches.length === 1 ? matches[0] : {};
+}
+
 function validate(item, value) {
   if (item.type === 'assistant_node_colour') {
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Servono ID del campione e colore.');
     const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
-    const ids = tree && tree.metadata ? Object.values(tree.metadata).map((row) => String(row.ID || '')).filter(Boolean) : [];
+    const category = String(value.category ?? 'ID');
     const id = String(value.id || '');
     const colour = String(value.colour || '');
-    if (!ids.includes(id)) throw new Error('L’ID indicato non esiste nei metadati caricati.');
+    if ([category, id].some((key) => Object.hasOwn(Object.prototype, key) || key === 'prototype') ||
+        !colourValues(tree, category).includes(id)) throw new Error('Il valore indicato non esiste nella categoria.');
     if (!/^#[0-9a-f]{6}$/i.test(colour)) throw new Error('Il colore deve essere espresso in esadecimale, per esempio #000000.');
-    return { id, colour };
+    return { category, id, colour };
   }
   if (item.type === 'assistant_metadata_replace_all') {
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Servono colonna e valore di sostituzione.');
@@ -311,7 +345,10 @@ function showPlan(panel, actions) {
   panel.querySelector('.spread-assistant__plan p').textContent = `${copy().plan}: ${actions.map((action) => {
     const label = labelOf(actionRegistry.get(action.id).item);
     if (action.value === undefined) return label;
-    if (action.value && typeof action.value === 'object') return action.value.category ? `${label}: ${action.value.category} = ${action.value.value}` : `${label}: ${action.value.id} = ${action.value.colour}`;
+    if (action.value && typeof action.value === 'object') {
+      const { category, id, colour, value } = action.value;
+      return id === undefined ? `${label}: ${category} = ${value}` : `${label}: ${category || 'ID'} / ${id} = ${colour}`;
+    }
     return `${label} = ${action.value}`;
   }).join(', ')}.`;
   panel.querySelector('.spread-assistant__plan').hidden = false;
@@ -408,12 +445,6 @@ function mandatoryActions(request) {
       if (entry) result.push({ id: entry.id, value: close ? 'off' : 'on' });
     }
   }
-  if (/\b(colore|color|colour|couleur)\b/.test(normalizedRequest) && /\b(nero|black|noir)\b/.test(normalizedRequest)) {
-    const entry = actionRegistry.get('assistant:node-colour');
-    const ids = tree && tree.metadata ? Object.values(tree.metadata).map((row) => String(row.ID || '')).filter(Boolean) : [];
-    const id = ids.find((value) => normalizedRequest.includes(normalizeTerms(value)));
-    if (entry && id) result.push({ id: entry.id, value: { id, colour: '#000000' } });
-  }
   // Macros are first-class SPREAD capabilities.  Select one only when at
   // least two meaningful words in the request match its title/description;
   // this keeps e.g. “scala logaritmica” deterministic without guessing.
@@ -432,7 +463,7 @@ function mandatoryActions(request) {
 
 function systemPrompt(request) {
   refreshRegistry();
-  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"id":"exact loaded sample ID","colour":"#RRGGBB"}. The catalog is locally filtered for relevance but all actions remain available in the app. Propose only listed IDs and values. If impossible, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(compactState(request))}`;
+  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"category":"exact loaded column","id":"exact group value or sample ID","colour":"#RRGGBB"}. The catalog is locally filtered for relevance but all actions remain available in the app. Propose only listed IDs and values. If impossible, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(compactState(request))}`;
 }
 
 function postChat(messages, request) {
@@ -514,9 +545,14 @@ function submit(event, panel) {
     addMessage(panel, 'assistant', fact);
     return;
   }
-  const exactCommand = /^(?:zoom(?:a)? \d+(?:[.,]\d+)?\s*x|(?:recenter|ricentra|centra)(?: (?:the |l albero |il )?(?:mst|tree))?|(?:close|open|chiudi|apri) (?:the |la )?(?:legend|legenda)|set all values in the .+ column to .+|set the color of sample \S+ to black)[.!]?$/i;
-  if (exactCommand.test(message)) {
-    const actions = mandatoryActions(message);
+  const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
+  const colour = namedColourCommand(message, tree);
+  const exactCommand = /^(?:zoom(?:a)? \d+(?:[.,]\d+)?\s*x|(?:recenter|ricentra|centra)(?: (?:the |l albero |il )?(?:mst|tree))?|(?:close|open|chiudi|apri) (?:the |la )?(?:legend|legenda)|set all values in the .+ column to .+)[.!]?$/i;
+  if (colour || exactCommand.test(message)) {
+    refreshRegistry();
+    const actions = colour
+      ? (colour.id && actionRegistry.has('assistant:node-colour') ? [{ id: 'assistant:node-colour', value: colour }] : [])
+      : mandatoryActions(message);
     if (actions.length === 1) {
       try {
         validate(actionRegistry.get(actions[0].id).item, actions[0].value);

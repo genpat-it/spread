@@ -104,6 +104,8 @@ Example commands:
   value in the loaded `region` column after confirmation.
 * `Set the color of sample IT-003 to black` — assigns black to that exact sample ID and
   switches the tree to the native ID colour category so the result is visible.
+* `Set the color of group ST-12 to black` — assigns black to the ST-12 group
+  in the demo's `lineage` column and shows that category on the tree.
 
 ## Instruction to run it locally
 
