@@ -4,3 +4,4 @@ node_modules
 tests/assistant/coverage-results.json
 __pycache__/
 
+tests/assistant/reference-examples.json

@@ -115,6 +115,10 @@ const CASES = [
   ['en', 'zoom in on the map', [{ id: 'map-view:zoom', value: 1.5 }]],
   ['fr', 'dézoome 2x', [{ id: 'assistant:tree-zoom', value: 0.5 }]],
   ['it', 'velocità del video 2x', [{ id: 'video-player:speed', value: 2 }]],
+  // shared selection shown in a panel
+  ['it', 'seleziona i campioni di Toscana e selezionali nella mappa', [{ id: 'assistant:select', value: { mode: 'replace', where: { column: 'region', op: 'eq', value: 'Toscana' } } }, { id: 'layout:1', value: 'on' }]],
+  ['it', 'mostrali nella tabella', [{ id: 'layout:2', value: 'on' }]],
+  ['en', 'show them on the map', [{ id: 'layout:1', value: 'on' }]],
   // legend order
   ['it', 'ordina la legenda temporalmente e metti gradiente', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-asc' }, { id: 'legend:12', value: 'gradient' }]],
   ['it', 'legenda in ordine cronologico', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-asc' }]],

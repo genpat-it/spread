@@ -14,7 +14,9 @@ there is no model to download, no GPU and no server, and the data never leaves
 the page.
 
 This document explains how the assistant works. For SPREAD itself, see the
-`main` branch. All examples below are in English; the same requests work in
+`main` branch. The [option reference](docs/ASSISTANT_REFERENCE.md) lists every
+SPREAD option: where it is in the interface, what it does and what to type.
+The panel is marked **alpha**: some requests may not be understood yet. All examples below are in English; the same requests work in
 Italian and French.
 
 ## Contents
@@ -82,7 +84,10 @@ that branch.
 flowchart TD
   S([clause]) --> Q0{"help?"}
   Q0 -- "what can you do" --> H[list of capabilities]
-  Q0 --> F0{"fixed command?"}
+  Q0 --> WH{"where is…? how do I…?"}
+  WH -- "where can I find the node size?" --> WHA[path in the interface + spotlight on the control]
+  WH -- "how do I colour by region?" --> WHB[the plan for it]
+  WH --> F0{"fixed command?"}
   F0 -- "play the timeline · center the map at 42.66, 13.70" --> FA[video / map view action]
   F0 --> Z{"zoom?"}
   Z -- "zoom out 2x · zoom in on the map 3x" --> ZA[tree or map zoom]
@@ -157,7 +162,9 @@ case-insensitively and with tolerance for typos.
 | Menus | `show node labels` · `hide the branch labels` · `log scale` · `node size 200` · `show the legend as a histogram` · `heatmap` · `sort groups alphabetically` · `download the image as png` |
 | Panels | `open the map` · `close the legend` · `full screen` |
 | Views | `zoom 2x` · `zoom out 2x` · `zoom in on the map 3x` · `recenter MST` · `play the timeline` · `timeline speed 2x` · `seek the timeline to 50%` · `center the map at 42.66, 13.70` |
-| Interface | `what can you do` · `switch language to Italian` (reloads the page, always asks) |
+| Orientation | `where can I find the node size?` · `where is the log scale?` · `where are the macros?` · `how do I colour by region?` |
+| Shared selection | `show them on the map` · `show them in the table` (the selection is shared by tree, map and table) |
+| Interface | `what can you do` · `switch language to Italian` (reloads the page, always asks) · `clear the chat` |
 
 **Conditions** support `=`, `≠` (*is not*), `>`, `≥`, `<`, `≤` (*after*,
 *before*, *at least*), *contains*, *empty* / *not empty*, alternatives
@@ -258,6 +265,25 @@ words live in `SYNONYMS` and `OPTION_SYNONYMS` in `js/assistant.js`.
   build has been deployed, the panel shows *"new version available — reload"*
   and the launcher gets a dot. `tests/assistant/bump_version.py` bumps the
   build and the cache keys together.
+
+## Orientation and documentation
+
+*"Where can I find …?"* answers with the path in the interface, for example
+`Settings › Node size › Radius size (%)`. It adds SPREAD's own help text for
+that control and a command that does it directly. The assistant then shows
+the control: it opens the panel, expands the card or opens the ⋮ menu, dims
+the page around the control and zooms a pulsing ring onto it. The ring follows
+the control while the layout settles and disappears after a few seconds or on
+click.
+
+The same location data produces [docs/ASSISTANT_REFERENCE.md](docs/ASSISTANT_REFERENCE.md),
+so the documentation cannot drift from the software. To regenerate it:
+
+```bash
+python tests/assistant/dump_context.py          # live catalog + locations (en/it/fr)
+node tests/assistant/reference_examples.mjs     # English examples, kept only if the parser resolves them
+python tests/assistant/reference.py             # writes docs/ASSISTANT_REFERENCE.md
+```
 
 ## Safety model
 

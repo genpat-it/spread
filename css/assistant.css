@@ -124,3 +124,20 @@
 .spread-assistant.is-docked .spread-assistant__edge:hover { background: var(--ultra-light, #dbe7ed); border-radius: 3px; }
 /* The dashboard keeps its own right margin; the panel floats beside it like another card. */
 html.spread-assistant-docked body > main, html.spread-assistant-docked body > footer { margin-right: calc(var(--spread-assistant-width, 380px) + var(--spread-assistant-gap, 15px) - 5px); }
+
+/* Orientation spotlight: dims the page around a control, zooms in, pulses. */
+.spread-assistant-spotlight {
+  animation: spread-spot-in .55s cubic-bezier(.2, .8, .2, 1), spread-spot-pulse 1s ease-in-out .55s 3;
+  border-radius: 14px; box-shadow: 0 0 0 9999px rgba(23, 50, 77, .42); outline: 3px solid var(--accent, #39beba);
+  outline-offset: 2px; pointer-events: none; position: fixed; z-index: 2147483000;
+}
+@keyframes spread-spot-in { from { opacity: 0; transform: scale(2.2); } to { opacity: 1; transform: scale(1); } }
+@keyframes spread-spot-pulse { 50% { outline-color: var(--main, #0066cc); outline-offset: 7px; } }
+@media (prefers-reduced-motion: reduce) { .spread-assistant-spotlight { animation: none; } }
+
+/* Alpha badge */
+.spread-assistant__badge {
+  background: var(--ultra-light, #dbe7ed); border-radius: 6px; color: var(--darker, #004080); font-size: 10px; font-weight: 700;
+  letter-spacing: .06em; margin-left: 4px; padding: 2px 6px; text-transform: uppercase; vertical-align: 2px;
+}
+.spread-assistant__message em { color: var(--secondary-darker, #555659); font-size: 12.5px; font-style: normal; }

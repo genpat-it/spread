@@ -34,6 +34,8 @@ const MESSAGES = {
     badColour: (colour) => `Il colore “${colour}” non è riconosciuto. Usa un nome (rosso, blu…) o un codice come #ff0000.`,
     colourSelected: 'SPREAD colora per gruppi: indica il valore da colorare (es. “colora Lazio di rosso”) oppure crea prima una colonna per i selezionati.',
     badTab: 'Il valore non può contenere tabulazioni o ritorni a capo.',
+    alreadySelected: 'La selezione è unica e condivisa: i campioni selezionati sono già evidenziati nell’albero, nella mappa e nella tabella. Per vederli scrivi per esempio “selezionali nella mappa”.',
+    notFound: (what) => `Non trovo un’opzione per “${what}”. Prova con il nome che vedi nell’interfaccia, o scrivi “aiuto”.`,
     question: 'Non ho capito la domanda. Posso rispondere a: quanti campioni (dove …), quanti valori distinti in una colonna, quanti campioni per gruppo, valore più frequente, minimo/massimo/intervallo, valori mancanti, quali colonne ci sono.',
     macroStep: (clause) => `Non ho capito il passo “${clause}” della macro, quindi non l’ho salvata.`,
     ambiguousAction: (labels) => `Richiesta ambigua: intendi ${labels.map((label) => `“${label}”`).join(' o ')}? Aggiungi un dettaglio (es. nodi, rami, mappa, legenda).`
@@ -52,6 +54,8 @@ const MESSAGES = {
     badColour: (colour) => `Colour “${colour}” is not recognised. Use a name (red, blue…) or a code such as #ff0000.`,
     colourSelected: 'SPREAD colours by group: name the value to colour (e.g. “colour Lazio red”) or first create a column for the selected samples.',
     badTab: 'The value cannot contain tabs or line breaks.',
+    alreadySelected: 'The selection is shared: selected samples are already highlighted in the tree, the map and the table. To see them, type for example “show them on the map”.',
+    notFound: (what) => `I cannot find an option for “${what}”. Try the name shown in the interface, or type “what can you do”.`,
     question: 'I did not understand the question. I can answer: how many samples (where …), how many distinct values in a column, samples per group, most frequent value, min/max/range, missing values, which columns exist.',
     macroStep: (clause) => `I could not understand the macro step “${clause}”, so the macro was not saved.`,
     ambiguousAction: (labels) => `Ambiguous request: do you mean ${labels.map((label) => `“${label}”`).join(' or ')}? Add a detail (e.g. nodes, branches, map, legend).`
@@ -70,6 +74,8 @@ const MESSAGES = {
     badColour: (colour) => `La couleur « ${colour} » n’est pas reconnue.`,
     colourSelected: 'SPREAD colore par groupes : indiquez la valeur à colorer.',
     badTab: 'La valeur ne peut pas contenir de tabulations ni de retours à la ligne.',
+    alreadySelected: 'La sélection est partagée : les échantillons sélectionnés sont déjà mis en évidence dans l’arbre, la carte et le tableau.',
+    notFound: (what) => `Je ne trouve pas d’option pour « ${what} ».`,
     question: 'Je n’ai pas compris la question. Je peux répondre : combien d’échantillons (où …), valeurs distinctes d’une colonne, échantillons par groupe, valeur la plus fréquente, min/max, valeurs manquantes, colonnes.',
     macroStep: (clause) => `Je n’ai pas compris l’étape « ${clause} » de la macro ; elle n’a pas été enregistrée.`,
     ambiguousAction: (labels) => `Demande ambiguë : voulez-vous dire ${labels.map((label) => `« ${label} »`).join(' ou ')} ? Ajoutez un détail (nœuds, branches, carte, légende).`
@@ -1039,7 +1045,7 @@ const priority = (entry) => AREA_PRIORITY[entry.area] ?? AREA_PRIORITY[entry.are
 const PANEL_WORDS = new Set(['tabella', 'table', 'tableau', 'griglia', 'grid', 'mappa', 'map', 'carte', 'legenda', 'legend', 'legende', 'video', 'timeline', 'metadati', 'metadata', 'metadonnees']);
 const POLARITY_WORDS = new Set([...POSITIVE, ...NEGATIVE].filter((word) => !word.includes(' ')));
 
-export function resolveCatalog(ctx, text) {
+export function resolveCatalog(ctx, text, options = {}) {
   const allWords = tokens(text).filter((token) => !STOP.has(token));
   const contentWords = allWords.filter((token) => !POLARITY_WORDS.has(token));
   const words = contentWords.length ? contentWords : allWords;
@@ -1118,6 +1124,8 @@ export function resolveCatalog(ctx, text) {
     }
     if (sameLabel) chosen = close.find((result) => result.entry.area === 'tree') || close.find((result) => result.entry.area === 'legend') || top;
   }
+  // Orientation questions only need the option, not a value.
+  if (options.locate) return { actions: [{ id: chosen.entry.id }], score: chosen.score };
   const extract = (entry) => {
     const action = { id: entry.id };
     if (entry.options && entry.options.length) {
@@ -1190,6 +1198,36 @@ function selectionShortcut(ctx, text, folded) {
     return { actions: [...selected.actions, { id: entry.id }] };
   }
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// Orientation: "dove trovo le impostazioni per…", "where is…", "come faccio a…"
+
+const WHERE = /^(?:dove|dov e|dov'e|dov’e|in (?:che|quale) (?:menu|pannello|parte)|mostrami dove|fammi vedere dove|where|show me where|in which (?:menu|panel)|ou|ou se trouve|montre(?:-moi)? ou|dans quel menu)\b/;
+const HOWTO = /^(?:come (?:faccio|posso|si fa|si puo|devo)|how (?:do|can) (?:i|you|we)|how to|comment (?:faire|puis-je|je peux|on))\b/;
+
+function parseWhere(ctx, text, folded) {
+  const where = folded.match(WHERE);
+  const howto = !where && folded.match(HOWTO);
+  if (!where && !howto) return null;
+  let rest = text.slice((where || howto)[0].length);
+  rest = stripFolded(rest.trim(), /^(?:(?:si |posso |devo |can i |do i |i can |je |on )?(?:trovo|trovano|trova|trovare|sono|e|stanno|sta|imposta|impostano|impostare|imposto|cambia|cambiare|cambio|modifica|modificare|regola|regolare|attiva|attivare|is|are|find|set|change|adjust|enable|turn on|se trouve|se trouvent|trouver|trouve|change|regle|modifie)\s+)*/i);
+  rest = stripFolded(rest.trim(), /^(?:(?:le|la|il|lo|i|gli|l'|the|les|un|una|a)\s*)?(?:impostazion[ei]|opzion[ei]|comand[oi]|controll[oi]|funzion[ei]|settings?|options?|controls?|commands?|functions?|reglages?|parametres?)?\s*(?:per|di|del|della|dei|delle|for|to|of|pour|de|du|des)?\s*(?:(?:le|la|il|lo|i|gli|l'|the|les)\s*)?/i).replace(/\?+\s*$/, '').trim();
+  if (!rest) return null;
+  if (howto) {
+    // "come faccio a colorare per regione?": just prepare the plan.
+    const verbish = rest.replace(/^(?:a|ad|to|a |pour)\s+/i, '');
+    const parsed = parseClause(verbish, ctx);
+    if (parsed?.actions?.length) return { ...parsed, howto: true };
+  }
+  // Header tools are not menu options: name them directly.
+  const tool = [['macros', /\bmacro/], ['search', /\b(?:cerca|ricerca|search|recherche|trova campioni)\b/], ['language', /\b(?:lingua|language|langue)\b/], ['info', /\b(?:info|informazioni|about|credits|crediti|documentazione|documentation|guida|guide)\b/]]
+    .find(([, pattern]) => pattern.test(fold(rest)));
+  if (tool) return { locate: { id: `#tool-${tool[0]}`, query: rest } };
+  const generic = resolveCatalog(ctx, rest, { locate: true });
+  const id = generic?.actions?.[0]?.id;
+  if (!id) return { error: msg(ctx).notFound(rest) };
+  return { locate: { id, query: rest } };
 }
 
 // ---------------------------------------------------------------------------
@@ -1436,12 +1474,24 @@ export function parseClause(rawText, ctx) {
   // Macros and metadata filters/questions come before the generic verbs.
   const macro = parseMacro(ctx, text, folded);
   if (macro) return macro;
+  const orientation = parseWhere(ctx, text, folded);
+  if (orientation) return orientation;
   const statistics = parseStats(ctx, text, folded);
   if (statistics) return statistics;
   const filter = parseFilter(ctx, text, folded);
   if (filter) return filter;
   // A question never becomes a menu action: answer it or say it was not understood.
   if (isQuestion(text) && !/^(?:apri|chiudi|mostra|open|show|close)\b/.test(folded)) return { error: msg(ctx).question };
+
+  // "selezionali nella mappa", "show them on the map": the selection is shared
+  // by tree, map and table, so this means opening that panel.
+  const onPanel = folded.match(/^(?:seleziona|mostra|visualizza|evidenzia|fammi vedere|vedi|select|show|highlight|display|see|selectionne|affiche|montre)\s+(?:(?:i|gli|le|the|les)\s+)?(?:selezionat\w*|selected|selectionne\w*)\s*(?:(?:anche|also|aussi)\s+)?(?:(?:nella|sulla|nel|sul|in|on|into|the|sur|dans|la|le|l)\s+)*(mappa|map|carte|tabella|table|tableau|metadati|metadata|metadonnees|albero|tree|arbre)?\s*$/);
+  if (onPanel) {
+    const view = !onPanel[1] ? '' : /mapp|map|cart/.test(onPanel[1]) ? 'map' : /alber|tree|arbre/.test(onPanel[1]) ? 'tree' : 'metadata';
+    const layout = view && view !== 'tree' ? ctx.catalog.find((entry) => entry.area === 'layout' && entry.type === view) : null;
+    if (layout) return { actions: [{ id: layout.id, value: 'on' }] };
+    return { error: msg(ctx).alreadySelected };
+  }
 
   // Column operations.
   if (phrase && (firstIs(W.add) || /\b(?:aggiungi|add|crea|create|ajoute|inserisci)\b/.test(folded)) && !/\b(?:alla selezione|to (?:the )?selection)\b/.test(folded)) {
@@ -1503,7 +1553,7 @@ export function parseClause(rawText, ctx) {
 // because "Selezione visiva" is a menu option, not a selection of samples.
 export function interpret(clause, ctx, hook) {
   const parsed = parseClause(clause, ctx);
-  if (parsed?.actions?.length || parsed?.macro || parsed?.query || parsed?.stats) return parsed;
+  if (parsed?.actions?.length || parsed?.macro || parsed?.query || parsed?.stats || parsed?.locate) return parsed;
   if (parsed?.error && isQuestion(clause)) return parsed;
   const hooked = hook ? hook(clause) : null;
   if (hooked?.length) return { actions: hooked };

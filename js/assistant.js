@@ -11,9 +11,9 @@ const UNRESOLVED_LIMIT = 500;
 // alongside package.json when SPREAD publishes a new application release.
 const SPREAD_VERSION = '1.0.0';
 const COPY = {
-  it: { title: 'Assistente locale', close: 'Chiudi', intro: 'Descrivi cosa vuoi fare con albero, mappa e metadati: filtri, selezioni, colori, modifiche alle colonne, impostazioni. Ti mostro il piano e lo applico solo dopo la tua conferma. Tutto resta nel browser.', placeholder: 'Descrivi cosa vuoi fare…', send: 'Invia', apply: 'Applica', cancel: 'Annulla', plan: 'Pronto ad applicare', done: 'Fatto', version: `SPREAD dichiara la versione ${SPREAD_VERSION}.`, invalid: 'Non sono riuscito a ricondurre la richiesta a un comando valido di SPREAD.', status: 'Funziona nel browser · i dati non escono', count: (n) => `${n} campioni soddisfano la condizione`, autoApply: 'Applica subito, senza conferma', dock: 'Aggancia come pannello laterale', clear: 'Pulisci la chat', undock: 'Rendi flottante', update: 'È disponibile una nuova versione dell’assistente.', reload: 'Ricarica la pagina', help: 'Ecco cosa so fare:', none: 'Nessun campione soddisfa la condizione.', macroSaved: (name, n) => `Macro “${name}” salvata con ${n} passi.`, macroNone: 'Non ci sono ancora macro dell’assistente. Esegui qualche azione e poi scrivi “registra gli ultimi 3 passaggi come macro Nome”.', macroList: 'Macro disponibili', macroSteps: 'passi', macroNative: 'macro di SPREAD', macroMissing: (name) => `Non trovo la macro “${name}”.`, macroDeleted: (name) => `Macro “${name}” eliminata.`, macroRenamed: (from, to) => `Macro “${from}” rinominata in “${to}”.`, historyShort: (n) => `Ci sono solo ${n} passi eseguiti in questa sessione.`, historyEmpty: 'Non ho ancora eseguito nessun passo da registrare.', noMatch: 'Nessun campione soddisfa la condizione.', notApplied: 'Non ho applicato l’azione', hint: 'Prova a nominare l’operazione e la colonna, per esempio: “dammi i metadati dove regione è Abruzzo”, “ordina la tabella per data decrescente”, “sostituisci Roma con Rieti nella colonna provincia”, “colora per sierotipo”.' },
-  en: { title: 'Local assistant', close: 'Close', intro: 'Describe what you want to do with the tree, map and metadata: filters, selections, colours, column edits, settings. I show the plan and apply it only after you confirm. Everything stays in the browser.', placeholder: 'Describe what you want to do…', send: 'Send', apply: 'Apply', cancel: 'Cancel', plan: 'Ready to apply', done: 'Done', version: `SPREAD declares version ${SPREAD_VERSION}.`, invalid: 'I could not map the request to a valid SPREAD command.', status: 'Runs in your browser · data stays local', count: (n) => `${n} samples match the condition`, autoApply: 'Apply immediately, without confirmation', dock: 'Dock as a side panel', clear: 'Clear the chat', undock: 'Make floating', update: 'A new version of the assistant is available.', reload: 'Reload the page', help: 'Here is what I can do:', none: 'No sample matches the condition.', macroSaved: (name, n) => `Macro “${name}” saved with ${n} steps.`, macroNone: 'There are no assistant macros yet. Run some actions, then type “record the last 3 steps as macro Name”.', macroList: 'Available macros', macroSteps: 'steps', macroNative: 'SPREAD macro', macroMissing: (name) => `Macro “${name}” not found.`, macroDeleted: (name) => `Macro “${name}” deleted.`, macroRenamed: (from, to) => `Macro “${from}” renamed to “${to}”.`, historyShort: (n) => `Only ${n} steps were run in this session.`, historyEmpty: 'No step has been run yet.', noMatch: 'No sample matches the condition.', notApplied: 'Action not applied', hint: 'Name the operation and the column, for example: “show me the metadata where region is Abruzzo”, “sort the table by date descending”, “replace Roma with Rieti in the province column”, “colour by serovar”.' },
-  fr: { title: 'Assistant local', close: 'Fermer', intro: 'Décrivez ce que vous voulez faire avec l’arbre, la carte et les métadonnées : filtres, sélections, couleurs, colonnes, réglages. Je montre le plan et je l’applique après votre confirmation. Tout reste dans le navigateur.', placeholder: 'Décrivez ce que vous voulez faire…', send: 'Envoyer', apply: 'Appliquer', cancel: 'Annuler', plan: 'Prêt à appliquer', done: 'Terminé', version: `SPREAD déclare la version ${SPREAD_VERSION}.`, invalid: 'Je ne peux pas associer cette demande à une commande SPREAD valide.', status: 'Dans votre navigateur · les données restent locales', count: (n) => `${n} échantillons correspondent à la condition`, autoApply: 'Appliquer tout de suite, sans confirmation', dock: 'Ancrer en panneau latéral', clear: 'Effacer la conversation', undock: 'Rendre flottant', update: 'Une nouvelle version de l’assistant est disponible.', reload: 'Recharger la page', help: 'Voici ce que je sais faire :', none: 'Aucun échantillon ne correspond à la condition.', macroSaved: (name, n) => `Macro « ${name} » enregistrée avec ${n} étapes.`, macroNone: 'Aucune macro de l’assistant pour l’instant.', macroList: 'Macros disponibles', macroSteps: 'étapes', macroNative: 'macro SPREAD', macroMissing: (name) => `Macro « ${name} » introuvable.`, macroDeleted: (name) => `Macro « ${name} » supprimée.`, macroRenamed: (from, to) => `Macro « ${from} » renommée en « ${to} ».`, historyShort: (n) => `Seulement ${n} étapes exécutées dans cette session.`, historyEmpty: 'Aucune étape exécutée pour l’instant.', noMatch: 'Aucun échantillon ne correspond à la condition.', notApplied: 'Action non appliquée', hint: 'Nommez l’opération et la colonne, par exemple : « montre les métadonnées où région est Abruzzo », « trie le tableau par date décroissant ».' }
+  it: { title: 'Assistente locale', close: 'Chiudi', intro: 'Descrivi cosa vuoi fare con albero, mappa e metadati: filtri, selezioni, colori, modifiche alle colonne, impostazioni. Ti mostro il piano e lo applico solo dopo la tua conferma. Tutto resta nel browser.', placeholder: 'Descrivi cosa vuoi fare…', send: 'Invia', apply: 'Applica', cancel: 'Annulla', plan: 'Pronto ad applicare', done: 'Fatto', version: `SPREAD dichiara la versione ${SPREAD_VERSION}.`, invalid: 'Non sono riuscito a ricondurre la richiesta a un comando valido di SPREAD.', status: 'Funziona nel browser · i dati non escono', count: (n) => `${n} campioni soddisfano la condizione`, autoApply: 'Applica subito, senza conferma', dock: 'Aggancia come pannello laterale', alpha: 'Versione alpha: alcune richieste potrebbero non essere capite. Le richieste non capite restano annotate solo nel tuo browser e ci aiutano a migliorarla.', clear: 'Pulisci la chat', undock: 'Rendi flottante', update: 'È disponibile una nuova versione dell’assistente.', reload: 'Ricarica la pagina', help: 'Ecco cosa so fare:', none: 'Nessun campione soddisfa la condizione.', macroSaved: (name, n) => `Macro “${name}” salvata con ${n} passi.`, macroNone: 'Non ci sono ancora macro dell’assistente. Esegui qualche azione e poi scrivi “registra gli ultimi 3 passaggi come macro Nome”.', macroList: 'Macro disponibili', macroSteps: 'passi', macroNative: 'macro di SPREAD', macroMissing: (name) => `Non trovo la macro “${name}”.`, macroDeleted: (name) => `Macro “${name}” eliminata.`, macroRenamed: (from, to) => `Macro “${from}” rinominata in “${to}”.`, historyShort: (n) => `Ci sono solo ${n} passi eseguiti in questa sessione.`, historyEmpty: 'Non ho ancora eseguito nessun passo da registrare.', noMatch: 'Nessun campione soddisfa la condizione.', notApplied: 'Non ho applicato l’azione', hint: 'Prova a nominare l’operazione e la colonna, per esempio: “dammi i metadati dove regione è Abruzzo”, “ordina la tabella per data decrescente”, “sostituisci Roma con Rieti nella colonna provincia”, “colora per sierotipo”.' },
+  en: { title: 'Local assistant', close: 'Close', intro: 'Describe what you want to do with the tree, map and metadata: filters, selections, colours, column edits, settings. I show the plan and apply it only after you confirm. Everything stays in the browser.', placeholder: 'Describe what you want to do…', send: 'Send', apply: 'Apply', cancel: 'Cancel', plan: 'Ready to apply', done: 'Done', version: `SPREAD declares version ${SPREAD_VERSION}.`, invalid: 'I could not map the request to a valid SPREAD command.', status: 'Runs in your browser · data stays local', count: (n) => `${n} samples match the condition`, autoApply: 'Apply immediately, without confirmation', dock: 'Dock as a side panel', alpha: 'Alpha version: some requests may not be understood. Requests that are not understood are noted only in your browser and help us improve it.', clear: 'Clear the chat', undock: 'Make floating', update: 'A new version of the assistant is available.', reload: 'Reload the page', help: 'Here is what I can do:', none: 'No sample matches the condition.', macroSaved: (name, n) => `Macro “${name}” saved with ${n} steps.`, macroNone: 'There are no assistant macros yet. Run some actions, then type “record the last 3 steps as macro Name”.', macroList: 'Available macros', macroSteps: 'steps', macroNative: 'SPREAD macro', macroMissing: (name) => `Macro “${name}” not found.`, macroDeleted: (name) => `Macro “${name}” deleted.`, macroRenamed: (from, to) => `Macro “${from}” renamed to “${to}”.`, historyShort: (n) => `Only ${n} steps were run in this session.`, historyEmpty: 'No step has been run yet.', noMatch: 'No sample matches the condition.', notApplied: 'Action not applied', hint: 'Name the operation and the column, for example: “show me the metadata where region is Abruzzo”, “sort the table by date descending”, “replace Roma with Rieti in the province column”, “colour by serovar”.' },
+  fr: { title: 'Assistant local', close: 'Fermer', intro: 'Décrivez ce que vous voulez faire avec l’arbre, la carte et les métadonnées : filtres, sélections, couleurs, colonnes, réglages. Je montre le plan et je l’applique après votre confirmation. Tout reste dans le navigateur.', placeholder: 'Décrivez ce que vous voulez faire…', send: 'Envoyer', apply: 'Appliquer', cancel: 'Annuler', plan: 'Prêt à appliquer', done: 'Terminé', version: `SPREAD déclare la version ${SPREAD_VERSION}.`, invalid: 'Je ne peux pas associer cette demande à une commande SPREAD valide.', status: 'Dans votre navigateur · les données restent locales', count: (n) => `${n} échantillons correspondent à la condition`, autoApply: 'Appliquer tout de suite, sans confirmation', dock: 'Ancrer en panneau latéral', alpha: 'Version alpha : certaines demandes peuvent ne pas être comprises. Elles sont notées uniquement dans votre navigateur pour l’améliorer.', clear: 'Effacer la conversation', undock: 'Rendre flottant', update: 'Une nouvelle version de l’assistant est disponible.', reload: 'Recharger la page', help: 'Voici ce que je sais faire :', none: 'Aucun échantillon ne correspond à la condition.', macroSaved: (name, n) => `Macro « ${name} » enregistrée avec ${n} étapes.`, macroNone: 'Aucune macro de l’assistant pour l’instant.', macroList: 'Macros disponibles', macroSteps: 'étapes', macroNative: 'macro SPREAD', macroMissing: (name) => `Macro « ${name} » introuvable.`, macroDeleted: (name) => `Macro « ${name} » supprimée.`, macroRenamed: (from, to) => `Macro « ${from} » renommée en « ${to} ».`, historyShort: (n) => `Seulement ${n} étapes exécutées dans cette session.`, historyEmpty: 'Aucune étape exécutée pour l’instant.', noMatch: 'Aucun échantillon ne correspond à la condition.', notApplied: 'Action non appliquée', hint: 'Nommez l’opération et la colonne, par exemple : « montre les métadonnées où région est Abruzzo », « trie le tableau par date décroissant ».' }
 };
 let actionRegistry = new Map();
 let pendingActions = [];
@@ -656,6 +656,185 @@ function handleMacro(request) {
   return { actions: macro.own ? macro.steps.map((step) => ({ ...step })) : [{ id: macro.id }] };
 }
 
+// ---------------------------------------------------------------------------
+// Orientation: where an option lives in the interface, shown with a spotlight.
+
+const PLACES = {
+  it: { topbar: 'barra in alto', settings: 'Impostazioni', tree: 'Albero', metadata: 'Metadati', legend: 'Legenda', map: 'Mappa', video: 'Video', zooms: 'Zoom ReporTree', menu: 'menu ⋮', header: 'intestazione della card', player: 'lettore', macros: 'Macro (▷▷)', search: 'Ricerca (lente)', language: 'Lingua (globo)', info: 'Informazioni (i)', assistant: 'Puoi chiederlo direttamente a me', where: 'Si trova in', type: 'Per farlo da qui scrivi', showing: 'Te lo mostro.' },
+  en: { topbar: 'top bar', settings: 'Settings', tree: 'Tree', metadata: 'Metadata', legend: 'Legend', map: 'Map', video: 'Video', zooms: 'ReporTree zooms', menu: '⋮ menu', header: 'card header', player: 'player', macros: 'Macros (▷▷)', search: 'Search (magnifier)', language: 'Language (globe)', info: 'Information (i)', assistant: 'You can ask me directly', where: 'It is in', type: 'To do it from here, type', showing: 'Showing it now.' },
+  fr: { topbar: 'barre du haut', settings: 'Paramètres', tree: 'Arbre', metadata: 'Métadonnées', legend: 'Légende', map: 'Carte', video: 'Vidéo', zooms: 'Zooms ReporTree', menu: 'menu ⋮', header: 'en-tête de la carte', player: 'lecteur', macros: 'Macros (▷▷)', search: 'Recherche (loupe)', language: 'Langue (globe)', info: 'Informations (i)', assistant: 'Vous pouvez me le demander', where: 'Se trouve dans', type: 'Pour le faire d’ici, tapez', showing: 'Je vous le montre.' }
+};
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+function places() { return PLACES[(typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en'] || PLACES.en; }
+
+function optionName(entry) {
+  const item = entry.labelItem || entry.item;
+  const hasLabel = typeof item.label === 'function' || Boolean(item.label);
+  if (hasLabel) return stripTags(labelOf(item));
+  const options = optionsOf(entry.item);
+  if (options.length) {
+    // Unlabelled switches and radios: name them by their choices.
+    const labels = [...new Set(options.map((option) => stripTags(option.label)))];
+    return labels.join(' / ');
+  }
+  const twin = entry.item.id && [...actionRegistry.values()].find((other) => other.item.id === `${entry.item.id}-slider`);
+  return twin ? stripTags(labelOf(twin.item)) : String(entry.item.type || entry.id);
+}
+
+// Assistant-made controls carry "English / Italiano / Français" labels.
+function englishPart(name) {
+  const parts = String(name).split(' / ');
+  if (parts.length < 3) return name;
+  const lang = (typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en';
+  return parts[{ en: 0, it: 1, fr: 2 }[lang] ?? 0];
+}
+
+async function openPanel(view) {
+  const toggle = document.querySelector(`.quick-actions .toggle-box[data-view="${view}"]`);
+  if (toggle && toggle.getAttribute('data-selection') !== 'on') {
+    toggle.click();
+    await sleep(900);
+  }
+}
+
+function findByText(root, text) {
+  const wanted = String(text).trim().toLowerCase();
+  if (!root || !wanted) return null;
+  const nodes = [...root.querySelectorAll('a, button, label, .label, .toggle-option, .list-value, .form-label, span, div')];
+  const hit = nodes.find((node) => node.children.length < 4 && node.textContent.trim().toLowerCase() === wanted) ||
+    nodes.find((node) => node.children.length < 4 && node.textContent.trim().toLowerCase().includes(wanted));
+  return hit ? hit.closest('.toggle-box, .select-box, .slider-box, .input-box, .list-box, .search-box, .button-box, .button-box-optioned, a, li') || hit : null;
+}
+
+// Path in the interface plus a function that reveals the control.
+function locationOf(id) {
+  const t = places();
+  if (id.startsWith('#tool-')) {
+    const tool = id.slice(6);
+    return { path: [t.topbar, t[tool]], reveal: async () => document.querySelector(`.tool-${tool === 'info' ? 'help' : tool}`) || document.querySelector(`.tool-${tool}`) };
+  }
+  const entry = actionRegistry.get(id);
+  if (!entry) return null;
+  const name = optionName(entry);
+  const { area, item } = entry;
+  if (area.startsWith('settings/')) {
+    const card = area.slice(9);
+    const cardNode = document.querySelector(`.card-settings[data-type="${card}"]`);
+    const title = cardNode?.querySelector('.card-title')?.textContent.trim() || card.replace(/-/g, ' ');
+    return {
+      path: [t.settings, title, name],
+      help: settingsHelp(card, name),
+      reveal: async () => {
+        await openPanel('settings');
+        if (cardNode && !cardNode.classList.contains('expanded')) { cardNode.querySelector('.card-expand-trigger')?.click(); await sleep(600); }
+        const control = (item.id && document.getElementById(`${item.id}-slider`)) || (item.id && document.getElementById(item.id));
+        return control?.closest('.toggle-box, .select-box, .slider-box, .input-box, .list-box, .search-box') || control || cardNode;
+      }
+    };
+  }
+  if (area === 'layout') return { path: [t.topbar, stripTags(optionsOf(item)[0]?.label || item.type)], reveal: async () => document.querySelector(`.quick-actions .toggle-box[data-view="${item.type}"]`) };
+  if (area === 'video') return { path: [t.video, t.player, englishPart(name)], reveal: async () => { await openPanel('video'); return document.querySelector('.slider-box-player'); } };
+  if (id.startsWith('map-view:')) return { path: [t.map, englishPart(name)], reveal: async () => { await openPanel('map'); return document.querySelector('.map-container'); } };
+  if (area === 'macro') return { path: [t.topbar, t.macros, name], reveal: async () => document.querySelector('.tool-macros') };
+  if (area === 'metadata-card') return { path: [t.metadata, t.header, name], reveal: async () => { await openPanel('metadata'); return findByText(document.querySelector('.card-metadata'), name); } };
+  if (id.startsWith('assistant:')) return { path: [t.assistant] };
+  const menuType = area.startsWith('zooms') ? 'zooms' : area;
+  const panel = { tree: t.tree, metadata: t.metadata, legend: t.legend, map: t.map, zooms: t.zooms }[menuType] || menuType;
+  const helpKey = { tree: 'tree-layout', map: 'map' }[menuType];
+  return {
+    path: [panel, t.menu, name],
+    help: helpKey ? settingsHelp(helpKey, name) : '',
+    reveal: async () => {
+      if (['metadata', 'legend', 'map'].includes(menuType)) await openPanel(menuType);
+      const trigger = document.querySelector(`.card-context-menu-trigger[data-menu-type="${menuType}"]`);
+      if (!trigger) return null;
+      trigger.click();
+      await sleep(400);
+      const menu = document.querySelector('.context-menu');
+      return (item.id && menu?.querySelector(`#${CSS.escape(item.id)}`)?.closest('.toggle-box, .select-box, .input-box, .button-box, .button-box-optioned')) || findByText(menu, name) || trigger;
+    }
+  };
+}
+
+// The matching line of SPREAD's own help for a settings card: the bullet whose
+// bold title best matches the option name.
+function settingsHelp(card, name, fallback = true) {
+  if (typeof gtiz_languages === 'undefined') return '';
+  const lang = (typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en';
+  const key = card.replace(/-/g, '_');
+  const raw = gtiz_languages[lang]?.helps?.[key]?.help || gtiz_languages.en?.helps?.[key]?.help || '';
+  const items = [...raw.matchAll(/<li>(.*?)<\/li>/g)].map((match) => ({ title: normIntent(stripTags((match[1].match(/<strong>(.*?)<\/strong>/) || [])[1] || '')), text: stripTags(match[1]) }));
+  const words = normIntent(name).split(' ').filter((word) => word.length > 2);
+  let best = null;
+  for (const item of items) {
+    const title = item.title.split(' ');
+    const overlap = words.filter((word) => title.some((part) => part === word || similarIntent(part, word) || (part.length > 4 && word.length > 4 && part.slice(0, 5) === word.slice(0, 5)))).length;
+    const score = overlap / Math.max(words.length, title.length || 1);
+    if (overlap && (!best || score > best.score)) best = { score, text: item.text };
+  }
+  return best ? best.text : '';
+}
+
+// Dim the page around the control and keep the ring on it while layout
+// settles (cards expand, menus slide in), then fade after a few seconds.
+function spotlight(element) {
+  document.querySelectorAll('.spread-assistant-spotlight').forEach((node) => node.remove());
+  if (!element) return;
+  element.scrollIntoView({ block: 'center', inline: 'nearest' });
+  const ring = document.createElement('div');
+  ring.className = 'spread-assistant-spotlight';
+  document.body.append(ring);
+  let alive = true;
+  const follow = () => {
+    if (!alive) return;
+    const rect = element.getBoundingClientRect();
+    Object.assign(ring.style, { left: `${rect.left - 6}px`, top: `${rect.top - 6}px`, width: `${rect.width + 12}px`, height: `${rect.height + 12}px` });
+    ring.hidden = !rect.width && !rect.height;
+    requestAnimationFrame(follow);
+  };
+  follow();
+  const remove = () => { alive = false; ring.remove(); window.removeEventListener('pointerdown', remove, true); };
+  window.addEventListener('pointerdown', remove, true);
+  setTimeout(remove, 5000);
+}
+
+async function showLocation(id) {
+  const location = locationOf(id);
+  if (!location?.reveal) return;
+  try { spotlight(await location.reveal()); } catch (_) { /* the panel changed meanwhile */ }
+}
+
+// A complete command for the option, so the suggestion works as typed.
+function exampleFor(id, query) {
+  const entry = actionRegistry.get(id);
+  if (!entry || id.startsWith('assistant:')) return '';
+  const { item } = entry;
+  const options = optionsOf(item);
+  if (['number', 'slider'].includes(item.type)) {
+    const min = Number.isFinite(item.min) ? item.min : 0;
+    const max = Number.isFinite(item.max) ? item.max : min + 10;
+    return `${query} ${Math.round((min + max) / 2)}`;
+  }
+  if (options.length) {
+    const labels = [...new Set(options.map((option) => stripTags(option.label)))];
+    if (labels.length === 1) return query;
+    return `${query} ${labels[Math.min(1, labels.length - 1)].toLowerCase()}`;
+  }
+  return query;
+}
+
+function locationMessage(locate) {
+  const t = places();
+  const location = locationOf(locate.id);
+  if (!location) return { message: copy().invalid, warning: true };
+  const lines = [`${t.where}: ${location.path.join(' › ')}`];
+  if (location.help) lines.push(location.help);
+  if (location.reveal) lines.push(t.showing);
+  const example = exampleFor(locate.id, locate.query);
+  if (example) lines.push(`${t.type}: “${example}”`);
+  return { message: lines.join('\n'), reveal: locate.id };
+}
+
 // Read-only statistics on the loaded metadata (optionally filtered).
 const STATS_TEXT = {
   it: { total: (n) => `Ci sono ${n} campioni.`, columns: (list) => `Colonne (${list.length}): ${list.join(', ')}.`, distinct: (c, n) => `La colonna ${c} ha ${n} valori distinti`, groups: (c) => `Campioni per ${c}`, mode: (c, v, n, t) => `Il valore più frequente di ${c} è “${v}” (${n} su ${t} campioni).`, max: (c, v) => `Il valore massimo di ${c} è ${v}.`, min: (c, v) => `Il valore minimo di ${c} è ${v}.`, range: (c, a, b) => `${c} va da ${a} a ${b}.`, missing: (c, n, t) => `${n} campioni su ${t} non hanno un valore in ${c}.`, among: (w, n) => ` (tra ${n} campioni con ${w})`, none: 'Nessun campione soddisfa la condizione.', more: (n) => `… e altri ${n}` },
@@ -1189,6 +1368,7 @@ function resolveClause(request, search) {
     return handled.actions ? accept(handled.actions) : { note: handled };
   }
   if (result?.stats) return { note: statsMessage(result.stats) };
+  if (result?.locate) return { note: locationMessage(result.locate) };
   if (result?.query) {
     const note = queryMessage(result.query);
     if (note.empty || !result.actions?.length) return { note };
@@ -1227,6 +1407,7 @@ function runClauses(panel, clauses) {
     try { result = resolveClause(request, search); }
     catch (error) { result = { error: error.message }; }
     if (result?.note) addMessage(panel, result.note.warning ? 'warning' : 'assistant', result.note.message);
+    if (result?.note?.reveal) showLocation(result.note.reveal);
     if (result?.actions) {
       search.plan.push(...result.actions);
       continue;
@@ -1530,13 +1711,13 @@ function mount() {
     <div class="spread-assistant__edge" aria-hidden="true"></div>
     <div class="spread-assistant__header">
       <span class="spread-assistant__avatar"><i class="tabler tabler-message-chatbot"></i></span>
-      <div class="spread-assistant__heading"><h2>${text.title}</h2><div class="spread-assistant__status">${text.status}</div></div>
+      <div class="spread-assistant__heading"><h2>${text.title} <span class="spread-assistant__badge" title="${text.alpha}">alpha</span></h2><div class="spread-assistant__status">${text.status}</div></div>
       <button type="button" class="spread-assistant__icon spread-assistant__clear" aria-label="${text.clear}" title="${text.clear}"><i class="tabler tabler-eraser"></i></button>
       <button type="button" class="spread-assistant__icon spread-assistant__dock" aria-label="${text.dock}" title="${text.dock}"><i class="tabler tabler-layout-sidebar-right"></i></button>
       <button type="button" class="spread-assistant__close" aria-label="${text.close}">×</button>
     </div>
     <div class="spread-assistant__messages">
-      <div class="spread-assistant__message spread-assistant__message--assistant">${text.intro}</div>
+      <div class="spread-assistant__message spread-assistant__message--assistant">${text.intro}\n\n<em>${text.alpha}</em></div>
       <div class="spread-assistant__examples"></div>
     </div>
     <div class="spread-assistant__plan" hidden><div class="spread-assistant__plan-box">
@@ -1617,6 +1798,7 @@ function mount() {
     lastPlan: () => lastProposedActions.map((action) => ({ ...action })),
     unresolved: () => readUnresolved(),
     macros: () => readMacros(),
+    locate: (id) => { refreshRegistry(); const location = locationOf(id); return location ? { path: location.path, help: location.help || '' } : null; },
     history: () => history.map((step) => ({ ...step })),
     clearUnresolved: () => { try { localStorage.removeItem(UNRESOLVED_KEY); } catch (_) { /* ignore */ } }
   });

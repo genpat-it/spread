@@ -3557,5 +3557,797 @@
   "nothing",
   "__Node",
   "ID"
- ]
+ ],
+ "locations": {
+  "tree:0": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Show tooltips"
+   ],
+   "help": ""
+  },
+  "tree:2": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Centre tree"
+   ],
+   "help": "Centre Tree: adjusts view settings so that the tree's core is at the centre of the working area."
+  },
+  "tree:3": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Static redraw"
+   ],
+   "help": "Static Redraw: refreshes the tree and redraws it with the preset layout."
+  },
+  "tree:4": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Original tree"
+   ],
+   "help": "Original Tree: reloads the page and restores the tree to the same state and layout it had when it was initially loaded. It will ask for confirmation before leaving the page. Caution : this function will cause the loss of all changes you made to the tree."
+  },
+  "tree:6": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Show hypothetical"
+   ],
+   "help": ""
+  },
+  "tree:8": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Select all"
+   ],
+   "help": ""
+  },
+  "tree:9": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Deselect all"
+   ],
+   "help": ""
+  },
+  "tree:11": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Collapse selected nodes"
+   ],
+   "help": ""
+  },
+  "tree:12": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Expand selected nodes"
+   ],
+   "help": ""
+  },
+  "tree:13": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Expand all"
+   ],
+   "help": ""
+  },
+  "tree:15": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Hide selected nodes"
+   ],
+   "help": ""
+  },
+  "tree:16": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Show selected subtrees"
+   ],
+   "help": ""
+  },
+  "tree:17": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Show whole tree"
+   ],
+   "help": "Centre Tree: adjusts view settings so that the tree's core is at the centre of the working area."
+  },
+  "tree:19": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Save SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:20": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Load SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:22": {
+   "path": [
+    "Tree",
+    "⋮ menu",
+    "Download image"
+   ],
+   "help": ""
+  },
+  "metadata:0": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Selected only"
+   ],
+   "help": ""
+  },
+  "metadata:2": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Add metadata"
+   ],
+   "help": ""
+  },
+  "metadata:3": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Edit metadata"
+   ],
+   "help": ""
+  },
+  "metadata:5": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Add metadata for selection"
+   ],
+   "help": ""
+  },
+  "metadata:6": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Edit metadata for selection"
+   ],
+   "help": ""
+  },
+  "metadata:8": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Delete metadata"
+   ],
+   "help": ""
+  },
+  "metadata:10": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Select column"
+   ],
+   "help": ""
+  },
+  "metadata:11": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Move to the first position"
+   ],
+   "help": ""
+  },
+  "metadata:12": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Set as figure legend"
+   ],
+   "help": ""
+  },
+  "metadata:14": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Resize columns"
+   ],
+   "help": ""
+  },
+  "metadata:16": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Show hypothetical"
+   ],
+   "help": ""
+  },
+  "metadata:18": {
+   "path": [
+    "Metadata",
+    "⋮ menu",
+    "Download table"
+   ],
+   "help": ""
+  },
+  "metadata-card:0": {
+   "path": [
+    "Metadata",
+    "card header",
+    "Select all"
+   ],
+   "help": ""
+  },
+  "metadata-card:1": {
+   "path": [
+    "Metadata",
+    "card header",
+    "Clean selection"
+   ],
+   "help": ""
+  },
+  "legend:0": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Related nodes selection / Visual selection"
+   ],
+   "help": ""
+  },
+  "legend:2": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Select all items"
+   ],
+   "help": ""
+  },
+  "legend:3": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Invert selection"
+   ],
+   "help": ""
+  },
+  "legend:4": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Clean selection"
+   ],
+   "help": ""
+  },
+  "legend:6": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Color by"
+   ],
+   "help": ""
+  },
+  "legend:7": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Maximum number of groups"
+   ],
+   "help": ""
+  },
+  "legend:8": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Mininimum group size"
+   ],
+   "help": ""
+  },
+  "legend:10": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Data category"
+   ],
+   "help": ""
+  },
+  "legend:11": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Group order"
+   ],
+   "help": ""
+  },
+  "legend:12": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Color scheme"
+   ],
+   "help": ""
+  },
+  "legend:13": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "Quick gradient"
+   ],
+   "help": ""
+  },
+  "legend:15": {
+   "path": [
+    "Legend",
+    "⋮ menu",
+    "List view / Histogram view"
+   ],
+   "help": ""
+  },
+  "map:0": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Join by coordinates / Join by metadata"
+   ],
+   "help": "Join by coordinates/by metadata: The toggle allows you to aggregate points on the map based on the geographical proximity of the provided coordinates or based on the values of the loaded metadata. In the first case, you can define a numerical value for delta , which determines the degree of aggregation."
+  },
+  "map:1": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Set value"
+   ],
+   "help": ""
+  },
+  "map:2": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Reset to default"
+   ],
+   "help": ""
+  },
+  "map:4": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Min marker radius"
+   ],
+   "help": "Minimum/Maximum marker radius: With these two fields, you can adjust the size of the points on the map by defining a minimum and a maximum radius. The initial size is relative to the number of nodes located at the same geographical coordinates."
+  },
+  "map:5": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Max marker radius"
+   ],
+   "help": "Minimum/Maximum marker radius: With these two fields, you can adjust the size of the points on the map by defining a minimum and a maximum radius. The initial size is relative to the number of nodes located at the same geographical coordinates."
+  },
+  "map:6": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Reset to default"
+   ],
+   "help": ""
+  },
+  "map:8": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Select all"
+   ],
+   "help": ""
+  },
+  "map:9": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Deselect all"
+   ],
+   "help": ""
+  },
+  "map:11": {
+   "path": [
+    "Map",
+    "⋮ menu",
+    "Pie Chart mode / Heatmap mode"
+   ],
+   "help": "Pie Chart mode/Heatmap mode: This toggle allows you to change the visualization mode of the points on the map. With the first option (selected by default), the points will be displayed with pie charts based on the categories of the tree nodes, while with the second option, a blur effect is applied to the nodes."
+  },
+  "map-view:zoom": {
+   "path": [
+    "Map",
+    "Map zoom factor"
+   ],
+   "help": ""
+  },
+  "map-view:level": {
+   "path": [
+    "Map",
+    "Map zoom level"
+   ],
+   "help": ""
+  },
+  "map-view:center": {
+   "path": [
+    "Map",
+    "Center map at coordinates"
+   ],
+   "help": ""
+  },
+  "map-view:fit": {
+   "path": [
+    "Map",
+    "Fit map to all markers"
+   ],
+   "help": ""
+  },
+  "video-player:play": {
+   "path": [
+    "Video",
+    "player",
+    "Play timeline"
+   ],
+   "help": ""
+  },
+  "video-player:pause": {
+   "path": [
+    "Video",
+    "player",
+    "Pause timeline"
+   ],
+   "help": ""
+  },
+  "video-player:speed": {
+   "path": [
+    "Video",
+    "player",
+    "Timeline playback speed"
+   ],
+   "help": ""
+  },
+  "video-player:seek": {
+   "path": [
+    "Video",
+    "player",
+    "Timeline position (%)"
+   ],
+   "help": ""
+  },
+  "zooms:0": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select zoom type"
+   ],
+   "help": ""
+  },
+  "zooms:1": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select"
+   ],
+   "help": ""
+  },
+  "zooms:2": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select"
+   ],
+   "help": ""
+  },
+  "zooms:4": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Show selection alerts / Hide selection alerts"
+   ],
+   "help": ""
+  },
+  "zooms:5": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select involved nodes"
+   ],
+   "help": ""
+  },
+  "zooms:6": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Clean selection"
+   ],
+   "help": ""
+  },
+  "zooms:8": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Use current settings / Do not use current settings"
+   ],
+   "help": ""
+  },
+  "zooms:9": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Load cluster"
+   ],
+   "help": ""
+  },
+  "zooms:10": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Load in new tab"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:0": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select zoom type"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:1": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:2": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Select"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:4": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Use current settings / Do not use current settings"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:5": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Load cluster"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:6": {
+   "path": [
+    "ReporTree zooms",
+    "⋮ menu",
+    "Load in new tab"
+   ],
+   "help": ""
+  },
+  "layout:0": {
+   "path": [
+    "top bar",
+    "Settings"
+   ],
+   "help": ""
+  },
+  "layout:1": {
+   "path": [
+    "top bar",
+    "Map"
+   ],
+   "help": ""
+  },
+  "layout:2": {
+   "path": [
+    "top bar",
+    "Metadata"
+   ],
+   "help": ""
+  },
+  "layout:3": {
+   "path": [
+    "top bar",
+    "Legend"
+   ],
+   "help": ""
+  },
+  "layout:4": {
+   "path": [
+    "top bar",
+    "Video"
+   ],
+   "help": ""
+  },
+  "layout:5": {
+   "path": [
+    "top bar",
+    "Full screen"
+   ],
+   "help": ""
+  },
+  "settings/node-style:0": {
+   "path": [
+    "Settings",
+    "Node style",
+    "Color by"
+   ],
+   "help": "Colour by: from the dropdown menu of this section it's possible to choose the fill-in colour of the nodes according to metadata."
+  },
+  "settings/node-style:2": {
+   "path": [
+    "Settings",
+    "Node style",
+    "Show labels / Hide labels"
+   ],
+   "help": "Show Labels: the switch will allow to choose whether to show the node labels or hide them. You can choose which label to show from the dropdown menu just below."
+  },
+  "settings/node-style:3": {
+   "path": [
+    "Settings",
+    "Node style",
+    "Labels"
+   ],
+   "help": "Show Labels: the switch will allow to choose whether to show the node labels or hide them. You can choose which label to show from the dropdown menu just below."
+  },
+  "settings/node-style:5": {
+   "path": [
+    "Settings",
+    "Node style",
+    "Font size"
+   ],
+   "help": "Font Size: the font size for the labels can be chosen either by dragging the slider or by specifying a size in the box."
+  },
+  "settings/node-style:6": {
+   "path": [
+    "Settings",
+    "Node style",
+    "Highlight labels"
+   ],
+   "help": "Highlight Label: use the text box to provide a search term for the labels to highlight the corresponding nodes. Supports Regular Expressions."
+  },
+  "settings/node-style:8": {
+   "path": [
+    "Settings",
+    "Node style",
+    "Individual segments"
+   ],
+   "help": "Individual segments: use the switch to turn each node into a pie chart showing the breakdown of the members contained in it. The breakdown is based on the category used for the Colour by settings."
+  },
+  "settings/node-size:1": {
+   "path": [
+    "Settings",
+    "Node size",
+    "Radius size (%)"
+   ],
+   "help": "Node Size (%): the overall node size can be increased or decreased through this option, either by using the slider or through the box."
+  },
+  "settings/node-size:3": {
+   "path": [
+    "Settings",
+    "Node size",
+    "Kurtosis (%)"
+   ],
+   "help": "Kurtosis (%): the area of the nodes is correlated with the members inside them by default. Using this section's slider or box, the node's size can be increased or decreased based on the distribution's kurtosis of the nodes. By increasing this value, you raise the percentage by which the node size grows per member in the node, thus nodes with a larger number of members will have a larger area and will stick out more."
+  },
+  "settings/branch-style:0": {
+   "path": [
+    "Settings",
+    "Branch style",
+    "Show labels / Hide labels"
+   ],
+   "help": "Show Labels: this option will allow you to choose whether to show the branch labels or hide them."
+  },
+  "settings/branch-style:2": {
+   "path": [
+    "Settings",
+    "Branch style",
+    "Font size"
+   ],
+   "help": "Font Size: this option allows you to choose the font size for the labels using the slider or the provided box."
+  },
+  "settings/branch-style:5": {
+   "path": [
+    "Settings",
+    "Branch style",
+    "Scaling (%)"
+   ],
+   "help": "Scaling (%): this option allows to increase or decrease the overall branches' lenght, by using the slider or by specifying a value in the box below it."
+  },
+  "settings/branch-style:7": {
+   "path": [
+    "Settings",
+    "Branch style",
+    "Collapse branches"
+   ],
+   "help": "Collapse Branches: use the slider or enter a value in the box to collapse all branches shorter than the specified lenght. Nodes falling in that interval will be merged together. Branch lenght values are scaled to the branch lenghts defined in the original tree data."
+  },
+  "settings/branch-style:9": {
+   "path": [
+    "Settings",
+    "Branch style",
+    "Log scale"
+   ],
+   "help": "Log Scale: by checking the box, all lenghts of all branches will be scaled logarithmically."
+  },
+  "settings/branch-cutoffs:0": {
+   "path": [
+    "Settings",
+    "Branch cutoffs",
+    "Cut off branches longer than"
+   ],
+   "help": ""
+  },
+  "settings/branch-cutoffs:1": {
+   "path": [
+    "Settings",
+    "Branch cutoffs",
+    "Display / Hide / Shorten"
+   ],
+   "help": "Display: show long branches as normal (default)."
+  },
+  "settings/rendering:0": {
+   "path": [
+    "Settings",
+    "Rendering",
+    "Static / Dynamic"
+   ],
+   "help": "Static: the tree layout is calculated when the tree is generated and remains static (but interactive); relative branch lenght and scaling (from the original tree data) will always be mantained as long as the Real Branch Lenght option is checked."
+  },
+  "settings/rendering:2": {
+   "path": [
+    "Settings",
+    "Rendering",
+    "Selected only / All"
+   ],
+   "help": ""
+  },
+  "settings/rendering:3": {
+   "path": [
+    "Settings",
+    "Rendering",
+    "Unreal branch length / Real branch length"
+   ],
+   "help": ""
+  },
+  "macro:0": {
+   "path": [
+    "top bar",
+    "Macros (▷▷)",
+    "Log scale at 10"
+   ],
+   "help": ""
+  },
+  "macro:1": {
+   "path": [
+    "top bar",
+    "Macros (▷▷)",
+    "Preset space time"
+   ],
+   "help": ""
+  }
+ }
 }

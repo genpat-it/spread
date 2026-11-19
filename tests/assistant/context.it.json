@@ -3557,5 +3557,797 @@
   "nothing",
   "__Node",
   "ID"
- ]
+ ],
+ "locations": {
+  "tree:0": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Mostra suggerimenti"
+   ],
+   "help": ""
+  },
+  "tree:2": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Centra albero"
+   ],
+   "help": "Centra Albero: regola le impostazioni di visualizzazione in modo tale che il centro dell'albero sia al centro dell'area di lavoro."
+  },
+  "tree:3": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Ridisegno statico"
+   ],
+   "help": "Ridisegno Statico: aggiorna l'albero e lo ridisegna con il layout attuale."
+  },
+  "tree:4": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Albero iniziale"
+   ],
+   "help": "Centra Albero: regola le impostazioni di visualizzazione in modo tale che il centro dell'albero sia al centro dell'area di lavoro."
+  },
+  "tree:6": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Mostra elementi ipotetici"
+   ],
+   "help": ""
+  },
+  "tree:8": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Seleziona tutto"
+   ],
+   "help": ""
+  },
+  "tree:9": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Deseleziona tutti"
+   ],
+   "help": ""
+  },
+  "tree:11": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Comprimi nodi selezionati"
+   ],
+   "help": ""
+  },
+  "tree:12": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Espandi nodi selezionati"
+   ],
+   "help": ""
+  },
+  "tree:13": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Espandi tutti"
+   ],
+   "help": ""
+  },
+  "tree:15": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Nascondi nodi selezionati"
+   ],
+   "help": ""
+  },
+  "tree:16": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Mostra i sottoalberi selezionati"
+   ],
+   "help": ""
+  },
+  "tree:17": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Mostra albero intero"
+   ],
+   "help": "Centra Albero: regola le impostazioni di visualizzazione in modo tale che il centro dell'albero sia al centro dell'area di lavoro."
+  },
+  "tree:19": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Salva SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:20": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Carica SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:22": {
+   "path": [
+    "Albero",
+    "menu ⋮",
+    "Scarica immagine"
+   ],
+   "help": ""
+  },
+  "metadata:0": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Solo selezionati"
+   ],
+   "help": ""
+  },
+  "metadata:2": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Aggiungi metadati"
+   ],
+   "help": ""
+  },
+  "metadata:3": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Modifica metadati"
+   ],
+   "help": ""
+  },
+  "metadata:5": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Aggiungi metadati per selezione"
+   ],
+   "help": ""
+  },
+  "metadata:6": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Modifica metadati per selezione"
+   ],
+   "help": ""
+  },
+  "metadata:8": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Elimina metadati"
+   ],
+   "help": ""
+  },
+  "metadata:10": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Seleziona colonna"
+   ],
+   "help": ""
+  },
+  "metadata:11": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Sposta in prima posizione"
+   ],
+   "help": ""
+  },
+  "metadata:12": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Imposta come legenda della figura"
+   ],
+   "help": ""
+  },
+  "metadata:14": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Ridimensiona colonne"
+   ],
+   "help": ""
+  },
+  "metadata:16": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Mostra elementi ipotetici"
+   ],
+   "help": ""
+  },
+  "metadata:18": {
+   "path": [
+    "Metadati",
+    "menu ⋮",
+    "Download tabella"
+   ],
+   "help": ""
+  },
+  "metadata-card:0": {
+   "path": [
+    "Metadati",
+    "intestazione della card",
+    "Seleziona tutto"
+   ],
+   "help": ""
+  },
+  "metadata-card:1": {
+   "path": [
+    "Metadati",
+    "intestazione della card",
+    "Pulisci selezione"
+   ],
+   "help": ""
+  },
+  "legend:0": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Selezione nodi correlati / Selezione visiva"
+   ],
+   "help": ""
+  },
+  "legend:2": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Seleziona tutti gli elementi"
+   ],
+   "help": ""
+  },
+  "legend:3": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Inverti selezione"
+   ],
+   "help": ""
+  },
+  "legend:4": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Pulisci selezione"
+   ],
+   "help": ""
+  },
+  "legend:6": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Colora per"
+   ],
+   "help": ""
+  },
+  "legend:7": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Numero massimo di gruppi"
+   ],
+   "help": ""
+  },
+  "legend:8": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Grandezza minima gruppo"
+   ],
+   "help": ""
+  },
+  "legend:10": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Categoria dati"
+   ],
+   "help": ""
+  },
+  "legend:11": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Ordine gruppo"
+   ],
+   "help": ""
+  },
+  "legend:12": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Schema colore"
+   ],
+   "help": ""
+  },
+  "legend:13": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Gradiente veloce"
+   ],
+   "help": ""
+  },
+  "legend:15": {
+   "path": [
+    "Legenda",
+    "menu ⋮",
+    "Visualizzazione a lista / Visualizzazione a istogramma"
+   ],
+   "help": ""
+  },
+  "map:0": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Aggrega per coordinate / Aggrega per metadati"
+   ],
+   "help": "Aggrega per coordinate/per metadati: l'interruttore permette di aggregare i punti sulla mappa in base alla vicinanza geografica delle coordinate fornite o ai valori dei metadati caricati. Nel primo caso, è possibile definire un valore numerico per delta che determina il grado di aggregazione."
+  },
+  "map:1": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Imposta valore"
+   ],
+   "help": "Modalità grafico a torta/Modalità mappa di calore: l'interruttore permette di cambiare la modalità di visualizzazione dei punti sulla mappa. Con la prima opzione (selezionata di default) i punti saranno visualizzati con dei grafici a torta in base alle categorie dei nodi dell'albero mentre, con la seconda, ai nodi viene applicato un effetto sfocato."
+  },
+  "map:2": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Torna alle impostazioni di default"
+   ],
+   "help": "Modalità grafico a torta/Modalità mappa di calore: l'interruttore permette di cambiare la modalità di visualizzazione dei punti sulla mappa. Con la prima opzione (selezionata di default) i punti saranno visualizzati con dei grafici a torta in base alle categorie dei nodi dell'albero mentre, con la seconda, ai nodi viene applicato un effetto sfocato."
+  },
+  "map:4": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Raggio minimo del marcatore"
+   ],
+   "help": "Raggio Minimo/Massimo del marcatore: questi due campi permettono di intervenire sulla dimensione dei punti sulla mappa, definendo un raggio minimo ed un raggio massimo. La dimensione iniziale è relativa al numero di nodi presenti sulle stesse coordinate geografiche."
+  },
+  "map:5": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Raggio massimo del marcatore"
+   ],
+   "help": "Raggio Minimo/Massimo del marcatore: questi due campi permettono di intervenire sulla dimensione dei punti sulla mappa, definendo un raggio minimo ed un raggio massimo. La dimensione iniziale è relativa al numero di nodi presenti sulle stesse coordinate geografiche."
+  },
+  "map:6": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Torna alle impostazioni di default"
+   ],
+   "help": "Modalità grafico a torta/Modalità mappa di calore: l'interruttore permette di cambiare la modalità di visualizzazione dei punti sulla mappa. Con la prima opzione (selezionata di default) i punti saranno visualizzati con dei grafici a torta in base alle categorie dei nodi dell'albero mentre, con la seconda, ai nodi viene applicato un effetto sfocato."
+  },
+  "map:8": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Seleziona tutto"
+   ],
+   "help": ""
+  },
+  "map:9": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Deseleziona tutti"
+   ],
+   "help": ""
+  },
+  "map:11": {
+   "path": [
+    "Mappa",
+    "menu ⋮",
+    "Modalità grafico a torta / Modalità heatmap"
+   ],
+   "help": "Modalità grafico a torta/Modalità mappa di calore: l'interruttore permette di cambiare la modalità di visualizzazione dei punti sulla mappa. Con la prima opzione (selezionata di default) i punti saranno visualizzati con dei grafici a torta in base alle categorie dei nodi dell'albero mentre, con la seconda, ai nodi viene applicato un effetto sfocato."
+  },
+  "map-view:zoom": {
+   "path": [
+    "Mappa",
+    "Fattore di zoom della mappa"
+   ],
+   "help": ""
+  },
+  "map-view:level": {
+   "path": [
+    "Mappa",
+    "Livello di zoom della mappa"
+   ],
+   "help": ""
+  },
+  "map-view:center": {
+   "path": [
+    "Mappa",
+    "Centra la mappa alle coordinate"
+   ],
+   "help": ""
+  },
+  "map-view:fit": {
+   "path": [
+    "Mappa",
+    "Inquadra tutti i marcatori"
+   ],
+   "help": ""
+  },
+  "video-player:play": {
+   "path": [
+    "Video",
+    "lettore",
+    "Riproduci video"
+   ],
+   "help": ""
+  },
+  "video-player:pause": {
+   "path": [
+    "Video",
+    "lettore",
+    "Metti in pausa il video"
+   ],
+   "help": ""
+  },
+  "video-player:speed": {
+   "path": [
+    "Video",
+    "lettore",
+    "Velocità del video"
+   ],
+   "help": ""
+  },
+  "video-player:seek": {
+   "path": [
+    "Video",
+    "lettore",
+    "Posizione del video (%)"
+   ],
+   "help": ""
+  },
+  "zooms:0": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona tipo di zoom"
+   ],
+   "help": ""
+  },
+  "zooms:1": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona"
+   ],
+   "help": ""
+  },
+  "zooms:2": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona"
+   ],
+   "help": ""
+  },
+  "zooms:4": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Mostra avvisi di selezione / Nascondi avvisi di selezione"
+   ],
+   "help": ""
+  },
+  "zooms:5": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona nodi coinvolti"
+   ],
+   "help": ""
+  },
+  "zooms:6": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Pulisci selezione"
+   ],
+   "help": ""
+  },
+  "zooms:8": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Usa impostazioni correnti / Non usare impostazioni correnti"
+   ],
+   "help": ""
+  },
+  "zooms:9": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Carica cluster"
+   ],
+   "help": ""
+  },
+  "zooms:10": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Apri in nuova scheda"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:0": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona tipo di zoom"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:1": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:2": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Seleziona"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:4": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Usa impostazioni correnti / Non usare impostazioni correnti"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:5": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Carica cluster"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:6": {
+   "path": [
+    "Zoom ReporTree",
+    "menu ⋮",
+    "Apri in nuova scheda"
+   ],
+   "help": ""
+  },
+  "layout:0": {
+   "path": [
+    "barra in alto",
+    "Impostazioni"
+   ],
+   "help": ""
+  },
+  "layout:1": {
+   "path": [
+    "barra in alto",
+    "Mappa"
+   ],
+   "help": ""
+  },
+  "layout:2": {
+   "path": [
+    "barra in alto",
+    "Metadati"
+   ],
+   "help": ""
+  },
+  "layout:3": {
+   "path": [
+    "barra in alto",
+    "Legenda"
+   ],
+   "help": ""
+  },
+  "layout:4": {
+   "path": [
+    "barra in alto",
+    "Video"
+   ],
+   "help": ""
+  },
+  "layout:5": {
+   "path": [
+    "barra in alto",
+    "Schermo intero"
+   ],
+   "help": ""
+  },
+  "settings/node-style:0": {
+   "path": [
+    "Impostazioni",
+    "Stile nodi",
+    "Colora per"
+   ],
+   "help": "Colora per: dal menù a cascata di questa sezione, è possibile selezionare il colore di riempimento dei nodi, in base ai metadati."
+  },
+  "settings/node-style:2": {
+   "path": [
+    "Impostazioni",
+    "Stile nodi",
+    "Mostra etichette / Nascondi etichette"
+   ],
+   "help": "Mostra etichette: l'opzione permette di scegliere se visualizzare o meno le etichette dei nodi. È anche possibile scegliere che tipo di etichetta mostrare dal menù a cascata qui sotto."
+  },
+  "settings/node-style:3": {
+   "path": [
+    "Impostazioni",
+    "Stile nodi",
+    "Etichette"
+   ],
+   "help": "Mostra etichette: l'opzione permette di scegliere se visualizzare o meno le etichette dei nodi. È anche possibile scegliere che tipo di etichetta mostrare dal menù a cascata qui sotto."
+  },
+  "settings/node-style:5": {
+   "path": [
+    "Impostazioni",
+    "Stile nodi",
+    "Dimensione carattere"
+   ],
+   "help": "Dimensione carattere: la dimensione del carattere per le etichette può essere scelta o trascinando l'apposito cursore oppure specificando una misura nel campo sottostante."
+  },
+  "settings/node-style:6": {
+   "path": [
+    "Impostazioni",
+    "Stile nodi",
+    "Evidenzia etichette"
+   ],
+   "help": "Evidenzia etichetta: usa il campo di testo per fornire un termine di ricerca per evidenziare i nodi corrispondenti alle etichette. Sono supportate le Espressioni Regolari."
+  },
+  "settings/node-style:8": {
+   "path": [
+    "Impostazioni",
+    "Stile nodi",
+    "Segmenti individuali"
+   ],
+   "help": "Segmenti individuali: usa l'opzione per trasformare ciascun nodo in un grafico a torta che mostri la scomposizione degli elementi in esso contenuti. Tale scomposizione è basata sulla categoria utilizzata per le impostazioni di Colora per"
+  },
+  "settings/node-size:1": {
+   "path": [
+    "Impostazioni",
+    "Dimensione nodi",
+    "Dimensione raggio (%)"
+   ],
+   "help": "Dimensione dei nodi (%): la dimensione complessiva dei nodi può essere aumentata o diminuita trascinando l'apposito cursore o specificando le dimensioni nel campo previsto."
+  },
+  "settings/node-size:3": {
+   "path": [
+    "Impostazioni",
+    "Dimensione nodi",
+    "Curtosi (%)"
+   ],
+   "help": "Curtosi (%): l'area dei nodi è correlata di default con il numero di elementi che ne fanno parte. Usando il cursore o il campo previsto di questa sezione, le dimensioni dei nodi possono essere diminuite o aumentate sulla base della curtosi della distribuzione dei nodi. All'aumentare del valore della curtosi, aumenta la percentuale attraverso la quale cresce la dimensione del nodo per ogni elemento al suo interno; di conseguenza, i nodi con un numero maggiore di elementi avranno un'area più grande e risalteranno di più."
+  },
+  "settings/branch-style:0": {
+   "path": [
+    "Impostazioni",
+    "Stile rami",
+    "Mostra etichette / Nascondi etichette"
+   ],
+   "help": "Mostra etichette: l'opzione permette di scegliere se mostrare o nascondere le etichette dei rami."
+  },
+  "settings/branch-style:2": {
+   "path": [
+    "Impostazioni",
+    "Stile rami",
+    "Dimensione carattere"
+   ],
+   "help": "Dimensione carattere: questa opzione ti permette di scegliere le dimensioni del carattere delle etichette, utilizzando il cursore o l'apposito campo."
+  },
+  "settings/branch-style:5": {
+   "path": [
+    "Impostazioni",
+    "Stile rami",
+    "Adattamento in scala (%)"
+   ],
+   "help": "Adattamento in scala (%): questa opzione ti permette di aumentare o diminuire la lunghezza complessiva dei rami, utilizzando il cursore o specificando un valore nel campo sottostante."
+  },
+  "settings/branch-style:7": {
+   "path": [
+    "Impostazioni",
+    "Stile rami",
+    "Comprimi rami"
+   ],
+   "help": "Comprimi i Rami: utilizza il cursore o inserisci un valore nel campo previsto per comprimere tutti i rami più corti della lunghezza specificata. I nodi che rientrano nell'intervallo verranno fusi. I valori delle lunghezze dei rami sono in scala sulla base delle lunghezze dei rami definite nei dati dell'albero originale."
+  },
+  "settings/branch-style:9": {
+   "path": [
+    "Impostazioni",
+    "Stile rami",
+    "Scala logaritmica"
+   ],
+   "help": "Scala logaritmica: selezionando questa opzione, le lunghezze di tutti i rami verranno adattate in scala logaritmica."
+  },
+  "settings/branch-cutoffs:0": {
+   "path": [
+    "Impostazioni",
+    "Taglio rami",
+    "Taglia rami più lunghi di"
+   ],
+   "help": ""
+  },
+  "settings/branch-cutoffs:1": {
+   "path": [
+    "Impostazioni",
+    "Taglio rami",
+    "Mostra / Nascondi / Riduci"
+   ],
+   "help": "Mostra: mostra i rami più lunghi come normali (predefinito)."
+  },
+  "settings/rendering:0": {
+   "path": [
+    "Impostazioni",
+    "Rendering",
+    "Statico / Dinamico"
+   ],
+   "help": "Statico: il layout dell'albero viene calcolato alla generazione del grafico e rimane statico (ma interattivo); la lunghezza relativa dei rami e la loro scala (derivate dai dati originali dell'albero) saranno sempre mantenute fintanto che l'opzione Lunghezza del ramo reale rimane selezionata."
+  },
+  "settings/rendering:2": {
+   "path": [
+    "Impostazioni",
+    "Rendering",
+    "Solo selezionati / Tutti"
+   ],
+   "help": ""
+  },
+  "settings/rendering:3": {
+   "path": [
+    "Impostazioni",
+    "Rendering",
+    "Lunghezza del ramo non reale / Lunghezza del ramo reale"
+   ],
+   "help": ""
+  },
+  "macro:0": {
+   "path": [
+    "barra in alto",
+    "Macro (▷▷)",
+    "Scala logaritmica a 10"
+   ],
+   "help": ""
+  },
+  "macro:1": {
+   "path": [
+    "barra in alto",
+    "Macro (▷▷)",
+    "Preset spazio tempo"
+   ],
+   "help": ""
+  }
+ }
 }

@@ -3557,5 +3557,797 @@
   "nothing",
   "__Node",
   "ID"
- ]
+ ],
+ "locations": {
+  "tree:0": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez les info-bulles"
+   ],
+   "help": ""
+  },
+  "tree:2": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Centrez l'arborescence"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:3": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Rendu statique"
+   ],
+   "help": "Redessin Statique: met à jour l'arborescence et la redessine avec le layout actuel."
+  },
+  "tree:4": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Arborescence originale"
+   ],
+   "help": "Arborescence Originale: recharge la page et rétablit l'arbre dans l'état et le layout qu'il avait lors de son chargement initial. Il vous demandera une confirmation avant de quitter la page. Attention : cette fonction entraînera la perte de toutes les modifications apportées à l'arborescence."
+  },
+  "tree:6": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez les éléments hypothétiques"
+   ],
+   "help": ""
+  },
+  "tree:8": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Tout sélectionner"
+   ],
+   "help": ""
+  },
+  "tree:9": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Désélectionnez tous"
+   ],
+   "help": ""
+  },
+  "tree:11": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Repliez les nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:12": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Développez les nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:13": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Développez tout"
+   ],
+   "help": ""
+  },
+  "tree:15": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Masquez les nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:16": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez les sous-arborescences sélectionnées"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:17": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez l'arborescence intière"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:19": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:20": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Chargez SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:22": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Download l'image"
+   ],
+   "help": ""
+  },
+  "metadata:0": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Seulement les sélectionnés"
+   ],
+   "help": ""
+  },
+  "metadata:2": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Ajoutez des métadonnées"
+   ],
+   "help": ""
+  },
+  "metadata:3": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Modifiez les métadonnées"
+   ],
+   "help": ""
+  },
+  "metadata:5": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Ajoutez des métadonnées pour la sélection"
+   ],
+   "help": ""
+  },
+  "metadata:6": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Modifiez les métadonnées pou la sélection"
+   ],
+   "help": ""
+  },
+  "metadata:8": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Supprimez les métadonnées"
+   ],
+   "help": ""
+  },
+  "metadata:10": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Sélectionnez une colonne"
+   ],
+   "help": ""
+  },
+  "metadata:11": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Déplacez en première position"
+   ],
+   "help": ""
+  },
+  "metadata:12": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Définissez comme légende de la figure"
+   ],
+   "help": ""
+  },
+  "metadata:14": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Redimensionnez les colonnes"
+   ],
+   "help": ""
+  },
+  "metadata:16": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Affichez les éléments hypothétiques"
+   ],
+   "help": ""
+  },
+  "metadata:18": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Download la table"
+   ],
+   "help": ""
+  },
+  "metadata-card:0": {
+   "path": [
+    "Métadonnées",
+    "en-tête de la carte",
+    "Tout sélectionner"
+   ],
+   "help": ""
+  },
+  "metadata-card:1": {
+   "path": [
+    "Métadonnées",
+    "en-tête de la carte",
+    "Effacez la sélection"
+   ],
+   "help": ""
+  },
+  "legend:0": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Sélection des nœuds associés / Sélection visuelle"
+   ],
+   "help": ""
+  },
+  "legend:2": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Sélectionnez tous les éléments"
+   ],
+   "help": ""
+  },
+  "legend:3": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Inversez la sélection"
+   ],
+   "help": ""
+  },
+  "legend:4": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Effacez la sélection"
+   ],
+   "help": ""
+  },
+  "legend:6": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Colorez par"
+   ],
+   "help": ""
+  },
+  "legend:7": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Nombre maximal de groupes"
+   ],
+   "help": ""
+  },
+  "legend:8": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Taille minimale du groupe"
+   ],
+   "help": ""
+  },
+  "legend:10": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Catégorie de données"
+   ],
+   "help": ""
+  },
+  "legend:11": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Ordre du groupe"
+   ],
+   "help": ""
+  },
+  "legend:12": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Schéma de couleurs"
+   ],
+   "help": ""
+  },
+  "legend:13": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Gradient rapide"
+   ],
+   "help": ""
+  },
+  "legend:15": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Vue à liste / Vue en histogramme"
+   ],
+   "help": ""
+  },
+  "map:0": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Agrégez par coordonnées / Agrégez par métadonnées"
+   ],
+   "help": "Agrégez par coordonnées/par métadonnées: Le commutateur vous permet d'agréger les points sur la carte en fonction de la proximité géographique des coordonnées fournies ou des valeurs des métadonnées importées. Dans le premier cas, vous pouvez définir une valeur numérique pour le delta , qui détermine le degré d'agrégation."
+  },
+  "map:1": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Définissez la valeur"
+   ],
+   "help": ""
+  },
+  "map:2": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Revenez aux paramètres par défaut"
+   ],
+   "help": "Agrégez par coordonnées/par métadonnées: Le commutateur vous permet d'agréger les points sur la carte en fonction de la proximité géographique des coordonnées fournies ou des valeurs des métadonnées importées. Dans le premier cas, vous pouvez définir une valeur numérique pour le delta , qui détermine le degré d'agrégation."
+  },
+  "map:4": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Rayon minimal du marqueur"
+   ],
+   "help": "Minimum/Rayon Minimal/Maximal du marqueur: ces deux champs vour permettent d'ajuster la taille des points sur la carte en définissant un rayon minimal et un rayon maximal. La taille initiale est relative au nombre de nœuds situés sur les mêmes coordonnées géographiques."
+  },
+  "map:5": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Rayon maximal du marqueur"
+   ],
+   "help": "Minimum/Rayon Minimal/Maximal du marqueur: ces deux champs vour permettent d'ajuster la taille des points sur la carte en définissant un rayon minimal et un rayon maximal. La taille initiale est relative au nombre de nœuds situés sur les mêmes coordonnées géographiques."
+  },
+  "map:6": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Revenez aux paramètres par défaut"
+   ],
+   "help": "Agrégez par coordonnées/par métadonnées: Le commutateur vous permet d'agréger les points sur la carte en fonction de la proximité géographique des coordonnées fournies ou des valeurs des métadonnées importées. Dans le premier cas, vous pouvez définir une valeur numérique pour le delta , qui détermine le degré d'agrégation."
+  },
+  "map:8": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Tout sélectionner"
+   ],
+   "help": ""
+  },
+  "map:9": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Désélectionnez tous"
+   ],
+   "help": ""
+  },
+  "map:11": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Mode graphique en secteurs / Mode heatmap"
+   ],
+   "help": "Mode Diagramme en Secteurs/Mode Carte Thermique: Le commutateur vous permet de modifier les modes d'affichage des points sur la carte. Avec la première option (sélectionnée par défaut) les points seront affichés sous forme de diagramme en secteurs selon les catégories des nœuds de l'arborescence, tandis qu'avec la seconde, en effet de flou est appliqué aux nœuds."
+  },
+  "map-view:zoom": {
+   "path": [
+    "Carte",
+    "Facteur de zoom de la carte"
+   ],
+   "help": ""
+  },
+  "map-view:level": {
+   "path": [
+    "Carte",
+    "Niveau de zoom de la carte"
+   ],
+   "help": ""
+  },
+  "map-view:center": {
+   "path": [
+    "Carte",
+    "Centrer la carte aux coordonnées"
+   ],
+   "help": ""
+  },
+  "map-view:fit": {
+   "path": [
+    "Carte",
+    "Afficher tous les marqueurs"
+   ],
+   "help": ""
+  },
+  "video-player:play": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Lire la vidéo"
+   ],
+   "help": ""
+  },
+  "video-player:pause": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Mettre la vidéo en pause"
+   ],
+   "help": ""
+  },
+  "video-player:speed": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Vitesse de lecture"
+   ],
+   "help": ""
+  },
+  "video-player:seek": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Position de lecture (%)"
+   ],
+   "help": ""
+  },
+  "zooms:0": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez le type de zoom"
+   ],
+   "help": ""
+  },
+  "zooms:1": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms:2": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms:4": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Affichez les alertes de sélection / Masquez les alertes de sélection"
+   ],
+   "help": ""
+  },
+  "zooms:5": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez les nœuds interessés"
+   ],
+   "help": ""
+  },
+  "zooms:6": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Effacez la sélection"
+   ],
+   "help": ""
+  },
+  "zooms:8": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Utilisez les paramètres actuels / Ne pas utiliser les paramètres actuels"
+   ],
+   "help": ""
+  },
+  "zooms:9": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Chargez le cluster"
+   ],
+   "help": ""
+  },
+  "zooms:10": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Ouvrez dans un nouvel onglet"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:0": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez le type de zoom"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:1": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:2": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:4": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Utilisez les paramètres actuels / Ne pas utiliser les paramètres actuels"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:5": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Chargez le cluster"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:6": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Ouvrez dans un nouvel onglet"
+   ],
+   "help": ""
+  },
+  "layout:0": {
+   "path": [
+    "barre du haut",
+    "Paramètres"
+   ],
+   "help": ""
+  },
+  "layout:1": {
+   "path": [
+    "barre du haut",
+    "Carte"
+   ],
+   "help": ""
+  },
+  "layout:2": {
+   "path": [
+    "barre du haut",
+    "Métadonnées"
+   ],
+   "help": ""
+  },
+  "layout:3": {
+   "path": [
+    "barre du haut",
+    "Légende"
+   ],
+   "help": ""
+  },
+  "layout:4": {
+   "path": [
+    "barre du haut",
+    "Vidéo"
+   ],
+   "help": ""
+  },
+  "layout:5": {
+   "path": [
+    "barre du haut",
+    "Plein écran"
+   ],
+   "help": ""
+  },
+  "settings/node-style:0": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Colorez par"
+   ],
+   "help": "Coloriez par: depuis le menu déroulant de cette section, il est possible de sélectionner la couleur de remplissage des nœuds en fonction des métadonnées."
+  },
+  "settings/node-style:2": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Affichez les étiquettes / Masquez les étiquettes"
+   ],
+   "help": "Affichez les étiquettes: l'option permet de choisir d'afficher ou non les étiquettes des nœuds. Il est également possible de choisir le type d'étiquette à afficher depuis le menu déroulant ci-dessous."
+  },
+  "settings/node-style:3": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Étiquettes"
+   ],
+   "help": "Affichez les étiquettes: l'option permet de choisir d'afficher ou non les étiquettes des nœuds. Il est également possible de choisir le type d'étiquette à afficher depuis le menu déroulant ci-dessous."
+  },
+  "settings/node-style:5": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Taille de police"
+   ],
+   "help": "Taille de police: la taille de police pour les étiquettes peut être choisie soit en faisant glisser le curseur approprié, soit en spécifiant une valeur dans le champ en dessous."
+  },
+  "settings/node-style:6": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Mettez en surbrillance les étiquettes"
+   ],
+   "help": "Mettez en surbrillance l'étiquette: utilisez le champ de texte pour fournir un terme de recherche pour mettre en surbrillance les nœuds correspondants aux étiquettes. Les Expressions Régulières sont prises en charge."
+  },
+  "settings/node-style:8": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Segments individuels"
+   ],
+   "help": "Segments individuels: utilisez cette option pour transformer chaque nœud en un graphique circulaire affichiant la répartition des éléments qu'il contient. Cette répartition est basée sur la catégorie utilisée pour les paramètres de Coloriez par"
+  },
+  "settings/node-size:1": {
+   "path": [
+    "Paramètres",
+    "Taille des nœuds",
+    "Taille du rayon (%)"
+   ],
+   "help": "Taille des Nœuds (%): la taille totale des nœuds peut être augmentée ou diminuée en faisant glisser le curseur approprié ou en spécifiant les dimensions dans le champ prévu."
+  },
+  "settings/node-size:3": {
+   "path": [
+    "Paramètres",
+    "Taille des nœuds",
+    "Kurtose (%)"
+   ],
+   "help": "Kurtose (%): la surface des nœuds est corrélée par défaut au nombre d'éléments qu'ils contiennent. En utilisant le curseur ou le champ prévu dans cette section, la taille des nœuds peut être augmentée ou diminuée sur la base de la kurtose de la distribution des nœuds. À mesure que la valeur de la kurtose augmente, le pourcentage par lequel la taille du nœud grandit, pour chaque élément en son sein, augmente également; par conséquent, les nœuds contenant un plus grand nombre d'éléments auront une plus grande surface et ressortiront davantage."
+  },
+  "settings/branch-style:0": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Affichez les étiquettes / Masquez les étiquettes"
+   ],
+   "help": "Affichez les étiquettes: cette option vous permet de choisir d'afficher ou de masquer les étiquettes des branches."
+  },
+  "settings/branch-style:2": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Taille de police"
+   ],
+   "help": "Taille de police: cette option vous permettra de choisir la taille de police pour les étiquettes, en utilisant le curseur ou le champ prévu."
+  },
+  "settings/branch-style:5": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Ajustement à l'échelle (%)"
+   ],
+   "help": "Ajustement à l'échelle (%): cette option vous permettra d'augmenter ou diminuer la longueur totale des branches, en utilisant le curseur ou en spécifiant une valeur dans le champ au-dessous."
+  },
+  "settings/branch-style:7": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Repliez les branches"
+   ],
+   "help": "Repliez les Branches: utilisez le curseur ou saisissez une valeur dans le champ prévu pour replier toutes les branches plus courtes que la longueur spécifiée. Les nœuds tombant dans cet intervalle seront fusionnés. Les valeurs de longueur des branches sont mises à l'échelle selon les longueurs définies dans les données de l'arborescence originale."
+  },
+  "settings/branch-style:9": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Échelle logarithmique"
+   ],
+   "help": "Échelle logarithmique: en sélectionnant cette option, les longueurs de toutes les branches seront ajustées selon une échelle logarithmique."
+  },
+  "settings/branch-cutoffs:0": {
+   "path": [
+    "Paramètres",
+    "Clôtures de la branche",
+    "Coupez les branches plus longues que"
+   ],
+   "help": ""
+  },
+  "settings/branch-cutoffs:1": {
+   "path": [
+    "Paramètres",
+    "Clôtures de la branche",
+    "Affichez / Masquez / Raccourcissez"
+   ],
+   "help": "Affichez: cette option affiche les branches plus longues que la valeur spécifiée comme normales (par défaut)."
+  },
+  "settings/rendering:0": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Statique / Dynamique"
+   ],
+   "help": "Statique: le layout de l'arborescence est calculé lors de la génération du graphe et reste statique (mais interactif); la longueur relative des branches et leur échelle (dérivées des données originales de l'arborescence) seront toujours conservées tant que l'option Longueur de la branche réelle reste sélectionnée."
+  },
+  "settings/rendering:2": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Seulement les sélectionnés / Tous"
+   ],
+   "help": ""
+  },
+  "settings/rendering:3": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Longueur de la branche non réelle / Longueur de la branche réelle"
+   ],
+   "help": ""
+  },
+  "macro:0": {
+   "path": [
+    "barre du haut",
+    "Macros (▷▷)",
+    "Échelle logarithmique en base 10"
+   ],
+   "help": ""
+  },
+  "macro:1": {
+   "path": [
+    "barre du haut",
+    "Macros (▷▷)",
+    "Préréglage espace-temps"
+   ],
+   "help": ""
+  }
+ }
 }
