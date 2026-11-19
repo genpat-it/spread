@@ -25,9 +25,9 @@ self.onmessage = async ({ data }) => {
         max_tokens: 700,
         response_format: { type: 'json_object' }
       });
-      self.postMessage({ type: 'answer', content: response.choices[0].message.content });
+      self.postMessage({ type: 'answer', requestId: data.requestId, request: data.request, content: response.choices[0].message.content });
     }
   } catch (error) {
-    self.postMessage({ type: 'error', message: error instanceof Error ? error.message : String(error) });
+    self.postMessage({ type: 'error', requestId: data.requestId, message: error instanceof Error ? error.message : String(error) });
   }
 };

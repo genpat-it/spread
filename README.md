@@ -59,12 +59,10 @@ isolated from the existing visualisation modules:
   execution.
 * `css/assistant.css` contains the assistant-only interface styles.
 
-The assistant is closed by default. Open it using **Assistente locale** at the
-bottom right, describe a change, inspect the proposed SPREAD actions and press
-**Applica**. Nothing changes until that explicit confirmation. On application,
-the same underlying SPREAD control/API used by the normal interface is called,
-so the visual interface updates immediately. For example, `zooma 2x` invokes
-the tree's native relative scale operation and doubles the current tree view.
+The assistant is closed by default. In the English interface, open **Local
+assistant** at the bottom right. Describe a change, review the proposed actions,
+and click **Apply**. SPREAD runs the confirmed actions through its native
+controls and updates the view.
 
 ### Privacy and deployment
 
@@ -97,14 +95,14 @@ for testing the assistant:
 ?tree=/datasets/assistant-demo/tree.nwk&metadata=/datasets/assistant-demo/metadata.tsv&longitude=longitude&latitude=latitude
 ```
 
-Examples of deterministic commands:
+Example commands:
 
-* `zooma 2x` — doubles the current MST viewport scale.
-* `ricentra MST` — fits and centers the native tree view.
-* `chiudi la legenda` — closes the existing legend panel.
-* `riscrivi nella colonna region tutti i valori a Teramo` — replaces every
+* `Zoom 2x` — doubles the current MST viewport scale.
+* `Recenter MST` — fits and centers the native tree view.
+* `Close the legend` — closes the existing legend panel.
+* `Set all values in the region column to Teramo` — replaces every
   value in the loaded `region` column after confirmation.
-* `metti il colore nero a ST-12` — assigns black to that exact sample ID and
+* `Set the color of sample IT-003 to black` — assigns black to that exact sample ID and
   switches the tree to the native ID colour category so the result is visible.
 
 ## Instruction to run it locally

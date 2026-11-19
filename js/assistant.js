@@ -19,7 +19,7 @@ let actionRegistry = new Map();
 let pendingActions = [];
 let lastProposedActions = [];
 let conversation = [];
-let activeRequest = '';
+let requestId = 0;
 
 function copy() {
   const code = typeof gtiz_locales !== 'undefined' ? gtiz_locales.getActiveLanguageCode() : 'en';
@@ -48,6 +48,7 @@ function optionsOf(item) {
 function registerMenu(area, menu, invoke) {
   if (!Array.isArray(menu)) return;
   menu.forEach((item, index) => {
+    if (item?.hide_in_read_only && gtiz_app.cfg.read_only) return;
     if (item && item.type !== 'separator') actionRegistry.set(`${area}:${index}`, { id: `${area}:${index}`, area, item, invoke });
   });
 }
@@ -96,7 +97,7 @@ function refreshRegistry() {
     // operation, but it needs two fields (column and replacement value) and
     // therefore is not representable by the one-value context-menu schema.
     // Keep it typed and bounded instead of sending free-form code to SPREAD.
-    if (gtiz_tree && gtiz_tree.tree && typeof gtiz_metadata.updateMetadata === 'function' && typeof gtiz_metadata.loadMetadata === 'function') {
+    if (!gtiz_app.cfg.read_only && gtiz_tree.tree && typeof gtiz_metadata.updateMetadata === 'function' && typeof gtiz_metadata.loadMetadata === 'function') {
       const item = {
         id: 'assistant-metadata-replace-all',
         type: 'assistant_metadata_replace_all',
@@ -250,8 +251,9 @@ function validate(item, value) {
     const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
     const category = String(value.category || '');
     const replacement = String(value.value || '').trim();
-    if (!columns.includes(category)) throw new Error('La colonna indicata non esiste nei metadati caricati.');
-    if (!replacement) throw new Error('Il valore di sostituzione non può essere vuoto.');
+    const protectedColumns = ['ID', 'CMP', 'nothing', '__Node', gtiz_file_handler.samples_column];
+    if (!columns.includes(category) || protectedColumns.includes(category)) throw new Error('La colonna indicata non è modificabile.');
+    if (!replacement || /[\t\r\n]/.test(replacement)) throw new Error('Serve un valore non vuoto, senza tabulazioni o ritorni a capo.');
     return { category, value: replacement };
   }
   const needsValue = optionsOf(item).length > 0 || ['toggle', 'select', 'number', 'slider', 'search', 'radio', 'text', 'abutton_optioned'].includes(item.type);
@@ -316,6 +318,7 @@ function showPlan(panel, actions) {
 }
 
 function confirm(panel) {
+  refreshRegistry();
   try { addMessage(panel, 'assistant', `${copy().done}: ${pendingActions.map(execute).join(', ')}.`); }
   catch (error) { addMessage(panel, 'assistant', `Non ho applicato l’azione: ${error.message}`); }
   clearPlan(panel);
@@ -359,7 +362,7 @@ function mandatoryActions(request) {
   let handledLogScale = false;
   if (/\b(zoom|zooma|zoomare|ingrandisci|ingrandire|riduci|ridurre)\b/.test(normalizedRequest)) {
     const entry = actionRegistry.get('assistant:tree-zoom');
-    const amount = normalizedRequest.match(/\b(\d+(?:[,.]\d+)?)\s*(?:x|volte|times)?\b/);
+    const amount = request.match(/\b(\d+(?:[,.]\d+)?)\s*(?:x|volte|times)?\b/i);
     if (entry && amount) {
       let factor = Number(amount[1].replace(',', '.'));
       if (/\b(riduci|ridurre|out|meno)\b/.test(normalizedRequest)) factor = 1 / factor;
@@ -392,8 +395,12 @@ function mandatoryActions(request) {
     });
     if (entry && column) result.push({ id: entry.id, value: column });
   }
-  if (/\b(apri|mostra|visualizza|chiudi|nascondi|close|hide|ferme)\b/.test(normalizedRequest)) {
-    const aliases = { mappa: 'map', metadati: 'metadata', impostazioni: 'settings', legenda: 'legend', video: 'video', schermo: 'full screen' };
+  if (/\b(apri|mostra|visualizza|open|show|chiudi|nascondi|close|hide|ferme)\b/.test(normalizedRequest)) {
+    const aliases = {
+      mappa: 'map', metadati: 'metadata', impostazioni: 'settings', legenda: 'legend',
+      video: 'video', schermo: 'full screen', map: 'map', metadata: 'metadata',
+      settings: 'settings', legend: 'legend', 'full screen': 'full screen'
+    };
     const target = Object.keys(aliases).find((word) => normalizedRequest.includes(word));
     if (target) {
       const entry = [...actionRegistry.values()].find(({ area, item }) => area === 'layout' && normalizeTerms(`${item.type} ${labelOf(item)}`).includes(aliases[target]));
@@ -428,29 +435,31 @@ function systemPrompt(request) {
   return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"id":"exact loaded sample ID","colour":"#RRGGBB"}. The catalog is locally filtered for relevance but all actions remain available in the app. Propose only listed IDs and values. If impossible, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(compactState(request))}`;
 }
 
-function postChat(messages) {
-  if (workerReady) worker.postMessage({ type: 'chat', messages });
-  else queuedMessages.push(messages);
+function postChat(messages, request) {
+  const job = { type: 'chat', messages, request, requestId };
+  if (workerReady) worker.postMessage(job);
+  else queuedMessages.push(job);
 }
 
 function initWorker(panel) {
   if (worker) return;
-  worker = new Worker('js/assistant-worker.js', { type: 'module' });
+  worker = new Worker(new URL('./assistant-worker.js?v=22', import.meta.url), { type: 'module' });
   worker.onmessage = ({ data }) => {
     if (data.type === 'progress') setStatus(panel, data.text || 'Caricamento modello…');
     if (data.type === 'ready') {
       workerReady = true;
       setStatus(panel, copy().ready);
-      queuedMessages.splice(0).forEach((messages) => worker.postMessage({ type: 'chat', messages }));
+      queuedMessages.splice(0).filter((job) => job.requestId === requestId).forEach((job) => worker.postMessage(job));
     }
+    if (data.requestId != null && data.requestId !== requestId) return;
     if (data.type === 'error') { setStatus(panel, copy().modelError); addMessage(panel, 'assistant', data.message); }
-    if (data.type === 'answer') handleAnswer(panel, data.content);
+    if (data.type === 'answer') handleAnswer(panel, data.content, data.request);
   };
   setStatus(panel, copy().downloading);
   worker.postMessage({ type: 'init', modelId: panel.querySelector('.spread-assistant__model').value || DEFAULT_MODEL });
 }
 
-function handleAnswer(panel, content) {
+function handleAnswer(panel, content, request) {
   let answer;
   try { answer = JSON.parse(content); }
   catch (_) { addMessage(panel, 'assistant', copy().malformed); return; }
@@ -470,7 +479,7 @@ function handleAnswer(panel, content) {
   }) : [];
   // A known-safe action derived from the user's explicit wording overrides a
   // conflicting model value; all other model instructions stay validated.
-  const mandatory = mandatoryActions(activeRequest);
+  const mandatory = mandatoryActions(request);
   // For a recognised, unambiguous imperative (e.g. “apri la mappa” or
   // “colora per regione”), execute exactly that plan.  Do not let an otherwise
   // valid but unrelated model action silently alter another panel.
@@ -498,15 +507,28 @@ function submit(event, panel) {
   clearPlan(panel);
   addMessage(panel, 'user', message);
   conversation.push({ role: 'user', content: message });
-  activeRequest = message;
+  requestId += 1;
   input.value = '';
   const fact = factualReply(message);
   if (fact) {
     addMessage(panel, 'assistant', fact);
     return;
   }
+  const exactCommand = /^(?:zoom(?:a)? \d+(?:[.,]\d+)?\s*x|(?:recenter|ricentra|centra)(?: (?:the |l albero |il )?(?:mst|tree))?|(?:close|open|chiudi|apri) (?:the |la )?(?:legend|legenda)|set all values in the .+ column to .+|set the color of sample \S+ to black)[.!]?$/i;
+  if (exactCommand.test(message)) {
+    const actions = mandatoryActions(message);
+    if (actions.length === 1) {
+      try {
+        validate(actionRegistry.get(actions[0].id).item, actions[0].value);
+        showPlan(panel, actions);
+      } catch (_) {
+        addMessage(panel, 'assistant', copy().invalid);
+      }
+    } else addMessage(panel, 'assistant', copy().invalid);
+    return;
+  }
   initWorker(panel);
-  postChat([{ role: 'system', content: systemPrompt(message) }, ...conversation.slice(-6)]);
+  postChat([{ role: 'system', content: systemPrompt(message) }, ...conversation.slice(-6)], message);
 }
 
 function mount() {
