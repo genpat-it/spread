@@ -1307,6 +1307,32 @@ function parseFilter(ctx, text, folded) {
 const DESC = /\b(?:desc|discendente|decrescente|decrescenti|descending|descendant|decroissant|decroissante|dal piu grande|dal piu recente|piu recenti prima|newest first|largest first|z-a|z a)\b/;
 const ASC = /\b(?:asc|ascendente|crescente|crescenti|ascending|croissant|croissante|dal piu piccolo|dal piu vecchio|piu vecchi prima|oldest first|smallest first|a-z)\b/;
 
+// Legend group order: chronological, alphabetical or by size.
+function parseLegendOrder(ctx, text, folded) {
+  const sortVerb = /^(?:ordina|riordina|ordinami|metti in ordine|sort|order|reorder|arrange|trie|trier|tri|classe)\b/.test(folded) || /\b(?:in ordine|ordine|order|ordre|chronolog\w*|cronologic\w*|temporal\w*)\b/.test(folded);
+  if (!sortVerb || !/\b(?:legenda|legend|legende|gruppi|groups|groupes|categorie|categories)\b/.test(folded)) return null;
+  const entry = ctx.catalog.find((candidate) => candidate.iid === 'legend-menu-group-order');
+  if (!entry) return null;
+  const newest = /\b(?:piu recent\w*|newest|latest|most recent|plus recent\w*|dal piu recente)\b/.test(folded);
+  const temporal = newest || /\b(?:temporal\w*|cronologic\w*|chronolog\w*|per data|by date|par date|nel tempo|over time|dans le temps|piu vecch\w*|oldest|plus ancien\w*)\b/.test(folded);
+  const descending = /\b(?:desc|decrescent\w*|discendent\w*|descending|decroissant\w*|inverso|reverse|inverse|z-a)\b/.test(folded);
+  let value;
+  if (temporal) value = newest || descending ? 'alphabetic-desc' : 'alphabetic-asc';
+  else if (/\b(?:alfabetic\w*|alphabetic\w*|alphabetique\w*|per nome|by name|par nom|a-z|z-a)\b/.test(folded)) value = descending ? 'alphabetic-desc' : 'alphabetic-asc';
+  else if (/\b(?:dimension\w*|grandezz\w*|numerosit\w*|size|taille|piu grandi|largest|biggest|piu numeros\w*)\b/.test(folded)) value = /\b(?:crescent\w*|ascending|croissant\w*|piu piccol\w*|smallest)\b/.test(folded) ? 'size-asc' : 'size-desc';
+  else return null;
+  if (!entry.options.some((option) => option.value === value)) return null;
+  const actions = [];
+  // A chronological legend only makes sense on a date column.
+  if (temporal) {
+    const dated = ctx.columns.filter((column) => column !== 'ID' && ctx.values(column).length && ctx.values(column).every(looksLikeDate));
+    const colourBy = colourByEntry(ctx);
+    if (!dated.includes(ctx.displayCategory) && dated.length === 1 && colourBy) actions.push({ id: colourBy.id, value: dated[0] });
+  }
+  actions.push({ id: entry.id, value });
+  return { actions };
+}
+
 function parseSort(ctx, text, folded) {
   if (!/^(?:ordina|riordina|ordinami|sort|order|reorder|trie|trier|tri|classe)\b/.test(folded)) return null;
   if (/\b(?:gruppi|groups|groupes|legenda|legend|legende)\b/.test(folded)) return null;
@@ -1400,6 +1426,8 @@ export function parseClause(rawText, ctx) {
     const moved = `${text.slice(phrase.end).trim()} ${text.slice(0, phrase.end).trim()}`;
     if (moved !== text) return parseClause(moved, ctx);
   }
+  const legendOrder = parseLegendOrder(ctx, text, folded);
+  if (legendOrder) return legendOrder;
   const sorted = parseSort(ctx, text, folded);
   if (sorted) return sorted;
   const language = parseLanguage(ctx, text, folded);

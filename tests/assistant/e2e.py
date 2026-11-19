@@ -91,6 +91,7 @@ CASES = [
     ('it', 'quanti campioni per regione?', lambda rows, pg: any('Toscana' in r for r in REPLIES[0])),
     ('it', '#history', None),
     ('it', '#clear', None),
+    ('it', 'ordina la legenda temporalmente e metti gradiente', lambda rows, pg: pg.evaluate('gtiz_tree.tree.display_category') == 'sampling_date' and pg.evaluate("[...document.querySelectorAll('.legend .legend-item, .legend li')].length >= 0") and 'alphabetic-asc' in PLAN[0] + pg.evaluate('JSON.stringify(SPREAD_ASSISTANT.history().slice(-3))') and 'gradient' in pg.evaluate('JSON.stringify(SPREAD_ASSISTANT.history().slice(-3))')),
     ('it', 'apri la mappa e mostrala come heatmap', lambda rows, pg: 'heatmap' in PLAN[0].lower() and 'legenda' not in PLAN[0].lower()),
     ('en', 'show only the selected rows in the table', lambda rows, pg: 'show_selected' in PLAN[0] or 'selezionati' in PLAN[0].lower()),
     ('it', 'imposta la dimensione dei nodi a 150', lambda rows, pg: '150' in PLAN[0] and ('raggio' in PLAN[0].lower() or 'radius' in PLAN[0].lower())),

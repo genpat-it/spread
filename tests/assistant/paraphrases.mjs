@@ -115,6 +115,13 @@ const CASES = [
   ['en', 'zoom in on the map', [{ id: 'map-view:zoom', value: 1.5 }]],
   ['fr', 'dézoome 2x', [{ id: 'assistant:tree-zoom', value: 0.5 }]],
   ['it', 'velocità del video 2x', [{ id: 'video-player:speed', value: 2 }]],
+  // legend order
+  ['it', 'ordina la legenda temporalmente e metti gradiente', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-asc' }, { id: 'legend:12', value: 'gradient' }]],
+  ['it', 'legenda in ordine cronologico', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-asc' }]],
+  ['it', 'ordina la legenda dal più recente', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-desc' }]],
+  ['en', 'sort the legend chronologically', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-asc' }]],
+  ['en', 'sort the legend by size', [{ id: 'legend:11', value: 'size-desc' }]],
+  ['fr', 'trie la légende par ordre chronologique', [{ id: 'settings/node-style:0', value: 'sampling_date' }, { id: 'legend:11', value: 'alphabetic-asc' }]],
   // compound
   ['it', 'seleziona i campioni del Lazio e nascondili', [{ id: 'assistant:select', value: { mode: 'replace', where: eq('region', 'Lazio') } }, { id: 'tree:15' }]],
   ['it', 'colora per regione e apri la mappa', [{ id: 'settings/node-style:0', value: 'region' }, { id: 'layout:1', value: 'on' }]],
