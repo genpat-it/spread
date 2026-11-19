@@ -53,6 +53,57 @@ function registerMenu(area, menu, invoke) {
   });
 }
 
+function registerVideoPlayer() {
+  if (typeof gtiz_video === 'undefined' || !gtiz_tree.tree || !gtiz_video.getLegendRows().length) return;
+  const video = gtiz_video;
+  const speedSelector = document.querySelector('.slider-box-player select');
+  if (!speedSelector || !video.slider || !video.play_trigger) return;
+  const { min, max } = video.slider;
+  const controls = [
+    ['play', {
+      type: 'abutton',
+      label: 'Play timeline / Riproduci video / Lire la vidéo',
+      function: () => {
+        const status = video.cfg.status;
+        if (status === 'playing') return;
+        if (status === 'finished') video.pause();
+        video.play({ currentTarget: video.play_trigger }, status === 'finished' ? 'init' : status);
+      }
+    }],
+    ['pause', {
+      type: 'abutton',
+      label: 'Pause timeline / Metti in pausa il video / Mettre la vidéo en pause',
+      function: () => {
+        if (video.cfg.status === 'playing') video.pause();
+      }
+    }],
+    ['speed', {
+      type: 'select',
+      label: 'Timeline playback speed / Velocità del video / Vitesse de lecture',
+      options: video.cfg.speeds,
+      function: (value) => {
+        if (speedSelector.disabled) throw new Error('Pause timeline playback before changing its speed.');
+        speedSelector.value = value;
+        speedSelector.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }],
+    ['seek', {
+      type: 'number',
+      label: 'Timeline position (%) / Posizione del video (%) / Position de lecture (%)',
+      min: 0,
+      max: 100,
+      function: (percent) => {
+        video.slider.dispatchEvent(new Event('mousedown', { bubbles: true }));
+        video.fireSliderEvent(Math.round(Number(min) + (Number(max) - Number(min)) * percent / 100));
+      }
+    }]
+  ];
+  for (const [control, item] of controls) {
+    const id = 'video-player:' + control;
+    actionRegistry.set(id, { id, area: 'video', item });
+  }
+}
+
 function refreshRegistry() {
   actionRegistry = new Map();
   if (typeof gtiz_tree !== 'undefined') {
@@ -114,6 +165,7 @@ function refreshRegistry() {
   if (typeof gtiz_legend !== 'undefined') registerMenu('legend', gtiz_legend.context_menu);
   if (typeof gtiz_map !== 'undefined') registerMenu('map', gtiz_map.context_menu);
   if (typeof gtiz_video !== 'undefined') registerMenu('video', gtiz_video.context_menu);
+  registerVideoPlayer();
   if (typeof gtiz_zooms !== 'undefined') {
     registerMenu('zooms', gtiz_zooms.context_menu);
     registerMenu('zooms-filtered', gtiz_zooms.filtered_context_menu);
@@ -530,6 +582,17 @@ function factualReply(request) {
   return '';
 }
 
+function videoCommand(request) {
+  const words = normalizeTerms(request);
+  if (/^(?:play|resume|riproduci|avvia|riprendi|lire) (?:the |il |la )?(?:video|timeline)$/.test(words)) return { id: 'video-player:play' };
+  if (/^(?:pause|metti in pausa|pausa) (?:the |il |la )?(?:video|timeline)$/.test(words)) return { id: 'video-player:pause' };
+  const speed = request.match(/^(?:set (?:the )?(?:video|timeline|playback) speed to|imposta (?:la )?velocità del video a) (\d+(?:[,.]\d+)?)\s*x[.!]?$/i);
+  if (speed) return { id: 'video-player:speed', value: Number(speed[1].replace(',', '.')) };
+  const seek = request.match(/^(?:seek (?:the )?(?:video|timeline) to|porta il video al) (\d+(?:[,.]\d+)?)\s*%[.!]?$/i);
+  if (seek) return { id: 'video-player:seek', value: Number(seek[1].replace(',', '.')) };
+  return null;
+}
+
 function submit(event, panel) {
   event.preventDefault();
   const input = event.currentTarget.querySelector('textarea');
@@ -547,12 +610,13 @@ function submit(event, panel) {
   }
   const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
   const colour = namedColourCommand(message, tree);
+  const video = videoCommand(message);
   const exactCommand = /^(?:zoom(?:a)? \d+(?:[.,]\d+)?\s*x|(?:recenter|ricentra|centra)(?: (?:the |l albero |il )?(?:mst|tree))?|(?:close|open|chiudi|apri) (?:the |la )?(?:legend|legenda)|set all values in the .+ column to .+)[.!]?$/i;
-  if (colour || exactCommand.test(message)) {
+  if (colour || video || exactCommand.test(message)) {
     refreshRegistry();
     const actions = colour
       ? (colour.id && actionRegistry.has('assistant:node-colour') ? [{ id: 'assistant:node-colour', value: colour }] : [])
-      : mandatoryActions(message);
+      : (video ? [video] : mandatoryActions(message));
     if (actions.length === 1) {
       try {
         validate(actionRegistry.get(actions[0].id).item, actions[0].value);

@@ -106,6 +106,9 @@ Example commands:
   switches the tree to the native ID colour category so the result is visible.
 * `Set the color of group ST-12 to black` — assigns black to the ST-12 group
   in the demo's `lineage` column and shows that category on the tree.
+* `Play the timeline` and `Pause the timeline` control playback.
+* `Set the timeline speed to 1.5x` changes the speed while playback is paused.
+* `Seek the timeline to 50%` moves the timeline slider to its midpoint.
 
 ## Instruction to run it locally
 
