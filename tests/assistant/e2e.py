@@ -90,6 +90,7 @@ CASES = [
     ('it', 'quanti valori distinti ci sono nella colonna cluster?', lambda rows, pg: any('cluster' in r and 'A' in r for r in REPLIES[0]) and not PLAN[0]),
     ('it', 'quanti campioni per regione?', lambda rows, pg: any('Toscana' in r for r in REPLIES[0])),
     ('it', '#history', None),
+    ('it', '#clear', None),
     ('it', 'apri la mappa e mostrala come heatmap', lambda rows, pg: 'heatmap' in PLAN[0].lower() and 'legenda' not in PLAN[0].lower()),
     ('en', 'show only the selected rows in the table', lambda rows, pg: 'show_selected' in PLAN[0] or 'selezionati' in PLAN[0].lower()),
     ('it', 'imposta la dimensione dei nodi a 150', lambda rows, pg: '150' in PLAN[0] and ('raggio' in PLAN[0].lower() or 'radius' in PLAN[0].lower())),
@@ -113,6 +114,12 @@ def main():
                     ok = last == 'quanti campioni per regione?' and prev == 'quanti valori distinti ci sono nella colonna cluster?' and draft == 'bozza'
                     failures += not ok; print('PASS' if ok else 'FAIL', '| history ↑↑↓↓ |', last, '|', prev, '|', draft)
                     pg.fill('.spread-assistant__form textarea', ''); continue
+                if message == '#clear':
+                    pg.fill('.spread-assistant__form textarea', 'pulisci la chat'); pg.keyboard.press('Enter'); time.sleep(0.3)
+                    left = pg.evaluate("document.querySelectorAll('.spread-assistant__message').length")
+                    chips = pg.evaluate("document.querySelectorAll('.spread-assistant__chip').length")
+                    ok = left == 1 and chips > 0
+                    failures += not ok; print('PASS' if ok else 'FAIL', '| clear chat |', left, 'messages,', chips, 'examples'); continue
                 if message == '#manual':
                     pg.uncheck('[data-assistant-auto]'); continue
                 if message == '#cancel':
@@ -137,7 +144,7 @@ def main():
             b.close()
     finally:
         srv.kill()
-    real = [c for c in CASES if not c[1].startswith('#') or c[1] == '#history']
+    real = [c for c in CASES if not c[1].startswith('#') or c[1] in ('#history', '#clear')]
     print(f'e2e: {len(real) - failures}/{len(real)} passed')
     sys.exit(1 if failures else 0)
 

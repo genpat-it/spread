@@ -3,8 +3,7 @@
 // It turns one clause of a request (Italian, English or French) into typed,
 // validated assistant actions.  It is a pure module: everything it knows about
 // the loaded data and the live SPREAD menus arrives through `ctx`, so it can be
-// unit-tested without a browser.  The local LLM is only consulted when this
-// parser returns `null`.
+// unit-tested without a browser.
 //
 // ctx = {
 //   lang: 'it' | 'en' | 'fr',
@@ -18,7 +17,7 @@
 // }
 //
 // A result is { actions: [...] } or { error: string }.  `null` means "not
-// understood here", so the caller may try the LLM.
+// understood here", so the caller may try its own fallbacks.
 
 const MESSAGES = {
   it: {
@@ -189,6 +188,9 @@ const CLITIC = /^(nascond|collass|espand|selezion|deselezion|color|mostr|elimin|
 
 // Expand Italian clitic pronouns ("nascondili" → "nascondi selezionati").
 export function expandClitics(text) {
+  // English "hide them", French "masque-les": the pronoun is the selection.
+  text = String(text).replace(/\b(hide|collapse|expand|colou?r|show|select|delete|remove|export|paint|make)\s+(?:them|those|these)\b/gi, '$1 selected')
+    .replace(/\b([a-zà-ÿ]+)-(?:les|la|le)\b/gi, '$1 sélectionnés');
   return String(text).replace(/[A-Za-zÀ-ÿ]+/g, (word) => {
     const match = fold(word).match(CLITIC);
     if (!match) return word;
@@ -498,7 +500,8 @@ function parseCondition(ctx, raw) {
       return { any: conditions };
     }
   }
-  const value = unquote(text.replace(/^(?:dell|dall|nell|sull|all|dell|de|d|l)['’]\s*/i, ''));
+  const value = unquote(text.replace(/^(?:dell|dall|nell|sull|all|dell|de|d|l)['’]\s*/i, '')
+    .replace(/\s+(?:samples?|campioni|campione|nodes?|nodi|isolates?|isolati|strains?|ceppi|rows?|righe|echantillons?|échantillons?)\s*$/i, ''));
   // A year on its own: a range on the date column ("i campioni del 2026").
   if (/^(?:19|20)\d\d$/.test(value) && !lookupValue(ctx, value).length) {
     const column = inferColumnForValue(ctx, `${value}-01-01`, 'gte');
@@ -1165,7 +1168,7 @@ function parseZoom(ctx, text, folded) {
 const SELECTION_VERBS = [
   [/^(?:mostra(?:mi)?|visualizza|fammi vedere|show(?: me)?|display|affiche(?:z)?|montre(?:z)?)\s+(?:solo|soltanto|solamente|only|just|seulement|uniquement)\s+/, ['Show selected subtrees']],
   [/^(?:isola|isolate|filtra|filter|filtre)\s+/, ['Show selected subtrees']],
-  [/^(?:nascondi|hide|masque(?:z)?|cache(?:z)?)\s+/, ['Hide selected nodes']],
+  [/^(?:nascondi|hide|masque(?:z|r)?|cache(?:z|r)?)\s+/, ['Hide selected nodes']],
   [/^(?:collassa|comprimi|collapse|replie(?:z)?)\s+/, ['Collapse selected nodes']],
   [/^(?:espandi|expand|deplie(?:z)?|developpe(?:z)?)\s+/, ['Expand selected nodes']]
 ];
@@ -1175,9 +1178,11 @@ function selectionShortcut(ctx, text, folded) {
     const match = folded.match(regex);
     if (!match) continue;
     const rest = text.slice(match[0].length).trim();
-    if (!rest || /selezionat|selected|selection/.test(fold(rest))) return null;
     const entry = ctx.catalog.find((candidate) => labels.some((label) => candidate.terms.includes(label)));
-    if (!entry) return null;
+    if (!rest || !entry) return null;
+    // "nascondi i selezionati", "hide selected", "masque-les": the action alone.
+    if (/^(?:(?:i|gli|le|the|les)\s+)?(?:nodi\s+|campioni\s+|nodes\s+|samples\s+|noeuds\s+)?(?:selezionat\w*|selected|selection|selectionne\w*)(?:\s+(?:nodi|campioni|nodes|samples|noeuds))?$/.test(fold(rest))) return { actions: [{ id: entry.id }] };
+    if (/selezionat|selected|selection/.test(fold(rest))) return null;
     const selected = parseSelect(ctx, `seleziona ${rest}`);
     // "mostra solo X" always means a filter: report a bad X instead of guessing.
     if (selected?.error && labels[0] === 'Show selected subtrees') return selected;
@@ -1263,7 +1268,7 @@ function filterAction(ctx) {
 
 function parseFilter(ctx, text, folded) {
   // "togli il filtro", "mostra tutte le righe".
-  if (/\b(?:togli|rimuovi|leva|azzera|resetta|annulla|clear|remove|reset|cancel|enleve|supprime|reinitialise)\b.*\bfiltr|\b(?:mostra|show|affiche)\s+(?:tutte|tutti|all|toutes|tous)\s+(?:le |i |the |les )?(?:righe|campioni|metadati|rows|samples|lignes)\b/.test(folded)) {
+  if (/\b(?:togli|rimuovi|leva|azzera|resetta|annulla|clear|remove|reset|cancel|enleve|supprime|reinitialise)\b.*\bfilt(?:r|er)|\b(?:mostra|show|affiche)\s+(?:tutte|tutti|all|toutes|tous)\s+(?:le |i |the |les )?(?:righe|campioni|metadati|rows|samples|lignes)\b/.test(folded)) {
     const { toggle } = filterAction(ctx);
     return toggle ? { actions: [{ id: toggle.id, value: 'show_all' }] } : null;
   }
@@ -1340,8 +1345,8 @@ function macroName(raw) {
 }
 
 function parseMacro(ctx, text, folded) {
-  if (!/\bmacro\b/.test(folded)) return null;
-  if (/^(?:dammi|mostrami|mostra|elenca|lista|quali|che|list|show|which|what|liste|affiche|montre|quelles)\b.*\bmacro/.test(folded) || /^(?:le |the |les )?macro(?:s)?\s*\??$/.test(folded)) {
+  if (!/\bmacros?\b/.test(folded)) return null;
+  if (/^(?:dammi|mostrami|mostra|elenca|lista|quali|che|list|show|which|what|liste|affiche|montre|quelles)\b.*\bmacros?\b/.test(folded) || /^(?:le |the |les )?macro(?:s)?\s*\??$/.test(folded)) {
     return { macro: { op: 'list' } };
   }
   // One-line definition: "crea una macro [Nome]: passo, passo e passo".

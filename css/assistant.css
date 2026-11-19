@@ -35,10 +35,6 @@
 .spread-assistant__heading { flex: 1; min-width: 0; }
 .spread-assistant__heading h2 { color: var(--text, #17324d); font-size: 16px; font-weight: 600; line-height: 1.2; margin: 0; }
 .spread-assistant__status { color: var(--secondary-dark, #919399); font-size: 12px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spread-assistant .spread-assistant__model {
-  background: var(--secondary-ultra-light, #f2f5ff); border: 0; border-radius: 8px; color: var(--main, #0066cc); cursor: pointer;
-  font-size: 12px; font-weight: 600; height: 28px; line-height: 28px; margin: 0; max-width: 110px; padding: 0 6px; width: auto;
-}
 .spread-assistant .spread-assistant__close {
   align-items: center; background: var(--secondary-ultra-light, #f2f5ff); border: 0; border-radius: 10px; color: var(--main, #0066cc);
   cursor: pointer; display: flex; flex: none; font-size: 18px; font-weight: 400; height: 30px; justify-content: center; line-height: 1;
@@ -119,10 +115,12 @@
 /* Docked side panel: SPREAD's page makes room on the right. */
 .spread-assistant__edge { display: none; }
 .spread-assistant.is-docked {
-  border-radius: 24px 0 0 24px; bottom: 0; height: 100vh !important; left: auto !important; max-height: none; max-width: none;
-  resize: none; right: 0; top: 0 !important; width: var(--spread-assistant-width, 380px) !important;
+  border-radius: 24px; bottom: var(--spread-assistant-bottom, 16px) !important; box-shadow: 0 0 34px rgba(0, 0, 0, .08);
+  height: auto !important; left: auto !important; max-height: none; max-width: none; resize: none;
+  right: var(--spread-assistant-gap, 15px) !important; top: var(--spread-assistant-top, 16px) !important; width: var(--spread-assistant-width, 380px) !important;
 }
 .spread-assistant.is-docked .spread-assistant__header { cursor: default; }
-.spread-assistant.is-docked .spread-assistant__edge { bottom: 0; cursor: ew-resize; display: block; left: 0; position: absolute; top: 0; width: 6px; z-index: 2; }
-.spread-assistant.is-docked .spread-assistant__edge:hover { background: var(--ultra-light, #dbe7ed); }
-html.spread-assistant-docked body > header, html.spread-assistant-docked body > main, html.spread-assistant-docked body > footer { margin-right: var(--spread-assistant-width, 380px); }
+.spread-assistant.is-docked .spread-assistant__edge { bottom: 24px; cursor: ew-resize; display: block; left: 0; position: absolute; top: 24px; width: 6px; z-index: 2; }
+.spread-assistant.is-docked .spread-assistant__edge:hover { background: var(--ultra-light, #dbe7ed); border-radius: 3px; }
+/* The dashboard keeps its own right margin; the panel floats beside it like another card. */
+html.spread-assistant-docked body > main, html.spread-assistant-docked body > footer { margin-right: calc(var(--spread-assistant-width, 380px) + var(--spread-assistant-gap, 15px) - 5px); }

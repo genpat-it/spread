@@ -2,35 +2,22 @@
 
 import { interpret, splitClauses, matchRows, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=12';
 
-// This bridge derives its catalog from SPREAD's actual menu configuration.
-// No arbitrary JavaScript received from the model is ever evaluated.
-//
-// Requests are resolved by the deterministic parser in assistant-intents.js.
-// The optional local LLM is only a fallback and is off by default, so the
-// assistant works standalone, offline and without WebGPU.
-const PARSER_ONLY = 'parser';
-const DEFAULT_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
-const MODELS = [PARSER_ONLY, DEFAULT_MODEL, 'Qwen2.5-3B-Instruct-q4f16_1-MLC', 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC'];
+// This bridge derives its catalog from SPREAD's actual menu configuration and
+// resolves requests with the deterministic parser in assistant-intents.js.
+// Only catalog actions can run; no code is ever evaluated. It works offline.
 const UNRESOLVED_KEY = 'spread-assistant-unresolved';
 const UNRESOLVED_LIMIT = 500;
 // Keep factual product answers outside the generative path.  Update this
 // alongside package.json when SPREAD publishes a new application release.
 const SPREAD_VERSION = '1.0.0';
 const COPY = {
-  it: { language: 'italiano', title: 'Assistente locale', close: 'Chiudi', initial: 'Modello locale non caricato.', intro: 'Descrivi cosa vuoi fare con albero, mappa e metadati: filtri, selezioni, colori, modifiche alle colonne, impostazioni. Ti mostro il piano e lo applico solo dopo la tua conferma. Tutto resta nel browser.', placeholder: 'Descrivi cosa vuoi fare…', send: 'Invia', apply: 'Applica', cancel: 'Annulla', downloading: 'Scarico e inizializzo il modello locale…', ready: 'Modello locale pronto.', modelError: 'Errore del modello locale.', plan: 'Pronto ad applicare', done: 'Fatto', version: `SPREAD dichiara la versione ${SPREAD_VERSION}.`, invalid: 'Non sono riuscito a ricondurre la richiesta a un comando valido di SPREAD.', malformed: 'Il modello non ha prodotto un comando valido. Riprova con una richiesta più semplice.', parserOnly: 'Solo parser (nessun download)', count: (n) => `${n} campioni soddisfano la condizione`, autoApply: 'Applica subito, senza conferma', dock: 'Aggancia come pannello laterale', undock: 'Rendi flottante', update: 'È disponibile una nuova versione dell’assistente.', reload: 'Ricarica la pagina', help: 'Ecco cosa so fare:', none: 'Nessun campione soddisfa la condizione.', macroSaved: (name, n) => `Macro “${name}” salvata con ${n} passi.`, macroNone: 'Non ci sono ancora macro dell’assistente. Esegui qualche azione e poi scrivi “registra gli ultimi 3 passaggi come macro Nome”.', macroList: 'Macro disponibili', macroSteps: 'passi', macroNative: 'macro di SPREAD', macroMissing: (name) => `Non trovo la macro “${name}”.`, macroDeleted: (name) => `Macro “${name}” eliminata.`, macroRenamed: (from, to) => `Macro “${from}” rinominata in “${to}”.`, historyShort: (n) => `Ci sono solo ${n} passi eseguiti in questa sessione.`, historyEmpty: 'Non ho ancora eseguito nessun passo da registrare.', noMatch: 'Nessun campione soddisfa la condizione.', notApplied: 'Non ho applicato l’azione', hint: 'Prova a nominare l’operazione e la colonna, per esempio: “dammi i metadati dove regione è Abruzzo”, “ordina la tabella per data decrescente”, “sostituisci Roma con Rieti nella colonna provincia”, “colora per sierotipo”.' },
-  en: { language: 'English', title: 'Local assistant', close: 'Close', initial: 'Local model not loaded.', intro: 'Describe what you want to do with the tree, map and metadata: filters, selections, colours, column edits, settings. I show the plan and apply it only after you confirm. Everything stays in the browser.', placeholder: 'Describe what you want to do…', send: 'Send', apply: 'Apply', cancel: 'Cancel', downloading: 'Downloading and initializing the local model…', ready: 'Local model ready.', modelError: 'Local model error.', plan: 'Ready to apply', done: 'Done', version: `SPREAD declares version ${SPREAD_VERSION}.`, invalid: 'I could not map the request to a valid SPREAD command.', malformed: 'The model did not produce a valid command. Try a simpler request.', parserOnly: 'Parser only (no download)', count: (n) => `${n} samples match the condition`, autoApply: 'Apply immediately, without confirmation', dock: 'Dock as a side panel', undock: 'Make floating', update: 'A new version of the assistant is available.', reload: 'Reload the page', help: 'Here is what I can do:', none: 'No sample matches the condition.', macroSaved: (name, n) => `Macro “${name}” saved with ${n} steps.`, macroNone: 'There are no assistant macros yet. Run some actions, then type “record the last 3 steps as macro Name”.', macroList: 'Available macros', macroSteps: 'steps', macroNative: 'SPREAD macro', macroMissing: (name) => `Macro “${name}” not found.`, macroDeleted: (name) => `Macro “${name}” deleted.`, macroRenamed: (from, to) => `Macro “${from}” renamed to “${to}”.`, historyShort: (n) => `Only ${n} steps were run in this session.`, historyEmpty: 'No step has been run yet.', noMatch: 'No sample matches the condition.', notApplied: 'Action not applied', hint: 'Name the operation and the column, for example: “show me the metadata where region is Abruzzo”, “sort the table by date descending”, “replace Roma with Rieti in the province column”, “colour by serovar”.' },
-  fr: { language: 'français', title: 'Assistant local', close: 'Fermer', initial: 'Modèle local non chargé.', intro: 'Décrivez ce que vous voulez faire avec l’arbre, la carte et les métadonnées : filtres, sélections, couleurs, colonnes, réglages. Je montre le plan et je l’applique après votre confirmation. Tout reste dans le navigateur.', placeholder: 'Décrivez ce que vous voulez faire…', send: 'Envoyer', apply: 'Appliquer', cancel: 'Annuler', downloading: 'Téléchargement et initialisation du modèle local…', ready: 'Modèle local prêt.', modelError: 'Erreur du modèle local.', plan: 'Prêt à appliquer', done: 'Terminé', version: `SPREAD déclare la version ${SPREAD_VERSION}.`, invalid: 'Je ne peux pas associer cette demande à une commande SPREAD valide.', malformed: 'Le modèle n’a pas produit de commande valide. Réessayez avec une demande plus simple.', parserOnly: 'Analyseur seul (sans téléchargement)', count: (n) => `${n} échantillons correspondent à la condition`, autoApply: 'Appliquer tout de suite, sans confirmation', dock: 'Ancrer en panneau latéral', undock: 'Rendre flottant', update: 'Une nouvelle version de l’assistant est disponible.', reload: 'Recharger la page', help: 'Voici ce que je sais faire :', none: 'Aucun échantillon ne correspond à la condition.', macroSaved: (name, n) => `Macro « ${name} » enregistrée avec ${n} étapes.`, macroNone: 'Aucune macro de l’assistant pour l’instant.', macroList: 'Macros disponibles', macroSteps: 'étapes', macroNative: 'macro SPREAD', macroMissing: (name) => `Macro « ${name} » introuvable.`, macroDeleted: (name) => `Macro « ${name} » supprimée.`, macroRenamed: (from, to) => `Macro « ${from} » renommée en « ${to} ».`, historyShort: (n) => `Seulement ${n} étapes exécutées dans cette session.`, historyEmpty: 'Aucune étape exécutée pour l’instant.', noMatch: 'Aucun échantillon ne correspond à la condition.', notApplied: 'Action non appliquée', hint: 'Nommez l’opération et la colonne, par exemple : « montre les métadonnées où région est Abruzzo », « trie le tableau par date décroissant ».' }
+  it: { title: 'Assistente locale', close: 'Chiudi', intro: 'Descrivi cosa vuoi fare con albero, mappa e metadati: filtri, selezioni, colori, modifiche alle colonne, impostazioni. Ti mostro il piano e lo applico solo dopo la tua conferma. Tutto resta nel browser.', placeholder: 'Descrivi cosa vuoi fare…', send: 'Invia', apply: 'Applica', cancel: 'Annulla', plan: 'Pronto ad applicare', done: 'Fatto', version: `SPREAD dichiara la versione ${SPREAD_VERSION}.`, invalid: 'Non sono riuscito a ricondurre la richiesta a un comando valido di SPREAD.', status: 'Funziona nel browser · i dati non escono', count: (n) => `${n} campioni soddisfano la condizione`, autoApply: 'Applica subito, senza conferma', dock: 'Aggancia come pannello laterale', clear: 'Pulisci la chat', undock: 'Rendi flottante', update: 'È disponibile una nuova versione dell’assistente.', reload: 'Ricarica la pagina', help: 'Ecco cosa so fare:', none: 'Nessun campione soddisfa la condizione.', macroSaved: (name, n) => `Macro “${name}” salvata con ${n} passi.`, macroNone: 'Non ci sono ancora macro dell’assistente. Esegui qualche azione e poi scrivi “registra gli ultimi 3 passaggi come macro Nome”.', macroList: 'Macro disponibili', macroSteps: 'passi', macroNative: 'macro di SPREAD', macroMissing: (name) => `Non trovo la macro “${name}”.`, macroDeleted: (name) => `Macro “${name}” eliminata.`, macroRenamed: (from, to) => `Macro “${from}” rinominata in “${to}”.`, historyShort: (n) => `Ci sono solo ${n} passi eseguiti in questa sessione.`, historyEmpty: 'Non ho ancora eseguito nessun passo da registrare.', noMatch: 'Nessun campione soddisfa la condizione.', notApplied: 'Non ho applicato l’azione', hint: 'Prova a nominare l’operazione e la colonna, per esempio: “dammi i metadati dove regione è Abruzzo”, “ordina la tabella per data decrescente”, “sostituisci Roma con Rieti nella colonna provincia”, “colora per sierotipo”.' },
+  en: { title: 'Local assistant', close: 'Close', intro: 'Describe what you want to do with the tree, map and metadata: filters, selections, colours, column edits, settings. I show the plan and apply it only after you confirm. Everything stays in the browser.', placeholder: 'Describe what you want to do…', send: 'Send', apply: 'Apply', cancel: 'Cancel', plan: 'Ready to apply', done: 'Done', version: `SPREAD declares version ${SPREAD_VERSION}.`, invalid: 'I could not map the request to a valid SPREAD command.', status: 'Runs in your browser · data stays local', count: (n) => `${n} samples match the condition`, autoApply: 'Apply immediately, without confirmation', dock: 'Dock as a side panel', clear: 'Clear the chat', undock: 'Make floating', update: 'A new version of the assistant is available.', reload: 'Reload the page', help: 'Here is what I can do:', none: 'No sample matches the condition.', macroSaved: (name, n) => `Macro “${name}” saved with ${n} steps.`, macroNone: 'There are no assistant macros yet. Run some actions, then type “record the last 3 steps as macro Name”.', macroList: 'Available macros', macroSteps: 'steps', macroNative: 'SPREAD macro', macroMissing: (name) => `Macro “${name}” not found.`, macroDeleted: (name) => `Macro “${name}” deleted.`, macroRenamed: (from, to) => `Macro “${from}” renamed to “${to}”.`, historyShort: (n) => `Only ${n} steps were run in this session.`, historyEmpty: 'No step has been run yet.', noMatch: 'No sample matches the condition.', notApplied: 'Action not applied', hint: 'Name the operation and the column, for example: “show me the metadata where region is Abruzzo”, “sort the table by date descending”, “replace Roma with Rieti in the province column”, “colour by serovar”.' },
+  fr: { title: 'Assistant local', close: 'Fermer', intro: 'Décrivez ce que vous voulez faire avec l’arbre, la carte et les métadonnées : filtres, sélections, couleurs, colonnes, réglages. Je montre le plan et je l’applique après votre confirmation. Tout reste dans le navigateur.', placeholder: 'Décrivez ce que vous voulez faire…', send: 'Envoyer', apply: 'Appliquer', cancel: 'Annuler', plan: 'Prêt à appliquer', done: 'Terminé', version: `SPREAD déclare la version ${SPREAD_VERSION}.`, invalid: 'Je ne peux pas associer cette demande à une commande SPREAD valide.', status: 'Dans votre navigateur · les données restent locales', count: (n) => `${n} échantillons correspondent à la condition`, autoApply: 'Appliquer tout de suite, sans confirmation', dock: 'Ancrer en panneau latéral', clear: 'Effacer la conversation', undock: 'Rendre flottant', update: 'Une nouvelle version de l’assistant est disponible.', reload: 'Recharger la page', help: 'Voici ce que je sais faire :', none: 'Aucun échantillon ne correspond à la condition.', macroSaved: (name, n) => `Macro « ${name} » enregistrée avec ${n} étapes.`, macroNone: 'Aucune macro de l’assistant pour l’instant.', macroList: 'Macros disponibles', macroSteps: 'étapes', macroNative: 'macro SPREAD', macroMissing: (name) => `Macro « ${name} » introuvable.`, macroDeleted: (name) => `Macro « ${name} » supprimée.`, macroRenamed: (from, to) => `Macro « ${from} » renommée en « ${to} ».`, historyShort: (n) => `Seulement ${n} étapes exécutées dans cette session.`, historyEmpty: 'Aucune étape exécutée pour l’instant.', noMatch: 'Aucun échantillon ne correspond à la condition.', notApplied: 'Action non appliquée', hint: 'Nommez l’opération et la colonne, par exemple : « montre les métadonnées où région est Abruzzo », « trie le tableau par date décroissant ».' }
 };
-let worker;
-let workerReady = false;
-let queuedMessages = [];
 let actionRegistry = new Map();
 let pendingActions = [];
 let lastProposedActions = [];
-let conversation = [];
-let requestId = 0;
-let catalogSearch;
-const ACTIONS_PER_PAGE = 24;
 
 function copy() {
   const code = typeof gtiz_locales !== 'undefined' ? gtiz_locales.getActiveLanguageCode() : 'en';
@@ -729,91 +716,9 @@ function logUnresolved(request, reason) {
   } catch (_) { /* storage unavailable */ }
 }
 
-function describe(entry) {
-  const { id, area, item } = entry;
-  const result = { id, area, label: labelOf(item), type: item.type, executable: typeof item.function === 'function' };
-  const options = optionsOf(item);
-  if (options.length) result.options = options;
-  if (Number.isFinite(item.min)) result.min = item.min;
-  if (Number.isFinite(item.max)) result.max = item.max;
-  if (options.length || ['toggle', 'select', 'number', 'slider', 'search', 'radio', 'text', 'abutton_optioned'].includes(item.type)) result.value_required = true;
-  if (item.type === 'assistant_metadata_replace_all') {
-    result.value_required = true;
-    result.value_schema = { category: 'exact loaded metadata column', value: 'replacement text' };
-  }
-  if (item.type === 'assistant_node_colour') {
-    result.value_required = true;
-    result.value_schema = { category: 'exact loaded column', id: 'exact sample ID or group value', colour: 'CSS hex colour' };
-  }
-  return result;
-}
-
-function state() {
-  const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
-  return {
-    data_loaded: Boolean(tree),
-    selected_nodes: tree && tree.getSelectedNodeIDs ? tree.getSelectedNodeIDs().length : 0,
-    active_category: tree ? tree.display_category : null,
-    metadata_columns: tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [],
-    available_actions: [...actionRegistry.values()].map(describe)
-  };
-}
-
-// A 0.5B model commonly has a 4k-token context window.  The complete SPREAD
-// catalog is intentionally retained, but represented as compact tuples rather
-// than a repeated verbose JSON schema.  Tuple layout:
   // [action id, functional area, visible label, control type, allowed values | "$columns", min, max]
 function normalizeTerms(value) {
   return String(value || '').toLocaleLowerCase('it').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-}
-
-function candidateEntries(request) {
-  const query = normalizeTerms(request);
-  const words = query.split(' ').filter((word) => word.length >= 3);
-  if (!words.length) return [...actionRegistry.values()];
-  const aliases = {
-    apri: ['on', 'layout'], mostra: ['on', 'layout'], chiudi: ['off', 'layout'], nascondi: ['off', 'layout'],
-    colora: ['colora', 'color', 'legend', 'node style'], colore: ['colora', 'color', 'legend', 'node style'], color: ['colora', 'color', 'legend', 'node style'],
-    albero: ['tree', 'legend', 'node style'], ramo: ['branch'], nodo: ['node'], mappa: ['map'], metadati: ['metadata'],
-    scarica: ['download', 'export'], esporta: ['download', 'export'], video: ['video'], schermo: ['full screen']
-  };
-  const scored = [...actionRegistry.values()].map((entry) => {
-    const text = normalizeTerms(`${entry.area} ${entry.id} ${labelOf(entry.item)} ${optionsOf(entry.item).map((option) => option.label).join(' ')}`);
-    let score = 0;
-    words.forEach((word) => {
-      if (text.includes(word)) score += 8;
-      else if (word.length >= 5 && text.split(' ').some((term) => term.startsWith(word.slice(0, 5)) || word.startsWith(term.slice(0, 5)))) score += 4;
-      (aliases[word] || []).forEach((alias) => { if (text.includes(alias)) score += 3; });
-    });
-    return { entry, score };
-  });
-  return scored.sort((left, right) => right.score - left.score).map(({ entry }) => entry);
-}
-
-function compactState(request) {
-  refreshRegistry();
-  const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
-  const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
-  const sameValues = (left, right) => left.length === right.length && left.every((value, index) => String(value) === String(right[index]));
-  const actions = candidateEntries(request).map(({ id, area, item }) => {
-    const values = optionsOf(item).map((option) => option.value);
-    const tuple = [id, area, String(labelOf(item)), item.type];
-    if (values.length) tuple.push(sameValues(values, columns) ? '$columns' : values);
-    else if (Number.isFinite(item.min) || Number.isFinite(item.max)) tuple.push(null);
-    if (Number.isFinite(item.min)) tuple.push(item.min);
-    if (Number.isFinite(item.max)) tuple.push(item.max);
-    if (item.type === 'assistant_metadata_replace_all') tuple.push('$columns + replacement text');
-    if (item.type === 'assistant_node_colour') tuple.push('$columns + group value or sample ID + CSS hex colour');
-    if (item.type === 'assistant_map_coordinates') tuple.push({ latitude: 'number [-90, 90]', longitude: 'number [-180, 180]' });
-    return tuple;
-  });
-  return {
-    loaded: Boolean(tree),
-    selected: tree && tree.getSelectedNodeIDs ? tree.getSelectedNodeIDs().length : 0,
-    category: tree ? tree.display_category : null,
-    columns,
-    actions
-  };
 }
 
 function colourValues(tree, category) {
@@ -981,7 +886,6 @@ function addMessage(panel, role, text) {
   node.scrollIntoView({ block: 'end' });
 }
 
-function setStatus(panel, text) { panel.querySelector('.spread-assistant__status').textContent = text; }
 function clearPlan(panel) { pendingActions = []; lastProposedActions = []; panel.querySelector('.spread-assistant__plan').hidden = true; }
 function describeWhere(where) {
   if (!where) return '';
@@ -1090,33 +994,8 @@ async function confirm(panel) {
   }
 }
 
-function colorHint(request) {
-  const normalizedRequest = normalizeTerms(request);
-  if (!/\b(colora|colore|color)\b/.test(normalizedRequest)) return '';
-  const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
-  const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
-  const colorAction = [...actionRegistry.values()].find(({ item }) => {
-    const values = optionsOf(item).map((option) => String(option.value));
-    return normalizeTerms(labelOf(item)).includes('color') && values.some((value) => columns.includes(value));
-  });
-  const column = columns.find((value) => normalizedRequest.includes(normalizeTerms(value)));
-  if (!colorAction || !column) return '';
-  return ` Vincolo per questa richiesta: non limitarti ad aprire legenda/impostazioni. Devi proporre {"id":"${colorAction.id}","value":"${column}"} per colorare usando la colonna ${column}.`;
-}
-
-function layoutHint(request) {
-  const normalizedRequest = normalizeTerms(request);
-  if (!/\b(apri|mostra|visualizza)\b/.test(normalizedRequest) || typeof gtiz_layout === 'undefined') return '';
-  const aliases = { mappa: 'map', metadati: 'metadata', impostazioni: 'settings', legenda: 'legend', video: 'video', schermo: 'full screen' };
-  const target = Object.keys(aliases).find((word) => normalizedRequest.includes(word));
-  if (!target) return '';
-  const desired = aliases[target];
-  const entry = [...actionRegistry.values()].find(({ area, item }) => area === 'layout' && normalizeTerms(`${item.type} ${labelOf(item)}`).includes(desired));
-  return entry ? ` Vincolo per questa richiesta: per aprire ${target} devi proporre {"id":"${entry.id}","value":"on"}.` : '';
-}
-
-// Guardrails for short, unambiguous requests.  The LLM remains the planner,
-// but an exact UI label/column match must not be lost because a small model
+// Fixed phrasings for short, unambiguous requests (tree zoom, centre, panels,
+// log scale, colour by).  They run before the generic catalog resolver so an
 // appends a hallucinated tool call.  These are merged only for commands whose
 // target and value are both present in the live SPREAD configuration.
 function mandatoryActions(request) {
@@ -1178,85 +1057,6 @@ function mandatoryActions(request) {
     }
   }
   return result;
-}
-
-function systemPrompt(request, page) {
-  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"category":"exact loaded column","id":"exact group value or sample ID","colour":"#RRGGBB"}. This is one page of the action catalog. Propose only listed IDs and values. If this page has no matching action, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(page)}`;
-}
-
-function postChat(messages, request) {
-  const job = { type: 'chat', messages, request, requestId };
-  if (workerReady) worker.postMessage(job);
-  else queuedMessages.push(job);
-}
-
-function sendCatalogPage(search) {
-  const actions = search.state.actions.slice(search.offset, search.offset + ACTIONS_PER_PAGE);
-  search.visibleIds = new Set(actions.map(([id]) => id));
-  search.offset += actions.length;
-  const page = { ...search.state, actions };
-  postChat([{ role: 'system', content: systemPrompt(search.request, page) }, ...search.history], search.request);
-}
-
-function initWorker(panel) {
-  if (worker) return;
-  worker = new Worker(new URL('./assistant-worker.js?v=28', import.meta.url), { type: 'module' });
-  worker.onmessage = ({ data }) => {
-    if (data.type === 'progress') setStatus(panel, data.text || 'Caricamento modello…');
-    if (data.type === 'ready') {
-      workerReady = true;
-      setStatus(panel, copy().ready);
-      queuedMessages.splice(0).filter((job) => job.requestId === requestId).forEach((job) => worker.postMessage(job));
-    }
-    if (data.requestId != null && data.requestId !== requestId) return;
-    if (data.type === 'error') {
-      catalogSearch = undefined;
-      if (!workerReady) {
-        worker.terminate();
-        worker = undefined;
-        queuedMessages = [];
-      }
-      setStatus(panel, copy().modelError);
-      addMessage(panel, 'assistant', data.message);
-    }
-    if (data.type === 'answer') handleAnswer(panel, data.content, data.request);
-  };
-  setStatus(panel, copy().downloading);
-  worker.postMessage({ type: 'init', modelId: panel.querySelector('.spread-assistant__model').value || DEFAULT_MODEL });
-}
-
-function finishClause(panel, actions, reply) {
-  const search = catalogSearch;
-  search.plan.push(...actions);
-  if (!actions.length) {
-    logUnresolved(search.request, 'llm-no-match');
-    search.unresolved.push({ request: search.request, reply });
-  }
-  startNextClause(panel);
-}
-
-function handleAnswer(panel, content, request) {
-  const search = catalogSearch;
-  if (!search || search.request !== request) return;
-  let answer;
-  try { answer = JSON.parse(content); }
-  catch (_) { answer = null; }
-  if (typeof answer?.reply === 'string' && answer.reply.trim() && !search.reply) search.reply = answer.reply;
-  refreshRegistry();
-  const actions = Array.isArray(answer?.actions) ? answer.actions.filter((action) => {
-    if (!action || !search.visibleIds.has(action.id) || !actionRegistry.has(action.id)) return false;
-    try {
-      validate(actionRegistry.get(action.id).item, action.value);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }) : [];
-  if (!actions.length && search.offset < search.state.actions.length) {
-    sendCatalogPage(search);
-    return;
-  }
-  finishClause(panel, actions, search.reply || (answer ? copy().invalid : copy().malformed));
 }
 
 const HELP = {
@@ -1367,11 +1167,6 @@ function proposalError(action, virtual) {
   catch (error) { return error.message; }
 }
 
-function llmEnabled(panel) {
-  const model = panel.querySelector('.spread-assistant__model')?.value;
-  return Boolean(model && model !== PARSER_ONLY);
-}
-
 // Deterministic resolution of one clause.  Returns { actions } or { error }
 // or null when nothing matched.
 function resolveClause(request, search) {
@@ -1411,10 +1206,18 @@ function resolveClause(request, search) {
   return null;
 }
 
-function startNextClause(panel) {
-  const search = catalogSearch;
-  while (search.clauses.length) {
-    const request = search.clauses.shift();
+// Empty the conversation and any pending plan; keep the intro and examples.
+function clearChat(panel) {
+  clearPlan(panel);
+  const messages = panel.querySelector('.spread-assistant__messages');
+  [...messages.children].forEach((node, index) => { if (index > 0 && !node.classList.contains('spread-assistant__examples')) node.remove(); });
+  renderExamples(panel);
+  messages.scrollTop = 0;
+}
+
+function runClauses(panel, clauses) {
+  const search = { clauses, plan: [], unresolved: [] };
+  for (const request of clauses) {
     const fact = factualReply(request);
     if (fact) {
       addMessage(panel, 'assistant', fact);
@@ -1433,23 +1236,11 @@ function startNextClause(panel) {
       search.unresolved.push({ request, reply: result.error });
       continue;
     }
-    if (!llmEnabled(panel)) {
-      logUnresolved(request, 'no-match');
-      search.unresolved.push({ request, reply: `${copy().invalid} ${copy().hint}` });
-      continue;
-    }
-    search.request = request;
-    search.state = compactState(request);
-    search.history = [...conversation.slice(-6, -1), { role: 'user', content: request }];
-    search.offset = 0;
-    search.reply = '';
-    initWorker(panel);
-    sendCatalogPage(search);
-    return;
+    logUnresolved(request, 'no-match');
+    search.unresolved.push({ request, reply: `${copy().invalid} ${copy().hint}` });
   }
-  catalogSearch = undefined;
   for (const { request, reply } of search.unresolved) {
-    addMessage(panel, 'warning', search.multiple ? `“${request}” — ${reply}` : reply);
+    addMessage(panel, 'warning', clauses.length > 1 ? `“${request}” — ${reply}` : reply);
   }
   if (search.plan.length) showPlan(panel, search.plan);
 }
@@ -1515,16 +1306,17 @@ function submit(event, panel) {
   const input = event.currentTarget.querySelector('textarea');
   const message = input.value.trim();
   if (!message) return;
+  if (/^(?:pulisci|svuota|cancella|azzera|clear|reset|empty|efface|vide)\s+(?:la\s+|the\s+|la\s+)?(?:chat|conversazione|conversation|cronologia della chat|messaggi|messages)\s*[.!]?$/i.test(message)) {
+    input.value = '';
+    rememberPrompt(message);
+    clearChat(panel);
+    return;
+  }
   clearPlan(panel);
   addMessage(panel, 'user', message);
-  conversation.push({ role: 'user', content: message });
   rememberPrompt(message);
-  requestId += 1;
-  catalogSearch = undefined;
   input.value = '';
-  const clauses = splitClauses(message);
-  catalogSearch = { clauses, multiple: clauses.length > 1, plan: [], unresolved: [] };
-  startNextClause(panel);
+  runClauses(panel, splitClauses(message));
 }
 
 // The deployed build is in js/assistant-version.json.  An open page polls it
@@ -1603,6 +1395,21 @@ const DOCK_KEY = 'spread-assistant-docked';
 const DOCK_WIDTH_KEY = 'spread-assistant-dock-width';
 function isDocked() { try { return localStorage.getItem(DOCK_KEY) === '1'; } catch (_) { return false; } }
 
+// Align the docked panel with SPREAD's card area (same top, bottom and right
+// margin as the tree/metadata/legend cards), so it floats like one of them.
+function alignDock() {
+  const area = document.querySelector('.main.dashboard-viewport') || document.querySelector('main');
+  const root = document.documentElement;
+  if (!area) return;
+  // The tree card is always visible: match its top and bottom edges exactly.
+  const card = document.querySelector('.tree-container');
+  const rect = (card && card.getBoundingClientRect().height > 0 ? card : area).getBoundingClientRect();
+  const gap = parseFloat(getComputedStyle(area).marginRight) || 15;
+  root.style.setProperty('--spread-assistant-top', `${Math.max(8, Math.round(rect.top))}px`);
+  root.style.setProperty('--spread-assistant-bottom', `${Math.max(8, Math.round(window.innerHeight - rect.bottom))}px`);
+  root.style.setProperty('--spread-assistant-gap', `${Math.round(gap)}px`);
+}
+
 // Docked mode: a full-height side panel; SPREAD's dashboard shrinks to make room.
 function setDocked(panel, docked) {
   const text = copy();
@@ -1613,6 +1420,7 @@ function setDocked(panel, docked) {
   button.setAttribute('aria-label', button.title);
   button.querySelector('i').className = `tabler ${docked ? 'tabler-picture-in-picture' : 'tabler-layout-sidebar-right'}`;
   if (docked) {
+    alignDock();
     let width = '';
     try { width = localStorage.getItem(DOCK_WIDTH_KEY) || ''; } catch (_) { /* ignore */ }
     document.documentElement.style.setProperty('--spread-assistant-width', width || '380px');
@@ -1673,7 +1481,11 @@ function makeFloating(panel) {
     let timer;
     new ResizeObserver(() => { clearTimeout(timer); timer = setTimeout(() => saveGeometry(panel), 250); }).observe(panel);
   }
-  window.addEventListener('resize', () => { if (!panel.hidden && !panel.classList.contains('is-docked')) placePanel(panel); });
+  window.addEventListener('resize', () => {
+    if (panel.hidden) return;
+    if (panel.classList.contains('is-docked')) alignDock();
+    else placePanel(panel);
+  });
   panel.querySelector('.spread-assistant__dock').addEventListener('click', () => {
     const docked = !panel.classList.contains('is-docked');
     try { localStorage.setItem(DOCK_KEY, docked ? '1' : '0'); } catch (_) { /* ignore */ }
@@ -1718,8 +1530,8 @@ function mount() {
     <div class="spread-assistant__edge" aria-hidden="true"></div>
     <div class="spread-assistant__header">
       <span class="spread-assistant__avatar"><i class="tabler tabler-message-chatbot"></i></span>
-      <div class="spread-assistant__heading"><h2>${text.title}</h2><div class="spread-assistant__status">${text.parserOnly}</div></div>
-      <select class="spread-assistant__model" aria-label="Engine">${MODELS.map((id) => `<option value="${id}">${id === PARSER_ONLY ? 'Parser' : `LLM ${id.replace('-Instruct-q4f16_1-MLC', '').replace('Qwen2.5-', 'Qwen ')}`}</option>`).join('')}</select>
+      <div class="spread-assistant__heading"><h2>${text.title}</h2><div class="spread-assistant__status">${text.status}</div></div>
+      <button type="button" class="spread-assistant__icon spread-assistant__clear" aria-label="${text.clear}" title="${text.clear}"><i class="tabler tabler-eraser"></i></button>
       <button type="button" class="spread-assistant__icon spread-assistant__dock" aria-label="${text.dock}" title="${text.dock}"><i class="tabler tabler-layout-sidebar-right"></i></button>
       <button type="button" class="spread-assistant__close" aria-label="${text.close}">×</button>
     </div>
@@ -1788,6 +1600,7 @@ function mount() {
     textarea.focus();
   });
   makeFloating(panel);
+  panel.querySelector('.spread-assistant__clear').addEventListener('click', () => clearChat(panel));
   const auto = panel.querySelector('[data-assistant-auto]');
   auto.checked = autoApply();
   auto.addEventListener('change', () => { try { localStorage.setItem(AUTO_KEY, auto.checked ? '1' : '0'); } catch (_) { /* ignore */ } });
@@ -1797,12 +1610,8 @@ function mount() {
   panel.querySelector('[data-assistant-cancel]').addEventListener('click', () => clearPlan(panel));
   // Read-only development hook: it makes coverage of the generated catalog
   // testable without granting arbitrary command execution to page scripts.
-  panel.querySelector('.spread-assistant__model').addEventListener('change', (event) => {
-    if (event.currentTarget.value === PARSER_ONLY) setStatus(panel, copy().parserOnly);
-    else if (!workerReady) setStatus(panel, copy().initial);
-  });
+
   window.SPREAD_ASSISTANT = Object.freeze({
-    catalog: () => compactState(),
     context: () => { const ctx = buildContext(); return { columns: ctx.columns, catalog: ctx.catalog }; },
     plan: (message) => planFor(String(message)),
     lastPlan: () => lastProposedActions.map((action) => ({ ...action })),
