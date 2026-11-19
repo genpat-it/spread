@@ -267,7 +267,37 @@ function lookupValue(ctx, text, column) {
   let found = pool.filter((entry) => entry.key === key);
   if (!found.length) found = pool.filter((entry) => entry.key.replace(/ /g, '') === key.replace(/ /g, ''));
   if (!found.length) found = pool.filter((entry) => similar(entry.key, key));
+  if (!found.length) found = closestValues(pool, key);
   return found;
+}
+
+// Did-you-mean fallback: the clearly best fuzzy candidate, word by word.
+// Each word is compared with prefix bonus and relative edit distance; the
+// winner must be close enough and well ahead of the runner-up. The corrected
+// value is shown in the plan before anything is applied.
+function closestValues(pool, key) {
+  const words = key.split(' ').filter(Boolean);
+  if (!words.length || key.length < 4) return [];
+  const wordScore = (a, b) => {
+    if (a === b) return 1;
+    const distance = levenshtein(a, b);
+    let common = 0;
+    while (common < Math.min(a.length, b.length) && a[common] === b[common]) common++;
+    return Math.max(0, 1 - distance / Math.max(a.length, b.length)) * 0.8 + Math.min(common, 4) / 4 * 0.2;
+  };
+  const scored = pool.map((entry) => {
+    const target = entry.key.split(' ');
+    if (target.length !== words.length) return { entry, score: 0 };
+    const score = words.reduce((sum, word, index) => sum + wordScore(word, target[index]), 0) / words.length;
+    return { entry, score };
+  }).filter((item) => item.score >= 0.62).sort((a, b) => b.score - a.score);
+  if (!scored.length) return [];
+  const best = scored[0].score;
+  const winners = scored.filter((item) => item.score >= best - 0.02);
+  const runnerUp = scored.find((item) => item.score < best - 0.02);
+  if (new Set(winners.map((item) => item.entry.key)).size > 1) return [];
+  if (runnerUp && runnerUp.score > best - 0.08) return [];
+  return winners.map((item) => item.entry);
 }
 
 function suggestions(ctx, text, column) {

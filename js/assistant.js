@@ -1468,6 +1468,48 @@ function planFor(message) {
   return { notes: search.notes || [], clauses: search.clauses, plan: search.plan.map((action) => ({ id: action.id, value: action.value })), unresolved: search.unresolved, description: search.plan.map(describeAction) };
 }
 
+// Sent prompts, newest last; ↑/↓ in the input walk through them like a shell.
+const PROMPTS_KEY = 'spread-assistant-prompts';
+const PROMPTS_LIMIT = 100;
+const promptCursor = { index: -1, draft: '' };
+
+function readPrompts() {
+  try { return JSON.parse(localStorage.getItem(PROMPTS_KEY) || '[]'); }
+  catch (_) { return []; }
+}
+
+function rememberPrompt(message) {
+  const prompts = readPrompts().filter((prompt) => prompt !== message);
+  prompts.push(message);
+  try { localStorage.setItem(PROMPTS_KEY, JSON.stringify(prompts.slice(-PROMPTS_LIMIT))); } catch (_) { /* storage unavailable */ }
+  promptCursor.index = -1;
+  promptCursor.draft = '';
+}
+
+// Returns true when the key was used to move through the history.
+function browsePrompts(textarea, direction) {
+  const prompts = readPrompts();
+  if (!prompts.length) return false;
+  const before = textarea.value.slice(0, textarea.selectionStart);
+  const after = textarea.value.slice(textarea.selectionEnd);
+  // In a multi-line prompt the arrows move the caret, except on the first/last line.
+  if (direction < 0 && before.includes('\n')) return false;
+  if (direction > 0 && after.includes('\n')) return false;
+  if (direction > 0 && promptCursor.index === -1) return false;
+  if (promptCursor.index === -1) {
+    promptCursor.draft = textarea.value;
+    promptCursor.index = prompts.length;
+  }
+  const next = Math.min(Math.max(promptCursor.index + direction, 0), prompts.length);
+  if (next === promptCursor.index && direction < 0) return true;
+  promptCursor.index = next;
+  textarea.value = next === prompts.length ? promptCursor.draft : prompts[next];
+  if (next === prompts.length) promptCursor.index = -1;
+  const end = textarea.value.length;
+  textarea.setSelectionRange(end, end);
+  return true;
+}
+
 function submit(event, panel) {
   event.preventDefault();
   const input = event.currentTarget.querySelector('textarea');
@@ -1476,6 +1518,7 @@ function submit(event, panel) {
   clearPlan(panel);
   addMessage(panel, 'user', message);
   conversation.push({ role: 'user', content: message });
+  rememberPrompt(message);
   requestId += 1;
   catalogSearch = undefined;
   input.value = '';
@@ -1726,8 +1769,17 @@ function mount() {
       event.preventDefault();
       panel.querySelector('form').requestSubmit();
       autosize();
+      return;
+    }
+    if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && !event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey && !event.isComposing) {
+      if (browsePrompts(textarea, event.key === 'ArrowUp' ? -1 : 1)) {
+        event.preventDefault();
+        autosize();
+      }
     }
   });
+  // Typing after browsing starts a fresh draft from the recalled prompt.
+  textarea.addEventListener('input', () => { promptCursor.index = -1; });
   panel.querySelector('.spread-assistant__examples').addEventListener('click', (event) => {
     const chip = event.target.closest('.spread-assistant__chip');
     if (!chip) return;
