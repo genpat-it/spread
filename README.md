@@ -97,6 +97,16 @@ for testing the assistant:
 ?tree=/datasets/assistant-demo/tree.nwk&metadata=/datasets/assistant-demo/metadata.tsv&longitude=longitude&latitude=latitude
 ```
 
+Examples of deterministic commands:
+
+* `zooma 2x` — doubles the current MST viewport scale.
+* `ricentra MST` — fits and centers the native tree view.
+* `chiudi la legenda` — closes the existing legend panel.
+* `riscrivi nella colonna region tutti i valori a Teramo` — replaces every
+  value in the loaded `region` column after confirmation.
+* `metti il colore nero a ST-12` — assigns black to that exact sample ID and
+  switches the tree to the native ID colour category so the result is visible.
+
 ## Instruction to run it locally
 
 To run the project locally you need to set a web server, **node packages http-server** or **live-server** works pretty fine.

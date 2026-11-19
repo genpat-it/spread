@@ -70,10 +70,45 @@ function refreshRegistry() {
       };
       actionRegistry.set('assistant:tree-zoom', { id: 'assistant:tree-zoom', area: 'tree', item });
     }
+    if (gtiz_tree.tree && typeof gtiz_tree.tree.setColour === 'function' && typeof gtiz_tree.tree.changeCategory === 'function') {
+      const item = {
+        id: 'assistant-node-colour',
+        type: 'assistant_node_colour',
+        label: () => ({ it: 'Colora un campione per ID', en: 'Colour one sample by ID', fr: 'Colorer un échantillon par ID' }[(typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en']),
+        function: ({ id, colour }) => {
+          gtiz_tree.tree.setColour('ID', id, colour);
+          gtiz_tree.tree.changeCategory('ID');
+          if (typeof gtiz_legend !== 'undefined') {
+            if (gtiz_legend.selection_mode === 'visual') {
+              gtiz_legend.resetVisualSelection();
+              gtiz_legend.highlightSelection();
+            } else gtiz_legend.resetQualitativeSelection();
+          }
+        }
+      };
+      actionRegistry.set('assistant:node-colour', { id: 'assistant:node-colour', area: 'tree', item });
+    }
   }
   if (typeof gtiz_metadata !== 'undefined') {
     registerMenu('metadata', gtiz_metadata.context_menu);
     registerMenu('metadata-card', gtiz_metadata.card_menu);
+    // Updating an entire existing metadata column is a native metadata
+    // operation, but it needs two fields (column and replacement value) and
+    // therefore is not representable by the one-value context-menu schema.
+    // Keep it typed and bounded instead of sending free-form code to SPREAD.
+    if (gtiz_tree && gtiz_tree.tree && typeof gtiz_metadata.updateMetadata === 'function' && typeof gtiz_metadata.loadMetadata === 'function') {
+      const item = {
+        id: 'assistant-metadata-replace-all',
+        type: 'assistant_metadata_replace_all',
+        label: () => ({ it: 'Sostituisci tutti i valori di una colonna metadati', en: 'Replace all values in a metadata column', fr: 'Remplacer toutes les valeurs d’une colonne de métadonnées' }[(typeof gtiz_locales !== 'undefined' && gtiz_locales.getActiveLanguageCode()) || 'en']),
+        function: ({ category, value }) => {
+          const metadata = gtiz_tree.tree.metadata;
+          const tsv = gtiz_metadata.updateMetadata('edit', metadata, [], category, value);
+          gtiz_metadata.loadMetadata(tsv);
+        }
+      };
+      actionRegistry.set('assistant:metadata-replace-all', { id: 'assistant:metadata-replace-all', area: 'metadata', item });
+    }
   }
   if (typeof gtiz_legend !== 'undefined') registerMenu('legend', gtiz_legend.context_menu);
   if (typeof gtiz_map !== 'undefined') registerMenu('map', gtiz_map.context_menu);
@@ -117,6 +152,14 @@ function describe(entry) {
   if (Number.isFinite(item.min)) result.min = item.min;
   if (Number.isFinite(item.max)) result.max = item.max;
   if (options.length || ['toggle', 'select', 'number', 'slider', 'search', 'radio', 'text', 'abutton_optioned'].includes(item.type)) result.value_required = true;
+  if (item.type === 'assistant_metadata_replace_all') {
+    result.value_required = true;
+    result.value_schema = { category: 'exact loaded metadata column', value: 'replacement text' };
+  }
+  if (item.type === 'assistant_node_colour') {
+    result.value_required = true;
+    result.value_schema = { id: 'exact loaded sample ID', colour: 'CSS hex colour' };
+  }
   return result;
 }
 
@@ -177,6 +220,8 @@ function compactState(request) {
     else if (Number.isFinite(item.min) || Number.isFinite(item.max)) tuple.push(null);
     if (Number.isFinite(item.min)) tuple.push(item.min);
     if (Number.isFinite(item.max)) tuple.push(item.max);
+    if (item.type === 'assistant_metadata_replace_all') tuple.push('$columns + replacement text');
+    if (item.type === 'assistant_node_colour') tuple.push('$sample IDs + CSS hex colour');
     return tuple;
   });
   return {
@@ -189,6 +234,26 @@ function compactState(request) {
 }
 
 function validate(item, value) {
+  if (item.type === 'assistant_node_colour') {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Servono ID del campione e colore.');
+    const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
+    const ids = tree && tree.metadata ? Object.values(tree.metadata).map((row) => String(row.ID || '')).filter(Boolean) : [];
+    const id = String(value.id || '');
+    const colour = String(value.colour || '');
+    if (!ids.includes(id)) throw new Error('L’ID indicato non esiste nei metadati caricati.');
+    if (!/^#[0-9a-f]{6}$/i.test(colour)) throw new Error('Il colore deve essere espresso in esadecimale, per esempio #000000.');
+    return { id, colour };
+  }
+  if (item.type === 'assistant_metadata_replace_all') {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Servono colonna e valore di sostituzione.');
+    const tree = typeof gtiz_tree !== 'undefined' ? gtiz_tree.tree : undefined;
+    const columns = tree && tree.metadata_info ? Object.keys(tree.metadata_info) : [];
+    const category = String(value.category || '');
+    const replacement = String(value.value || '').trim();
+    if (!columns.includes(category)) throw new Error('La colonna indicata non esiste nei metadati caricati.');
+    if (!replacement) throw new Error('Il valore di sostituzione non può essere vuoto.');
+    return { category, value: replacement };
+  }
   const needsValue = optionsOf(item).length > 0 || ['toggle', 'select', 'number', 'slider', 'search', 'radio', 'text', 'abutton_optioned'].includes(item.type);
   if (!needsValue) return undefined;
   if (value === undefined || value === null) throw new Error(`Manca un valore per “${labelOf(item)}”.`);
@@ -243,7 +308,9 @@ function showPlan(panel, actions) {
   lastProposedActions = actions.map((action) => ({ id: action.id, value: action.value }));
   panel.querySelector('.spread-assistant__plan p').textContent = `${copy().plan}: ${actions.map((action) => {
     const label = labelOf(actionRegistry.get(action.id).item);
-    return action.value === undefined ? label : `${label} = ${action.value}`;
+    if (action.value === undefined) return label;
+    if (action.value && typeof action.value === 'object') return action.value.category ? `${label}: ${action.value.category} = ${action.value.value}` : `${label}: ${action.value.id} = ${action.value.colour}`;
+    return `${label} = ${action.value}`;
   }).join(', ')}.`;
   panel.querySelector('.spread-assistant__plan').hidden = false;
 }
@@ -303,6 +370,12 @@ function mandatoryActions(request) {
     const entry = [...actionRegistry.values()].find(({ item }) => /\b(centra|center|centre)\b/.test(normalizeTerms(labelOf(item))) && item.type === 'abutton');
     if (entry) result.push({ id: entry.id });
   }
+  if (/\b(tutti|tutte|ogni|all|every|tous|toutes)\b/.test(normalizedRequest) && /\b(valori|values|valeurs)\b/.test(normalizedRequest) && /\b(colonna|column|colonne|metadati|metadata)\b/.test(normalizedRequest)) {
+    const entry = actionRegistry.get('assistant:metadata-replace-all');
+    const column = columns.find((value) => normalizedRequest.includes(normalizeTerms(value)));
+    const replacement = String(request).match(/\b(?:a|to|à)\s+(.+?)(?:[.!?]|$)/i);
+    if (entry && column && replacement && replacement[1].trim()) result.push({ id: entry.id, value: { category: column, value: replacement[1].trim() } });
+  }
   if (/\b(scala|scale)\b/.test(normalizedRequest) && /\b(logaritmica|logarithmic|logarithmique|log)\b/.test(normalizedRequest)) {
     const disable = /\b(togli|rimuovi|disattiva|senza|remove|disable|turn off|off|enleve|desactive)\b/.test(normalizedRequest);
     const entry = [...actionRegistry.values()].find(({ item }) => item.id === 'tree-branch-toggle-log-scale');
@@ -319,13 +392,20 @@ function mandatoryActions(request) {
     });
     if (entry && column) result.push({ id: entry.id, value: column });
   }
-  if (/\b(apri|mostra|visualizza)\b/.test(normalizedRequest)) {
+  if (/\b(apri|mostra|visualizza|chiudi|nascondi|close|hide|ferme)\b/.test(normalizedRequest)) {
     const aliases = { mappa: 'map', metadati: 'metadata', impostazioni: 'settings', legenda: 'legend', video: 'video', schermo: 'full screen' };
     const target = Object.keys(aliases).find((word) => normalizedRequest.includes(word));
     if (target) {
       const entry = [...actionRegistry.values()].find(({ area, item }) => area === 'layout' && normalizeTerms(`${item.type} ${labelOf(item)}`).includes(aliases[target]));
-      if (entry) result.push({ id: entry.id, value: 'on' });
+      const close = /\b(chiudi|nascondi|close|hide|ferme)\b/.test(normalizedRequest);
+      if (entry) result.push({ id: entry.id, value: close ? 'off' : 'on' });
     }
+  }
+  if (/\b(colore|color|colour|couleur)\b/.test(normalizedRequest) && /\b(nero|black|noir)\b/.test(normalizedRequest)) {
+    const entry = actionRegistry.get('assistant:node-colour');
+    const ids = tree && tree.metadata ? Object.values(tree.metadata).map((row) => String(row.ID || '')).filter(Boolean) : [];
+    const id = ids.find((value) => normalizedRequest.includes(normalizeTerms(value)));
+    if (entry && id) result.push({ id: entry.id, value: { id, colour: '#000000' } });
   }
   // Macros are first-class SPREAD capabilities.  Select one only when at
   // least two meaningful words in the request match its title/description;
@@ -345,7 +425,7 @@ function mandatoryActions(request) {
 
 function systemPrompt(request) {
   refreshRegistry();
-  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. The catalog is locally filtered for relevance but all actions remain available in the app. Propose only listed IDs and values. If impossible, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(compactState(request))}`;
+  return `You are the local SPREAD assistant. Reply in ${copy().language}. Request: ${request}.${colorHint(request)}${layoutHint(request)} Never invent actions, values, columns, or results. Reply ONLY with JSON and no markdown: {"reply":"brief action explanation","actions":[{"id":"real id","value":"only when required"}]}. When the user asks to change SPREAD, include its matching tools in actions. For colouring tree/legend, use “Color by” in legend or settings/node-style and an exact listed data column as value, never an area name such as tree or legend. The catalog tuples are [id,area,label,type,values|min|max]; "$columns" means a data column. For assistant_metadata_replace_all the value must be {"category":"exact loaded column","value":"replacement text"}. For assistant_node_colour the value must be {"id":"exact loaded sample ID","colour":"#RRGGBB"}. The catalog is locally filtered for relevance but all actions remain available in the app. Propose only listed IDs and values. If impossible, return actions:[]. Every action is confirmed by the user.\n${JSON.stringify(compactState(request))}`;
 }
 
 function postChat(messages) {
