@@ -64,8 +64,17 @@ gtiz_tree.applySettings = function(obj, apply, metadata, page) {
     gtiz_tree.toggleRenderingMode(bkp_tree_settings.rendering_mode);
     gtiz_tree.setRenderingDynamicSelecion(bkp_tree_settings.rendering_dynamic_selected_only);
     gtiz_tree.setRenderingStaticSelecion(bkp_tree_settings.rendering_static_real_branch_length);
+    // node shapes and borders, by sample id: a zoom shows them on its own samples
+    if (bkp.layout_data && bkp.layout_data.nodes_links && bkp.layout_data.nodes_links.node_styles) {
+      tree.setNodeStyles(bkp.layout_data.nodes_links.node_styles);
+      gtiz_node_styles.refresh();
+    }
 
     if (metadata) {
+      // the metadata grid keeps the column order of the tree the settings come from
+      if (bkp.gtiz_metadata) {
+        gtiz_metadata.setColumnsOrder(bkp.gtiz_metadata.columns_order);
+      }
       let bkp_category = bkp.layout_data.display_category;
       // set custom colors
       let bkp_custom_colors = bkp.layout_data.nodes_links.custom_colours;
@@ -137,13 +146,9 @@ gtiz_tree.applySettings = function(obj, apply, metadata, page) {
         }, {
           type: 'metadata',
           value: bkp.gtiz_layout.metadata
-        }, {
-          type: 'video',
-          value: bkp.gtiz_layout.video
-        }, {
-          type: 'fullscreen',
-          value: bkp.gtiz_layout.fullscreen
       }];
+      // the video player has no toggle: it is set directly (on when the session has no value)
+      gtiz_layout.setVideo(bkp.gtiz_layout.video);
       layout.forEach(element => {
         let selector = '[data-view="' + element.type + '"]';
         let node = gtiz_layout.quick_actions_node.querySelector(selector);
@@ -177,13 +182,8 @@ gtiz_tree.applySettings = function(obj, apply, metadata, page) {
         }, {
           type: 'metadata',
           value: 'off'
-        }, {
-          type: 'video',
-          value: 'on'
-        }, {
-          type: 'fullscreen',
-          value: 'off'
       }];
+      gtiz_layout.setVideo('on');
       layout.forEach(element => {
         let selector = '[data-view="' + element.type + '"]';
         let node = gtiz_layout.quick_actions_node.querySelector(selector);
@@ -226,6 +226,8 @@ gtiz_tree.getCompleteGrapeTreeSettings = function() {
 		cfg : gtiz_settings.cfg,
 		tree : {
 			rendering_mode : gtiz_tree.rendering_mode,
+			// angle of the tree from the layout loaded (the positions are saved rotated)
+			tree_rotation : gtiz_tree.tree_rotation,
 			rendering_dynamic_selected_only : gtiz_tree.rendering_dynamic_selected_only,
 			rendering_static_real_branch_length : gtiz_tree.rendering_static_real_branch_length,
 			show_node_labels : gtiz_tree.show_node_labels,
@@ -253,12 +255,14 @@ gtiz_tree.getCompleteGrapeTreeSettings = function() {
   obj.gtiz_legend = {
 		selection_mode : gtiz_legend.selection_mode,
 		view_mode : gtiz_legend.view_mode,
+		histogram_scale : gtiz_legend.histogram_scale,
 		group_order : gtiz_legend.group_order,
 		selection_map : gtiz_legend.getSelectionMap()
 	};
   obj.gtiz_metadata = {
 		show_nodes : gtiz_metadata.show_nodes,
-		show_hypothetical : gtiz_metadata.show_hypothetical
+		show_hypothetical : gtiz_metadata.show_hypothetical,
+		columns_order : [...gtiz_metadata.columns_order]
 	};
   obj.gtiz_video = {
 		cfg : gtiz_video.cfg
@@ -286,6 +290,16 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
   obj.gtiz_locales = {
 		languages : gtiz_locales.languages
 	};
+  // the embedded metadata are the ones in memory, so a single language: we carry
+  // the resolution of their technical columns along, otherwise reading this json
+  // would depend on the app.json of whoever opens it
+  obj.gtiz_metadata_localization = {
+		lang : gtiz_locales.getActiveLanguageCode(),
+		localized : gtiz_file_handler.metadata_localized,
+		source : gtiz_file_handler.metadata_source,
+		technical_columns : { ...gtiz_file_handler.technical_columns },
+		technical_values : JSON.parse(JSON.stringify(gtiz_file_handler.technical_values))
+	};
   if (gtiz_map.geojson && gtiz_map.geojson != '') {
 		obj.gtiz_map = {
 			geojson : gtiz_map.geojson
@@ -302,6 +316,8 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
 		cfg : gtiz_settings.cfg,
 		tree : {
 			rendering_mode : gtiz_tree.rendering_mode,
+			// angle of the tree from the layout loaded (the positions are saved rotated)
+			tree_rotation : gtiz_tree.tree_rotation,
 			rendering_dynamic_selected_only : gtiz_tree.rendering_dynamic_selected_only,
 			rendering_static_real_branch_length : gtiz_tree.rendering_static_real_branch_length,
 			show_node_labels : gtiz_tree.show_node_labels,
@@ -329,12 +345,14 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
   obj.gtiz_legend = {
 		selection_mode : gtiz_legend.selection_mode,
 		view_mode : gtiz_legend.view_mode,
+		histogram_scale : gtiz_legend.histogram_scale,
 		group_order : gtiz_legend.group_order,
 		selection_map : gtiz_legend.getSelectionMap()
 	};
   obj.gtiz_metadata = {
 		show_nodes : gtiz_metadata.show_nodes,
-		show_hypothetical : gtiz_metadata.show_hypothetical
+		show_hypothetical : gtiz_metadata.show_hypothetical,
+		columns_order : [...gtiz_metadata.columns_order]
 	};
   obj.gtiz_video = {
 		cfg : gtiz_video.cfg
@@ -347,6 +365,16 @@ gtiz_tree.getCompleteGrapeTreeObject = function() {
     zooms_prefix : gtiz_zooms.zooms_prefix,
     zooms : gtiz_zooms.zooms
 	};
+  // the macros recorded by the user travel with the session
+  let macros = typeof gtiz_macros !== 'undefined' ? gtiz_macros.getSessionData() : undefined;
+  if (macros) {
+    obj.gtiz_macros = macros;
+  }
+  // the notes of the session (js/notes.js)
+  let notes = typeof gtiz_notes !== 'undefined' ? gtiz_notes.getSessionData() : undefined;
+  if (notes) {
+    obj.gtiz_notes = notes;
+  }
 
   return obj;
 }
@@ -376,6 +404,8 @@ gtiz_tree.findNodes = function(nodes) {
     gtiz_metadata.findNodes(nodes);
   }
   gtiz_zooms.checkZooms(nodes);
+  // a legend filtered by the selection follows it (selections of tree and map)
+  gtiz_legend.refreshSelectionFilter();
 }
 
 /**
@@ -688,6 +718,8 @@ gtiz_tree.toggleRenderingMode = function(value) {
       gtiz_tree.tree.fixAllNodes(false);
     }
   }
+  // the rotation works in the static layout only
+  gtiz_tree.updateRotationControls();
 }
 
 gtiz_tree.toggleHypotetical = function(value) {
@@ -813,7 +845,9 @@ gtiz_tree.treeLoaded = function(tree) {
   tree.addSegmentOverListener(function(d, event) {
     if (gtiz_tree.show_node_tooltips == 'show_tooltips') {
       let display = d.data.type;
-      gtiz_tree.showToolTip(display+ '(' + d.data.value + ')', event);
+      // the titles of the notes of the node follow its values
+      let notes = typeof gtiz_notes !== 'undefined' ? gtiz_notes.tooltipHtml(tree._hover_node) : '';
+      gtiz_tree.showToolTip(display+ '(' + d.data.value + ')' + notes, event);
     }
   });
 
@@ -930,6 +964,11 @@ gtiz_tree.treeLoaded = function(tree) {
 
   // gtiz_tree.tree_interceptor(tree, (groupedNods) => console.log(groupedNods));
   gtiz_tree.tree_interceptor(tree, (groupedNods) => gtiz_tree.findNodes(groupedNods));
+  // the node style cards follow the selection (hint, value shared by the selected nodes)
+  tree.addNodesSelectedListener(() => gtiz_node_styles.refresh());
+  // the menu items acting on the selection are enabled only with selected nodes
+  tree.addNodesSelectedListener(() => gtiz_context.updateSelectionStates());
+  gtiz_node_styles.refresh();
 
 } //------------------------------- tree_loaded
 
@@ -957,6 +996,17 @@ gtiz_tree.treeLoading = function(tree, msg) {
  */
 gtiz_tree.loadMSTree = function(data, json) {
   gtiz_tree.metadata_options = {};
+  // a new tree starts without the metadata of the previous one: the grid and the
+  // samples column are set again when its metadata are loaded (or restored below
+  // from a complete json)
+  gtiz_metadata.reset();
+  gtiz_file_handler.samples_column = undefined;
+  // a new tree starts with the whole legend: its selection is empty
+  gtiz_legend.selection_filter = false;
+  gtiz_legend.setFilterIndicator(null);
+  // order of the metadata columns: the one saved in a complete json, otherwise the
+  // order of the metadata file (a zoom inherits it later, through applySettings)
+  gtiz_metadata.columns_order = data.gtiz_metadata && Array.isArray(data.gtiz_metadata.columns_order) ? [...data.gtiz_metadata.columns_order] : [];
   if (gtiz_tree.tree) {
     gtiz_tree.tree.svg.remove();
     gtiz_tree.tree.legend_div.remove();
@@ -982,6 +1032,9 @@ gtiz_tree.loadMSTree = function(data, json) {
     gtiz_tree.treeLoading(tree, msg);
   });
 
+  // a new tree starts unrotated; a complete session gives back its angle (below)
+  gtiz_tree.tree_rotation = 0;
+
   // control if data contains configurations
   let file_handler = data.gtiz_file_handler;
   let layout = data.gtiz_layout;
@@ -991,7 +1044,18 @@ gtiz_tree.loadMSTree = function(data, json) {
   let metadata = data.gtiz_metadata;
   let video = data.gtiz_video;
   let locales = data.gtiz_locales;
+  let localization = data.gtiz_metadata_localization;
   let zooms = data.gtiz_zooms;
+  // the macros of the session join the library of the browser (the ones already
+  // there are skipped)
+  if (data.gtiz_macros && typeof gtiz_macros !== 'undefined') {
+    gtiz_macros.importSession(data.gtiz_macros);
+  }
+  // the notes of the session replace the ones in memory, unless the same session
+  // is being reloaded (zoom, original tree, undo of a macro)
+  if (typeof gtiz_notes !== 'undefined') {
+    gtiz_notes.loadSession(data.gtiz_notes);
+  }
   if (file_handler) {
     gtiz_file_handler.samples_column = file_handler.samples_column;
   }
@@ -1013,13 +1077,17 @@ gtiz_tree.loadMSTree = function(data, json) {
     }
     gtiz_layout.metadata = layout.metadata;
     gtiz_layout.legend = layout.legend;
-    gtiz_layout.video = layout.video;
+    // a session without the value keeps the player on (setVideo also sets the icon of its trigger)
+    gtiz_layout.setVideo(layout.video);
   }
   if (settings) {
     if (settings.cfg) {
       gtiz_settings.cfg.forEach(setting => {
         let card = settings.cfg.find(element => element.card === setting.card);
-        setting.expanded = card.expanded;
+        // a session saved before a card existed (e.g. node-shape) keeps its default state
+        if (card) {
+          setting.expanded = card.expanded;
+        }
       });
     }
     if (settings.tree) {
@@ -1039,6 +1107,7 @@ gtiz_tree.loadMSTree = function(data, json) {
       gtiz_tree.branch_log_scale = settings.tree.branch_log_scale;
       gtiz_tree.branch_cutoffs_method = settings.tree.branch_cutoffs_method;
       gtiz_tree.label_to_highlight = settings.tree.label_to_highlight;
+      gtiz_tree.tree_rotation = gtiz_tree.normalizeAngle(settings.tree.tree_rotation);
     }
     if (settings.map) {
       gtiz_map.default_delta_type = settings.map.default_delta_type;
@@ -1052,6 +1121,10 @@ gtiz_tree.loadMSTree = function(data, json) {
     gtiz_legend.selection_mode = legend.selection_mode,
     gtiz_legend.view_mode = legend.view_mode,
     gtiz_legend.group_order = legend.group_order
+    // sessions saved before the option have no scale and keep the default one
+    if (legend.histogram_scale) {
+      gtiz_legend.histogram_scale = legend.histogram_scale;
+    }
     gtiz_legend.selection_map = legend.selection_map;
   }
   if (video) {
@@ -1061,6 +1134,18 @@ gtiz_tree.loadMSTree = function(data, json) {
     gtiz_locales.languages = locales.languages;
     gtiz_locales.current = gtiz_locales.getActiveLanguageTerms();
     gtiz_locales.translate();
+  }
+  if (localization) {
+    gtiz_file_handler.technical_columns = localization.technical_columns ? localization.technical_columns : {};
+    gtiz_file_handler.technical_values = localization.technical_values ? localization.technical_values : {};
+    gtiz_file_handler.metadata_localized = localization.localized ? true : false;
+    gtiz_file_handler.metadata_source = localization.source;
+    // align the url so the link stays shareable, without reloading the page. Only
+    // for translated metadata: enabling the lookup of localized files for a
+    // default dataset would mix translated and untranslated headers on zooms
+    if (gtiz_file_handler.metadata_localized) {
+      gtiz_locales.syncUrlLanguage(localization.lang);
+    }
   }
   if (zooms) {
     gtiz_zooms.cfg = zooms.cfg,
@@ -1101,6 +1186,10 @@ gtiz_tree.originalTree = function() {
   if (tree) {
     let text = JSON.stringify(tree);
     gtiz_tree.current_metadata_file = null;
+    // the same session: the notes written meanwhile stay
+    if (typeof gtiz_notes !== 'undefined') {
+      gtiz_notes.keep_session = true;
+    }
     gtiz_file_handler.loadTreeText(text, true);
   } else {
     console.log('Oops! Something went wrong.');
@@ -1133,8 +1222,29 @@ gtiz_tree.initiateLoading = function(msg) {
 };
 
 /**
+ * Get the label shown in the load modal for the selected files
+ *
+ * A folder shows its name, loose files their names (up to the first three).
+ *
+ * @param {Object} set File set, see `gtiz_file_handler.buildFileSet`
+ * @returns {String} Html label with icon
+ */
+gtiz_tree.getFileSetLabel = function(set) {
+  let is_folder = set.files.some(item => item.path.includes('/')) || (set.files.length > 1 && set.name);
+  let icon = is_folder ? 'tabler-folder' : (set.files.length > 1 ? 'tabler-files' : 'tabler-file');
+  let text = set.name ? set.name : set.files.slice(0, 3).map(item => item.path).join(', ');
+  if (!set.name && set.files.length > 3) {
+    text += ' (+' + (set.files.length - 3) + ')';
+  }
+  // file names are user data: escape them before building the html label
+  let span = document.createElement('span');
+  span.textContent = text.slice(0, 60);
+  return '<i class="tabler ' + icon + '"></i> ' + span.innerHTML;
+}
+
+/**
  * Build modal contents
- * 
+ *
  * @param {String} mode `save` || `load`
  * 
  */
@@ -1143,11 +1253,8 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
   let cfg;
   switch (mode) {
     case 'save':
+      // group headings are part of the options, see `gtiz_file_handler.save_options`
       cfg = gtiz_file_handler.save_options;
-      let label = document.createElement('div');
-      label.setAttribute('class', 'modal-label');
-      contents.push(label);
-      label.innerHTML = gtiz_locales.current.select_format_to_download;
       break;
     case 'load':
       cfg = gtiz_file_handler.load_options;
@@ -1158,6 +1265,17 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
   let form = document.createElement('div');
   form.setAttribute('class', 'modal-form');
   cfg.forEach(item => {
+    // items can be shown only in some conditions, e.g. the export with zooms
+    if (!gtiz_utils.isMenuItemVisible(item)) {
+      return;
+    }
+    // heading of a group of options
+    if (item.type == 'label') {
+      let label = document.createElement('div');
+      label.setAttribute('class', 'modal-label');
+      label.innerHTML = typeof item.label === 'function' ? item.label() : item.label;
+      form.append(label);
+    }
     if (item.type == 'abutton') {
       let box = document.createElement('div'); 
       box.setAttribute('class', 'button-box');
@@ -1193,16 +1311,16 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
         let modal = document.querySelector('.modal');
         let feedback = modal.querySelector('.modal-feedback');
         feedback.innerHTML = '';
-        let files = ev.dataTransfer.files;
-        if (files.length === 1) {
-          let file_name = files[0].name;
-          label.innerHTML = '<i class="tabler tabler-file"></i> ' + file_name;
-          item.listener(files);
-        } else {
-          feedback.classList.add('info');
-          feedback.innerHTML = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.dropped_files_alert + '</p>';
+        // single files, several files, folders and zip packages are all accepted
+        gtiz_file_handler.collectDroppedFiles(ev.dataTransfer).then((set) => {
+          label.innerHTML = gtiz_tree.getFileSetLabel(set);
+          item.listener(set);
+        }).catch((error) => {
+          console.error(error);
+          feedback.classList.add('warning');
+          feedback.innerHTML = '<p><i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.package_unreadable_msg + '</p>';
           feedback.classList.add('show');
-        }
+        });
       });
       label.addEventListener("dragover", (ev) => {
         ev.preventDefault();
@@ -1222,15 +1340,16 @@ gtiz_tree.buildFileHandlerModalContents = function(mode) {
       if (item.accept) {
         input.setAttribute('accept', item.accept);
       }
+      if (item.multiple) {
+        input.setAttribute('multiple', '');
+      }
       let events = ['change'];
       events.forEach((event) => {
         input.addEventListener(event, (e) => {
-          let path = e.target.value;
-          let file_name = path.split("\\").pop();
-          file_name = file_name.slice(0, 21);
-          if (file_name) {
-            label.innerHTML = '<i class="tabler tabler-file"></i> ' + file_name;
-            item.listener(input.files);
+          if (input.files.length > 0) {
+            let set = gtiz_file_handler.buildFileSet(input.files);
+            label.innerHTML = gtiz_tree.getFileSetLabel(set);
+            item.listener(set);
           }
         });
       });
@@ -1274,6 +1393,69 @@ gtiz_tree.openFileHandlerModal = function(mode) {
 	gtiz_modal.buildModal(title, contents);
 }
 
+/**
+ * Apply a shape or a border to the selected nodes (all their samples).
+ * Nothing happens when no node is selected, as for the other actions on the
+ * selection; the node style cards say so with their hint.
+ *
+ * @param {String} kind 'shapes' or 'borders'
+ * @param {String} value Shape or border name
+ * @returns {undefined}
+ */
+gtiz_tree.setSelectedNodesStyle = function(kind, value) {
+  if (!value) {
+    return;
+  }
+  let selected = gtiz_tree.tree.getSelectedNodeIDs();
+  gtiz_tree.tree.setNodesStyle(selected, kind, value);
+  // the open cards show the value now shared by the selection
+  gtiz_node_styles.refresh();
+}
+
+/**
+ * Bring every node of the tree back to the circle with the normal border
+ * (a few nodes are reset choosing circle and normal in the node style card).
+ *
+ * @returns {undefined}
+ */
+gtiz_tree.resetNodesStyle = function() {
+  gtiz_tree.tree.setNodeStyles(null);
+  gtiz_node_styles.refresh();
+}
+
+/**
+ * Ask for confirmation before resetting the shapes and borders of every node: the
+ * reset cannot be undone.
+ *
+ * @returns {undefined}
+ */
+gtiz_tree.confirmResetNodesStyle = function() {
+  let text = document.createElement('p');
+  text.textContent = gtiz_locales.current.reset_nodes_style_confirm;
+  let button_box = document.createElement('div');
+  button_box.setAttribute('class', 'modal-confirm-actions');
+  // icon before the text, as the other buttons of the modals
+  let reset = document.createElement('button');
+  let reset_icon = document.createElement('i');
+  reset_icon.setAttribute('class', 'tabler tabler-restore');
+  reset.append(reset_icon, document.createTextNode(' ' + gtiz_locales.current.reset));
+  reset.addEventListener('click', () => {
+    // through the item of the macros, so a recording notes it
+    gtiz_node_styles.runItem('node-shape-reset');
+    gtiz_modal.closeModal();
+  });
+  let cancel = document.createElement('button');
+  cancel.setAttribute('class', 'button-tertiary-outline');
+  let cancel_icon = document.createElement('i');
+  cancel_icon.setAttribute('class', 'tabler tabler-circle-x');
+  cancel.append(cancel_icon, document.createTextNode(' ' + gtiz_locales.current.cancel));
+  cancel.addEventListener('click', () => {
+    gtiz_modal.closeModal();
+  });
+  button_box.append(reset, cancel);
+  gtiz_modal.buildModal(gtiz_locales.current.reset_nodes_style, [text, button_box]);
+}
+
 gtiz_tree.context_menu = [{
   type : 'toggle',
   id : 'tree-tooltip-toggle',
@@ -1300,6 +1482,7 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'abutton',
+  id : 'tree-menu-centre-tree',
   label : () => {
     return gtiz_locales.current.centre_tree;
   },
@@ -1309,6 +1492,9 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-static-redraw',
+  // undo: the positions of the nodes before the redraw (js/history.js)
+  undo : 'positions',
   label : () => {
     return gtiz_locales.current.static_redraw;
   },
@@ -1318,6 +1504,7 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-original-tree',
   label : () => {
     return gtiz_locales.current.original_tree;
   },
@@ -1330,7 +1517,7 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'toggle',
-  id : 'tree-tooltip-toggle',
+  id : 'tree-hypothetical-toggle',
   options : [{
       label : () => {
         return gtiz_locales.current.show_hypothetical;
@@ -1354,6 +1541,7 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'abutton',
+  id : 'tree-menu-select-all',
   label : () => {
     return gtiz_locales.current.select_all;
   },
@@ -1363,6 +1551,7 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-deselect-all',
   label : () => {
     return gtiz_locales.current.deselect_all;
   },
@@ -1374,6 +1563,10 @@ gtiz_tree.context_menu = [{
   type: 'separator'
 }, {
   type : 'abutton',
+  id : 'tree-menu-collapse-selected',
+  // undo: the whole session, the tree changes (js/history.js)
+  undo : 'structure',
+  requires_selection : true,
   label : () => {
     return gtiz_locales.current.collapse_selected_nodes;
   },
@@ -1384,6 +1577,10 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-expand-selected',
+  // undo: the whole session, the tree changes (js/history.js)
+  undo : 'structure',
+  requires_selection : true,
   label : () => {
     return gtiz_locales.current.expand_selected_nodes;
   },
@@ -1394,6 +1591,9 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-expand-all',
+  // undo: the whole session, the tree changes (js/history.js)
+  undo : 'structure',
   label : () => {
     return gtiz_locales.current.expand_all;
   },
@@ -1406,6 +1606,10 @@ gtiz_tree.context_menu = [{
   type : 'separator'
 }, {
   type : 'abutton',
+  id : 'tree-menu-hide-selected',
+  // undo: the whole session, the tree changes (js/history.js)
+  undo : 'structure',
+  requires_selection : true,
   label : () => {
     return gtiz_locales.current.hide_selected_nodes;
   },
@@ -1416,6 +1620,10 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-show-selected-subtrees',
+  // undo: the whole session, the tree changes (js/history.js)
+  undo : 'structure',
+  requires_selection : true,
   label : () => {
     return gtiz_locales.current.show_selected_subtrees;
   },
@@ -1426,6 +1634,9 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-show-whole-tree',
+  // undo: the whole session, the tree changes (js/history.js)
+  undo : 'structure',
   label : () => {
     return gtiz_locales.current.show_whole_tree;
   },
@@ -1434,10 +1645,49 @@ gtiz_tree.context_menu = [{
     gtiz_tree.tree.undeleteNodes();
   }
 }, {
+  type : 'separator'
+}, {
+  type : 'abutton',
+  id : 'tree-menu-add-note',
+  // notes are contents, not settings of the view: never in a macro
+  macro : false,
+  requires_selection : true,
+  label : () => {
+    return gtiz_locales.current.add_note_to_selected;
+  },
+  icon : 'tabler-notes',
+  function : () => {
+    gtiz_notes.addNoteFromSelection();
+  }
+}, {
+  type : 'toggle',
+  id : 'tree-menu-note-marks',
+  options : [{
+    label : () => {
+      return gtiz_locales.current.notes_on_tree;
+    },
+    value : 'show',
+    icon : 'tabler-eye'
+  }, {
+    label : () => {
+      return gtiz_locales.current.notes_on_tree;
+    },
+    value : 'hide',
+    icon : 'tabler-eye-off'
+  }],
+  selected : () => {
+    return gtiz_notes.show_marks ? 'show' : 'hide';
+  },
+  function : (value) => {
+    gtiz_notes.setMarksVisibility(value === 'show');
+  }
+}, {
   type : 'separator',
   hide_in_read_only: true
 }, {
   type : 'abutton',
+  id : 'tree-menu-save-spread',
+  macro : false,
   hide_in_read_only: true,
   label : () => {
     return gtiz_locales.current.save_spread
@@ -1449,6 +1699,8 @@ gtiz_tree.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'tree-menu-load-spread',
+  macro : false,
   hide_in_read_only: true,
   label : () => {
     return gtiz_locales.current.load_spread
@@ -1463,6 +1715,7 @@ gtiz_tree.context_menu = [{
   hide_in_read_only: true
 }, {
   type: 'abutton_optioned',
+  id: 'tree-menu-download-image',
   hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.download_image;
@@ -1497,62 +1750,390 @@ gtiz_tree.context_menu = [{
   }
 }];
 
+/*
+*
+* Rotation of the tree, in the static layout: Alt (Option) + drag on the tree,
+* Alt + left or right arrow with the pointer over the tree (steps of 15°), and
+* the Rotation setting of the Rendering card (an absolute angle, from the layout
+* loaded). The nodes turn around the centre of the tree; the angle is kept in
+* the complete session. Every rotation is part of the undo history (js/history.js)
+* as the Rotation setting, with the node positions.
+*
+*/
+gtiz_tree.tree_rotation = 0;
+gtiz_tree.rotation_step = 15;
+
 /**
- * Event for tree rotation
- * to be rewritten
- * 
+ * Angle in the 0-359 range
+ *
+ * @param {Number} angle Angle in degrees
+ * @returns {Number} The same angle, from 0 to 359
  */
-(function() {
-  var icon = document.getElementById('rotation-icon');
-  if (!icon) return;
-  var helper = null;
-  var icon_x = 0;
-  var icon_y = 0;
+gtiz_tree.normalizeAngle = function(angle) {
+  let value = Math.round(Number(angle) || 0) % 360;
+  return value < 0 ? value + 360 : value;
+}
 
-  function onMouseMove(e) {
-    gtiz_tree.tree._dragging(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
-    if (helper) {
-      // helper element follows the cursor and shows the rotation angle
-      helper.style.left = (e.clientX + 10) + 'px';
-      helper.style.top = (e.clientY + 10) + 'px';
-      var x_dif = e.clientX - icon_x;
-      var y_dif = icon_y - e.clientY;
-      var angle = y_dif !== 0 ? Math.atan(x_dif / y_dif) / Math.PI * 180 : (x_dif === 0 ? 0 : (x_dif > 0 ? 90 : -90));
-      if (y_dif < 0) {
-        angle = 180 + angle;
-      } else if (x_dif < 0) {
-        angle = 360 + angle;
-      }
-      helper.textContent = Math.round(angle) + '\xB0';
-    }
+/**
+ * Tell if the tree can be rotated: a tree is loaded and the layout is static
+ * (in the dynamic one the simulation moves the nodes)
+ *
+ * @returns {Boolean} True when it can be rotated
+ */
+gtiz_tree.canRotate = function() {
+  return !!gtiz_tree.tree && gtiz_tree.rendering_mode !== 'dynamic';
+}
+
+/**
+ * Rotate the tree by an angle around its centre
+ *
+ * @param {Number} degrees Angle in degrees, clockwise
+ * @returns {undefined}
+ */
+gtiz_tree.rotateTreeBy = function(degrees) {
+  let tree = gtiz_tree.tree;
+  let delta = Number(degrees) || 0;
+  if (!gtiz_tree.canRotate() || delta === 0 || !tree.force_nodes || tree.force_nodes.length === 0) {
+    return;
   }
-
-  function onMouseUp(e) {
-    gtiz_tree.tree._dragEnded(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-    document.body.classList.remove('no-select');
-    if (helper) {
-      helper.remove();
-      helper = null;
-    }
-  }
-
-  icon.addEventListener('mousedown', function(e) {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    var rect = icon.getBoundingClientRect();
-    icon_x = rect.left + rect.width / 2;
-    icon_y = rect.top + rect.height / 2;
-    gtiz_tree.tree._dragStarted(gtiz_tree.tree.force_nodes[0], [e.clientX, e.clientY]);
-    helper = document.createElement('div');
-    helper.id = 'angle-text';
-    helper.style.cssText = 'position:fixed;cursor:none;font-size:1.3rem;font-weight:bold;pointer-events:none;z-index:10000;';
-    helper.style.left = (e.clientX + 10) + 'px';
-    helper.style.top = (e.clientY + 10) + 'px';
-    document.body.appendChild(helper);
-    document.body.classList.add('no-select');
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+  // centre of the nodes, so the tree turns in place
+  let min_x = Infinity, max_x = -Infinity, min_y = Infinity, max_y = -Infinity;
+  tree.force_nodes.forEach(node => {
+    min_x = Math.min(min_x, node.x);
+    max_x = Math.max(max_x, node.x);
+    min_y = Math.min(min_y, node.y);
+    max_y = Math.max(max_y, node.y);
   });
-})();
+  let cx = (min_x + max_x) / 2;
+  let cy = (min_y + max_y) / 2;
+  let radians = delta * Math.PI / 180;
+  let cos = Math.cos(radians);
+  let sin = Math.sin(radians);
+  tree.force_nodes.forEach(node => {
+    let dx = node.x - cx;
+    let dy = node.y - cy;
+    node.x = cx + dx * cos - dy * sin;
+    node.y = cy + dx * sin + dy * cos;
+    node.px = node.x;
+    node.py = node.y;
+  });
+  if (tree.renderer) {
+    tree.renderer.invalidateIndex();
+    tree.renderer.requestRedraw();
+  }
+  gtiz_tree.tree_rotation = gtiz_tree.normalizeAngle(gtiz_tree.tree_rotation + delta);
+  gtiz_tree.updateRotationControls();
+}
+
+/**
+ * Rotate the tree to an angle (the Rotation setting)
+ *
+ * @param {Number} angle Angle in degrees, from the layout loaded
+ * @returns {undefined}
+ */
+gtiz_tree.rotateTreeTo = function(angle) {
+  let target = gtiz_tree.normalizeAngle(angle);
+  let delta = target - gtiz_tree.tree_rotation;
+  // the shortest way round
+  if (delta > 180) {
+    delta -= 360;
+  } else if (delta < -180) {
+    delta += 360;
+  }
+  gtiz_tree.rotateTreeBy(delta);
+}
+
+/**
+ * Show the angle in the Rotation setting and disable it in the dynamic layout
+ *
+ * @returns {undefined}
+ */
+gtiz_tree.updateRotationControls = function() {
+  let disabled = !gtiz_tree.canRotate();
+  ['tree-rotation-slider', 'tree-rotation'].forEach(id => {
+    let input = document.getElementById(id);
+    if (!input) {
+      return;
+    }
+    input.value = gtiz_tree.tree_rotation;
+    input.disabled = disabled;
+    let box = input.closest('.slider-box, .input-box');
+    if (box) {
+      box.classList.toggle('disabled', disabled);
+    }
+  });
+}
+
+/**
+ * Item of the Rotation setting, recorded in the undo history for the rotations
+ * made on the tree
+ *
+ * @returns {Object|undefined} The number item of the Rendering card
+ */
+gtiz_tree.rotationItem = function() {
+  let card = gtiz_settings.cfg.find(setting => setting.card === 'rendering');
+  return card ? card.menu.find(item => item && item.id === 'tree-rotation') : undefined;
+}
+
+/**
+ * Record a rotation made on the tree (drag, arrows) in the undo history
+ *
+ * @param {Number} before Angle before the rotation
+ * @param {Object} positions Node positions before the rotation
+ * @returns {undefined}
+ */
+gtiz_tree.recordRotation = function(before, positions) {
+  let item = gtiz_tree.rotationItem();
+  if (item && typeof gtiz_history !== 'undefined' && gtiz_history.isTracking()) {
+    gtiz_history.recordValue('settings/rendering', item, before, gtiz_tree.tree_rotation, positions);
+  }
+}
+
+/**
+ * Capture the node positions for the undo history, when it records
+ *
+ * @returns {Object|null} Positions, null when the history does not record
+ */
+gtiz_tree.rotationPositions = function() {
+  if (typeof gtiz_history === 'undefined' || !gtiz_history.isTracking()) {
+    return null;
+  }
+  return gtiz_history.scopes.positions.capture();
+}
+
+/**
+ * Alt + drag on the tree rotates it; Alt + left or right arrow, with the pointer
+ * over the tree, rotates it by 15°
+ *
+ * @returns {undefined}
+ */
+gtiz_tree.initRotation = function() {
+  let graph = document.getElementById('graph-div');
+  let card = document.querySelector('.tree-container');
+  if (!graph || !card) {
+    return;
+  }
+  let over_tree = false;
+  card.addEventListener('mouseenter', () => { over_tree = true; });
+  card.addEventListener('mouseleave', () => { over_tree = false; });
+
+  // drag: captured before the zoom and the node drag of the tree, which never see it
+  graph.addEventListener('mousedown', function(e) {
+    if (!e.altKey || e.button !== 0 || !gtiz_tree.canRotate()) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    let tree = gtiz_tree.tree;
+    let rect = tree.svg.node().getBoundingClientRect();
+    // centre of the tree on screen
+    let min_x = Infinity, max_x = -Infinity, min_y = Infinity, max_y = -Infinity;
+    tree.force_nodes.forEach(node => {
+      min_x = Math.min(min_x, node.x);
+      max_x = Math.max(max_x, node.x);
+      min_y = Math.min(min_y, node.y);
+      max_y = Math.max(max_y, node.y);
+    });
+    let centre_x = rect.left + tree.translate[0] + (min_x + max_x) / 2 * tree.scale;
+    let centre_y = rect.top + tree.translate[1] + (min_y + max_y) / 2 * tree.scale;
+    let pointer_angle = (ev) => Math.atan2(ev.clientY - centre_y, ev.clientX - centre_x) * 180 / Math.PI;
+    let last = pointer_angle(e);
+    let before = gtiz_tree.tree_rotation;
+    let positions = gtiz_tree.rotationPositions();
+    // the angle next to the cursor (only its position is set here, the rest is in dashboard.css)
+    let helper = document.createElement('div');
+    helper.setAttribute('class', 'tree-rotation-angle');
+    let place = (ev) => {
+      helper.style.left = (ev.clientX + 12) + 'px';
+      helper.style.top = (ev.clientY + 12) + 'px';
+      helper.textContent = gtiz_tree.tree_rotation + '\xB0';
+    };
+    place(e);
+    document.body.append(helper);
+    document.body.classList.add('no-select');
+    let onMove = function(ev) {
+      let current = pointer_angle(ev);
+      let delta = current - last;
+      if (delta > 180) {
+        delta -= 360;
+      } else if (delta < -180) {
+        delta += 360;
+      }
+      // whole degrees, the rest is kept for the next move
+      let step = Math.trunc(delta);
+      if (step !== 0) {
+        gtiz_tree.rotateTreeBy(step);
+        last += step;
+      }
+      place(ev);
+    };
+    let onUp = function() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.classList.remove('no-select');
+      helper.remove();
+      if (positions && gtiz_tree.tree_rotation !== before) {
+        gtiz_tree.recordRotation(before, positions);
+      }
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }, true);
+
+  // arrows: not in text fields, the browser keeps them there
+  document.addEventListener('keydown', function(e) {
+    if (!e.altKey || e.ctrlKey || e.metaKey || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) {
+      return;
+    }
+    if (!over_tree || !gtiz_tree.canRotate()) {
+      return;
+    }
+    if (typeof gtiz_history !== 'undefined' && gtiz_history.isEditing(e)) {
+      return;
+    }
+    e.preventDefault();
+    let before = gtiz_tree.tree_rotation;
+    let positions = gtiz_tree.rotationPositions();
+    gtiz_tree.rotateTreeBy(e.key === 'ArrowRight' ? gtiz_tree.rotation_step : -gtiz_tree.rotation_step);
+    if (positions) {
+      gtiz_tree.recordRotation(before, positions);
+    }
+  });
+}
+
+/*
+*
+* Shortcuts of the tree: a box opened by the trigger at the bottom right of the
+* tree card (the place of the old rotation icon), closed by its close trigger
+* (top right), the trigger, Esc or a click elsewhere. Keys are written as on the platform (⌘ ⌥ ⇧ on a Mac).
+*
+*/
+
+/**
+ * Rows of the shortcuts box
+ *
+ * @returns {Array} Rows `{ keys: [String|Array], text: String }`; a key given as an
+ * array lists alternatives (e.g. either arrow)
+ */
+gtiz_tree.shortcutRows = function() {
+  let t = gtiz_locales.current;
+  let mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  let command = mac ? '⌘' : 'Ctrl';
+  let alt = mac ? '⌥' : 'Alt';
+  let shift = mac ? '⇧' : t.shortcut_shift;
+  let rows = [
+    { keys : [t.shortcut_wheel], text : t.shortcut_zoom },
+    { keys : [t.shortcut_drag], text : t.shortcut_pan },
+    { keys : [t.shortcut_drag_node], text : t.shortcut_move_node },
+    { keys : [shift, t.shortcut_drag], text : t.shortcut_select },
+    { keys : [alt, t.shortcut_drag], text : t.shortcut_rotate },
+    // the arrows are alternatives: either of them
+    { keys : [alt, ['←', '→']], text : t.shortcut_rotate_step },
+    { keys : [command, 'Z'], text : t.shortcut_undo },
+    { keys : [command, shift, 'Z'], text : t.shortcut_redo }
+  ];
+  if (!mac) {
+    rows.push({ keys : ['Ctrl', 'Y'], text : t.shortcut_redo });
+  }
+  return rows;
+}
+
+/**
+ * Build the contents of the shortcuts box
+ *
+ * @param {Element} box The box
+ * @param {Function} close Closes the box (its close trigger, top right)
+ * @returns {undefined}
+ */
+gtiz_tree.buildShortcuts = function(box, close) {
+  // close trigger as the one of the notifications of the card
+  let close_trigger = document.createElement('div');
+  close_trigger.setAttribute('class', 'notifier-close tree-shortcuts-close');
+  close_trigger.setAttribute('role', 'button');
+  close_trigger.setAttribute('tabindex', '0');
+  close_trigger.setAttribute('title', gtiz_locales.current.close);
+  let close_icon = document.createElement('i');
+  close_icon.setAttribute('class', 'tabler tabler-circle-x');
+  close_trigger.append(close_icon);
+  close_trigger.addEventListener('click', close);
+  close_trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      close();
+    }
+  });
+  let title = document.createElement('div');
+  title.setAttribute('class', 'tree-shortcuts-title');
+  title.textContent = gtiz_locales.current.tree_shortcuts;
+  // one row per shortcut: the action first, then its keys (right aligned in the css)
+  let list = document.createElement('ul');
+  list.setAttribute('class', 'tree-shortcuts-list');
+  gtiz_tree.shortcutRows().forEach(row => {
+    let item = document.createElement('li');
+    item.setAttribute('class', 'tree-shortcuts-row');
+    let keys = document.createElement('span');
+    keys.setAttribute('class', 'tree-shortcuts-keys');
+    row.keys.forEach((key, index) => {
+      if (index > 0) {
+        keys.append(' + ');
+      }
+      (Array.isArray(key) ? key : [key]).forEach((alternative, position) => {
+        if (position > 0) {
+          keys.append(' / ');
+        }
+        let kbd = document.createElement('kbd');
+        kbd.textContent = alternative;
+        keys.append(kbd);
+      });
+    });
+    let text = document.createElement('span');
+    text.setAttribute('class', 'tree-shortcuts-text');
+    text.textContent = row.text;
+    item.append(text, keys);
+    list.append(item);
+  });
+  box.replaceChildren(close_trigger, title, list);
+}
+
+/**
+ * Bind the trigger of the shortcuts box
+ *
+ * @returns {undefined}
+ */
+gtiz_tree.initShortcuts = function() {
+  let trigger = document.querySelector('.tree-shortcuts-trigger');
+  let box = document.querySelector('.tree-shortcuts');
+  if (!trigger || !box) {
+    return;
+  }
+  trigger.setAttribute('title', gtiz_locales.current.tree_shortcuts);
+  let show = (open) => {
+    if (open) {
+      gtiz_tree.buildShortcuts(box, () => show(false));
+    }
+    box.hidden = !open;
+    trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+  trigger.addEventListener('click', () => show(box.hidden));
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      show(box.hidden);
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (!box.hidden && !box.contains(e.target) && !trigger.contains(e.target)) {
+      show(false);
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hidden) {
+      show(false);
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  gtiz_tree.initRotation();
+  gtiz_tree.initShortcuts();
+});

@@ -7,7 +7,9 @@ header {
   */
   /* consistency with cmdbuild header */
   padding: 0.6rem 1.5rem;
-  background-color: var(--main);
+  /* --header only in the dark variables (vars-dark.css): the colour of the cards,
+     the light --main of the dark mode would leave the white text unreadable */
+  background-color: var(--header, var(--main));
 }
 
 header .top-bar {

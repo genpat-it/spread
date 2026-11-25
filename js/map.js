@@ -198,18 +198,21 @@ gtiz_map.getMapDeltaSelectOptions = function() {
 gtiz_map.toggleAggregationMode = function(value) {
   if (value) {
     gtiz_map.delta_type = value;
-    let select = document.querySelector('#map-delta-select');
-    select.innerHTML = '';
-    let options = gtiz_map.getMapDeltaSelectOptions();
-    options.forEach(el => {
-      let option = document.createElement('option');
-      option.setAttribute('value', el.value);
-      option.innerHTML = el.label;
-      select.append(option);
-    });
     let select_value = value == 'geographical' ? gtiz_map.default_delta : gtiz_tree.tree.display_category;
     gtiz_map.delta = select_value;
-    select.value = select_value;
+    // the select is in the map menu, which may be closed (e.g. a macro step)
+    let select = document.querySelector('#map-delta-select');
+    if (select) {
+      select.innerHTML = '';
+      let options = gtiz_map.getMapDeltaSelectOptions();
+      options.forEach(el => {
+        let option = document.createElement('option');
+        option.setAttribute('value', el.value);
+        option.innerHTML = el.label;
+        select.append(option);
+      });
+      select.value = select_value;
+    }
     gtiz_map.setMapDelta(select_value);
   } else {
     console.log('Oops! Value not defined.');
@@ -270,7 +273,67 @@ gtiz_map.toggleSampleListView = function (e) {
     target.classList.add('shown');
     target.innerHTML = gtiz_locales.current.hide_sample_list;
   }
+  // the popup is higher or lower: its bar is measured again
+  gtiz_map.updatePopupScroll(contents);
 } // toggleSampleListView
+
+/*
+*
+* Scrolly of the point popups: the content of a popup scrolls by itself (max
+* height in leaflet-custom.css), so the bar follows the node, its own track and
+* overflow, as the conversation of the assistant. Colours as css variables: the
+* bar follows the light or dark mode
+*
+*/
+gtiz_map.popup_scrolly = typeof Scrolly === 'function' ? new Scrolly({
+  opacity: 0.8,
+  containerColor: 'var(--secondary-light)',
+  barColor: 'var(--secondary-dark)',
+  radius: 1,
+  side: 'right',
+  width: 0.3,
+  unit: 'rem',
+  position: 'absolute',
+  offset: 0.8,
+  contentHeightMode: 'scroll',
+  draggable: true,
+  preserveNodeMaxHeight: true,
+  verticalTrackMode: 'node',
+  overflowCheckMode: 'self',
+  // shorter than the content: a margin above and below, as the other bars
+  scaleY: 0.8
+}) : null;
+
+/**
+ * Close trigger of a point popup as in the other cards and panels: the Tabler
+ * circle-x icon instead of the × of Leaflet (its aria-label stays)
+ *
+ * @param {Object} popup The Leaflet popup just opened
+ * @returns {undefined}
+ */
+gtiz_map.setPopupCloseIcon = function (popup) {
+  let element = popup && popup.getElement ? popup.getElement() : null;
+  let button = element ? element.querySelector('.leaflet-popup-close-button') : null;
+  if (!button || button.querySelector('.tabler-circle-x')) {
+    return;
+  }
+  let icon = document.createElement('i');
+  icon.setAttribute('class', 'tabler tabler-circle-x');
+  button.replaceChildren(icon);
+}
+
+/**
+ * Update the Scrolly bar of a point popup after its contents change
+ *
+ * @param {Element} node An element inside the popup
+ * @returns {undefined}
+ */
+gtiz_map.updatePopupScroll = function (node) {
+  let content = node ? node.closest('.leaflet-popup-content') : null;
+  if (content && gtiz_map.popup_scrolly) {
+    gtiz_map.popup_scrolly.updateNode(content);
+  }
+}
 
 /**
  * Select all samples in a point
@@ -410,6 +473,10 @@ gtiz_map.initMap = () => {
   map.setMaxBounds(bounds);
   map.on('drag', function() {
     map.panInsideBounds(bounds, { animate: false });
+  });
+  // close trigger of the point popups as in the other cards and panels
+  map.on('popupopen', function(e) {
+    gtiz_map.setPopupCloseIcon(e.popup);
   });
   /**
    * Set min zoom to avoid empty space around world edges
@@ -744,6 +811,8 @@ gtiz_map.defineMarkers = () => {
         gtiz_loader.removeLoader(list_box);
         list_box.append(frag);
         gtiz_map.decoratePopupSamples(popup);
+        // the popup is in the page now: its Scrolly bar, when it scrolls
+        gtiz_map.updatePopupScroll(popup);
       }));
       return popup;
     });
@@ -1324,6 +1393,7 @@ gtiz_map.context_menu = [{
   type : 'separator'
 }, {
   type : 'abutton',
+  id : 'map-select-all',
   label : () => {
     return gtiz_locales.current.select_all;
   },
@@ -1333,6 +1403,7 @@ gtiz_map.context_menu = [{
   }
 }, {
   type : 'abutton',
+  id : 'map-deselect-all',
   label : () => {
     return gtiz_locales.current.deselect_all;
   },
@@ -1361,6 +1432,21 @@ gtiz_map.context_menu = [{
     gtiz_map.toggleMarkerType(value);
   }
 }];
+
+/**
+ * Fit the map view to its points, when there are any (an empty layer has no valid bounds)
+ *
+ * @returns {undefined}
+ */
+gtiz_map.fitToPoints = function() {
+  let bounds = pointLayer.getBounds();
+  if (bounds.isValid()) {
+    // padding adds a space around the points
+    map.fitBounds(bounds, {
+      padding: [21, 21]
+    });
+  }
+}
 
 gtiz_map.init = function() {
   
@@ -1418,9 +1504,7 @@ gtiz_map.init = function() {
             } 
             gtiz_loader.removeLoader(gtiz_map.map_container);
             gtiz_map.map_container.classList.add('map-initialized');
-            map.fitBounds(pointLayer.getBounds(), {
-              padding: [21, 21]
-            });
+            gtiz_map.fitToPoints();
             gtiz_tree.saveOriginalTree(true);
           }
         }).catch((err) => {
@@ -1453,10 +1537,8 @@ gtiz_map.init = function() {
           } 
           gtiz_loader.removeLoader(gtiz_map.map_container);
           gtiz_map.map_container.classList.add('map-initialized');
-          // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
-          map.fitBounds(pointLayer.getBounds(), {
-            padding: [21, 21]
-          });
+          // zoom the map to show all the points
+          gtiz_map.fitToPoints();
           gtiz_tree.saveOriginalTree(true);
         } else {
           let map_node = document.querySelector('#map-div');
@@ -1479,10 +1561,8 @@ gtiz_map.init = function() {
       } 
       gtiz_loader.removeLoader(gtiz_map.map_container);
       gtiz_map.map_container.classList.add('map-initialized');
-      // fitBounds force the map to zoom and allow the view of all the point, padding add a space around
-      map.fitBounds(pointLayer.getBounds(), {
-        padding: [21, 21]
-      });
+      // zoom the map to show all the points
+      gtiz_map.fitToPoints();
       gtiz_tree.saveOriginalTree(true);
     }
   }));

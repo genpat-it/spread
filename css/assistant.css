@@ -1,0 +1,488 @@
+/*
+*
+* Assistant card (js/assistant.js): a card of SPREAD in the column of the legend,
+* under the legend card, an accordion as the cards of the settings. Sizes in rem
+* on the 0.8 / 1.3 / 2.1 scale, colours from SPREAD's variables.
+*
+*/
+
+/* shown with its toggle on (assistant-mode, see dashboard.css); collapsed: only
+   the header; open: it fills the space left by the legend card. The basis is 0,
+   so the length of the conversation never changes the height of the legend (its
+   list would be measured by Scrolly at a height that does not last).
+   The accordion is animated as the settings and legend cards: the flex is the
+   same open and collapsed (collapsed, the max-height of the expandable cards
+   keeps it to its header), and max-height (13px to 100% of the column) and
+   min-height (0 to 24rem) are lengths, so the transition of the expandable
+   cards (all 0.8s) animates them; none or auto would switch at once */
+.dashboard-grapetree.assistant-mode .legend .card.card-expandable.card-assistant {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.dashboard-grapetree.assistant-mode .legend .card.card-expandable.card-assistant.expanded,
+.dashboard-grapetree.assistant-mode .main > .card.card-expandable.card-assistant.expanded {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 24rem;
+  max-height: 100%;
+}
+
+/* title as in the settings cards (and as the legend card): room for the tools,
+   its text opens and closes the card, its empty space drags it (cursors in
+   dashboard.css, with the other draggable cards); the same when detached */
+.dashboard-grapetree .legend .card-assistant .card-title,
+.dashboard-grapetree .main > .card-assistant .card-title {
+  width: calc(100% - 5.4rem);
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__badge {
+  display: inline-block;
+  margin-left: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.6rem;
+  background-color: var(--secondary-ultra-light);
+  color: var(--darker);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  vertical-align: 0.15rem;
+}
+
+/* help in the header, as in the settings cards */
+.dashboard-grapetree .card-assistant .help-trigger {
+  cursor: pointer;
+}
+
+/* tools row under the header: the switch "Apply immediately" on the left, the
+   round trigger to clear the chat (blue icon) on the right, as in the notes panel */
+.dashboard-grapetree .card-assistant .spread-assistant__tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__tools .card-context-trigger {
+  margin: 0;
+  color: var(--main);
+  cursor: pointer;
+}
+
+/* body: conversation, update notice, input and switch */
+.dashboard-grapetree .card-assistant .spread-assistant__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* the conversation scrolls inside the card, with the Scrolly bar on its right;
+   it reaches 0.8rem into the padding of the card on both sides (and gives them
+   back as its own padding) so that the tails of the bubbles are not cut */
+.dashboard-grapetree .card-assistant .spread-assistant__messages {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 0.8rem;
+  margin: 0 -0.8rem;
+  padding: 0 0.8rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__messages::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__message {
+  flex: none;
+  max-width: 88%;
+  padding: 0.8rem 1.3rem;
+  border-radius: 1.1rem;
+  font-size: 1.3rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__message--assistant {
+  position: relative;
+  align-self: flex-start;
+  border-bottom-left-radius: 0.2rem;
+  background-color: var(--secondary-ultra-light);
+  color: var(--text);
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__message--user {
+  position: relative;
+  align-self: flex-end;
+  border-bottom-right-radius: 0.2rem;
+  background-color: var(--light);
+  color: var(--white);
+}
+
+/* tails of the bubbles: a small triangle at the bottom right of the user
+   messages and, mirrored, at the bottom left of the assistant ones */
+.dashboard-grapetree .card-assistant .spread-assistant__message--assistant::after,
+.dashboard-grapetree .card-assistant .spread-assistant__message--user::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-top: 0.6rem solid transparent;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__message--assistant::after {
+  left: -0.5rem;
+  border-right: 0.6rem solid var(--secondary-ultra-light);
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__message--user::after {
+  right: -0.5rem;
+  border-left: 0.6rem solid var(--light);
+}
+
+/* outcomes (done, not understood, warnings): a fixed header with the icon in
+   line before the title, same size and colour, as the titles of the
+   notifications; the text on the line below */
+.dashboard-grapetree .card-assistant .spread-assistant__message-title {
+  margin-bottom: 0.3rem;
+  color: var(--darker);
+  font-weight: 600;
+}
+
+/* steps of a plan applied: one per line, the icon in line before the text,
+   same size and colour (check done, x failed, tilde not run); a long
+   step wraps under its text, not under the icon */
+.dashboard-grapetree .card-assistant .spread-assistant__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: normal;
+}
+
+/* rows as close as the steps of the plan box (skeleton.css gives every li 1rem below) */
+.dashboard-grapetree .card-assistant .spread-assistant__steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.2rem 0;
+}
+
+/* steps not run after a failed one: suspended, icon and text lighter */
+.dashboard-grapetree .card-assistant .spread-assistant__steps li.spread-assistant__step--skipped {
+  color: var(--secondary-dark);
+}
+
+/* a list of samples in a reply, as the samples of a note: the count with the copy
+   icon glued to its last word (it never wraps alone), then a preview of the IDs on
+   three lines at most, with an ellipsis when they are more */
+.dashboard-grapetree .card-assistant .spread-assistant__samples-glue {
+  white-space: nowrap;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__samples-copy {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--secondary-dark);
+  line-height: 1;
+  vertical-align: -0.1rem;
+  cursor: pointer;
+  -webkit-transition: color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__samples-copy:hover,
+.dashboard-grapetree .card-assistant .spread-assistant__samples-copy:focus,
+.dashboard-grapetree .card-assistant .spread-assistant__samples-copy.copied {
+  color: var(--main);
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__samples-preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  color: var(--secondary-dark);
+  white-space: normal;
+}
+
+/* copy and retry under the replies to a request: plain icons, on the side of
+   the assistant bubbles, coloured on hover */
+.dashboard-grapetree .card-assistant .spread-assistant__reply-actions {
+  display: flex;
+  flex: none;
+  align-self: flex-start;
+  gap: 0.8rem;
+  margin-top: -0.3rem;
+  padding-left: 0.3rem;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__reply-action {
+  color: var(--secondary-dark);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-transition: color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__reply-action:hover,
+.dashboard-grapetree .card-assistant .spread-assistant__reply-action:focus,
+.dashboard-grapetree .card-assistant .spread-assistant__reply-action.copied {
+  color: var(--main);
+}
+
+/* email of the footer in the note after a report */
+.dashboard-grapetree .card-assistant .spread-assistant__mail {
+  color: var(--main);
+  font-weight: 600;
+}
+
+/* clickable examples from the loaded data, inside a bubble: under the intro and
+   under the last message not understood */
+.dashboard-grapetree .card-assistant .spread-assistant__examples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  white-space: normal;
+}
+
+/* the global button states colour the text in white: kept in --main */
+.dashboard-grapetree .card-assistant .spread-assistant__chip,
+.dashboard-grapetree .card-assistant .spread-assistant__chip:hover,
+.dashboard-grapetree .card-assistant .spread-assistant__chip:focus,
+.dashboard-grapetree .card-assistant .spread-assistant__chip:active {
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0.6rem 1.1rem;
+  border: 0.1rem solid var(--secondary-light);
+  border-radius: 1.1rem;
+  background-color: var(--surface);
+  color: var(--main);
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.35;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__chip:hover,
+.dashboard-grapetree .card-assistant .spread-assistant__chip:focus {
+  border-color: var(--secondary);
+  background-color: var(--secondary-ultra-light);
+}
+
+/* plan awaiting confirmation, after the last message */
+.dashboard-grapetree .card-assistant .spread-assistant__plan {
+  flex: none;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__plan[hidden] {
+  display: none;
+}
+
+/* a proposal, not a message: light dashed outline on a transparent background */
+.dashboard-grapetree .card-assistant .spread-assistant__plan-box {
+  padding: 0.8rem 1.3rem;
+  border: 0.1rem dashed var(--secondary);
+  border-radius: 1.1rem;
+  background-color: transparent;
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__plan-title {
+  margin-bottom: 0.4rem;
+  color: var(--darker);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__plan ol {
+  margin: 0 0 0.8rem;
+  padding-left: 1.8rem;
+  list-style: decimal outside;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__plan li {
+  margin: 0.2rem 0;
+  font-size: 1.3rem;
+}
+
+/* actions as links with their icon, as in the notes: Cancel in grey */
+.dashboard-grapetree .card-assistant .spread-assistant__actions {
+  display: flex;
+  gap: 1.3rem;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__action {
+  color: var(--main);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__action--cancel {
+  color: var(--secondary-dark);
+}
+
+/* while a plan runs its links wait */
+.dashboard-grapetree .card-assistant.is-running .spread-assistant__actions .spread-assistant__action {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* notice of a new version of the assistant */
+.dashboard-grapetree .card-assistant .spread-assistant__update {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+  padding: 0.8rem 1.3rem;
+  border-radius: 1.1rem;
+  background-color: var(--secondary-ultra-light);
+  font-size: 1.3rem;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__update[hidden] {
+  display: none;
+}
+
+/* input: the form is the field (border and radius), the text has no frame of
+   its own and the send button sits inside it on the right */
+.dashboard-grapetree .card-assistant .spread-assistant__form {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  gap: 0.3rem;
+  margin: 1.3rem 0 0;
+  padding: 0.3rem 0.4rem 0.3rem 1.3rem;
+  border: 0.1rem solid var(--secondary);
+  border-radius: 1.7rem;
+  background-color: var(--surface);
+  -webkit-transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__form:focus-within {
+  border-color: var(--secondary-darker);
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__form textarea,
+.dashboard-grapetree .card-assistant .spread-assistant__form textarea:focus {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  /* one line: 1.35 × 1.3rem plus the padding, the height autosize gives it */
+  height: 2.8rem;
+  min-height: 2.8rem;
+  max-height: 14rem;
+  margin: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.3rem;
+  line-height: 1.35;
+  outline: none;
+  resize: none;
+}
+
+/* send: only the icon, grey and inactive while the field is empty, darker with
+   a text; a round background on hover. The global button states are neutralized */
+.dashboard-grapetree .card-assistant .spread-assistant__send,
+.dashboard-grapetree .card-assistant .spread-assistant__send:hover,
+.dashboard-grapetree .card-assistant .spread-assistant__send:focus,
+.dashboard-grapetree .card-assistant .spread-assistant__send:active {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  /* centred on the first line of the text (2.8rem), at the bottom when it grows */
+  margin: 0 0 0.1rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--secondary-dark);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__send:not(:disabled):hover,
+.dashboard-grapetree .card-assistant .spread-assistant__send:not(:disabled):focus-visible {
+  background-color: var(--secondary-ultra-light);
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__send:disabled {
+  color: var(--secondary);
+  cursor: default;
+}
+
+/* the paper plane has its weight up and to the right of its box (measured on the
+   glyph: 0.06em each way): moved down and left so that it looks centred */
+.dashboard-grapetree .card-assistant .spread-assistant__send i {
+  -webkit-transform: translate(-0.06em, 0.06em);
+  transform: translate(-0.06em, 0.06em);
+}
+
+/* switch "Apply immediately" in the tools row: no line height around the
+   switch, as in the components row, so it is centred on the round trigger;
+   slightly smaller here (scaled from its left edge, aligned with the card) */
+.dashboard-grapetree .card-assistant .spread-assistant__auto {
+  flex: none;
+  margin: 0;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__auto .toggle-box {
+  line-height: 0;
+  -webkit-transform: scale(0.9);
+  transform: scale(0.9);
+  -webkit-transform-origin: left center;
+  transform-origin: left center;
+}
+
+/* short note under the input (privacy, alpha version), in the style of the
+   hints of the notes panel: info icon in line before the text */
+.dashboard-grapetree .card-assistant .spread-assistant__note {
+  flex: none;
+  margin-top: 0.8rem;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__note p {
+  margin: 0;
+  padding: 0 0.3rem;
+  color: var(--secondary-dark);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.dashboard-grapetree .card-assistant .spread-assistant__note strong {
+  font-weight: 600;
+}

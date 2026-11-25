@@ -1,0 +1,31 @@
+/*
+*
+* Dark mode of the default theme (`dark_vars` in app.json): the variables of
+* vars.css for the dark mode, applied with `data-theme="dark"` on the html node
+* (js/theme.js). The page is darker than the cards, so they stand out without
+* the shadow; `--white` stays white, it is the text on the coloured backgrounds.
+*
+*/
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0D1219;
+  --surface: #19212D;
+  --text: #D5DEEA;
+  --main: #4D9BF0;
+  --dark: #6AAEF5;
+  --darker: #A8CBF5;
+  --light: #3B82D6;
+  --ultra-light: #2C3949;
+  --accent: #3CC7C2;
+  --accent-light: #52D6D1;
+  --accent-dark: #2FA9A5;
+  --secondary: #3B4556;
+  --secondary-dark: #8A95A5;
+  --secondary-darker: #B6BFCB;
+  --secondary-light: #283343;
+  --secondary-ultra-light: #212B39;
+  --red: #FF5C74;
+  --red-dark: #E64A62;
+  /* the info panel (footer.css): the colour of the cards, white text */
+  --footer: var(--surface);
+}

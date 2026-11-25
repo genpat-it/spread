@@ -3,14 +3,17 @@ let gtiz_footer = {};
 gtiz_footer.css_vars = gtiz_utils.getAllCssVariables();
 gtiz_footer.scrolly_options = {
   position: 'absolute',
-  containerColor: gtiz_footer.css_vars['--light'],
-  barColor: gtiz_footer.css_vars['--secondary-ultra-light'],
+  containerColor: 'var(--light)',
+  barColor: 'var(--secondary-ultra-light)',
   radius: 1,
   scaleY : 0.8,
   offset: 1,
-  side : 'left',
+  side : 'right',
   width : 0.3,
   unit : 'rem',
+  // new Scrolly: content measured with scrollHeight, bar draggable
+  contentHeightMode : 'scroll',
+  draggable : true,
 };
 gtiz_footer.scrolly = new Scrolly(gtiz_footer.scrolly_options);
 

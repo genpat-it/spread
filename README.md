@@ -11,11 +11,21 @@ Previously known as GrapeTree Extended.
   - [Install and use live-server](#install-and-use-live-server)
   - [Run SPREAD locally](#run-spread-locally)
   - [Load geoJSON or cooridates data](#load-geojson-or-cooridates-data)
+  - [Localized metadata](#localized-metadata)
   - [Load files](#load-files)
-  - [Save or load a compatible JSON file](#save-or-load-a-compatible-json-file)
+  - [Metadata files](#metadata-files)
+  - [Save or load a SPREAD session](#save-or-load-a-spread-session)
   - [Download the tree as an image](#download-the-tree-as-an-image)
+  - [Undo and redo](#undo-and-redo)
+  - [Tree shortcuts](#tree-shortcuts)
+  - [Node shapes](#node-shapes)
+  - [Legend](#legend)
+  - [Macros](#macros)
+  - [Notes](#notes)
+  - [Dark mode](#dark-mode)
+  - [Assistant (alpha)](#assistant-alpha)
   - [Zooms for clusters](#zooms-for-clusters)
-- [Customizing SPREAD](#customizing-SPREAD)
+- [Customizing SPREAD](#customizing-spread)
 - [Server](#server)
 - [Docker](#docker)
 - [Videos](#videos)
@@ -90,7 +100,7 @@ In the project you will find a `datasets` folder with some example data to load,
 http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metadata.tsv&geo=/datasets/test/points.geojson
 ```
 
-## Load geoJSON or cooridates data
+### Load geoJSON or cooridates data
 
 The dashboard is able to recognize `.geojson` file passed as `geo` parameter by query string:
 
@@ -112,7 +122,7 @@ http://localhost:8080?tree=/datasets/test/tree.nwk&metadata=/datasets/test/metad
 
 > Please note that for the longitude and latitude values, decimal points should be used as separators instead of commas.
 
-### Using predefined country coordinates
+#### Using predefined country coordinates
 
 If neither a GeoJSON file nor latitude and longitude values are provided, the application checks for a `countries` object in `app.json`, defined as follows:
 
@@ -148,19 +158,218 @@ The JSON file at the specified `path` should follow this structure:
 
 The application compares values in the specified `column` against this mapping and assigns the corresponding coordinates accordingly.
 
-## Load files
+### Localized metadata
 
-You can also directly upload files by dragging them over the tree, over the initial droppable area or using load buttons provided in the UI. In this case you don't need to user parameters in the url. You can drag or load a `.nwk` file followed by a `.tsv` file containing metadata and optionally a `.geojson` file containing geo-saptial information.
+Metadata can be provided in localized variants, so that column names and values
+are shown in the language chosen by the user. The feature is switched on per
+deployment by the `metadata_localization` block of `app.json`; when `enabled` is
+`false`, or the block is missing, no localized file is looked up and SPREAD
+behaves as it did before the feature.
+
+```json
+"metadata_localization" : {
+  "enabled" : true,
+  "technical_columns" : { ... }
+}
+```
+
+Beside the default file, place a variant named after the language code and
+SPREAD will pick it up:
+
+```
+metadata.tsv        <- default, always required
+metadata_en.tsv
+metadata_fr.tsv
+metadata_it.tsv
+```
+
+The lookup happens when a language is explicitly requested by the `lang` query
+string parameter, either because it is in the url or because the user changed
+language from the UI (which adds the parameter and reloads the page):
+
+```
+http://localhost:8080?tree=tree.nwk&metadata=metadata.tsv&lang=it
+```
+
+If the variant is not there, the default file is loaded and nothing is reported:
+a missing translation is a normal condition. Language codes are the ones of the
+files in `js/i18n`, so `&lang=it-IT` looks for `metadata_it.tsv` and a language
+SPREAD does not know falls back to `_en`, the same way the interface does.
+
+The same convention applies to the metadata of the zoomed trees described in the
+[Zooms for clusters](#zooms-for-clusters) paragraph, and the language is carried
+over when a zoom is opened in a new tab. When the full tree was translated but the
+zoom has no variant, the default file is loaded and a notice explains that the
+settings carried over from the full tree may not match its column names.
+
+#### Technical columns
+
+Some columns are looked up by name, so translating their header would break the
+features using them. Their translations can be declared in two places: by the
+dataset, in a mapping file placed beside the localized metadata, or by the
+deployment, in `app.json`. The mapping file wins, `app.json` holds the defaults.
+
+The mapping file has the same name as the localized `.tsv` with the `.json`
+extension, `metadata_it.json` beside `metadata_it.tsv`, and is looked up only
+when the variant itself is found:
+
+```json
+{
+  "columns" : {
+    "latitude" : "Lat.",
+    "longitude" : "Long.",
+    "category" : "Categoria"
+  },
+  "values" : {
+    "category" : {
+      "sample of interest" : "campione di interesse"
+    }
+  }
+}
+```
+
+`columns` maps the canonical key of a technical column to the header used by the
+file, `values` maps the canonical identifier values of a column to the ones used
+by the file. Both are optional. A missing mapping file is a normal condition; a
+malformed one is ignored with a notice.
+
+The deployment defaults live in `app.json`, under
+`metadata_localization.technical_columns`:
+
+```json
+"metadata_localization" : {
+  "enabled" : true,
+  "technical_columns" : {
+    "latitude" : {
+      "en" : "Latitude",
+      "fr" : "Latitude",
+      "it" : "Latitudine"
+    },
+    "longitude" : {
+      "en" : "Longitude",
+      "fr" : "Longitude",
+      "it" : "Longitudine"
+    },
+    "category" : {
+      "en" : "Category",
+      "fr" : "Catégorie",
+      "it" : "Categoria",
+      "values" : {
+        "sample of interest" : {
+          "en" : "sample of interest",
+          "fr" : "échantillon d'intérêt",
+          "it" : "campione di interesse"
+        }
+      }
+    },
+    "sampling country" : {
+      "en" : "Sampling country",
+      "fr" : "Pays de prélèvement",
+      "it" : "Paese di campionamento"
+    }
+  }
+}
+```
+
+A `default` entry can be added as a fallback for the languages not listed. Any
+column not declared here is considered **not translatable** and must keep its
+expected header in the localized files, namely the `MST-` prefixed columns used
+by zooms and the reserved `ID` and `CMP` names. The column holding the sample
+names is an exception: it is recognized by its position, so it can be translated
+freely. The `sampling country` key must match the `countries.column` setting.
+
+The `values` entry declares the translations of the values that are compared by
+value, today only the samples of interest marker of the `category` column.
+
+Declarations are offers, not obligations: a translated name or value is used
+only when it is really present in the file, otherwise the canonical one is used.
+A localized file may therefore keep `latitude`, `longitude`, `category` or
+`sample of interest` as they are, translate some of them, or use the names of
+its mapping file, and every combination resolves. Categories passed through
+`zooms=` or `zooms_list=` with the canonical names are resolved the same way, so
+a link written for the default file works on a variant.
 
 > **Important**
 >
-> .nwk file should be loaded before loading metadata or geoJson files.
+> A localized file must hold the same rows as the default one and the same
+> values in the sample names column, which is what links metadata to the tree.
 
-## Save or load a compatible JSON file
+> Values used as identifiers must not be translated either, unless declared under
+> `values`: the cluster values of the `MST-` columns never, the samples of
+> interest marker of the `category` column only as declared. Numeric values must
+> keep the dot as decimal separator. Everything else, headers and values, can be
+> translated.
 
-Dashboard allows you to download a complete JSON file including metadata and configurations. Generated JSON file can be loaded with the same drag or load functionalities seen previously, this is very useful if you want to save your work or share it.
+Coordinates passed as query string parameters (`&latitude=` and `&longitude=`)
+keep taking precedence over the declarations above.
 
-## Download the tree as an image
+#### Exported files
+
+A complete JSON exported while a translation is in use embeds the metadata of
+that language only, along with the language itself, the resolved names of its
+technical columns and the resolved identifier values. This makes the file
+self-contained: whoever loads it reads the translated dataset correctly even with
+a different `app.json`, also after editing cells in the grid, and the `lang`
+parameter of the url is aligned to it. The source path is stored without its
+query string, so a token appended to the metadata url never ends up in the file.
+
+Exported `.tsv` metadata carry the translated headers of the language in use, so
+reloading them under a different language leaves the technical columns unresolved.
+
+A SPREAD session saved with zooms also includes the localized metadata of each
+zoom, and their mapping files, when the full tree uses localized metadata.
+
+### Load files
+
+You can also directly upload files by dragging them over the tree, over the initial droppable area or using load buttons provided in the UI. In this case you don't need to use parameters in the url. You can drag or load a `.nwk` file with a `.tsv` or `.xlsx` file containing metadata and optionally a `.geojson` file containing geo-spatial information: one after the other, all together, inside a folder or inside a `.zip` file.
+
+```
+my-dataset.zip
+  |__ tree.nwk
+  |__ metadata.tsv
+  |__ points.geojson
+```
+
+> **Important**
+>
+> When files are loaded one after the other, the .nwk file should be loaded before loading metadata or geoJson files.
+
+> **Please note.** When files are loaded together, in a folder or in a `.zip` file, only one file for each type is allowed (a `.tsv` and an `.xlsx` are both metadata). A SPREAD session found together with other files takes precedence over them, and the other files are ignored.
+
+### Metadata files
+
+Metadata can be a `.tsv` or an `.xlsx` file, loaded in the same ways: from the url (`&metadata=metadata.xlsx`, also with the localized variants such as `metadata_it.xlsx`), dragged, chosen with the load buttons, in a folder or in a `.zip` file.
+
+* **`.tsv`**: columns are always separated by tabs, commas are part of the values and of the headers.
+* **`.xlsx`**: the first sheet is read, with its first row as header; other sheets are ignored, with a notice. Every value is read as text: numbers as a spreadsheet shows them, dates as `yyyy-mm-dd`, formulas as their last calculated value. Merged cells are not allowed: the file is not loaded and the cells must be split. Old Excel files (`.xls`) are not supported, save them as `.xlsx`.
+
+A loaded metadata file replaces the current metadata: columns and rows not in the file are removed, and the metadata table follows the order of its columns. Samples are linked to the tree by the `ID` column or, without it, by the first column.
+
+The metadata table can be downloaded as `.tsv` or `.xlsx`, with the same contents. In the `.xlsx` file every cell is text and every column has the Text format, so values typed later in a spreadsheet are kept as they are (no `2008.0` turned into `2008`, no leading zeros removed, no automatic dates).
+
+### Save or load a SPREAD session
+
+Dashboard allows you to save a SPREAD session, a complete JSON file including tree, metadata, map, configurations, notes and your macros. Generated JSON file can be loaded with the same drag or load functionalities seen previously, this is very useful if you want to save your work or share it.
+
+When zooms are available (see [Zooms for clusters](#zooms-for-clusters)), the session can also be saved together with the files of its zooms, as a `.zip` file:
+
+```
+spread1234567890.zip
+  |__ spread.json
+  |__ zooms.txt
+  |__ Reportree_MST-7x1.0_cluster_335
+        |__ MST-7x1.0_cluster_335.nwk
+        |__ MST-7x1.0_cluster_335_metadata_w_partitions.tsv
+  ...
+```
+
+The `.zip` file, or the folder obtained by unzipping it, can be loaded with the same drag or load functionalities, without parameters in the url: zooms are read from the file itself.
+
+> **Please note.** Zooms that cannot be downloaded while saving are skipped and listed at the end, with the reason. If no zoom can be downloaded, no `.zip` file is saved. Zooms loaded from a `.zip` file or from a folder cannot be opened in a new tab.
+
+The save window also allows you to export the current data as separate files, without settings: the tree as `.nwk`, the metadata as `.tsv` or `.xlsx` and the geographic data as `.geojson`. These files reflect the current state of the dashboard, changes included, and can be loaded again as described in [Load files](#load-files). The notes can be exported from the same window, see [Notes](#notes).
+
+### Download the tree as an image
 
 From the tree download menu you can export the current tree as an image in two formats:
 
@@ -170,6 +379,46 @@ From the tree download menu you can export the current tree as an image in two f
 Both exports embed the theme font, so text renders with the same typeface outside the browser.
 
 > **Please note:** choose `.svg` when you need a complete, print-quality or further editable figure, and `.png` when you want to capture exactly the view currently on screen.
+
+### Undo and redo
+
+The changes to the tree can be undone and redone with the two round buttons of the tree card, whose title says what they would undo or redo, or with `Ctrl+Z` / `Cmd+Z` and `Ctrl+Y` / `Ctrl+Shift+Z` / `Cmd+Shift+Z`. They cover the tree menu, the settings cards (node shapes and borders included), the legend options that change the colours of the tree and the nodes dragged in the static layout. Selection, view (zoom, panels, full screen, dark mode) and exports are not part of it, nor the map and the metadata. Loading a tree or new metadata, running a macro or applying a request of the assistant clear the history: macros and requests have their own undo.
+
+### Tree shortcuts
+
+The keyboard button at the bottom right of the tree card lists the shortcuts of the tree: wheel to zoom, drag to move the view, drag a node to move it with its subtree, `Shift` + drag to select the nodes in an area, `Alt` (`Option`) + drag to rotate the tree, `Alt` + left or right arrow to rotate it by 15° with the pointer on the tree, and the undo and redo keys. The rotation works in the static layout; the **Rotation** setting of the Rendering card sets an exact angle and the angle is saved in the SPREAD session.
+
+### Node shapes
+
+The **Node shape** card of the Settings changes the shape (circle, square, triangle, hexagon, octagon) and the border of the selected nodes, and selects the nodes by their shape or border. Every shape keeps the area of the circle, so the size of a node still reflects its samples. Shapes and borders are saved in the SPREAD session and in the settings.
+
+### Legend
+
+Besides colouring the tree and the map by a category, the legend can be filtered by the selection: **Filter by selection**, in the legend menu, shows only the values of the selected nodes, with their selected/total counts. The legend can be shown as a list or as a histogram, and downloaded as `.png` or `.svg`. The video player, which walks through the values of the legend one at a time, is in the legend card.
+
+### Macros
+
+The macros panel, opened from the top bar, collects sequences of actions: the built-in ones and the ones you record. **Rec** records the options used in menus, settings and panels; when a macro is run, the steps that do not apply to the current data (for instance a missing column or no selected node) are skipped with the reason, and **Undo macro** brings back the previous state. Your macros are kept in the browser and in the SPREAD session, and can be exported and imported as `.json` files, also by dropping the file on the tree.
+
+### Notes
+
+The notes panel, opened from the top bar, collects the notes of the session: a text with a simple Markdown formatting and, optionally, the samples of the selected nodes, marked on the tree, and an image of the current view. Notes are saved in the SPREAD session and can be exported and imported as `.json` files, or exported as Markdown and as a Word (`.docx`) report with the current view, the notes and the table of their samples.
+
+### Dark mode
+
+The button in the top bar switches between light and dark mode. Without a choice, SPREAD follows the mode of the system or of the browser; the choice is kept in the browser. Tree, map and metadata table follow the mode, while exported images are always light. Each theme sets its dark colours with `dark_vars` in `app.json`, as described in `themes/README.md`.
+
+### Assistant (alpha)
+
+The assistant turns requests written in plain words, in English, Italian or French, into SPREAD operations: for instance *colour by serovar*, *show me the metadata where region is Abruzzo* or *how many samples per region?*. It shows the plan before changing anything and works in the browser: the data never leave the page.
+
+It is an **alpha** version and it is turned on in `app.json`; without this block it is off, with no card and no toggle:
+
+```json
+"assistant" : {
+  "enabled" : true
+}
+```
 
 ## Zooms for clusters
 
@@ -252,6 +501,8 @@ then add in the URL one of the following parameters:
 
 > **Please note.** The `prefix` should match the name of the `.nwk` file.
 
+To keep the zooms when you save or share your work, save a SPREAD session with zooms as described in [Save or load a SPREAD session](#save-or-load-a-spread-session).
+
 ## Customizing SPREAD
 
 SPREAD allows you to customize some elements of its appearance such as colors, fonts, header elements (logo and title), and footer content.
@@ -259,6 +510,8 @@ SPREAD allows you to customize some elements of its appearance such as colors, f
 It is also possible to set SPREAD to **read-only** mode by changing the `read_only` parameter in `app.json` to `true`.
 
 > **Please note:** read-only mode hides download buttons and limits edit functions at the UI level only.
+
+Themes can also define the colours of the dark mode, see [Dark mode](#dark-mode).
 
 Please find more information on [wiki](https://github.com/genpat-it/spread/wiki/Customizing-SPREAD)
 
@@ -354,7 +607,8 @@ This will expose the application running inside the container on port 3000 of yo
 
 ## Documentation
 
-* [https://cohesive.izs.it/wiki/user/Dashboards/GrapeTree/GrapeTree_extended.html](https://cohesive.izs.it/wiki/user/Dashboards/GrapeTree/GrapeTree_extended.html)
+* [https://github.com/genpat-it/spread/wiki](https://github.com/genpat-it/spread/wiki)
+* [https://genpat.izs.it/wiki/en/Dashboards/SPREAD/SPREAD.html](https://genpat.izs.it/wiki/en/Dashboards/SPREAD/SPREAD.html)
 * [https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html](https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html)
 
 ## Credits

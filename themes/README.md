@@ -81,6 +81,7 @@ Let's refer to the configuration object and look in detail at the elements that 
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",
+    "dark_vars" : "css/vars-dark.css",
     "modules" : {
       "header" : {
         "css" : "css/header.css",
@@ -116,6 +117,31 @@ The `favicon` value is used to define the path relative to the theme for the fav
 The `vars` value, if present, defines the relative path for the CSS file that manages the general colors and fonts of the application.
 
 > If you decide to overwrite this file, it's important not to delete the defined variables, but only edit their value where necessary.
+
+`--page` is the background of the page (header and space around the cards), `--surface` the background of cards, panels, modals and menus. In the light theme both are white, as `--white`, which is also the text colour on coloured backgrounds (e.g. buttons).
+
+### Dark Mode
+
+The `dark_vars` value, if present, defines the relative path for the CSS file with the colours of the dark mode, and shows the button to switch between light and dark mode in the top bar. Without it the theme is always light and the button is hidden.
+
+The file redefines the variables of `vars` for `:root[data-theme="dark"]`; the default theme uses `css/vars-dark.css`:
+
+```css
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0D1219;
+  --surface: #19212D;
+  --text: #D5DEEA;
+  --main: #4D9BF0;
+  ...
+}
+```
+
+Keep `--page` darker than `--surface`, so the cards stand out from the page, and `--white` white.
+
+Two variables exist only in the dark file, for the elements with white text on a coloured background: `--footer`, the background of the info panel (`footer.css`, `--dark` when missing), and `--header`, the background of a coloured header bar (`header.css` of the genpat and cohesive themes, `--main` when missing). The themes set them to `var(--surface)`, because the light blues of the dark mode would leave the white text unreadable. The tree on screen takes its lines and labels from `--text`, `--surface` and `--secondary-dark`; the exported images are always light.
+
+Without a choice of the user, SPREAD follows the light or dark mode of the system or of the browser; the choice made with the button is kept in the browser, until it matches the system mode again.
 
 ### Header and Footer
 

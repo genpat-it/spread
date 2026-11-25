@@ -12,18 +12,34 @@ gtiz_context.legendToggleSelectionMode = function (value) {
   gtiz_legend.toggleSelectionMode(value);
 }
 
+/**
+ * Tell if the legend card is in its column on the right of the components
+ *
+ * The `-l` layouts keep the legend column, but a legend card detached from it
+ * (`legend-floating`, see gtiz_legend.initCard) leaves the column to the
+ * assistant or closes it: the menus of the components then open as without it.
+ *
+ * @returns {Boolean} True when the legend is on and docked in its column
+ */
+gtiz_context.legendColumnOpen = function () {
+  return gtiz_context.body.className.includes('-l') && !gtiz_context.body.classList.contains('legend-floating');
+}
+
 gtiz_context.css_vars = gtiz_utils.getAllCssVariables();
 gtiz_context.scrolly_options = {
   position: 'absolute',
   opacity: 0.8,
-  containerColor: gtiz_context.css_vars['--secondary-light'],
-  barColor: gtiz_context.css_vars['--secondary-dark'],
+  containerColor: 'var(--secondary-light)',
+  barColor: 'var(--secondary-dark)',
   radius: 1,
   scaleY : 0.8,
-  side : 'left',
+  side : 'right',
   offset : -1.3,
   width : 0.3,
   unit : 'rem',
+  // new Scrolly: content measured with scrollHeight, bar draggable
+  contentHeightMode : 'scroll',
+  draggable : true,
 };
 gtiz_context.scrolly = new Scrolly(gtiz_context.scrolly_options);
 
@@ -33,6 +49,50 @@ gtiz_context.scrolly = new Scrolly(gtiz_context.scrolly_options);
  * @param {String} type 'legend' || 'tree' || 'metadata' based on the available context menus 
  * @returns DOM node containing the UI contents
  */
+/*
+*
+* Items acting on the selected nodes (`requires_selection` in the menu configs):
+* without a selection they are shown disabled, grey and not clickable, with a
+* tooltip saying to select nodes first; they follow the selection while the menu
+* is open (see `gtiz_context.updateSelectionStates`, called by the tree).
+*
+*/
+
+/**
+ * Enable or disable an item acting on the selected nodes
+ *
+ * @param {Element} box Box of the item (`data-requires-selection`)
+ * @returns {undefined}
+ */
+gtiz_context.setSelectionState = function(box) {
+  let selected = gtiz_tree.tree ? gtiz_tree.tree.getSelectedNodeIDs().length > 0 : false;
+  box.classList.toggle('button-box-disabled', !selected);
+  let a = box.querySelector('.card-action');
+  if (!a) {
+    return;
+  }
+  if (selected) {
+    a.removeAttribute('aria-disabled');
+    a.removeAttribute('title');
+  } else {
+    let text = document.createElement('textarea');
+    text.innerHTML = gtiz_locales.current.select_nodes_in_tree;
+    a.setAttribute('aria-disabled', 'true');
+    a.setAttribute('title', text.value);
+  }
+}
+
+/**
+ * Update the items acting on the selected nodes in the open menus
+ *
+ * @returns {undefined}
+ */
+gtiz_context.updateSelectionStates = function() {
+  document.querySelectorAll('.card-context-menu [data-requires-selection]').forEach(box => {
+    gtiz_context.setSelectionState(box);
+  });
+}
+
 gtiz_context.getMenu = function(type) {
   let form = document.createElement('div');
   form.setAttribute('class', 'card-form');
@@ -63,9 +123,17 @@ gtiz_context.getMenu = function(type) {
     if (gtiz_app.cfg.read_only && item.hide_in_read_only) {
       return;
     }
+    // skip items not available in the current conditions, e.g. load in new tab
+    if (!gtiz_utils.isMenuItemVisible(item)) {
+      return;
+    }
     if (item.type == 'toggle') {
       let container = document.createElement('div');
       container.setAttribute('class', 'tools');
+      // built but hidden, so it can be shown while the menu is open (e.g. histogram scale)
+      if (typeof item.hidden === 'function' && item.hidden()) {
+        container.classList.add('hidden');
+      }
       let box = document.createElement('div'); 
       box.setAttribute('class', 'toggle-box');
       box.setAttribute('data-selection', item.options[0].value);
@@ -151,7 +219,15 @@ gtiz_context.getMenu = function(type) {
           a.innerHTML = icon + label_text;
         }
       }
+      // an item acting on the selected nodes is disabled while none is selected
+      if (item.requires_selection) {
+        box.setAttribute('data-requires-selection', 'true');
+        gtiz_context.setSelectionState(box);
+      }
       a.addEventListener('click', (e) => {
+        if (box.classList.contains('button-box-disabled')) {
+          return;
+        }
         item.function();
       });
       box.append(a);
@@ -406,7 +482,8 @@ gtiz_context.buildMenuUi = function(type, relation) {
     help.addEventListener('click', (e) => {
       gtiz_help.getHelp(type);
     });
-    tools.append(help);
+    // the help before the close trigger, as in the other cards and panels
+    tools.prepend(help);
   }
   card.append(title);
   let menu = gtiz_context.getMenu(type);
@@ -441,7 +518,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
   let translate_value = -(width + margin)/10 + 'rem';
   if (type == 'tree' || type == 'zooms') {
     if (!parent_cls.includes('expanded')) {
-      if (!cls_controller.includes('-l')) {
+      if (!gtiz_context.legendColumnOpen()) {
         width = 320;
         translate_value = 0;
         if (gtiz_context.body.classList.contains('dashboard-grapetree-m') || gtiz_context.body.classList.contains('dashboard-grapetree-mt') || gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
@@ -463,7 +540,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
   }
   if (type == 'metadata') {
     if (!parent_cls.includes('expanded')) {
-      if (!cls_controller.includes('-l')) {
+      if (!gtiz_context.legendColumnOpen()) {
         width = 320;
         translate_value = 0;
         left = x + card.offsetWidth + margin - width;
@@ -481,7 +558,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
   }
   if (type == 'map') {
     if (!parent_cls.includes('expanded')) {
-      if (!cls_controller.includes('-l')) {
+      if (!gtiz_context.legendColumnOpen()) {
         width = 320;
         translate_value = 0;
         left = x + card.offsetWidth + margin - width;
@@ -528,7 +605,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
     if (parent_cls.includes('expanded')) {
       parent.style.right = (margin/2 + width)/10 + 'rem';
     } else {
-      if (!cls_controller.includes('-l') && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
+      if (!gtiz_context.legendColumnOpen() && !gtiz_context.body.classList.contains('dashboard-grapetree-m') && !gtiz_context.body.classList.contains('dashboard-grapetree-mt') && !gtiz_context.body.classList.contains('dashboard-grapetree-m-mt')) {
         tree_container.style.width = 'auto';
         tree_container.style.right = (margin/2 + width)/10 + 'rem';
       }
@@ -540,7 +617,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
     if (parent_cls.includes('expanded')) {
       parent.style.right = (margin/2 + width)/10 + 'rem';
     } else {
-      if (!cls_controller.includes('-l')) {
+      if (!gtiz_context.legendColumnOpen()) {
         metadata_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
       }
     }
@@ -551,7 +628,7 @@ gtiz_context.showMenu = function(type, component, trigger) {
     if (parent_cls.includes('expanded')) {
       parent.style.right = (margin/2 + width)/10 + 'rem';
     } else {
-      if (!cls_controller.includes('-l')) {
+      if (!gtiz_context.legendColumnOpen()) {
         map_container.style.transform = 'translateX(-' + (width/10) + 'rem)';
       }
     }
@@ -626,7 +703,7 @@ gtiz_context.updateContextPosition = function(menu, type) {
     component.style.transform = `translateX(${translate})`;
   }
   // update width
-  if (!parent_cls.includes('expanded') && body_cls.includes('-l')) {
+  if (!parent_cls.includes('expanded') && gtiz_context.legendColumnOpen()) {
     let legend = document.querySelector('.legend-container');
     // get legend margin left and right
     let legend_width = legend.offsetWidth;

@@ -126,6 +126,13 @@ function D3MSTree(element_id,data,callback,height,width){
 
         this.manual_collapsing = {};
 
+        // shapes and borders chosen by the user, by sample id (see setNodesStyle)
+        this.node_styles = {shapes: {}, borders: {}};
+        // resolved style of each force node, valid for one version of node_styles
+        // and one grouping of samples (see _getNodeStyleEntry)
+        this._node_styles_version = 0;
+        this._node_style_cache = new WeakMap();
+
         
         // d3 v4+: nodes/links are plain arrays owned here and (re)bound to the
         // simulation in startForce after any in-place mutation.
@@ -783,6 +790,7 @@ D3MSTree.prototype.setLayout = function(layout_data){
                 this.custom_colours = data['custom_colours']?data['custom_colours']:this.custom_colours;
                 this.color_schemes.custom = data.custom_color_scheme ? data.custom_color_scheme : this.color_schemes.custom;
                 this.backup = data.backup ? data.backup : null;
+                this.setNodeStyles(data.node_styles);
                 this._updateNodeRadii();
                 this._setLinkDistance();
                 this.setLinkLength(this.max_link_scale);                                  
@@ -838,6 +846,8 @@ D3MSTree.prototype.getLayout=function(){
 			manual_collapsing:this.manual_collapsing,
 			backup : this.backup,
 			custom_color_scheme : this.color_schemes.custom, 
+			// a copy: later changes to the tree must not alter a saved layout
+			node_styles : JSON.parse(JSON.stringify(this.node_styles)),
         };
         if (this.log_link_scale){
                 nodes_links['log_link_scale']= "true";
@@ -915,6 +925,156 @@ D3MSTree.prototype.getSelectedNodeIDs=function(){
 		}
 	}
 	return selected_nodes;
+}
+
+/**
+ * Replace all the node shapes and borders, e.g. from a saved session or from the
+ * settings of another tree. Values are kept by sample id; unknown shapes or
+ * borders and default values are dropped.
+ * @param {Object} styles {shapes: {sample_id: shape}, borders: {sample_id: border}}
+ * @returns {undefined}
+ */
+D3MSTree.prototype.setNodeStyles = function(styles) {
+        var clean = {shapes: {}, borders: {}};
+        var allowed = {shapes: D3MSTreeNodeStyles.shapes, borders: D3MSTreeNodeStyles.borders};
+        var defaults = {shapes: D3MSTreeNodeStyles.default_shape, borders: D3MSTreeNodeStyles.default_border};
+        if (styles) {
+                ['shapes', 'borders'].forEach(function(kind) {
+                        var map = styles[kind] || {};
+                        Object.keys(map).forEach(function(id) {
+                                var value = map[id];
+                                if (value !== defaults[kind] && allowed[kind].indexOf(value) !== -1) {
+                                        clean[kind][id] = value;
+                                }
+                        });
+                });
+        }
+        this.node_styles = clean;
+        this._node_styles_version++;
+        if (this.renderer) {
+                this.renderer.requestRedraw();
+        }
+}
+
+/**
+ * Set the shape or the border of the given nodes. The value goes to every
+ * sample of a node, so it stays when branches are collapsed or expanded; the
+ * default value (circle, normal) removes the entry.
+ * @param {Array} ids Node ids (e.g. getSelectedNodeIDs)
+ * @param {string} kind 'shapes' or 'borders'
+ * @param {string} value Shape or border name
+ * @returns {number} Number of samples changed
+ */
+D3MSTree.prototype.setNodesStyle = function(ids, kind, value) {
+        var map = this.node_styles[kind];
+        var reset = value === (kind === 'shapes' ? D3MSTreeNodeStyles.default_shape : D3MSTreeNodeStyles.default_border);
+        var self = this;
+        var count = 0;
+        ids.forEach(function(id) {
+                var samples = self.grouped_nodes[id] || [id];
+                samples.forEach(function(sample) {
+                        if (reset) {
+                                delete map[sample];
+                        } else {
+                                map[sample] = value;
+                        }
+                        count++;
+                });
+        });
+        this._node_styles_version++;
+        if (this.renderer) {
+                this.renderer.requestRedraw();
+        }
+        return count;
+}
+
+/**
+ * Shape or border of a node. A node grouping several samples takes the value
+ * they share, otherwise the most frequent one; on a tie, the default.
+ * @param {Object} node Force node
+ * @param {string} kind 'shapes' or 'borders'
+ * @param {string} def Default value
+ * @returns {string} Value
+ */
+D3MSTree.prototype._resolveNodeStyle = function(node, kind, def) {
+        var map = this.node_styles ? this.node_styles[kind] : null;
+        if (!map) {
+                return def;
+        }
+        var samples = this.grouped_nodes[node.id];
+        if (!samples || samples.length <= 1) {
+                return map[node.id] || def;
+        }
+        // fast path: every sample has the same value (no allocation)
+        var first = map[samples[0]] || def;
+        var same = true;
+        for (var i = 1; i < samples.length; i++) {
+                if ((map[samples[i]] || def) !== first) {
+                        same = false;
+                        break;
+                }
+        }
+        if (same) {
+                return first;
+        }
+        var counts = {};
+        samples.forEach(function(sample) {
+                var value = map[sample] || def;
+                counts[value] = (counts[value] || 0) + 1;
+        });
+        var best = def, best_count = 0, tie = false;
+        Object.keys(counts).forEach(function(value) {
+                if (counts[value] > best_count) {
+                        best = value;
+                        best_count = counts[value];
+                        tie = false;
+                } else if (counts[value] === best_count) {
+                        tie = true;
+                }
+        });
+        return tie ? def : best;
+}
+
+/**
+ * Resolved shape and border of a node, computed once and kept until the styles
+ * change (version) or the samples of the node change (collapsing or expanding
+ * branches builds new groups). Drawing calls this for every node at every frame.
+ * @param {Object} node Force node
+ * @returns {Object} {shape, border}
+ */
+D3MSTree.prototype._getNodeStyleEntry = function(node) {
+        var group = this.grouped_nodes[node.id];
+        var size = group ? group.length : 0;
+        var entry = this._node_style_cache.get(node);
+        if (!entry || entry.version !== this._node_styles_version || entry.group !== group || entry.size !== size) {
+                entry = {
+                        version: this._node_styles_version,
+                        group: group,
+                        size: size,
+                        shape: this._resolveNodeStyle(node, 'shapes', D3MSTreeNodeStyles.default_shape),
+                        border: this._resolveNodeStyle(node, 'borders', D3MSTreeNodeStyles.default_border)
+                };
+                this._node_style_cache.set(node, entry);
+        }
+        return entry;
+}
+
+/**
+ * Shape of a node (see _resolveNodeStyle).
+ * @param {Object} node Force node
+ * @returns {string} Shape name
+ */
+D3MSTree.prototype.getNodeShape = function(node) {
+        return this._getNodeStyleEntry(node).shape;
+}
+
+/**
+ * Border of a node (see _resolveNodeStyle).
+ * @param {Object} node Force node
+ * @returns {string} Border name
+ */
+D3MSTree.prototype.getNodeBorder = function(node) {
+        return this._getNodeStyleEntry(node).border;
 }
 
 
@@ -1476,6 +1636,8 @@ D3MSTree.prototype._centerGraph = function(){
         this.setScale(scale);
         this.setTranslate([0,0]);
         this.updateScaleDiv();
+        // centered again: layout changes can center it until the user moves it
+        this.user_moved = false;
 }
  
 D3MSTree.prototype.centerGraph = function(){

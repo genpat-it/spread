@@ -1,0 +1,36 @@
+/*
+*
+* Dark mode of the cohesive theme (`dark_vars` in app.json): the variables of
+* vars.css for the dark mode, applied with `data-theme="dark"` on the html node
+* (js/theme.js). Neutral greys as the light theme, its petrol blue and orange
+* made lighter to stay readable on the dark backgrounds (as in the default
+* theme, `--dark` and `--darker` are the lighter, more contrasted shades). The
+* page is darker than the cards, so they stand out without the shadow; `--white`
+* stays white, it is the text on the coloured backgrounds.
+*
+*/
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #101316;
+  --surface: #1B2025;
+  --text: #DDDEDF;
+  --main: #3A9FD3;
+  --dark: #5AB2DF;
+  --darker: #9FD0EA;
+  --light: #2489BE;
+  --ultra-light: #24343F;
+  --accent: #F28A4C;
+  --accent-light: #F79C66;
+  --accent-dark: #D8743A;
+  --secondary: #45484C;
+  --secondary-dark: #909296;
+  --secondary-darker: #BEBFC1;
+  --secondary-light: #2A2E33;
+  --secondary-ultra-light: #22262B;
+  --red: #FF5C74;
+  --red-dark: #E64A62;
+  /* the blue bar of the header (header.css) and the info panel (footer.css): the
+     colour of the cards, white text */
+  --header: var(--surface);
+  --footer: var(--surface);
+}

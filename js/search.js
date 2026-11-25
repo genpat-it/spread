@@ -15,6 +15,33 @@ gtiz_search.node_style.forEach(item => {
   item.hierarchy = 'settings/node-style';
   item.category = 'node-style';
 });
+/*
+*
+* Node shape card: its grids are not menu items, so the search lists the two
+* sections and the reset; shape and border names are listed only when they
+* match the keyword (see gtiz_search.search).
+*
+*/
+gtiz_search.node_shape = [{
+  label : () => gtiz_locales.current.node_shapes,
+  icon : 'tabler-shape'
+}, {
+  label : () => gtiz_locales.current.node_borders,
+  icon : 'tabler-border-style-2'
+}, {
+  label : () => gtiz_locales.current.reset_nodes_style,
+  icon : 'tabler-restore'
+}];
+gtiz_search.node_shape_values = [
+  ...D3MSTreeNodeStyles.shapes.map(value => 'shape_' + value),
+  ...D3MSTreeNodeStyles.borders.map(value => 'border_' + value)
+].map(key => {
+  return { label : () => gtiz_locales.current[key], icon : 'tabler-circle-check' };
+});
+[...gtiz_search.node_shape, ...gtiz_search.node_shape_values].forEach(item => {
+  item.hierarchy = 'settings/node-shape';
+  item.category = 'node-shape';
+});
 gtiz_search.node_size = gtiz_settings.cfg.find(item => item.card === 'node-size').menu;
 gtiz_search.node_size.forEach(item => {
   item.hierarchy = 'settings/node-size';
@@ -46,18 +73,21 @@ gtiz_search.metadata.forEach(item => {
   item.category = 'metadata';
 });
 
-gtiz_search.obj = [...gtiz_search.tree, ...gtiz_search.rendering, ...gtiz_search.node_style, ...gtiz_search.node_size, ...gtiz_search.branch_style, ...gtiz_search.branch_cutoffs, ...gtiz_search.legend, ...gtiz_search.map, ...gtiz_search.metadata];
+gtiz_search.obj = [...gtiz_search.tree, ...gtiz_search.rendering, ...gtiz_search.node_style, ...gtiz_search.node_shape, ...gtiz_search.node_size, ...gtiz_search.branch_style, ...gtiz_search.branch_cutoffs, ...gtiz_search.legend, ...gtiz_search.map, ...gtiz_search.metadata];
 
 gtiz_search.css_vars = gtiz_utils.getAllCssVariables();
 gtiz_search.scrolly_options = {
   opacity: 0.8,
-  containerColor: gtiz_search.css_vars['--secondary-light'],
-  barColor: gtiz_search.css_vars['--secondary-dark'],
+  containerColor: 'var(--secondary-light)',
+  barColor: 'var(--secondary-dark)',
   radius: 1,
   scaleY : 0.95,
-  side : 'left',
+  side : 'right',
   width : 0.3,
   unit : 'rem',
+  // new Scrolly: content measured with scrollHeight, bar draggable
+  contentHeightMode : 'scroll',
+  draggable : true,
 };
 gtiz_search.scrolly = new Scrolly(gtiz_search.scrolly_options);
 
@@ -68,15 +98,36 @@ gtiz_search.engine_close = document.querySelector('.search-engine-close');
 gtiz_search.engine_contents_node = document.querySelector('.search-engine-contents');
 
 /**
- * Function node to highlight after search
+ * Highlight a control found by the search: the shared highlight of the
+ * functions (js/highlight.js), the same as the "show me" of the assistant
  * 
  * @param {DOM Node} node 
  */
 gtiz_search.highlight = function(node) {
-  node.classList.add('search-highlight');
-  setTimeout(function() {
-    node.classList.remove('search-highlight');
-  }, 4000);
+  gtiz_highlight.show(node);
+};
+
+/**
+ * The control of a search result in a card or menu: by the id of its item,
+ * otherwise by its label, as the first element with that text and no children
+ * but an icon
+ * 
+ * @param {DOM Node} root The card or menu
+ * @param {Object} item The search result
+ * @returns {DOM Node|null} The control
+ */
+gtiz_search.findNode = function(root, item) {
+  if (!root) {
+    return null;
+  }
+  if (item.id) {
+    let node = root.querySelector('#' + CSS.escape(item.id));
+    if (node) {
+      return node;
+    }
+  }
+  let nodes = root.querySelectorAll('*');
+  return [...nodes].find(node => (node.children.length === 0 || node.children[0].nodeName.toLocaleLowerCase() === 'i') && node.innerHTML.includes(item.label)) || null;
 };
 
 /**
@@ -85,6 +136,12 @@ gtiz_search.highlight = function(node) {
  * @param {*} item 
  */
 gtiz_search.findFunction = function(item) {
+  // panels, cards and menus open first: the highlight waits for them
+  let highlightIn = function(root) {
+    setTimeout(() => {
+      gtiz_search.highlight(gtiz_search.findNode(root, item));
+    }, 300);
+  };
   if (item.hierarchy.includes('settings')) {
     gtiz_settings.cfg.forEach(card => {
       if (card.card === item.category) {
@@ -114,12 +171,7 @@ gtiz_search.findFunction = function(item) {
         }
       }
       if (card) {
-        let nodes = card.querySelectorAll('*');
-        nodes.forEach(node => {
-          if ((node.children.length === 0 || node.children[0].nodeName.toLocaleLowerCase() === 'i') && node.innerHTML.includes(item.label)) {
-            gtiz_search.highlight(node);
-          }
-        });
+        highlightIn(card);
       }
     }
   } else {
@@ -133,16 +185,11 @@ gtiz_search.findFunction = function(item) {
       }
     }
     if (trigger) {
-      trigger.click();
-      let menu = document.querySelector('.context-menu-' + item.category);
-      if (menu) {
-        let nodes = menu.querySelectorAll('*');
-        nodes.forEach(node => {
-          if ((node.children.length === 0 || node.children[0].nodeName.toLocaleLowerCase() === 'i') && node.innerHTML.includes(item.label)) {
-            gtiz_search.highlight(node);
-          }
-        });
+      // the menu exists only while open, and its trigger closes it: open it only when closed
+      if (!document.querySelector('.context-menu-' + item.category)) {
+        trigger.click();
       }
+      highlightIn(document.querySelector('.context-menu-' + item.category));
     }
   }
 };
@@ -157,6 +204,10 @@ gtiz_search.getMenu = function(obj) {
   let menu = [];
   obj.forEach(item => {
     if (gtiz_app.cfg.read_only && item.hide_in_read_only) {
+      return;
+    }
+    // skip items not available now, e.g. the histogram scale in list view
+    if (!gtiz_utils.isMenuItemVisible(item) || (typeof item.hidden === 'function' && item.hidden())) {
       return;
     }
     if (item.type !== 'separator') {
@@ -285,6 +336,9 @@ gtiz_search.buildUi = function(menu, keyword) {
           case 'node-style':
             title.innerHTML = gtiz_locales.current.node_style;
             break;
+          case 'node-shape':
+            title.innerHTML = gtiz_locales.current.node_shape_and_border;
+            break;
           case 'node-size':
             title.innerHTML = gtiz_locales.current.node_size;
             break;
@@ -389,7 +443,8 @@ gtiz_search.search = function(keyword) {
       }
     }).map(([key, value]) => value);
 
-    let is_label_present = gtiz_search.obj.filter(item => {
+    // shape and border names are searched too, though not in the default list
+    let is_label_present = [...gtiz_search.obj, ...gtiz_search.node_shape_values].filter(item => {
       if (item.type === 'toggle') {
         if (item.options && item.options.length > 0) {
           let labels = [];

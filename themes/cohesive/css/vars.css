@@ -15,6 +15,10 @@
   --secondary-light: #dfdfde;
   --secondary-ultra-light: #f2f2f3;
   --white: #ffffff;
+  /* background of the page (body, header, main area) and of the cards, panels, modals and menus:
+     the same white in the light theme, two shades in the dark one (dark_vars in app.json) */
+  --page: var(--white);
+  --surface: var(--white);
   --red: #F83E5A;
   --red-dark: #DE3750;
   --highlight: #eeff00;

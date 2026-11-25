@@ -1,0 +1,455 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          2.5342,
+          80.5631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.10"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          2.5342,
+          80.5631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.13"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.4342,
+          80.1631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.14"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          85.7342,
+          80.4631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.15"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          85.0342,
+          80.7631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.16"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3342,
+          80.0631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.17"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.6342,
+          80.3631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.18"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.9342,
+          80.6631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.2"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.2342,
+          80.9631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.20"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.5342,
+          80.2631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.21"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.8342,
+          80.5631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.22"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.1342,
+          80.8631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.23"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.4342,
+          80.1631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.26"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.7342,
+          80.4631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.27"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.0342,
+          80.7631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.28"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3342,
+          80.0631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.29"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.6342,
+          80.3631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.3"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.9342,
+          80.6631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.30"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.2342,
+          80.9631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.33"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.5342,
+          80.2631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.34"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.8342,
+          80.5631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.5"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.1342,
+          80.8631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.52"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.4342,
+          80.1631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.53"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.7342,
+          80.4631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.55"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.0342,
+          80.7631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.6"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.3342,
+          80.0631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.66"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.6342,
+          80.3631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.7"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.9342,
+          80.6631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.78"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.2342,
+          71.1631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.8"
+      }
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          13.5342,
+          71.1631
+        ],
+        "type": "Point"
+      },
+      "type": "Feature",
+      "properties": {
+        "data": "18/03/2021",
+        "amr": "",
+        "codice": "1858.1.9"
+      }
+    }
+  ]
+}

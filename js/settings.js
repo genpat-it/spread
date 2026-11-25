@@ -122,6 +122,14 @@ gtiz_settings.cfg = [{
     }
   }]
 }, {
+  // shapes and borders of the selected nodes, built by js/node-shape.js
+  card : 'node-shape',
+  expanded : false,
+  visible : true,
+  menu : [{
+    type : 'node-styles'
+  }]
+}, {
   card : 'node-size',
   expanded : false,
   visible : true,
@@ -240,6 +248,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'slider',
     id : 'tree-branch-scaling-slider',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     label : gtiz_locales.current.scaling,
     related : 'tree-branch-scaling',
     min : 5,
@@ -254,6 +264,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'number',
     id : 'tree-branch-scaling',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     label : null,
     icon : '',
     min : 5,
@@ -269,6 +281,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'slider',
     id : 'tree-collapse-branches-slider',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     label : gtiz_locales.current.collapse_branches,
     related : 'tree-collapse-branches',
     min : 0,
@@ -287,6 +301,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'number',
     id : 'tree-collapse-branches',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     label : null,
     icon : '',
     min : 0,
@@ -308,6 +324,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'toggle',
     id : 'tree-branch-toggle-log-scale',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     options : [{
       label : gtiz_locales.current.log_scale,
       value : 'active',
@@ -331,6 +349,8 @@ gtiz_settings.cfg = [{
   menu : [{
     type : 'number',
     id : 'tree-branch-length',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     label : gtiz_locales.current.for_branches_longer_than,
     icon : '',
     min : 0,
@@ -352,6 +372,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'radio',
     id : 'tree-branch-length-method',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     options : [{
       label : gtiz_locales.current.display,
       value : 'display'
@@ -376,6 +398,8 @@ gtiz_settings.cfg = [{
   menu: [{
     type : 'toggle',
     id : 'tree-rendering-toggle',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     options : [{
         label : gtiz_locales.current.static,
         value : 'static',
@@ -396,6 +420,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'radio',
     id : 'tree-rendering-dynamic-selected-only',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     hidden : true,
     options : [{
       label : gtiz_locales.current.selected_only,
@@ -413,6 +439,8 @@ gtiz_settings.cfg = [{
   }, {
     type : 'radio',
     id : 'tree-rendering-static-real-branch-length',
+    // undo: the value and then the node positions it changes (js/history.js)
+    undo : 'layout',
     options : [{
       label : gtiz_locales.current.unreal_branch_length,
       value : 'unreal'
@@ -426,14 +454,60 @@ gtiz_settings.cfg = [{
     function : (value) => {
       gtiz_tree.setRenderingStaticSelecion(value);
     }
+  }, {
+    type : 'separator'
+  }, {
+    // rotation of the tree, an angle from the layout loaded (also Alt + drag and
+    // Alt + arrows on the tree, see js/tree.js); static layout only
+    type : 'slider',
+    id : 'tree-rotation-slider',
+    // undo: the angle and then the node positions (js/history.js)
+    undo : 'layout',
+    label : gtiz_locales.current.rotation,
+    related : 'tree-rotation',
+    min : 0,
+    max : 359,
+    step : '1',
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.tree_rotation;
+    },
+    get_disabled : () => {
+      return !gtiz_tree.canRotate();
+    },
+    function : (value) => {
+      gtiz_tree.rotateTreeTo(value);
+    }
+  }, {
+    type : 'number',
+    id : 'tree-rotation',
+    // undo: the angle and then the node positions (js/history.js)
+    undo : 'layout',
+    label : null,
+    icon : '',
+    min : 0,
+    max : 359,
+    step : '1',
+    slider : 'tree-rotation-slider',
+    default : undefined,
+    get_default : () => {
+      return gtiz_tree.tree_rotation;
+    },
+    get_disabled : () => {
+      return !gtiz_tree.canRotate();
+    },
+    function : (value) => {
+      gtiz_tree.rotateTreeTo(value);
+    }
   }]
 }];
 
 gtiz_settings.body = document.querySelector('body');
 gtiz_settings.container = document.querySelector('.settings');
 gtiz_settings.cards = document.querySelectorAll('.settings .card');
-gtiz_settings.exp_triggers = document.querySelectorAll('.card-expandable .card-expand-trigger');
-gtiz_settings.card_titles = document.querySelectorAll('.card-expandable .card-title');
+// accordions of the settings cards only: the legend and the assistant cards have their own
+gtiz_settings.exp_triggers = document.querySelectorAll('.settings .card-expandable .card-expand-trigger');
+gtiz_settings.card_titles = document.querySelectorAll('.settings .card-expandable .card-title');
 gtiz_settings.load_grapetree_btns = document.querySelectorAll('.load-grapetree');
 
 gtiz_settings.expandCard = function(e) {
@@ -681,6 +755,11 @@ gtiz_settings.buildForm = function(form, menu) {
         if (item.id) {
           slider.setAttribute('id', item.id);
         }
+        // a setting that does not apply now (e.g. the rotation in the dynamic layout)
+        if (typeof item.get_disabled === 'function' && item.get_disabled()) {
+          slider.disabled = true;
+          box.classList.add('disabled');
+        }
         slider.addEventListener('input', (e) => {
           let value = slider.value;
           item.function(value);
@@ -707,6 +786,11 @@ gtiz_settings.buildForm = function(form, menu) {
         input.setAttribute('type', 'number');
         if (item.id) {
           input.setAttribute('id', item.id);
+        }
+        // a setting that does not apply now (e.g. the rotation in the dynamic layout)
+        if (typeof item.get_disabled === 'function' && item.get_disabled()) {
+          input.disabled = true;
+          box.classList.add('disabled');
         }
         if (item.min || item.min === 0) {
           input.setAttribute('min', item.min);
@@ -863,6 +947,10 @@ gtiz_settings.buildForm = function(form, menu) {
       if (item.type == 'separator') {
         let hr = document.createElement('hr');
         form.append(hr);
+      }
+      if (item.type == 'node-styles') {
+        // grids of node shapes and borders (js/node-shape.js)
+        form.append(gtiz_node_styles.buildContents());
       }
     });
   }

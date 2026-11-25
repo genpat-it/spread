@@ -25,6 +25,18 @@ gtiz_help.settings = [{
     return gtiz_locales.current.helps.feedback;
   }
 }, {
+  card: 'node-shape',
+  title: () => {
+    return gtiz_locales.current.node_shape_and_border;
+  },
+  contents: () => {
+    return gtiz_locales.current.helps.node_shape.help;
+  },
+  feedback: () => {
+    // SPREAD only feature: no link to the EnteroBase documentation
+    return gtiz_locales.current.helps.feedback_wiki;
+  }
+}, {
   card: 'node-size',
   title: () => {
     return gtiz_locales.current.node_size;
@@ -77,7 +89,21 @@ gtiz_help.settings = [{
     return gtiz_locales.current.helps.map.help;
   },
   feedback: () => {
-    return gtiz_locales.current.helps.feedback;
+    // SPREAD only feature: no link to the EnteroBase documentation
+    return gtiz_locales.current.helps.feedback_wiki;
+  }
+}, {
+  // legend card: its help trigger in the header, as the settings cards
+  card: 'legend',
+  title: () => {
+    return gtiz_locales.current.legend;
+  },
+  contents: () => {
+    return gtiz_locales.current.helps.legend.help;
+  },
+  feedback: () => {
+    // SPREAD only feature: no link to the EnteroBase documentation
+    return gtiz_locales.current.helps.feedback_wiki;
   }
 }, {
   card: 'macros',
@@ -88,7 +114,20 @@ gtiz_help.settings = [{
     return gtiz_locales.current.helps.macros.help;
   },
   feedback: () => {
-    return gtiz_locales.current.helps.feedback;
+    // SPREAD only feature: no link to the EnteroBase documentation
+    return gtiz_locales.current.helps.feedback_wiki;
+  }
+}, {
+  card: 'notes',
+  title: () => {
+    return gtiz_locales.current.notes;
+  },
+  contents: () => {
+    return gtiz_locales.current.helps.notes.help;
+  },
+  feedback: () => {
+    // SPREAD only feature: no link to the EnteroBase documentation
+    return gtiz_locales.current.helps.feedback_wiki;
   }
 }];
 

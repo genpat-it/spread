@@ -1,0 +1,119 @@
+cff-version: 1.2.0
+message: "If you use SPREAD, please cite the article below, and also ReporTree and GrapeTree, on which SPREAD relies."
+title: "SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard"
+type: software
+license: GPL-3.0-or-later
+repository-code: "https://github.com/genpat-it/spread"
+keywords:
+  - infectious disease surveillance
+  - spatiotemporal visualization
+  - phylogenomic analysis
+  - public health informatics
+authors:
+  - family-names: de Ruvo
+    given-names: Andrea
+    orcid: "https://orcid.org/0000-0001-6836-3455"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+  - family-names: De Luca
+    given-names: Alessandro
+    orcid: "https://orcid.org/0009-0000-4653-521X"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+  - family-names: Bucciacchio
+    given-names: Andrea
+    orcid: "https://orcid.org/0000-0002-2083-5043"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+  - family-names: Castelli
+    given-names: Pierluigi
+    orcid: "https://orcid.org/0000-0001-6518-1752"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+  - family-names: Di Lorenzo
+    given-names: Alessio
+    orcid: "https://orcid.org/0000-0003-3222-2399"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+  - family-names: Radomski
+    given-names: Nicolas
+    orcid: "https://orcid.org/0000-0002-7480-4197"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+  - family-names: Di Pasquale
+    given-names: Adriano
+    orcid: "https://orcid.org/0000-0002-9328-3972"
+    affiliation: "Istituto Zooprofilattico Sperimentale dell'Abruzzo e del Molise \"G. Caporale\""
+preferred-citation:
+  type: article
+  title: "SPREAD: Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard"
+  authors:
+    - family-names: de Ruvo
+      given-names: Andrea
+      orcid: "https://orcid.org/0000-0001-6836-3455"
+    - family-names: De Luca
+      given-names: Alessandro
+      orcid: "https://orcid.org/0009-0000-4653-521X"
+    - family-names: Bucciacchio
+      given-names: Andrea
+      orcid: "https://orcid.org/0000-0002-2083-5043"
+    - family-names: Castelli
+      given-names: Pierluigi
+      orcid: "https://orcid.org/0000-0001-6518-1752"
+    - family-names: Di Lorenzo
+      given-names: Alessio
+      orcid: "https://orcid.org/0000-0003-3222-2399"
+    - family-names: Radomski
+      given-names: Nicolas
+      orcid: "https://orcid.org/0000-0002-7480-4197"
+    - family-names: Di Pasquale
+      given-names: Adriano
+      orcid: "https://orcid.org/0000-0002-9328-3972"
+  journal: "Veterinaria Italiana"
+  volume: 60
+  issue: 4
+  year: 2024
+  doi: "10.12834/VetIt.3476.23846.1"
+  url: "https://doi.org/10.12834/VetIt.3476.23846.1"
+references:
+  - type: article
+    title: "ReporTree: a surveillance-oriented tool to strengthen the linkage between pathogen genetic clusters and epidemiological data"
+    authors:
+      - family-names: Mixão
+        given-names: Verónica
+      - family-names: Pinto
+        given-names: Miguel
+      - family-names: Sobral
+        given-names: Daniel
+      - family-names: Di Pasquale
+        given-names: Adriano
+      - family-names: Gomes
+        given-names: João Paulo
+      - family-names: Borges
+        given-names: Vítor
+    journal: "Genome Medicine"
+    volume: 15
+    issue: 1
+    start: 43
+    year: 2023
+    doi: "10.1186/s13073-023-01196-1"
+  - type: article
+    title: "GrapeTree: visualization of core genomic relationships among 100,000 bacterial pathogens"
+    authors:
+      - family-names: Zhou
+        given-names: Zhemin
+      - family-names: Alikhan
+        given-names: Nabil-Fareed
+      - family-names: Sergeant
+        given-names: Martin J.
+      - family-names: Luhmann
+        given-names: Nina
+      - family-names: Vaz
+        given-names: Cátia
+      - family-names: Francisco
+        given-names: Alexandre P.
+      - family-names: Carriço
+        given-names: João André
+      - family-names: Achtman
+        given-names: Mark
+    journal: "Genome Research"
+    volume: 28
+    issue: 9
+    start: 1395
+    end: 1404
+    year: 2018
+    doi: "10.1101/gr.232397.117"

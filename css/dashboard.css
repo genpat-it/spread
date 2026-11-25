@@ -8,7 +8,7 @@
 }
 
 .dashboard-grapetree main {
-  background-color: var(--white);
+  background-color: var(--page);
 }
 
 .dashboard-grapetree .quick-actions {
@@ -41,23 +41,8 @@
 .dashboard-grapetree.tree-not-defined .toggle-box[data-view="settings"],
 .dashboard-grapetree.tree-not-defined .toggle-box[data-view="map"],
 .dashboard-grapetree.tree-not-defined .toggle-box[data-view="legend"],
-.dashboard-grapetree.tree-not-defined .toggle-box[data-view="metadata"],
-.dashboard-grapetree.tree-not-defined .toggle-box[data-view="video"] {
+.dashboard-grapetree.tree-not-defined .toggle-box[data-view="metadata"] {
   display: none;
-}
-
-.dashboard-grapetree .toggle-box[data-view="video"] {
-  display: none;
-}
-
-.dashboard-grapetree.dashboard-grapetree-s-l .toggle-box[data-view="video"],
-.dashboard-grapetree.dashboard-grapetree-s-m-l .toggle-box[data-view="video"],
-.dashboard-grapetree.dashboard-grapetree-m-l .toggle-box[data-view="video"],
-.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .toggle-box[data-view="video"],
-.dashboard-grapetree.dashboard-grapetree-s-mt-l .toggle-box[data-view="video"],
-.dashboard-grapetree.dashboard-grapetree-mt-l .toggle-box[data-view="video"],
-.dashboard-grapetree.dashboard-grapetree-l .toggle-box[data-view="video"] {
-  display: block;
 }
 
 .dashboard-grapetree .quick-actions .tools .toggle-box .label {
@@ -331,7 +316,7 @@
   height: calc(100% - 1rem);
   border-radius: 2.4rem;
   overflow: hidden;
-  background-color: var(--white);
+  background-color: var(--surface);
   margin-left: 1rem;
   margin-right: 1rem;
   position: relative;
@@ -432,6 +417,38 @@
   cursor: grabbing;
 }
 
+/* the titles of the notes of a node, under its values, flush left */
+.dashboard-grapetree .tree-node-tooltip .tree-node-tooltip-notes {
+  text-align: left;
+}
+
+/* the marks of the notes on the tree open the panel on their notes */
+.dashboard-grapetree svg.note-mark-over,
+.dashboard-grapetree svg.note-mark-over * {
+  cursor: pointer;
+}
+
+/* trigger of the notes on the session in the tree card, only when there are some */
+.dashboard-grapetree .card-tree .tree-notes-trigger[hidden] {
+  display: none;
+}
+
+/* undo and redo of the tree card (js/history.js): with nothing to undo or redo
+   grey and not clickable, as the items acting on the selected nodes without one */
+.dashboard-grapetree .card-tree .tree-history-trigger {
+  cursor: pointer;
+}
+
+.dashboard-grapetree .card-tree .tree-history-trigger.is-disabled {
+  cursor: default;
+}
+
+.dashboard-grapetree .card-tree .tree-history-trigger.is-disabled i,
+.dashboard-grapetree .card-tree .tree-history-trigger.is-disabled:hover i {
+  color: var(--secondary);
+  border-color: var(--secondary);
+}
+
 .dashboard-grapetree .tree-node-tooltip {
   position: absolute;
   text-align: center;
@@ -444,7 +461,9 @@
   pointer-events: none;
 }
 
-.dashboard-grapetree .tree-container #rotation-icon {
+/* shortcuts of the tree (js/tree.js, gtiz_tree.initShortcuts): the trigger takes the place and
+   the look of the old rotation icon, the box opens above it with a click */
+.dashboard-grapetree .tree-container .tree-shortcuts-trigger {
   position: absolute;
   right: 2.4rem;
   bottom: 2.4rem;
@@ -455,6 +474,99 @@
   color: var(--main);
   line-height: 1;
   z-index: 3;
+  cursor: pointer;
+}
+
+.dashboard-grapetree .tree-container .tree-shortcuts-trigger[aria-expanded="true"] {
+  background-color: var(--secondary-light);
+}
+
+/* opened on purpose: over the notifications of the tree card (component-notifier, z-index 90),
+   which show again when the box closes */
+.dashboard-grapetree .tree-container .tree-shortcuts {
+  position: absolute;
+  right: 2.4rem;
+  bottom: 6.6rem;
+  z-index: 100;
+  padding: 1.3rem;
+  border-radius: 1.5rem;
+  background-color: var(--surface);
+  box-shadow: 0 0 3.4rem 0 rgba(0, 0, 0, 0.12);
+  font-size: 1.2rem;
+}
+
+.dashboard-grapetree .tree-container .tree-shortcuts[hidden] {
+  display: none;
+}
+
+/* close trigger top right, as in the notifications of the card (.notifier-close) */
+.dashboard-grapetree .tree-shortcuts .tree-shortcuts-close {
+  font-size: 1.3rem;
+  color: var(--main);
+}
+
+/* the title leaves room for the close trigger */
+.dashboard-grapetree .tree-shortcuts-title {
+  padding-right: 2.1rem;
+  margin-bottom: 0.8rem;
+  color: var(--darker);
+  font-size: 1.3rem;
+}
+
+/* one row per shortcut: the action on the left, the keys on the right edge, as in the menus of
+   the applications; a light line between the rows, halfway in the space between them */
+.dashboard-grapetree .tree-shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-grapetree .tree-shortcuts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.1rem;
+  margin: 0;
+  padding: 0.4rem 0;
+}
+
+.dashboard-grapetree .tree-shortcuts-row + .tree-shortcuts-row {
+  border-top: 0.1rem solid var(--secondary-light);
+}
+
+.dashboard-grapetree .tree-shortcuts-keys {
+  white-space: nowrap;
+  color: var(--secondary-darker);
+}
+
+.dashboard-grapetree .tree-shortcuts-keys kbd {
+  display: inline-block;
+  min-width: 2.1rem;
+  padding: 0.1rem 0.5rem;
+  border: 0.1rem solid var(--secondary);
+  border-radius: 0.5rem;
+  background-color: var(--secondary-ultra-light);
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+  line-height: 1.6rem;
+  text-align: center;
+}
+
+.dashboard-grapetree .tree-shortcuts-text {
+  color: var(--text);
+}
+
+/* angle of the rotation next to the cursor (Alt+drag); its position follows the pointer */
+.tree-rotation-angle {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .dashboard-grapetree .tree-container .drop-box {
@@ -717,7 +829,7 @@
   align-content: center;
   height: calc(100% - 1rem);
   border-radius: 2.4rem;
-  background-color: var(--white);
+  background-color: var(--surface);
   margin-right: 1rem;
   margin-left: 1rem;
   -webkit-box-shadow: 0px 0px 34px 0px rgba(0,0,0,0.08);
@@ -734,7 +846,7 @@
 }
 
 @media (min-width: 1380px) {
-  .dashboard-grapetree.dashboard-grapetree-m-mt-l .map-container
+  .dashboard-grapetree.dashboard-grapetree-m-mt-l .map-container,
   .dashboard-grapetree.dashboard-grapetree-m-l .map-container {
     margin-left: 0;
   }
@@ -758,7 +870,7 @@
 }
 
 .dashboard-grapetree .map-container .card-context-trigger i {
-  background-color: var(--white);
+  background-color: var(--surface);
 }
 
 .dashboard-grapetree .map-container .leaflet-pane,
@@ -916,7 +1028,7 @@
   flex-direction: column;
   height: calc(100% - 1rem);
   border-radius: 2.4rem;
-  background-color: var(--white);
+  background-color: var(--surface);
   margin-right: 1rem;
   margin-left: 1rem;
   -webkit-box-shadow: 0px 0px 34px 0px rgba(0,0,0,0.08);
@@ -933,7 +1045,7 @@
 }
 
 @media (min-width: 1380px) {
-  .dashboard-grapetree.dashboard-grapetree-m-mt-l .metadata-container
+  .dashboard-grapetree.dashboard-grapetree-m-mt-l .metadata-container,
   .dashboard-grapetree.dashboard-grapetree-mt-l .metadata-container {
     margin-left: 0;
   }
@@ -953,7 +1065,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--white);
+  background-color: var(--surface);
   opacity: 0.8;
   z-index: 1;
   border-radius: 2.4rem;
@@ -971,9 +1083,16 @@
   width: 100%;
 }
 
-.dashboard-grapetree .metadata-container .button-box {
-  display: inline-block;
-  margin-right: 0.5rem;
+/* title of the card, as in the settings cards, centred on the row of the card
+   tools (top 1.7rem, 2.1rem high) */
+.dashboard-grapetree .metadata-container .card-form {
+  padding-top: 1.8rem;
+  padding-bottom: 0.8rem;
+}
+
+.dashboard-grapetree .metadata-container .card-form .card-title {
+  margin: 0;
+  line-height: 2.1rem;
 }
 
 .dashboard-grapetree .metadata-container #metadata-grid {
@@ -1007,72 +1126,317 @@
   z-index: 1;
 }
 
+/* column of the legend card: the card shrinks to the space of the column and
+   its list scrolls, no height computed in js */
 .dashboard-grapetree .legend {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   display: none;
+  flex-direction: column;
   opacity: 0;
   -webkit-transition: opacity 0.3s ease;
   transition: opacity 0.3s ease;
 }
 
+/*
+*
+* Legend column: one width for every layout, at least 32rem, wider where the
+* screen allows it (15%). The components next to it end where it starts, the
+* others keep their percentages.
+*
+*/
+.dashboard-grapetree {
+  --legend-width: max(15%, 32rem);
+}
+
 .dashboard-grapetree.dashboard-grapetree-s-m-mt-l .legend,
 .dashboard-grapetree.dashboard-grapetree-s-mt-l .legend,
 .dashboard-grapetree.dashboard-grapetree-s-m-l .legend,
-.dashboard-grapetree.dashboard-grapetree-s-l .legend {
-  left: 80%;
-  display: block;
-  opacity: 1;
-}
-
-@media (min-width: 1980px) {
-  .dashboard-grapetree.dashboard-grapetree-s-m-mt-l .legend,
-  .dashboard-grapetree.dashboard-grapetree-s-mt-l .legend,
-  .dashboard-grapetree.dashboard-grapetree-s-m-l .legend,
-  .dashboard-grapetree.dashboard-grapetree-s-l .legend {
-    left: 85%;
-  }
-}
-
+.dashboard-grapetree.dashboard-grapetree-s-l .legend,
 .dashboard-grapetree.dashboard-grapetree-m-mt-l .legend,
 .dashboard-grapetree.dashboard-grapetree-mt-l .legend,
 .dashboard-grapetree.dashboard-grapetree-m-l .legend,
 .dashboard-grapetree.dashboard-grapetree-l .legend {
-  left: 75%;
-  display: block;
+  left: auto;
+  width: var(--legend-width);
+  display: flex;
   opacity: 1;
 }
 
+.dashboard-grapetree.dashboard-grapetree-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m-l .map,
+.dashboard-grapetree.dashboard-grapetree-s-mt-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-mt-l .metadata,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .metadata,
+.dashboard-grapetree.dashboard-grapetree-m-l .tree,
+.dashboard-grapetree.dashboard-grapetree-m-l .map,
+.dashboard-grapetree.dashboard-grapetree-mt-l .tree,
+.dashboard-grapetree.dashboard-grapetree-mt-l .metadata,
+.dashboard-grapetree.dashboard-grapetree-m-mt-l .tree,
+.dashboard-grapetree.dashboard-grapetree-m-mt-l .metadata {
+  right: var(--legend-width);
+  width: auto;
+}
+
 @media (min-width: 1380px) {
-  .dashboard-grapetree.dashboard-grapetree-m-mt-l .legend,
-  .dashboard-grapetree.dashboard-grapetree-mt-l .legend,
-  .dashboard-grapetree.dashboard-grapetree-m-l .legend {
-    left: 85%;
+  /* the tree keeps the left half, map and table go between the tree and the legend */
+  .dashboard-grapetree.dashboard-grapetree-m-l .tree,
+  .dashboard-grapetree.dashboard-grapetree-mt-l .tree,
+  .dashboard-grapetree.dashboard-grapetree-m-mt-l .tree {
+    right: auto;
+    width: 50%;
+  }
+  .dashboard-grapetree.dashboard-grapetree-m-mt-l .map {
+    right: var(--legend-width);
+    width: auto;
   }
 }
 
-@media (min-width: 1720px) {
-  .dashboard-grapetree.dashboard-grapetree-l .legend {
-    left: 85%;
-  }
+/*
+*
+* Assistant card (js/assistant.js) in the same column, under the legend card.
+* With the legend off the column stays for the assistant alone: the components
+* on the right of each layout end where it starts (expanded ones still cover
+* everything).
+*
+*/
+.dashboard-grapetree.assistant-mode .legend {
+  left: auto;
+  width: var(--legend-width);
+  display: flex;
+  opacity: 1;
 }
 
-.dashboard-grapetree .legend .card-title {
-  width: calc(100% - 29px);
-  margin-top: 0;
-  padding-top: 0;
-  -webkit-transform: translateY(-8px);
-  transform: translateY(-8px);
-}
-
-.dashboard-grapetree .legend .card-player {
+.dashboard-grapetree.assistant-mode:not(.legend-mode) .legend .card-legend,
+.dashboard-grapetree:not(.assistant-mode) .card-assistant {
   display: none;
 }
 
-.dashboard-grapetree.video-mode .legend .card-player {
+/* the assistant detached from the column (assistant-floating): with the legend
+   off the column closes and the components take its space. The same with the
+   legend detached (legend-floating) and the assistant off, and with both
+   detached: the layout is the one with legend and assistant off */
+.dashboard-grapetree.assistant-floating:not(.legend-mode),
+.dashboard-grapetree.legend-floating:not(.assistant-mode),
+.dashboard-grapetree.legend-floating.assistant-floating {
+  --legend-width: 0px;
+}
+
+/* the legend detached follows its toggle as in the column (:not(.hidden) to win
+   over the flex rule of the card) */
+.dashboard-grapetree:not(.legend-mode) .main > .card-legend:not(.hidden) {
+  display: none;
+}
+
+/* detached and open, the legend keeps the width of the column (generic rule of
+   the dragged cards) and, as the detached notes and macros panels, at most 70% of
+   the window: it grows with its list up to there, then the list scrolls */
+.dashboard-grapetree .main > .card-legend.expanded.dragging,
+.dashboard-grapetree .main > .card-legend.expanded.dragged {
+  max-height: min(70vh, calc(100vh - 9.8rem));
+}
+
+/* detached, the assistant keeps the width of the column and, open, a height
+   of its own: the conversation scrolls inside it */
+.dashboard-grapetree .main > .card-assistant.dragging,
+.dashboard-grapetree .main > .card-assistant.dragged {
+  width: max(15%, 32rem);
+}
+
+/* the height also collapsed: the max-height of the accordion (13px to 100%)
+   keeps it to its header, and the change is animated as in the column (a
+   height switching to auto would jump); no min-height collapsed (24rem open) */
+.dashboard-grapetree .main > .card-assistant.dragging,
+.dashboard-grapetree .main > .card-assistant.dragged {
+  height: min(62rem, 70vh);
+}
+
+.dashboard-grapetree .main > .card-assistant.card-expandable:not(.expanded) {
+  min-height: 0;
+}
+
+.dashboard-grapetree.assistant-mode:not([class*="dashboard-grapetree-"]) .tree:not(.tree-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s .tree:not(.tree-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-m .map:not(.map-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-mt .metadata:not(.metadata-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-m-mt .map:not(.map-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-m-mt .metadata:not(.metadata-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s-m .tree:not(.tree-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s-m .map:not(.map-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s-mt .tree:not(.tree-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s-mt .metadata:not(.metadata-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s-m-mt .tree:not(.tree-expanded),
+.dashboard-grapetree.assistant-mode.dashboard-grapetree-s-m-mt .metadata:not(.metadata-expanded) {
+  right: var(--legend-width);
+  width: auto;
+}
+
+/* with the assistant open the legend takes at most about half of the column,
+   its list scrolls; with the assistant closed or collapsed it takes it all. A
+   collapsed legend keeps the height of its header (card-expandable) */
+.dashboard-grapetree.assistant-mode .legend:has(.card-assistant.expanded) .card-legend.expanded {
+  max-height: 45%;
+}
+
+/*
+*
+* Settings column: as the legend one, at least 32rem, wider where the screen
+* allows it (15%). The components next to it start
+* where it ends and reach the legend column (`--legend-space`, 0 without it);
+* with map and table side by side they share the space in the middle.
+*
+*/
+.dashboard-grapetree {
+  --settings-width: max(15%, 32rem);
+  --legend-space: 0px;
+}
+
+.dashboard-grapetree.legend-mode,
+.dashboard-grapetree.assistant-mode {
+  --legend-space: var(--legend-width);
+}
+
+.dashboard-grapetree.dashboard-grapetree-s .settings,
+.dashboard-grapetree.dashboard-grapetree-s-l .settings,
+.dashboard-grapetree.dashboard-grapetree-s-m .settings,
+.dashboard-grapetree.dashboard-grapetree-s-m-l .settings,
+.dashboard-grapetree.dashboard-grapetree-s-mt .settings,
+.dashboard-grapetree.dashboard-grapetree-s-mt-l .settings,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt .settings,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .settings {
+  width: var(--settings-width);
+}
+
+.dashboard-grapetree.dashboard-grapetree-s .tree,
+.dashboard-grapetree.dashboard-grapetree-s-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-mt .tree,
+.dashboard-grapetree.dashboard-grapetree-s-mt-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .tree,
+.dashboard-grapetree.dashboard-grapetree-s-m .map,
+.dashboard-grapetree.dashboard-grapetree-s-m-l .map,
+.dashboard-grapetree.dashboard-grapetree-s-mt .metadata,
+.dashboard-grapetree.dashboard-grapetree-s-mt-l .metadata {
+  left: var(--settings-width);
+  right: var(--legend-space);
+  width: auto;
+}
+
+.dashboard-grapetree.dashboard-grapetree-s-m-mt .map,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .map {
+  left: var(--settings-width);
+  right: auto;
+  width: calc((100% - var(--settings-width) - var(--legend-space)) / 2);
+}
+
+.dashboard-grapetree.dashboard-grapetree-s-m-mt .metadata,
+.dashboard-grapetree.dashboard-grapetree-s-m-mt-l .metadata {
+  left: calc(var(--settings-width) + (100% - var(--settings-width) - var(--legend-space)) / 2);
+  right: var(--legend-space);
+  width: auto;
+}
+
+/* open and docked in its column, the legend takes the whole column when its list
+   has the rows for it (e.g. with the assistant collapsed): no cap of the accordion
+   cards of the settings (89rem, beaten by the .legend class); the 45% with the
+   assistant open still applies and, detached, the card leaves the column (70%).
+   100% of the column instead of none: a length, so the legend shrinks and grows
+   with the transition while the assistant opens and collapses */
+.dashboard-grapetree .legend .card-legend.card-expandable.expanded {
+  max-height: 100%;
+}
+
+/* header of the legend card as the assistant one: the title leaves room for the
+   tools (handle, help, close when detached) and opens and closes the card */
+.dashboard-grapetree .card-legend > .card-title {
+  width: calc(100% - 5.4rem);
+  cursor: pointer;
+}
+
+/* row under the header: the category select and, on its right, the round video
+   and menu triggers, the same space between all of them; the last trigger ends
+   where the accordion trigger of the header ends */
+.dashboard-grapetree .card-legend .card-legend-tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-grapetree .card-legend .card-legend-tools .select-box {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding-top: 0;
+}
+
+.dashboard-grapetree .card-legend .card-legend-tools .card-context-trigger {
+  flex: none;
+  margin: 0;
+}
+
+/* video player at the bottom of the legend card, shown in video mode: white with
+   a light outline, radius of the card; the top padding makes up for the
+   controls raised by 0.2rem, so the space above and below them is the same; the
+   negative bottom margin leaves to the card edge the same space as above the
+   category select (1.3rem) */
+.dashboard-grapetree .card-legend .card-legend-player {
+  display: none;
+  margin-top: 1.3rem;
+  margin-bottom: -0.8rem;
+  padding: 1.1rem 1.1rem 0.8rem;
+  background-color: var(--surface);
+  border: 0.1rem solid var(--secondary-light);
+  border-radius: 2.4rem;
+}
+
+.dashboard-grapetree.video-mode .card-legend .card-legend-player {
   display: block;
+}
+
+/* round trigger of the player in the legend header (its icon is set in js) */
+.dashboard-grapetree .card-legend-player-trigger {
+  cursor: pointer;
+}
+
+/* the legend card never grows beyond its contents, it shrinks when the column is
+   shorter (or, detached, at its maximum height): only its form shrinks, the list
+   inside gets the scrollbar (scrolly) */
+.dashboard-grapetree .legend .card-legend:not(.hidden),
+.dashboard-grapetree .main > .card-legend:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.dashboard-grapetree .legend .card-legend > *,
+.dashboard-grapetree .main > .card-legend > * {
+  flex-shrink: 0;
+}
+
+/* the accordion of the legend keeps the transition of the expandable cards
+   (all 0.8s, base.css), but not on transform: the card moves aside at once when
+   its context menu opens or closes (translateX in js/context.js), as before it
+   was an expandable card. Not while dragged: there `.dragging` turns every
+   transition off, so the card follows the pointer without delay */
+.dashboard-grapetree .card-legend.card-expandable:not(.dragging) {
+  -webkit-transition: all 0.8s ease, transform 0s;
+  transition: all 0.8s ease, transform 0s;
+}
+
+.dashboard-grapetree .legend .card-legend > .card-form,
+.dashboard-grapetree .main > .card-legend > .card-form {
+  flex-shrink: 1;
+  min-height: 0;
 }
 
 .dashboard-grapetree .context-menu {
@@ -1152,7 +1516,7 @@
   overflow: hidden;
 }
 
-.dashboard-grapetree .card-legend.legend-loading .card-title {
+.dashboard-grapetree .card-legend.legend-loading .card-legend-tools {
   display: none;
 }
 
@@ -1313,13 +1677,21 @@
   display: inline-block;
   border: 0.1rem solid var(--secondary);
   border-radius: 50%;
-  background-color: var(--white);
+  background-color: var(--surface);
   font-size: 1rem;
   width: 2.1rem;
   height: 2.1rem;
   line-height: 2.1rem;
   text-align: center;
   margin-left: 0.3rem;
+  -webkit-transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease;
+}
+
+/* round triggers: on hover the circle darkens as the border of the toggles */
+.dashboard-grapetree .card-context-trigger:hover i,
+.dashboard-grapetree .card-context-trigger:focus-visible i {
+  border-color: var(--secondary-dark);
 }
 
 .dashboard-grapetree .card-context-trigger.card-context-utility-trigger i {
@@ -1333,8 +1705,16 @@
   font-size: 1.4rem;
 }
 
-.dashboard-grapetree .card-context-menu .card-context-tools div {
-  margin-bottom: 0.5rem;
+/* tools of the context menus (help and close, js/context.js) on one row, as in
+   the other cards and panels; they were stacked one under the other */
+.dashboard-grapetree .card-context-menu .card-context-tools {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.dashboard-grapetree .card-context-menu .card-context-tools > div {
+  margin-left: 0.5rem;
 }
 
 .dashboard-grapetree .card a.card-action {
@@ -1356,6 +1736,14 @@
 
 .dashboard-grapetree .card a.card-action.card-action-accent i {
   color: var(--accent);
+}
+
+/* item acting on the selected nodes while none is selected (js/context.js): grey, not
+   clickable, the tooltip says to select nodes first */
+.dashboard-grapetree .card .button-box-disabled a.card-action,
+.dashboard-grapetree .card .button-box-disabled a.card-action i {
+  color: var(--secondary);
+  cursor: default;
 }
 
 .dashboard-grapetree .select-box,
@@ -1442,7 +1830,7 @@
   width: 21px;
   height: 21px;
   border-radius: 50%;
-  border: 0.4rem solid var(--white);
+  border: 0.4rem solid var(--surface);
   background-color: var(--main);
   -webkit-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2); 
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
@@ -1454,7 +1842,7 @@
   width: 1.4rem;
   height: 1.4rem;
   border-radius: 50%;
-  border: 0.4rem solid var(--white);
+  border: 0.4rem solid var(--surface);
   background-color: var(--main);
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
 }
@@ -1465,7 +1853,7 @@
   width: 2.1rem;
   height: 2.1rem;
   border-radius: 50%;
-  border: 0.4rem solid var(--white);
+  border: 0.4rem solid var(--surface);
   background-color: var(--main);
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
 }
@@ -1519,7 +1907,7 @@
   height: 2.6rem;
   width: 3.9rem;
   text-align: center;
-  background-color: var(--white);
+  background-color: var(--surface);
   margin-left: 0.5rem;
   -webkit-transform: translateY(-0.15rem);
   transform: translateY(-0.15rem);
@@ -1542,14 +1930,65 @@
   margin-bottom: 0.5rem;
 }
 
+/* rows on the right, bars on their left: padding instead of margin keeps the bars
+   inside the list box, which clips them when it scrolls (overflow auto) */
 .dashboard-grapetree .card-legend.card-legend-histogram .list-box {
-  width: 60%;
-  margin-left: 40%;
+  /* auto fills the card with the padding included, 100% would overflow */
+  width: auto;
+  padding-left: 40%;
 }
 
 .dashboard-grapetree .card-legend .list-box .list-row {
   position: relative;
   margin-bottom: 0;
+}
+
+/* "Others" sums the groups not listed: pinned at the bottom of the list, so it
+   stays visible while the list scrolls. Above the rows (their values use z-index 3) */
+.dashboard-grapetree .card-legend .list-box .list-row[data-real-group-izsam="Others"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  padding-top: 0.8rem;
+  background: var(--surface);
+  border-top: 0.1rem solid var(--ultra-light);
+}
+
+/* the check is absolute: moved down by the padding of the row */
+.dashboard-grapetree .card-legend .list-box .list-row[data-real-group-izsam="Others"] .list-check {
+  top: 0.95rem;
+}
+
+/* the whole list in view (no scrollbar, Scrolly adds .scrolly only when it
+   scrolls): no rows pass under "Others", it is a row as the others, without
+   line and with their padding (0.1rem, see .list-box .list-row), its check back
+   in the place of the other rows. Scrolly measures the list with its current
+   state: when the bar goes the list gets shorter and still fits, when it comes
+   the padding only adds to the scroll */
+.dashboard-grapetree .card-legend .list-box:not(.scrolly) .list-row[data-real-group-izsam="Others"] {
+  padding-top: 0.1rem;
+  border-top: 0;
+}
+
+.dashboard-grapetree .card-legend.card-legend-histogram .list-box:not(.scrolly) .list-row[data-real-group-izsam="Others"]::before {
+  border-top: 0;
+}
+
+.dashboard-grapetree .card-legend .list-box:not(.scrolly) .list-row[data-real-group-izsam="Others"] .list-check {
+  top: 0.15rem;
+}
+
+/* histogram: the bars sit on the left of the rows, the cover hides the bars
+   of the rows scrolling under "Others" (66.7% of the row is the 40% padding of the list) */
+.dashboard-grapetree .card-legend.card-legend-histogram .list-box .list-row[data-real-group-izsam="Others"]::before {
+  content: '';
+  position: absolute;
+  top: -0.1rem;
+  bottom: 0;
+  right: 100%;
+  width: 66.7%;
+  background: var(--surface);
+  border-top: 0.1rem solid var(--ultra-light);
 }
 
 .dashboard-grapetree .list-box .list-row:last-child {
@@ -1614,6 +2053,9 @@
 
 .dashboard-grapetree .card-legend.card-legend-histogram .card-legend-item-bar {
   display: inline-block;
+  /* bars are proportional to the samples: the smallest groups keep a dot, as
+     large as the bar height, so they stay visible and clickable */
+  min-width: 0.8rem;
 }
 
 
@@ -1653,9 +2095,82 @@
   color: var(--secondary-dark);
 }
 
-.dashboard-grapetree .card-player {
-  padding-top: 2.9rem;
-  padding-bottom: 2.4rem;
+/* legend filtered by the selection: title over the counts on the left, the
+   round button with the crossed filter on the right brings back the whole legend */
+.dashboard-grapetree .card-legend .card-legend-filter,
+.dashboard-grapetree .notes .notes-filter {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "title close" "summary close";
+  align-items: center;
+  column-gap: 0.8rem;
+  row-gap: 0.1rem;
+  margin: 0 0.2rem 0.8rem 0.2rem;
+  padding: 0.8rem 0.8rem 0.8rem 1.3rem;
+  border-radius: 1.1rem;
+  background-color: var(--secondary-ultra-light);
+}
+
+.dashboard-grapetree .card-legend .card-legend-filter.hidden {
+  display: none;
+}
+
+/* the box of the notes panel has only the title: one row, title and button centred */
+.dashboard-grapetree .notes .notes-filter {
+  grid-template-areas: "title close";
+  margin: 0 0 0.8rem 0;
+}
+
+/* same colour of the notifier titles */
+.dashboard-grapetree .card-legend .card-legend-filter-title,
+.dashboard-grapetree .notes .notes-filter-title {
+  grid-area: title;
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  color: var(--darker);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-grapetree .card-legend .card-legend-filter-summary {
+  grid-area: summary;
+  font-size: 1.1rem;
+  line-height: 1.5rem;
+  color: var(--secondary-dark);
+}
+
+.dashboard-grapetree .card-legend .card-legend-filter-close,
+.dashboard-grapetree .card-legend .card-legend-filter-close:hover,
+.dashboard-grapetree .notes .notes-filter-close,
+.dashboard-grapetree .notes .notes-filter-close:hover {
+  grid-area: close;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* same round button of the card tools: only the icon takes the main colour on hover */
+.dashboard-grapetree .card-legend .card-legend-filter-close i,
+.dashboard-grapetree .notes .notes-filter-close i {
+  display: inline-block;
+  border: 0.1rem solid var(--secondary);
+  border-radius: 50%;
+  background-color: var(--surface);
+  color: var(--secondary-darker);
+  font-size: 1rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  line-height: 2.1rem;
+  text-align: center;
+  -webkit-transition: color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.dashboard-grapetree .card-legend .card-legend-filter-close:hover i,
+.dashboard-grapetree .notes .notes-filter-close:hover i {
+  color: var(--main);
 }
 
 .dashboard-grapetree .slider-box-player {
@@ -1845,7 +2360,8 @@
 
 .dashboard-grapetree .modal-contents h3 {
   margin-bottom: 0;
-  line-height: 2.4rem;
+  font-size: 2.1rem;
+  line-height: 2.1rem;
 }
 
 .dashboard-grapetree .modal-help .modal-contents h3 {
@@ -1857,6 +2373,7 @@
 .dashboard-grapetree .modal-contents ol {
   margin-bottom: 0;
   margin-top: 1.3rem;
+  font-size: 1.4rem;
 }
 
 .dashboard-grapetree .modal-contents p:first-child,
@@ -1885,6 +2402,11 @@
   margin-top: 1.3rem;
 }
 
+/* feedback messages keep their smaller size, below the 1.4rem of the modal paragraphs */
+.dashboard-grapetree .modal-contents .modal-feedback p {
+  font-size: 1.3rem;
+}
+
 .dashboard-grapetree .modal-form a.modal-action {
   color: var(--main);
   font-size: 1.3rem;
@@ -1894,11 +2416,75 @@
   padding-right: 0.3rem;
 }
 
+/* export view of the save modal: its paragraphs keep their own margins */
+.dashboard-grapetree .modal-contents .modal-export-text {
+  margin: 0;
+}
+
+.dashboard-grapetree .modal-contents .modal-export-note {
+  margin: 0.8rem 0 0 0;
+}
+
+/* the note used as label of the missing zooms box: further from the status line */
+.dashboard-grapetree .modal-contents .modal-export-note.modal-export-label {
+  margin: 2.1rem 0 0 0;
+}
+
+/* the copy button is a bare icon, not a regular modal button */
+.dashboard-grapetree .modal-contents .modal-export-copy {
+  height: auto;
+  margin: 0;
+  padding: 0.2rem;
+  border: none;
+  background-color: transparent;
+  line-height: 1;
+}
+
+/* the global button states would paint it white on a solid background:
+   the icon stays gray when focused or pressed, main on hover and while confirming a copy */
+.dashboard-grapetree .modal-contents .modal-export-copy:focus,
+.dashboard-grapetree .modal-contents .modal-export-copy:active {
+  color: var(--secondary-dark);
+  border: none;
+  background-color: transparent;
+}
+
+.dashboard-grapetree .modal-contents .modal-export-copy:hover,
+.dashboard-grapetree .modal-contents .modal-export-copy.copied {
+  color: var(--main);
+  border: none;
+  background-color: transparent;
+}
+
+/* the actions container sets the spacing, not the generic modal button margin */
+.dashboard-grapetree .modal-contents .modal-export-actions button,
+.dashboard-grapetree .modal-contents .modal-confirm-actions button {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .dashboard-grapetree .modal-form a.modal-action.modal-action-secondary {
   color: var(--secondary-dark);
 }
 
 /* SEARCH ENGINE */
+
+/* highlight of a control (js/highlight.js), for the search and the assistant:
+   the page dimmed around a hole with round ends on the row of the control */
+.highlight-hole {
+  position: fixed;
+  z-index: 2147483000;
+  border-radius: 2.1rem;
+  box-shadow: 0 0 0 9999px rgba(23, 50, 77, 0.42);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-grapetree .search-highlight::before {
+    -webkit-animation: none;
+    animation: none;
+  }
+}
 
 .dashboard-grapetree .search-highlight {
   position: relative;
@@ -1951,7 +2537,9 @@
 }
 
 .dashboard-grapetree .search-engine::before,
-.dashboard-grapetree .macros::before {
+.dashboard-grapetree .macros::before,
+.dashboard-grapetree .languages::before,
+.dashboard-grapetree .notes::before {
   content: "";
   position: fixed;
   top: 0;
@@ -1967,14 +2555,18 @@
 }
 
 .dashboard-grapetree.show-search-engine .search-engine::before,
-.dashboard-grapetree.show-macros .macros::before {
+.dashboard-grapetree.show-macros .macros::before,
+.dashboard-grapetree.show-languages .languages::before,
+.dashboard-grapetree.show-notes .notes::before {
   opacity: 1;
   z-index: 1000;
   visibility: visible;
 }
 
 .dashboard-grapetree .search-engine::after,
-.dashboard-grapetree .macros::after {
+.dashboard-grapetree .macros::after,
+.dashboard-grapetree .languages::after,
+.dashboard-grapetree .notes::after {
   content: "";
   position: fixed;
   top: 0;
@@ -1990,14 +2582,18 @@
 }
 
 .dashboard-grapetree.show-search-engine .search-engine::after,
-.dashboard-grapetree.show-macros .macros::after {
+.dashboard-grapetree.show-macros .macros::after,
+.dashboard-grapetree.show-languages .languages::after,
+.dashboard-grapetree.show-notes .notes::after {
   opacity: 0.8;
   z-index: 1001;
   visibility: visible;
 }
 
 .dashboard-grapetree .search-engine,
-.dashboard-grapetree .macros {
+.dashboard-grapetree .macros,
+.dashboard-grapetree .languages,
+.dashboard-grapetree .notes {
   position: fixed;
   z-index: -1;
   visibility: hidden;
@@ -2008,19 +2604,23 @@
 }
 
 .dashboard-grapetree.show-search-engine .search-engine,
-.dashboard-grapetree.show-macros .macros {
+.dashboard-grapetree.show-macros .macros,
+.dashboard-grapetree.show-languages .languages,
+.dashboard-grapetree.show-notes .notes {
   z-index: 9997;
   visibility: visible;
 }
 
 .dashboard-grapetree .search-engine-contents,
-.dashboard-grapetree .macros-contents {
+.dashboard-grapetree .macros-contents,
+.dashboard-grapetree .languages-contents,
+.dashboard-grapetree .notes-contents {
   position: absolute;
   z-index: 9998;
   width: 32rem;
   border-radius: 2.4rem;
   padding: 2.1rem 1.3rem;
-  background-color: var(--white);
+  background-color: var(--surface);
   top: 1rem;
   right: 1rem;
   max-height: calc(100vh - 9.8rem);
@@ -2034,7 +2634,9 @@
 }
 
 .dashboard-grapetree.show-search-engine .search-engine-contents,
-.dashboard-grapetree.show-macros .macros-contents {
+.dashboard-grapetree.show-macros .macros-contents,
+.dashboard-grapetree.show-languages .languages-contents,
+.dashboard-grapetree.show-notes .notes-contents {
   opacity: 1;
   -webkit-transform: translateX(0);
   transform: translateX(0);
@@ -2044,7 +2646,12 @@
 
 .dashboard-grapetree .search-engine-close,
 .dashboard-grapetree .macros-close,
-.dashboard-grapetree .macros-help-trigger {
+.dashboard-grapetree .languages-close,
+.dashboard-grapetree .macros-help-trigger,
+.dashboard-grapetree .macros-drag-handle,
+.dashboard-grapetree .notes-close,
+.dashboard-grapetree .notes-help-trigger,
+.dashboard-grapetree .notes-drag-handle {
   /*PLEASE NOTE: modal close container should include the Tabler <i> tag in html*/
   position: fixed;
   opacity: 0;
@@ -2059,24 +2666,75 @@
 
 .dashboard-grapetree.show-search-engine .search-engine-close,
 .dashboard-grapetree.show-macros .macros-close,
-.dashboard-grapetree.show-macros .macros-help-trigger {
+.dashboard-grapetree.show-languages .languages-close,
+.dashboard-grapetree.show-macros .macros-help-trigger,
+.dashboard-grapetree.show-macros .macros-drag-handle,
+.dashboard-grapetree.show-notes .notes-close,
+.dashboard-grapetree.show-notes .notes-help-trigger,
+.dashboard-grapetree.show-notes .notes-drag-handle {
   opacity: 1;
   -webkit-transition: opacity 0.3s ease 0.6s;
   transition: opacity 0.3s ease 0.6s;
 }
 
-.dashboard-grapetree.tree-not-defined .macros-help-trigger {
+.dashboard-grapetree.tree-not-defined .macros-help-trigger,
+.dashboard-grapetree.tree-not-defined .notes-help-trigger {
   display: none;
 }
 
-.dashboard-grapetree .macros-help-trigger {
+.dashboard-grapetree .macros-help-trigger,
+.dashboard-grapetree .notes-help-trigger {
   top: 0.8rem;
   right: 3.4rem;
 }
 
+/* the handle of the macros and notes panels, before the help, as in the cards */
+.dashboard-grapetree .macros-drag-handle,
+.dashboard-grapetree .notes-drag-handle {
+  top: 0.8rem;
+  right: 5.7rem;
+  color: var(--secondary-dark);
+  cursor: grab;
+}
+
+/* a block as the help and the close triggers (not the inline-flex of the card
+   handles), so the three icons share their line */
+.dashboard-grapetree .macros-contents .macros-drag-handle,
+.dashboard-grapetree .notes-contents .notes-drag-handle {
+  display: block;
+}
+
+/* a panel dragged by its handle is no more modal: no veil, the page usable
+   around it; closed, it opens again in the top right corner, modal */
+.dashboard-grapetree.show-macros .macros.panel-floating,
+.dashboard-grapetree.show-notes .notes.panel-floating {
+  pointer-events: none;
+}
+
+/* both layers of the veil: the blur (::before) and the colour (::after) */
+.dashboard-grapetree.show-macros .macros.panel-floating::before,
+.dashboard-grapetree.show-notes .notes.panel-floating::before,
+.dashboard-grapetree.show-macros .macros.panel-floating::after,
+.dashboard-grapetree.show-notes .notes.panel-floating::after {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.dashboard-grapetree .macros.panel-floating .macros-contents,
+.dashboard-grapetree .notes.panel-floating .notes-contents {
+  pointer-events: auto;
+  /* detached, at most 70% of the window: on tall screens it stays manageable */
+  max-height: min(70vh, calc(100vh - 9.8rem));
+  /* and slightly transparent, as the detached cards */
+  background-color: color-mix(in srgb, var(--surface) 95%, transparent);
+}
+
 .dashboard-grapetree .search-engine-close .tabler,
 .dashboard-grapetree .macros-close .tabler,
-.dashboard-grapetree .macros-help-trigger .tabler {
+.dashboard-grapetree .languages-close .tabler,
+.dashboard-grapetree .macros-help-trigger .tabler,
+.dashboard-grapetree .notes-close .tabler,
+.dashboard-grapetree .notes-help-trigger .tabler {
   cursor: pointer;
 } 
 
@@ -2124,14 +2782,16 @@
   padding-right: 2.1rem;
 }
 
-.dashboard-grapetree .macros-result {
+.dashboard-grapetree .macros-result,
+.dashboard-grapetree .notes-result {
   background-color: var(--secondary-ultra-light);
   border-radius: 1.3rem;
   padding: 1.3rem;
   margin-top: 1.8rem;
 }
 
-.dashboard-grapetree .macros-tag {
+.dashboard-grapetree .macros-tag,
+.dashboard-grapetree .notes-tag {
   font-size: 1.3rem;
   color: var(--main);
   margin-bottom: 1.6rem;
@@ -2140,7 +2800,8 @@
   cursor: pointer;
 }
 
-.dashboard-grapetree .macros-tag::before {
+.dashboard-grapetree .macros-tag::before,
+.dashboard-grapetree .notes-tag::before {
   content: '';
   position: absolute;
   left: 0;
@@ -2151,14 +2812,16 @@
   top: 0.7rem;
 }
 
-.dashboard-grapetree .macros-result-title {
+.dashboard-grapetree .macros-result-title,
+.dashboard-grapetree .notes-result-title {
   font-size: 1.5rem;
   margin-bottom: 0.8rem;
   color: var(--text);
   font-weight: 600;
 }
 
-.dashboard-grapetree .macros-result-description {
+.dashboard-grapetree .macros-result-description,
+.dashboard-grapetree .notes-result-description {
   margin-bottom: 1.8rem;
   font-size: 1.4rem;
   color: var(--secondary-darker);
@@ -2168,10 +2831,931 @@
   transform: translateX(-0.2rem);
 }
 
+/* user macros (js/macros.js): record trigger of the panel, recorder in the quick
+   actions bar, save modal */
+
+/* title of the search panels, as the title of the cards, on the line of the help
+   and close icons (centred on them). Out of the flow: Scrolly sizes the scrolled
+   form on the height of the panel less its paddings, so the room of the title is a
+   padding of the panel, or the form would overflow at the bottom */
+.dashboard-grapetree .search-engine-contents,
+.dashboard-grapetree .macros-contents,
+.dashboard-grapetree .languages-contents,
+.dashboard-grapetree .notes-contents {
+  padding-top: 4.1rem;
+}
+
+.dashboard-grapetree .panel-title {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.6rem;
+  margin: 0;
+}
+
+/* search field and record trigger on one row */
+.dashboard-grapetree .macros-search-row,
+.dashboard-grapetree .notes-search-row {
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+/* the bottom margin of the field would move its centre up: the row keeps it */
+.dashboard-grapetree .macros-search-row .search-box,
+.dashboard-grapetree .notes-search-row .search-box {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.dashboard-grapetree .macros-search-tools,
+.dashboard-grapetree .notes-search-tools {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.dashboard-grapetree.tree-not-defined .macros-search-tools,
+.dashboard-grapetree.tree-not-defined .notes-search-tools {
+  display: none;
+}
+
+/* import and export area below the search row: the dashed drop area of the file
+   inputs (2/3) and, with user macros, an export button as a card (1/3) */
+.dashboard-grapetree .macros-transfer:not([hidden]),
+.dashboard-grapetree .notes-transfer:not([hidden]) {
+  padding-top: 0.8rem;
+}
+
+.dashboard-grapetree .macros-transfer-cards,
+.dashboard-grapetree .notes-transfer-cards {
+  display: flex;
+  gap: 0.8rem;
+}
+
+/* outcome of an import, as the outcome of a run: the text colour, red warnings */
+.dashboard-grapetree .macros-transfer-feedback,
+.dashboard-grapetree .languages-feedback,
+.dashboard-grapetree .notes-transfer-feedback,
+.dashboard-grapetree .notes-empty {
+  margin-top: 0.8rem;
+}
+
+.dashboard-grapetree .macros-transfer-feedback p,
+.dashboard-grapetree .languages-feedback p,
+.dashboard-grapetree .notes-transfer-feedback p,
+.dashboard-grapetree .notes-empty p {
+  font-size: 1.2rem;
+  margin: 0;
+  padding: 0 0.3rem;
+  color: var(--text);
+}
+
+/* the hint of the empty notes panel in the colour of the note of the assistant
+   (.spread-assistant__note), the feedback of the transfers keeps the text colour */
+.dashboard-grapetree .notes-empty p {
+  color: var(--secondary-dark);
+}
+
+.dashboard-grapetree .macros-transfer-feedback p + p,
+.dashboard-grapetree .notes-transfer-feedback p + p {
+  margin-top: 0.5rem;
+}
+
+.dashboard-grapetree .macros-transfer-feedback p.macros-transfer-warning,
+.dashboard-grapetree .notes-transfer-feedback p.notes-transfer-warning {
+  color: var(--red);
+}
+
+.dashboard-grapetree .macros-transfer label.input-file.input-file-drag,
+.dashboard-grapetree .notes-transfer label.input-file.input-file-drag {
+  flex: 2;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0.8rem;
+  text-align: center;
+  line-height: 1.4;
+  font-size: 1.2rem;
+  color: var(--main);
+  border-color: var(--secondary);
+}
+
+/* a file dragged over the area lights it up as the hover */
+.dashboard-grapetree .macros-transfer label.input-file.input-file-drag.macros-transfer-dropping,
+.dashboard-grapetree .notes-transfer label.input-file.input-file-drag.notes-transfer-dropping {
+  border-color: var(--main);
+  background-color: var(--secondary-ultra-light);
+}
+
+.dashboard-grapetree .macros-transfer label.input-file.input-file-drag:hover,
+.dashboard-grapetree .macros-transfer label.input-file.input-file-drag:focus,
+.dashboard-grapetree .notes-transfer label.input-file.input-file-drag:hover,
+.dashboard-grapetree .notes-transfer label.input-file.input-file-drag:focus {
+  border-color: var(--main);
+  outline: 0;
+}
+
+.dashboard-grapetree .macros-transfer label.input-file.input-file-drag i,
+.dashboard-grapetree .notes-transfer label.input-file.input-file-drag i {
+  margin-right: 0;
+  font-size: 1.8rem;
+}
+
+.dashboard-grapetree .macros-transfer-export:not([hidden]),
+.dashboard-grapetree .notes-transfer-export:not([hidden]) {
+  flex: 1;
+  height: 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0.1rem solid var(--secondary);
+  border-radius: 1.8rem;
+  color: var(--main);
+  font-size: 1.2rem;
+  cursor: pointer;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.dashboard-grapetree .macros-transfer-export:hover,
+.dashboard-grapetree .macros-transfer-export:focus,
+.dashboard-grapetree .notes-transfer-export:hover,
+.dashboard-grapetree .notes-transfer-export:focus {
+  border-color: var(--main);
+  outline: 0;
+}
+
+.dashboard-grapetree .macros-transfer-export i,
+.dashboard-grapetree .notes-transfer-export i {
+  font-size: 1.8rem;
+}
+
+.dashboard-grapetree .macros-transfer-trigger,
+.dashboard-grapetree .notes-transfer-trigger {
+  cursor: pointer;
+}
+
+/* a card trigger with a text, as the available zooms one, in red; text on the right */
+.dashboard-grapetree .macros-rec-trigger,
+.dashboard-grapetree .notes-new-trigger {
+  display: inline-flex;
+  align-items: center;
+  color: var(--red);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dashboard-grapetree .macros-rec-trigger i,
+.dashboard-grapetree .notes-new-trigger i {
+  color: var(--red);
+  margin-left: 0;
+}
+
+/* status box, as the legend filter indicator: the `hidden` attribute hides it */
+.dashboard-grapetree .macro-recorder:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: var(--secondary-ultra-light);
+  border-radius: 1.1rem;
+  padding: 0.3rem 0.3rem 0.3rem 1.3rem;
+  margin-right: 1.3rem;
+}
+
+.dashboard-grapetree .macro-recorder-status {
+  font-size: 1.2rem;
+  color: var(--darker);
+  white-space: nowrap;
+}
+
+.dashboard-grapetree .macro-recorder-label {
+  color: var(--red);
+  margin-left: 0.3rem;
+}
+
+.dashboard-grapetree .macro-recorder-paused .macro-recorder-label {
+  color: var(--secondary-darker);
+}
+
+.dashboard-grapetree .macro-recorder-actions {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+/* the icons of the quick actions bar are drawn as circles, filled on hover: not
+   in the recorder, where the round button is the link itself */
+.dashboard-grapetree .quick-actions .macro-recorder .tabler,
+.dashboard-grapetree .quick-actions .macro-recorder a:hover .tabler {
+  border: none;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  color: inherit;
+}
+
+.dashboard-grapetree .quick-actions .macro-recorder .macro-recorder-status .tabler {
+  color: var(--red);
+  animation: macro-recording 1.4s ease-in-out infinite;
+}
+
+.dashboard-grapetree .quick-actions .macro-recorder-paused .macro-recorder-status .tabler {
+  color: var(--secondary-dark);
+  animation: none;
+}
+
+@keyframes macro-recording {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* round icon buttons, as the card tools: only the icon takes the main colour */
+.dashboard-grapetree .macro-recorder-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  border: 0.1rem solid var(--secondary);
+  background-color: var(--surface);
+  color: var(--secondary-darker);
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.dashboard-grapetree .macro-recorder-action:hover {
+  color: var(--main);
+  text-decoration: none;
+}
+
+/* required fields: asterisk in the label, red border when missing */
+.dashboard-grapetree .form-required {
+  color: var(--red);
+}
+
+.dashboard-grapetree .input-box.input-box-error input,
+.dashboard-grapetree .input-box.input-box-error input:focus {
+  border-color: var(--red);
+}
+
+/* textarea: the project rule makes every valid textarea tall; here it stays low
+   while empty and not focused */
+.dashboard-grapetree .macro-save-form textarea,
+.dashboard-grapetree .note-save-form textarea {
+  margin-bottom: 0;
+  resize: vertical;
+}
+
+.dashboard-grapetree .macro-save-form textarea:placeholder-shown:not(:focus),
+.dashboard-grapetree .note-save-form textarea:placeholder-shown:not(:focus) {
+  height: 8rem;
+}
+
+.dashboard-grapetree .macro-steps {
+  margin: 0.5rem 0 0;
+  padding-left: 2.1rem;
+}
+
+.dashboard-grapetree .macro-step {
+  color: var(--text);
+  font-size: 1.3rem;
+  padding: 0.5rem 0;
+  border-bottom: 0.1rem solid var(--secondary-light);
+}
+
+.dashboard-grapetree .macro-step::marker {
+  color: var(--secondary-dark);
+}
+
+.dashboard-grapetree .macro-step-body {
+  display: inline-flex;
+  flex-direction: column;
+  width: calc(100% - 2.4rem);
+  vertical-align: top;
+}
+
+.dashboard-grapetree .macro-step-note {
+  font-size: 1.1rem;
+  color: var(--accent-dark);
+}
+
+.dashboard-grapetree .macro-step-remove {
+  float: right;
+  color: var(--secondary-dark);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.dashboard-grapetree .macro-step-remove:hover {
+  color: var(--red);
+}
+
+/* edit and delete of the user macros at the top right of the card, close to each
+   other; the labels keep clear of them */
+.dashboard-grapetree .macros-result,
+.dashboard-grapetree .notes-result {
+  position: relative;
+}
+
+.dashboard-grapetree .macros-result-tools,
+.dashboard-grapetree .notes-result-tools {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.dashboard-grapetree .macros-result-tools .macros-result-tool,
+.dashboard-grapetree .notes-result-tools .notes-result-tool {
+  margin: 0;
+  cursor: pointer;
+}
+
+.dashboard-grapetree .macros-result-tools .macros-result-tool i,
+.dashboard-grapetree .notes-result-tools .notes-result-tool i {
+  margin-left: 0;
+}
+
+.dashboard-grapetree .macros-result-user .macros-tags,
+.dashboard-grapetree .notes-result-user .notes-tags {
+  padding-right: 5.5rem;
+}
+
+/* after saving, the fields stay visible as read only */
+.dashboard-grapetree .macro-save-form-done input,
+.dashboard-grapetree .macro-save-form-done textarea {
+  color: var(--secondary-darker);
+  border-color: var(--secondary-light);
+}
+
+/* while a macro runs the panel lets the page show through: lighter veil, no blur */
+.dashboard-grapetree.show-macros .macros.macros-running::before {
+  backdrop-filter: none;
+}
+
+.dashboard-grapetree.show-macros .macros.macros-running::after {
+  opacity: 0.3;
+}
+
+/* outcome of a run below the Run button, as the feedback of the modals: the text
+   colour on the background of the card, red for the skipped steps */
+.dashboard-grapetree .macros-result-feedback {
+  margin-top: 1.3rem;
+}
+
+.dashboard-grapetree .macros-result-feedback p {
+  font-size: 1.2rem;
+  margin-bottom: 0;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  color: var(--text);
+}
+
+.dashboard-grapetree .macros-result-feedback p.macros-result-skipped {
+  color: var(--red);
+  margin-top: 0.5rem;
+}
+
+.dashboard-grapetree .button.macros-action.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* labels in use below the label field, as small buttons on a light background */
+.dashboard-grapetree .macro-label-suggestions:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0 0 0;
+}
+
+.dashboard-grapetree .macro-label-suggestions .macro-label-suggestion {
+  margin-bottom: 0;
+  padding: 0.3rem 1rem;
+  border-radius: 1.1rem;
+  background-color: var(--secondary-ultra-light);
+  font-size: 1.2rem;
+  line-height: 1.6rem;
+  transition: background-color 0.3s ease;
+}
+
+.dashboard-grapetree .macro-label-suggestions .macro-label-suggestion:hover,
+.dashboard-grapetree .macro-label-suggestions .macro-label-suggestion:focus {
+  background-color: var(--ultra-light);
+  outline: 0;
+}
+
+.dashboard-grapetree .macro-label-suggestions .macro-label-suggestion::before {
+  display: none;
+}
+
+/* a warning in the body of a macros modal (e.g. a file that is not a macros file) */
+.dashboard-grapetree .modal-contents p.macro-modal-warning {
+  color: var(--red);
+}
+
+/* where the library is kept, in the save modal */
+.dashboard-grapetree .modal-contents p.macro-storage-note,
+.dashboard-grapetree .modal-contents p.note-hint {
+  font-size: 1.2rem;
+  color: var(--secondary-dark);
+}
+
+/* several tags of a macro, side by side */
+.dashboard-grapetree .macros-tags,
+.dashboard-grapetree .notes-tags {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.8rem;
+  row-gap: 0.5rem;
+  margin-bottom: 1.6rem;
+}
+
+.dashboard-grapetree .macros-tags .macros-tag,
+.dashboard-grapetree .notes-tags .notes-tag {
+  margin-bottom: 0;
+}
+
+/* NOTES */
+
+/* Notes panel (js/notes.js): it takes the rules of the macros panel above (panel,
+   search row, import and export area, cards, tags, round tools, save modal); the
+   rules below cover only what the macros panel has not */
+
+/* without a tree only the message is shown, as in the macros panel */
+.dashboard-grapetree.tree-not-defined .notes-header {
+  display: none;
+}
+
+/* New, as Rec, in the main colour */
+.dashboard-grapetree .notes-new-trigger,
+.dashboard-grapetree .notes-new-trigger i {
+  color: var(--main);
+}
+
+/* the labels of a note tell its samples, they are not a filter */
+.dashboard-grapetree .notes-tag {
+  cursor: default;
+}
+
+/* samples of the note missing in the tree, in red as the warnings */
+.dashboard-grapetree .notes-tag.notes-tag-warning {
+  color: var(--red);
+}
+
+.dashboard-grapetree .notes-tag.notes-tag-warning::before {
+  background-color: var(--red);
+}
+
+/* a note has more round tools than a macro: the labels keep clear of them */
+.dashboard-grapetree .notes-result-user .notes-tags {
+  padding-right: 15rem;
+}
+
+/* text of a note, formatted from its Markdown */
+.dashboard-grapetree .notes-result-description > :last-child {
+  margin-bottom: 0;
+}
+
+.dashboard-grapetree .notes-result-description p,
+.dashboard-grapetree .notes-result-description ul,
+.dashboard-grapetree .notes-result-description ol {
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-grapetree .notes-result-description ul,
+.dashboard-grapetree .notes-result-description ol {
+  padding-left: 2.1rem;
+  list-style-position: outside;
+}
+
+.dashboard-grapetree .notes-result-description li {
+  margin-bottom: 0.3rem;
+}
+
+.dashboard-grapetree .notes-result-description h4,
+.dashboard-grapetree .notes-result-description h5,
+.dashboard-grapetree .notes-result-description h6 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+}
+
+.dashboard-grapetree .notes-result-description a {
+  color: var(--main);
+}
+
+/* title of a note with the copy of the note on its right, as a round tool */
+.dashboard-grapetree .notes-result-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-grapetree .notes-result-heading .notes-result-title {
+  margin-bottom: 0;
+}
+
+.dashboard-grapetree .notes-result-heading .note-copy {
+  flex-shrink: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* on the background of the card, unlike the other round tools */
+.dashboard-grapetree .notes-result-heading .note-copy i {
+  margin-left: 0;
+  background-color: transparent;
+}
+
+/* text of a note in its card: the box of the samples of the modal, with a solid
+   border and the radius of the image of the view; its scrollbar runs outside it */
+.dashboard-grapetree .modal-export-missing.note-text-box {
+  margin: 0;
+  border: 0.1rem solid var(--secondary);
+  border-radius: 0.8rem;
+  padding: 0.5rem 0.8rem;
+}
+
+/* the space below the box goes on what follows it: Scrolly counts the margins of the
+   box in the height of its bar */
+.dashboard-grapetree .note-text-box + .notes-result-image,
+.dashboard-grapetree .note-text-box + .notes-result-date {
+  margin-top: 1.3rem;
+}
+
+/* 13rem in all with the paddings and the border, as a focused textarea */
+.dashboard-grapetree .note-text-box .notes-result-description {
+  max-height: 11.8rem;
+  margin-bottom: 0;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* image of the view kept with a note, in the card and in the modal */
+.dashboard-grapetree .notes-result-image,
+.dashboard-grapetree .note-image-preview {
+  display: block;
+  width: 100%;
+  border: 0.1rem solid var(--secondary-light);
+  border-radius: 0.8rem;
+  margin-bottom: 1.3rem;
+}
+
+/* date of the last change, as the notes of the modals */
+.dashboard-grapetree .notes-result-date {
+  font-size: 1.2rem;
+  color: var(--secondary-dark);
+  margin: 0;
+}
+
+/* second row of the import and export area: the other export formats */
+.dashboard-grapetree .notes-transfer-cards + .notes-transfer-cards {
+  margin-top: 0.8rem;
+}
+
+/* samples and image in the modal of a note: a line of text, aligned with the
+   label, and right below it its link actions, well apart from Save and Cancel */
+.dashboard-grapetree .note-save-form .note-box-text {
+  font-size: 1.3rem;
+  color: var(--text);
+  margin-bottom: 0;
+  padding: 0 0.3rem;
+  word-break: break-word;
+}
+
+.dashboard-grapetree .note-save-form .note-box-actions:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.8rem;
+  row-gap: 0.5rem;
+}
+
+/* the same 2.1rem between samples, image and the buttons of the modal */
+.dashboard-grapetree .note-save-form .list-box {
+  padding-top: 0;
+  margin-bottom: 2.1rem;
+}
+
+/* preview of the samples: three lines, an ellipsis when they are more */
+.dashboard-grapetree .note-save-form .note-samples-box .note-box-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+/* the textarea of the text scrolls by itself (Scrolly): at its ends the wheel does not
+   go on scrolling the modal */
+.dashboard-grapetree .note-save-form textarea {
+  overscroll-behavior: contain;
+}
+
+/* the copy button of the samples, small, beside their label, on its line */
+.dashboard-grapetree .modal-contents .modal-export-copy.note-label-copy {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  padding: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+  vertical-align: -0.1rem;
+}
+
+/* the samples block starts 2.1rem below the hint on the text, as the other blocks */
+.dashboard-grapetree .modal-contents .note-save-form p.note-hint {
+  margin-bottom: 2.1rem;
+}
+
+/* a link action that removes something, in red as the danger buttons */
+.dashboard-grapetree .modal-form a.modal-action.modal-action-danger {
+  color: var(--red);
+}
+
+/* NODE STYLES */
+
+/* "Node shape" Settings card (js/node-shape.js) */
+/* hint shown only after a click on a cell with no node selected */
+/* hint in the accent colour with an info icon, to tell it apart from the labels */
+.dashboard-grapetree .node-styles .node-styles-hint {
+  display: none;
+  color: var(--accent-dark);
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-grapetree .node-styles.node-styles-show-hint .node-styles-hint {
+  display: block;
+}
+
+.dashboard-grapetree .node-styles-section + .node-styles-section {
+  padding-top: 0.8rem;
+}
+
+/* the sections scroll inside a box of limited height (Scrolly of the legend); no
+   overflow hidden: the scrollbar sits outside the box, on the edge of the card */
+.dashboard-grapetree .node-styles-scroll {
+  position: relative;
+  max-height: 30rem;
+}
+
+/* three columns of square cells, separated by light lines inside the grid only */
+.dashboard-grapetree .node-styles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.dashboard-grapetree .node-styles-cell {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--secondary-dark);
+  cursor: pointer;
+  border-right: 0.1rem solid var(--secondary-light);
+  border-bottom: 0.1rem solid var(--secondary-light);
+}
+
+.dashboard-grapetree .node-styles-cell:nth-child(3n) {
+  border-right: none;
+}
+
+/* cells of the last row, complete or not */
+.dashboard-grapetree .node-styles-cell:nth-child(3n+1):nth-last-child(-n+3),
+.dashboard-grapetree .node-styles-cell:nth-child(3n+1):nth-last-child(-n+3) ~ .node-styles-cell {
+  border-bottom: none;
+}
+
+/* hover, and the value shared by all the selected nodes */
+.dashboard-grapetree .node-styles-cell:hover,
+.dashboard-grapetree .node-styles-cell.active {
+  color: var(--main);
+}
+
+.dashboard-grapetree .node-styles-cell:hover {
+  background-color: var(--secondary-ultra-light);
+}
+
+/* the cells are not-draggable, which would give them the default cursor */
+.dashboard-grapetree .node-styles-cell.not-draggable,
+.dashboard-grapetree .node-styles-cell .not-draggable {
+  cursor: pointer;
+}
+
+/* no selection: a click shows the hint, the select buttons still work */
+.dashboard-grapetree .node-styles-empty .node-styles-cell:hover {
+  color: var(--secondary-dark);
+  background-color: transparent;
+}
+
+.dashboard-grapetree .node-styles-empty .node-styles-cell > svg,
+.dashboard-grapetree .node-styles-empty .node-styles-cell > span {
+  opacity: 0.4;
+}
+
+/* drawings outlined in the text colour; clicks go to the cell */
+.dashboard-grapetree .node-styles-thumbnail {
+  width: 3.4rem;
+  height: 3.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* shapes and border decorations with a light fill, light blue on hover and when active */
+.dashboard-grapetree .node-styles-thumbnail .thumbnail-fill {
+  fill: var(--secondary-light);
+}
+
+.dashboard-grapetree .node-styles-cell:hover .thumbnail-fill,
+.dashboard-grapetree .node-styles-cell.active .thumbnail-fill {
+  fill: var(--ultra-light);
+}
+
+.dashboard-grapetree .node-styles-empty .node-styles-cell:hover .thumbnail-fill {
+  fill: var(--secondary-light);
+}
+
+.dashboard-grapetree .node-styles-thumbnail .thumbnail-dashed {
+  stroke-dasharray: 3 2;
+}
+
+.dashboard-grapetree .node-styles-thumbnail .thumbnail-dotted {
+  stroke-dasharray: 0.01 2.4;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+/* select the nodes with the style of the cell: the round button of the card tools,
+   smaller to fit the cell; only the icon takes the main colour on hover */
+.dashboard-grapetree .node-styles-select,
+.dashboard-grapetree .node-styles-select:hover {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.dashboard-grapetree .node-styles-select i {
+  display: inline-block;
+  border: 0.1rem solid var(--secondary);
+  border-radius: 50%;
+  background-color: var(--surface);
+  color: var(--secondary-darker);
+  font-size: 0.9rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  line-height: 1.8rem;
+  text-align: center;
+  -webkit-transition: color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.dashboard-grapetree .node-styles-select:hover i,
+.dashboard-grapetree .node-styles-select.active i {
+  color: var(--main);
+}
+
+/* no node has this style */
+.dashboard-grapetree .node-styles-select.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* reset of every node, at the bottom of the card; off when no style is applied */
+.dashboard-grapetree .node-styles .node-styles-reset {
+  padding-top: 1.3rem;
+}
+
+.dashboard-grapetree .node-styles .node-styles-reset .not-draggable {
+  cursor: pointer;
+}
+
+.dashboard-grapetree .node-styles .node-styles-reset.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 /* DRAGGABLE */
 
-.dashboard-grapetree .draggable {
+/* the cards are taken by their handle, a grip in the tools of the header,
+   before the help: same size as the other tools, --main on hover */
+.dashboard-grapetree .card-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  color: var(--secondary-dark);
   cursor: grab;
+  -webkit-transition: color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.dashboard-grapetree .card-drag-handle:hover,
+.dashboard-grapetree .dragging .card-drag-handle {
+  color: var(--main);
+}
+
+.dashboard-grapetree .dragging .card-drag-handle {
+  cursor: grabbing;
+}
+
+/* the cards and the macros and notes panels are also taken by the empty space
+   of their header, the title outside its text (gtiz_drag.isHeaderSpace): the
+   open hand there, the text keeps its cursor (the click one on the legend and
+   assistant titles, which open and close the card), the closed hand while dragged */
+.dashboard-grapetree .card.draggable > .card-title,
+.dashboard-grapetree .macros-contents > .panel-title,
+.dashboard-grapetree .notes-contents > .panel-title {
+  cursor: grab;
+}
+
+.dashboard-grapetree .card.draggable > .card-title > *,
+.dashboard-grapetree .macros-contents > .panel-title > *,
+.dashboard-grapetree .notes-contents > .panel-title > * {
+  cursor: auto;
+}
+
+.dashboard-grapetree .card-legend.draggable > .card-title > *,
+.dashboard-grapetree .card-assistant.draggable > .card-title > * {
+  cursor: pointer;
+}
+
+.dashboard-grapetree .card.dragging > .card-title,
+.dashboard-grapetree .card.dragging > .card-title > * {
+  cursor: grabbing;
+}
+
+/* the title of the macros and notes panels (absolute, as wide as its text)
+   reaches the tools of the header, so the empty space before them takes the
+   panel: the handle starts 7.3rem from the right edge */
+.dashboard-grapetree .macros-contents > .panel-title,
+.dashboard-grapetree .notes-contents > .panel-title {
+  right: 8rem;
+}
+
+/* a card detached from its column (gtiz_drag.makeDetachable, e.g. the
+   assistant) floats over the main area */
+.dashboard-grapetree .main > .card.dragging,
+.dashboard-grapetree .main > .card.dragged {
+  position: absolute;
+  z-index: 1000;
+}
+
+/* its column, while the card is over it to dock again: a drop area over the
+   whole column, above the legend card (which meanwhile may take all the height),
+   as the drop area of the settings column with its icon in the middle; the same
+   margins as the cards of the column (1rem on the right and at the bottom) */
+.dashboard-grapetree .legend > .detach-drop-area {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  bottom: 1rem;
+  left: 0;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2.4rem;
+  border: dashed 0.1rem var(--main);
+  background-color: var(--secondary-ultra-light);
+  opacity: 0.85;
+  color: var(--main);
+  font-size: 1.5rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.dashboard-grapetree .legend.drag-over > .detach-drop-area {
+  display: flex;
+}
+
+/* a card detached and open: its background slightly transparent over the
+   components below */
+.dashboard-grapetree .card.expanded.dragging,
+.dashboard-grapetree .card.expanded.dragged {
+  background-color: color-mix(in srgb, var(--surface) 95%, transparent);
 }
 
 .dashboard-grapetree .not-draggable {
@@ -2235,4 +3819,73 @@
 .dashboard-grapetree .settings.settings-on.target.drag-over .target-area,
 .dashboard-grapetree .settings.settings-on.target.target-empty .target-area {
   display: block;
+}
+
+/*
+*
+* DARK MODE (js/theme.js, `data-theme="dark"` on the html node): the colours
+* come from the dark variables of the theme (`dark_vars` in app.json); here only
+* what does not follow them by itself
+*
+*/
+
+/* the page, the header and the space around the cards take the page colour
+   (transparent in the light mode, the white of the browser) */
+:root[data-theme="dark"],
+:root[data-theme="dark"] body {
+  background-color: var(--page);
+}
+
+:root[data-theme="dark"] code {
+  background-color: var(--secondary-ultra-light);
+  border-color: var(--secondary-light);
+}
+
+/* metadata table: the colours of the ag-grid theme (js/ag-grid/ag-theme-genpat.css) */
+:root[data-theme="dark"] .ag-theme-genpat {
+  --ag-background-color: var(--surface);
+  --ag-header-background-color: var(--surface);
+  --ag-subheader-background-color: var(--surface);
+  --ag-odd-row-background-color: var(--secondary-ultra-light);
+  --ag-tooltip-background-color: var(--secondary-light);
+  --ag-control-panel-background-color: var(--secondary-light);
+  --ag-disabled-foreground-color: rgba(213, 222, 234, 0.5);
+  --ag-chip-background-color: rgba(213, 222, 234, 0.07);
+  background-color: var(--surface);
+}
+
+/* map: the same tiles, darkened; controls, popups and attribution on the cards colours */
+:root[data-theme="dark"] .leaflet-container {
+  background-color: var(--surface);
+}
+
+:root[data-theme="dark"] .leaflet-tile-pane {
+  -webkit-filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}
+
+:root[data-theme="dark"] .leaflet-bar a,
+:root[data-theme="dark"] .leaflet-popup-content-wrapper,
+:root[data-theme="dark"] .leaflet-popup-tip {
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .leaflet-control-attribution {
+  background-color: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--text);
+}
+
+/* scale of the tree on screen (the exported one is drawn apart, always black) */
+:root[data-theme="dark"] .tree-scale-div line {
+  stroke: var(--text);
+}
+
+:root[data-theme="dark"] .tree-scale-div text {
+  fill: var(--text);
+}
+
+/* theme trigger of the top bar: hidden when the theme has no dark mode */
+.tool-theme.hidden {
+  display: none;
 }

@@ -10,6 +10,12 @@ gtiz_zooms.category = 'category';
 gtiz_zooms.soi = 'sample of interest';
 gtiz_zooms.thresholds_params = [];
 gtiz_zooms.zooms_prefix = 'Reportree';
+/*
+*
+* Name of the zooms list inside a SPREAD package, at the package root
+*
+*/
+gtiz_zooms.package_zooms_list = 'zooms.txt';
 gtiz_zooms.thresholds = [];
 gtiz_zooms.msts = [];
 
@@ -157,6 +163,7 @@ gtiz_zooms.context_menu = [{
 }, {
   type : 'abutton',
   id : 'zooms-menu-load-zoomed-tree',
+  macro : false,
   label : () => {
     return gtiz_locales.current.load_cluster;
   },
@@ -167,10 +174,15 @@ gtiz_zooms.context_menu = [{
 }, {
   type : 'abutton',
   id : 'zooms-menu-open-zoomed-tree',
+  macro : false,
   label : () => {
     return gtiz_locales.current.load_cluster_in_new_tab;
   },
   icon : 'tabler-arrow-up-right',
+  // a new tab loads from url: not available for zooms held by a SPREAD package
+  visible : () => {
+    return !gtiz_file_handler.package;
+  },
   function : () => {
     gtiz_zooms.loadZoomedTreeInNewTab();
   }
@@ -259,6 +271,7 @@ gtiz_zooms.filtered_context_menu = [{
 }, {
   type : 'abutton',
   id : 'zooms-menu-load-zoomed-tree',
+  macro : false,
   label : () => {
     return gtiz_locales.current.load_cluster;
   },
@@ -269,10 +282,15 @@ gtiz_zooms.filtered_context_menu = [{
 }, {
   type : 'abutton',
   id : 'zooms-menu-open-zoomed-tree',
+  macro : false,
   label : () => {
     return gtiz_locales.current.load_cluster_in_new_tab;
   },
   icon : 'tabler-arrow-up-right',
+  // a new tab loads from url: not available for zooms held by a SPREAD package
+  visible : () => {
+    return !gtiz_file_handler.package;
+  },
   function : () => {
     gtiz_zooms.loadZoomedTreeInNewTab(true);
   }
@@ -314,6 +332,8 @@ gtiz_zooms.setBackButton = function() {
         gtiz_layout.uiLoadingManager(l_components, l_action);
         let text = JSON.stringify(tree);
         let json = true;
+        // back to the same session: the notes written in the zoom stay
+        gtiz_notes.keep_session = true;
         gtiz_file_handler.loadTreeText(text, json);
         gtiz_zooms.setBackButton();
         gtiz_tree.full_tree_backup = {};
@@ -321,6 +341,62 @@ gtiz_zooms.setBackButton = function() {
     });
     container.prepend(button);
   }
+}
+
+/**
+ * Get the metadata column holding the categories used to generate clusters
+ * 
+ * A localized metadata file can translate the column header, so we resolve the
+ * name declared for the active language against the loaded metadata. A column
+ * requested through the `zooms=`/`zooms_list=` parameters wins when present; when
+ * it is the canonical `category` name and the file is translated, it is resolved
+ * too, so a link written for the default file keeps working on a variant.
+ * 
+ * @param {String} requested Column name requested by url, optional
+ * @returns String of the column name
+ * 
+ */
+gtiz_zooms.getCategoryColumnName = function(requested) {
+  let headers = gtiz_tree.tree && gtiz_tree.tree.metadata_info ? Object.keys(gtiz_tree.tree.metadata_info) : [];
+  if (requested && (headers.length === 0 || headers.includes(requested))) {
+    return requested;
+  }
+  if (requested && requested !== 'category') {
+    // an explicit custom name missing from the headers is kept, so the problem is reported as before
+    return requested;
+  }
+  return gtiz_locales.getTechnicalColumnName('category', headers);
+}
+
+/**
+ * Get the value marking the samples of interest in the category column
+ * 
+ * The marker is compared by value, so a localized file may translate it only when
+ * declared in `app.json` under the `values` entry of the `category` column. It
+ * must be called after `gtiz_zooms.category` is set. A value requested by url
+ * follows the same rules as `getCategoryColumnName()`.
+ * 
+ * @param {String} requested Value requested by url, optional
+ * @returns String of the value
+ * 
+ */
+gtiz_zooms.getSoiValue = function(requested) {
+  let metadata = gtiz_tree.tree && gtiz_tree.tree.metadata ? gtiz_tree.tree.metadata : {};
+  let column = gtiz_zooms.category;
+  let values = [];
+  Object.keys(metadata).forEach(id => {
+    let value = metadata[id][column];
+    if (value !== undefined && value !== '' && !values.includes(value)) {
+      values.push(value);
+    }
+  });
+  if (requested && (values.length === 0 || values.includes(requested))) {
+    return requested;
+  }
+  if (requested && requested !== 'sample of interest') {
+    return requested;
+  }
+  return gtiz_locales.getTechnicalValue('category', 'sample of interest', values);
 }
 
 gtiz_zooms.loadZoomedTreeInNewTab = function(filtered) {
@@ -346,6 +422,12 @@ gtiz_zooms.loadZoomedTreeInNewTab = function(filtered) {
   if (geo) {
     url += '&' + geo;
   }
+  // keep the language explicitly requested by url, so the new tab shows the same
+  // ui language and, when the feature is on, looks for its own localized metadata
+  let lang = gtiz_locales.getUrlLanguageCode();
+  if (lang) {
+    url += '&lang=' + lang;
+  }
   
   let current_settings = gtiz_tree.getCompleteGrapeTreeSettings();
   current_settings = JSON.stringify(current_settings)
@@ -353,8 +435,10 @@ gtiz_zooms.loadZoomedTreeInNewTab = function(filtered) {
   // In the opening window
   let newWindow = window.open(url, '_blank');
   
+  // the child tab needs to know the parent worked on translated metadata, to warn when its own variant is missing
+  let localized = gtiz_file_handler.metadata_localized;
   newWindow.onload = function() {
-    newWindow.postMessage({ settings : {tree_backup : current_settings, apply : use_settings}}, domain);
+    newWindow.postMessage({ settings : {tree_backup : current_settings, apply : use_settings, localized : localized}}, domain);
   };
 }
 
@@ -436,6 +520,8 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
 					data['layout_algorithm'] = layout_select ? layout_select.value : '';
 				}			
         
+        // a zoom of the same session: the notes stay
+        gtiz_notes.keep_session = true;
         gtiz_tree.loadMSTree(data, is_valid);
 				
         if (gtiz_tree.tree) {
@@ -443,7 +529,9 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
           gtiz_zooms.setBackButton();
 
           if (metadata) {
-						gtiz_file_handler.getData(metadata).then((obj) => {
+            // read before the zoom metadata replace the state of the full tree
+            let full_tree_localized = gtiz_file_handler.metadata_localized;
+						gtiz_file_handler.getMetadataText(metadata).then((obj) => {
 							if (obj.error) {
 								let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
 								let html = gtiz_locales.current.missing_net_tsv_alert;
@@ -473,7 +561,11 @@ gtiz_zooms.loadZoomedTree = function(filtered) {
                 gtiz_tree.applySettings(gtiz_tree.full_tree_backup, gtiz_zooms.apply_settings, false, 'current');
                 gtiz_map.init();
 							} else {
-								gtiz_file_handler.loadMetadataText(obj.text);
+								gtiz_file_handler.loadMetadataText(obj.text, obj);
+                // the full tree was translated and this zoom is not: the settings carried over may not match
+                if (full_tree_localized && !obj.localized) {
+                  gtiz_file_handler.localizedZoomMissingNotice(obj);
+                }
                 gtiz_tree.applySettings(gtiz_tree.full_tree_backup, gtiz_zooms.apply_settings, true, 'current');
                 gtiz_map.init();
 							}
@@ -530,7 +622,10 @@ gtiz_zooms.selectInvolvedNodes = function() {
     codes = [selected];
   }
   if (codes.length > 0) {
-    gtiz_tree.tree.selectNodesByIds(codes);
+    // the cluster replaces the previous selection, so only the nodes the view moves to are red
+    gtiz_tree.tree.replaceSelectionByIds(codes);
+    // on large trees the selected nodes are a few pixels wide: the view moves to them
+    gtiz_tree.tree.zoomToNodes(codes);
   } else {
     let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
     let contents = [];
@@ -610,7 +705,8 @@ gtiz_zooms.changeCategoryOption = function(value, filtered) {
   let select = document.querySelector(selector);
   let box = select.parentNode;
   let label = box.querySelector('.form-label');
-  label.innerHTML = gtiz_zooms.getZoomedTreeOptionsLabel();
+  // the label follows the zoom type of the same form (general menu or notifier)
+  label.innerHTML = gtiz_zooms.getZoomedTreeOptionsLabel(filtered);
   select.innerHTML = '';
   let trees = filtered ? gtiz_zooms.filtered_zooms[type][value] : gtiz_zooms.zooms[type][value];
   trees.forEach(tree => {
@@ -674,7 +770,8 @@ gtiz_zooms.changeZoomTypeOption = function(value, filtered) {
   let select = document.querySelector(selector);
   let box = select.parentNode;
   let label = box.querySelector('.form-label');
-  label.innerHTML = gtiz_zooms.getCategoryOptionsLabel();
+  // the label follows the zoom type of the same form (general menu or notifier)
+  label.innerHTML = gtiz_zooms.getCategoryOptionsLabel(filtered);
   select.innerHTML = '';
   let categories = filtered ? Object.keys(gtiz_zooms.filtered_zooms[type]) : Object.keys(gtiz_zooms.zooms[type]);
   categories.forEach(tree => {
@@ -730,6 +827,10 @@ gtiz_zooms.getFilteredZoomsMenu = function() {
   form.setAttribute('class', 'card-form notfier-form');
   let cfg = gtiz_zooms.filtered_context_menu;
   cfg.forEach(item => {
+    // skip items not available in the current conditions, e.g. load in new tab
+    if (!gtiz_utils.isMenuItemVisible(item)) {
+      return;
+    }
     if (item.type == 'toggle') {
       let container = document.createElement('div');
       container.setAttribute('class', 'tools');
@@ -971,8 +1072,23 @@ gtiz_zooms.closeSelectionNotifier = function() {
   }
 }
 
+/**
+ * Close the general "Zooms available" notifier, if open
+ *
+ * @returns {undefined}
+ */
+gtiz_zooms.closeZoomsAvailableNotifier = function() {
+  let component = document.querySelector('.tree-container');
+  let contents = component ? component.querySelector('#zooms-found-notifier') : null;
+  if (contents) {
+    gtiz_modal.closeComponentNotifier(component, null, contents);
+  }
+}
+
 gtiz_zooms.showSelectionNotifier = function() {
   if (gtiz_zooms.selection_alerts == 'show') {
+    // the selection notifier is more specific: the general one is no longer needed
+    gtiz_zooms.closeZoomsAvailableNotifier();
     let component = 'tree';
     let title = '<i class="tabler tabler-sun"></i> ' + gtiz_locales.current.zooms_available_for_selected_nodes;
     let id = 'selection-message-notifier';
@@ -1011,12 +1127,7 @@ gtiz_zooms.showZoomsAvailableNotifier = function() {
   link.addEventListener('click', function (e) {
     let trigger = document.querySelector('[data-menu-type="zooms"]');
     gtiz_context.showMenu('zooms', 'tree', trigger);
-    let component = document.querySelector('.tree-container');
-    let notifier = component.querySelector('.component-notifier');
-    let contents = notifier ? notifier.querySelector('#'+ id) : undefined;
-    if (contents) {
-      gtiz_modal.closeComponentNotifier(component, notifier,contents);
-    }
+    gtiz_zooms.closeZoomsAvailableNotifier();
   });
   actions.push(link);
   let feedback = '<p>' + gtiz_locales.current.zooms_found_info + '</p>';
@@ -1025,9 +1136,15 @@ gtiz_zooms.showZoomsAvailableNotifier = function() {
 }
 
 /**
- * Check if a zoom exist for selected legend item
- * 
- * @param {Object} nodes Selected category
+ * Check if a zoom exists for the selected nodes
+ *
+ * `gtiz_zooms.filtered_zooms` is rebuilt from scratch on every call, so it holds
+ * only the zooms of the current selection: a threshold is added only when at
+ * least one selected node belongs to one of its clusters with a zoom. The
+ * selection notifier is shown when the current selection has zooms.
+ *
+ * @param {Object} nodes Selected nodes as {node id: [sample ids]}, the current selection when missing
+ * @returns {undefined}
  */
 gtiz_zooms.checkZooms = function(nodes) {
   if (gtiz_utils.isObjectNotEmpty(gtiz_zooms.zooms)) {
@@ -1035,45 +1152,33 @@ gtiz_zooms.checkZooms = function(nodes) {
       nodes = gtiz_tree.tree.getAllSelectedNodesIDs();
     }
     let ids = Object.values(nodes).flat();
-    let types = Object.keys(gtiz_zooms.zooms);
-    let msts = [];
-    let samples = [];
-    types.forEach(type => {
-      switch (type) {
-        case 'cluster':
-          msts = Object.keys(gtiz_zooms.zooms[type]);
-          break;
-        case 'closest':
-          samples = Object.keys(gtiz_zooms.zooms[type]);
-          break;
-      }
-    });
+    let msts = gtiz_zooms.zooms['cluster'] ? Object.keys(gtiz_zooms.zooms['cluster']) : [];
+    // the previous selections must not leak into the zooms of the current one
+    gtiz_zooms.filtered_zooms = {};
     if (ids.length > 0) {
       ids.forEach(id => {
-        if (gtiz_zooms.zooms['closest']) {
-          if (gtiz_zooms.zooms['closest'][id]) {
-            if (!gtiz_zooms.filtered_zooms['closest']) {
-              gtiz_zooms.filtered_zooms['closest'] = {};
-            }
-            gtiz_zooms.filtered_zooms['closest'][id] = gtiz_zooms.zooms['closest'][id];
+        if (gtiz_zooms.zooms['closest'] && gtiz_zooms.zooms['closest'][id]) {
+          if (!gtiz_zooms.filtered_zooms['closest']) {
+            gtiz_zooms.filtered_zooms['closest'] = {};
           }
+          gtiz_zooms.filtered_zooms['closest'][id] = gtiz_zooms.zooms['closest'][id];
         }
-        if (gtiz_zooms.zooms['cluster']) {
-          msts.forEach(mst => {
-            if (gtiz_tree.tree.metadata[id] && gtiz_tree.tree.metadata[id][mst]) {
-              let cluster = gtiz_tree.tree.metadata[id][mst];
-              if (!gtiz_zooms.filtered_zooms['cluster']) {
-                gtiz_zooms.filtered_zooms['cluster'] = {};
-              }
-              if (!gtiz_zooms.filtered_zooms['cluster'][mst]) {
-                gtiz_zooms.filtered_zooms['cluster'][mst] = [];
-              }
-              if (gtiz_zooms.zooms['cluster'][mst].includes(cluster) && !gtiz_zooms.filtered_zooms['cluster'][mst].includes(cluster)) {
-                gtiz_zooms.filtered_zooms['cluster'][mst].push(cluster);
-              }
-            }
-          });
-        }
+        msts.forEach(mst => {
+          let cluster = gtiz_tree.tree.metadata[id] ? gtiz_tree.tree.metadata[id][mst] : undefined;
+          // only clusters with a zoom: a threshold without them would leave an empty list
+          if (!cluster || !gtiz_zooms.zooms['cluster'][mst].includes(cluster)) {
+            return;
+          }
+          if (!gtiz_zooms.filtered_zooms['cluster']) {
+            gtiz_zooms.filtered_zooms['cluster'] = {};
+          }
+          if (!gtiz_zooms.filtered_zooms['cluster'][mst]) {
+            gtiz_zooms.filtered_zooms['cluster'][mst] = [];
+          }
+          if (!gtiz_zooms.filtered_zooms['cluster'][mst].includes(cluster)) {
+            gtiz_zooms.filtered_zooms['cluster'][mst].push(cluster);
+          }
+        });
       });
       if (gtiz_utils.isObjectNotEmpty(gtiz_zooms.filtered_zooms)) {
         gtiz_zooms.closeSelectionNotifier();
@@ -1201,8 +1306,154 @@ gtiz_zooms.buildZoomsObjects = function() {
 
 }
 
+/**
+ * Get the names of all the zooms available for the current tree
+ *
+ * A zoom name is `<threshold>_<cluster>` for clusters and `<sample>_<closest>`
+ * for closest samples, as used to build the zoom folder and file names.
+ *
+ * @returns {Array} Array of zoom names
+ */
+gtiz_zooms.getZoomsNames = function() {
+  let names = [];
+  Object.keys(gtiz_zooms.zooms).forEach(type => {
+    let groups = gtiz_zooms.zooms[type];
+    Object.keys(groups).forEach(group => {
+      groups[group].forEach(item => {
+        names.push(group + '_' + item);
+      });
+    });
+  });
+  return names;
+}
+
+/**
+ * Remove every zoom in memory and the related notifier
+ *
+ * Used when the loaded tree has no reachable zooms, so that the zooms of a
+ * previously loaded dataset are not offered for the current one.
+ *
+ * @returns {undefined}
+ */
+gtiz_zooms.resetZooms = function() {
+  gtiz_zooms.zooms = {};
+  gtiz_zooms.filtered_zooms = {};
+  gtiz_zooms.closeZoomsAvailableNotifier();
+}
+
+/**
+ * Load the zooms listed in a zooms.txt file
+ *
+ * Each line is `<prefix>_<zoom>`, where `<zoom>` is `<threshold>_<cluster>` or
+ * `<sample>_<closest>`. It must be called after `gtiz_zooms.category`,
+ * `gtiz_zooms.soi` and `gtiz_zooms.zooms_prefix` are set.
+ *
+ * @param {String} path Path of the zooms list, on the network or inside a SPREAD package
+ * @returns {undefined}
+ */
+gtiz_zooms.loadZoomsList = function(path) {
+  gtiz_file_handler.getData(path).then((obj) => {
+    if (obj.error) {
+      let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
+      let html = gtiz_locales.current.missing_net_zooms_alert;
+      if (obj.status) {
+        if (obj.status == 403) {
+          title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
+          let protocol = window.location.protocol;
+          let hostname = window.location.host;
+          let url = protocol + '//' + hostname;
+          html = gtiz_locales.current.forbidden_net_tree_alert.replace('{0}', url).replace('{1}', url);
+        }
+        if (obj.status == 404) {
+          title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
+          html = gtiz_locales.current.not_found_net_zooms_alert;
+        }
+        let contents = [];
+        let content = document.createElement('p');
+        content.innerHTML = html;
+        contents.push(content);
+        let feedback = '<p>' + obj.text + '</p>';
+        let f_type = 'info';
+        gtiz_modal.buildNotifier(title, contents, feedback, f_type);
+      }
+    } else {
+      let contents = obj.text;
+      // If zooms.txt is empty, we are considering it not an error.
+      if (contents == '') {
+        return;
+      }
+      let prefix = gtiz_zooms.zooms_prefix + '_';
+      let list = contents.split(/\r?\n/); // \n or \r\n if generated by windows
+      // Remove empty string from list
+      list = list.filter(element => element !== "");
+      // Remove prefix from list
+      list = list.map(element => element.replace(prefix, ''));
+      let metadata_info = gtiz_tree.tree.metadata_info;
+      let metadata = gtiz_tree.tree.metadata;
+      let samples = Object.values(metadata).filter(item => item[gtiz_zooms.category] == gtiz_zooms.soi).map(item => item[gtiz_zooms.cfg.metadata_sample_name]);
+      let extracted = list.map(element => {
+        let parts = element.split('_');
+        let part = parts[0];
+        if (metadata_info[part] && part.includes(gtiz_zooms.cfg.metadata_prefix_MST)) {
+          return {
+            type: 'cluster',
+            threshold: part,
+            cluster: element.replace(part + '_', '')
+          };
+        } else {
+          for (let sample of samples) {
+            if (element.includes(sample)) {
+              return {
+                type: 'closest',
+                sample: sample,
+                closest: element.replace(sample + '_', '')
+              };
+            }
+          }
+        }
+        return null; // Return null or some default value if no conditions are met
+      });
+      let aggregated = extracted.reduce((acc, item) => {
+        // lines matching neither a threshold nor a sample of interest are skipped
+        if (!item) {
+          return acc;
+        }
+        if (item.type == 'cluster') {
+          if (!acc[item.type]) {
+            acc[item.type] = {};
+          }
+          if (!acc[item.type][item.threshold]) {
+            acc[item.type][item.threshold] = [];
+          }
+          acc[item.type][item.threshold].push(item.cluster);
+        } else if (item.type == 'closest') {
+          if (!acc[item.type]) {
+            acc[item.type] = {};
+          }
+          if (!acc[item.type][item.sample]) {
+            acc[item.type][item.sample] = [];
+          }
+          acc[item.type][item.sample].push(item.closest);
+        }
+        return acc; // This is crucial, as it passes the accumulator to the next iteration
+      }, {}); // Initial value of the accumulator
+      // no line matches the current tree (e.g. a different tree loaded on a page opened
+      // with zooms_list): no zooms, without the clusters warning of setAvailableZooms
+      if (!gtiz_utils.isObjectNotEmpty(aggregated)) {
+        console.log("(ZOOMS) no zoom of '" + path + "' matches the current tree");
+        gtiz_zooms.resetZooms();
+        return;
+      }
+      gtiz_zooms.zooms = aggregated;
+      gtiz_zooms.setAvailableZooms();
+    }
+  }).catch((err) => {
+    console.log(err);
+  });
+}
+
 gtiz_zooms.init = function() {
-  
+
   // reset actions
   gtiz_zooms.tree_node.classList.remove('zoom-available');
 
@@ -1213,20 +1464,33 @@ gtiz_zooms.init = function() {
     gtiz_zooms.cfg.metadata_sample_name = 'ID';
   }
 
-  // get and set prefix, default `Reportree`
-  if ('zooms_prefix' in gtiz_file_handler.params) {
-    gtiz_zooms.zooms_prefix = gtiz_file_handler.params.zooms_prefix;
-  } else {
-    if ('tree' in gtiz_file_handler.params) {
-      let name = gtiz_file_handler.params.tree.split('/').pop();
-      let prefix = name.split('.')[0];
-      if (prefix) {
-        gtiz_zooms.zooms_prefix = prefix;
+  // get and set prefix, default `Reportree`. A SPREAD package keeps the prefix
+  // restored from its json, the url may belong to a different dataset; a session
+  // json opened by url keeps it too, unless the url sets `zooms_prefix`
+  if (!gtiz_file_handler.package) {
+    if ('zooms_prefix' in gtiz_file_handler.params) {
+      gtiz_zooms.zooms_prefix = gtiz_file_handler.params.zooms_prefix;
+    } else {
+      if ('tree' in gtiz_file_handler.params && !gtiz_file_handler.url_session) {
+        let name = gtiz_file_handler.params.tree.split('/').pop();
+        let prefix = name.split('.')[0];
+        if (prefix) {
+          gtiz_zooms.zooms_prefix = prefix;
+        }
       }
     }
   }
 
-  if ('zooms' in gtiz_file_handler.params) {
+  if (gtiz_file_handler.package) {
+    // zooms of a SPREAD package are listed in its own zooms.txt; category and
+    // sample of interest are the ones restored from the package json
+    if (gtiz_file_handler.package.files[gtiz_zooms.package_zooms_list]) {
+      let path = gtiz_file_handler.package_base_path + '/' + gtiz_zooms.package_zooms_list;
+      gtiz_zooms.loadZoomsList(path);
+    } else {
+      gtiz_zooms.resetZooms();
+    }
+  } else if ('zooms' in gtiz_file_handler.params) {
     let zooms = gtiz_file_handler.params.zooms;
     let parts = zooms.includes('@') ? zooms.split('@') : undefined;
     let categories = parts ? parts[0].split(',') : undefined;
@@ -1234,14 +1498,15 @@ gtiz_zooms.init = function() {
     
     if (categories) {
       // metadata column to take into consideration
-      gtiz_zooms.category = categories[0] ? categories[0] : 'category';
+      gtiz_zooms.category = gtiz_zooms.getCategoryColumnName(categories[0]);
       // sample of interest used to generate clusters
-      gtiz_zooms.soi = categories[1] ? categories[1] : 'sample of interest';
-    } else {
+      gtiz_zooms.soi = gtiz_zooms.getSoiValue(categories[1]);
+    } else if (!gtiz_file_handler.url_session) {
+      // a session json opened by url keeps the column and the sample of interest it saved
       // metadata column to take into consideration
-      gtiz_zooms.category = 'category';
+      gtiz_zooms.category = gtiz_zooms.getCategoryColumnName();
       // sample of interest used to generate clusters
-      gtiz_zooms.soi = 'sample of interest';
+      gtiz_zooms.soi = gtiz_zooms.getSoiValue();
     }
 
     if (thresholds && thresholds.length > 0) {
@@ -1263,103 +1528,21 @@ gtiz_zooms.init = function() {
 
       if (categories) {
         // metadata column to take into consideration
-        gtiz_zooms.category = categories[0] ? categories[0] : 'category';
+        gtiz_zooms.category = gtiz_zooms.getCategoryColumnName(categories[0]);
         // sample of interest used to generate clusters
-        gtiz_zooms.soi = categories[1] ? categories[1] : 'sample of interest';
-      } else {
+        gtiz_zooms.soi = gtiz_zooms.getSoiValue(categories[1]);
+      } else if (!gtiz_file_handler.url_session) {
+        // a session json opened by url keeps the column and the sample of interest it saved
         // metadata column to take into consideration
-        gtiz_zooms.category = 'category';
+        gtiz_zooms.category = gtiz_zooms.getCategoryColumnName();
         // sample of interest used to generate clusters
-        gtiz_zooms.soi = 'sample of interest';
+        gtiz_zooms.soi = gtiz_zooms.getSoiValue();
       }
 
-      gtiz_file_handler.getData(path).then((obj) => {
-        if (obj.error) {
-          let title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops;
-          let html = gtiz_locales.current.missing_net_zooms_alert;
-          if (obj.status) {
-            if (obj.status == 403) {
-              title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_forbidden_http;
-              let protocol = window.location.protocol;
-              let hostname = window.location.host;
-              let url = protocol + '//' + hostname;
-              html = gtiz_locales.current.forbidden_net_tree_alert.replace('{0}', url).replace('{1}', url);
-            }
-            if (obj.status == 404) {
-              title = '<i class="tabler tabler-alert-triangle"></i> ' + gtiz_locales.current.oops_not_found_http;
-              html = gtiz_locales.current.not_found_net_zooms_alert;
-            }
-            let contents = [];
-            let content = document.createElement('p');
-            content.innerHTML = html;
-            contents.push(content);
-            let feedback = '<p>' + obj.text + '</p>';
-            let f_type = 'info';
-            gtiz_modal.buildNotifier(title, contents, feedback, f_type);
-          }
-        } else {
-          let contents = obj.text;
-          // If zooms.txt is empty, we are considering it not an error.
-          if (contents == '') {
-            return;
-          }
-          let prefix = gtiz_zooms.zooms_prefix + '_';
-          let list = contents.split(/\r?\n/); // \n or \r\n if generated by windows
-          // Remove empty string from list
-          list = list.filter(element => element !== "");
-          // Remove prefix from list
-          list = list.map(element => element.replace(prefix, ''));
-          let metadata_info = gtiz_tree.tree.metadata_info;
-          let metadata = gtiz_tree.tree.metadata;
-          let samples = Object.values(metadata).filter(item => item[gtiz_zooms.category] == gtiz_zooms.soi).map(item => item[gtiz_zooms.cfg.metadata_sample_name]);
-          let extracted = list.map(element => {
-            let parts = element.split('_');
-            let part = parts[0];
-            if (metadata_info[part] && part.includes(gtiz_zooms.cfg.metadata_prefix_MST)) {
-              return {
-                type: 'cluster',
-                threshold: part,
-                cluster: element.replace(part + '_', '')
-              };
-            } else {
-              for (let sample of samples) {
-                if (element.includes(sample)) {
-                  return {
-                    type: 'closest',
-                    sample: sample,
-                    closest: element.replace(sample + '_', '')
-                  };
-                }
-              }
-            }
-            return null; // Return null or some default value if no conditions are met
-          });
-          let aggregated = extracted.reduce((acc, item) => {
-            if (item.type == 'cluster') {
-              if (!acc[item.type]) {
-                acc[item.type] = {};
-              }
-              if (!acc[item.type][item.threshold]) {
-                acc[item.type][item.threshold] = [];
-              }
-              acc[item.type][item.threshold].push(item.cluster);
-            } else if (item.type == 'closest') {
-              if (!acc[item.type]) {
-                acc[item.type] = {};
-              }
-              if (!acc[item.type][item.sample]) {
-                acc[item.type][item.sample] = [];
-              }
-              acc[item.type][item.sample].push(item.closest);
-            }
-            return acc; // This is crucial, as it passes the accumulator to the next iteration
-          }, {}); // Initial value of the accumulator
-          gtiz_zooms.zooms = aggregated;
-          gtiz_zooms.setAvailableZooms();
-        }
-      }).catch((err) => {
-        console.log(err);
-      });
+      gtiz_zooms.loadZoomsList(path);
+    } else {
+      // no source for zooms: drop the ones restored from a json, their files are not reachable
+      gtiz_zooms.resetZooms();
     }
   }
 

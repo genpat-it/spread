@@ -1,3 +1,8 @@
 .DS_Store
 datasets/sensible
 node_modules
+
+tests/assistant/coverage-results.json
+tests/assistant/reference-examples.json
+__pycache__/
+semantic-*.json

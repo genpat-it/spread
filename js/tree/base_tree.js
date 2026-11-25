@@ -973,12 +973,36 @@ function D3BaseTree(element_id,metadata,height,width){
 			return Array.apply(null, {length: num}).map(Number.call, Number).map(function(n) {return scale(n);});
 		}
 	};
-	// Generate the categorical palette on demand (distinct HSL hues via
-	// golden-angle rotation) instead of using the fixed array above, so the
-	// legend is never capped at the palette length: every group up to
-	// `category_num` gets its own colour. Deterministic (same count -> same
-	// colours across redraws). The gradient_* schemes are left untouched.
-	this.color_schemes.category = function(num) {
+	// Categorical schemes. The colour of a group is taken by its position in the
+	// legend; all of them are deterministic (same count -> same colours across redraws).
+	// The gradient_* schemes are left untouched.
+	//
+	// `category` (default) and `category_soft` have 60 fixed colours each, picked one
+	// at a time as the farthest (CIEDE2000) from the ones already taken, starting from
+	// white (background, "Others") and black (outlines); the distance under
+	// deuteranopia and protanopia simulation weighs 2.5, so that colour-blind users
+	// can tell the first ones apart too. Beyond the 60 fixed colours, when the
+	// maximum is raised, the colours come from the hue rotation below.
+	// - category: lightness L* 30-85, chroma >= 20 (no upper limit, vivid colours);
+	//   any two of the 60 differ by at least 10.1 (28.1 among the first 10)
+	// - category_soft: lightness L* 40-82, chroma 20-68 (softer colours); the first
+	//   43 differ by at least 10 (21.6 among the first 10), the next ones less
+	this.category_palette = ['#bb11ff', '#dd3300', '#008866', '#00ee00', '#005599', '#ff88aa', '#66aaff', '#bb9955', '#882244', '#00dddd',
+		'#887799', '#664422', '#ffaa88', '#1100ee', '#ee0055', '#bbddbb', '#554466', '#667733', '#99aa00', '#0099bb',
+		'#ee33aa', '#226666', '#ccbbff', '#aa7777', '#990088', '#77aa99', '#990000', '#22dd99', '#9977ff', '#6655cc',
+		'#ffcc77', '#995577', '#cc7733', '#cc88dd', '#eebbdd', '#4477cc', '#889966', '#776644', '#ff7777', '#007700',
+		'#99cc55', '#009922', '#cc6688', '#448888', '#aa5555', '#885599', '#bb99bb', '#55bbcc', '#8800cc', '#884433',
+		'#006633', '#557755', '#ee22ee', '#cc1177', '#cc9988', '#11bbaa', '#005544', '#55aa77', '#7788aa', '#ff8833'];
+	this.category_soft_palette = ['#338811', '#aa55bb', '#ee7766', '#44aaff', '#00ccbb', '#eebb44', '#007777', '#776644', '#eebbee', '#bbcc99',
+		'#446688', '#cc3366', '#999922', '#9999cc', '#ff77aa', '#77bbcc', '#669988', '#ee9955', '#885555', '#bb6633',
+		'#00bb77', '#aa7799', '#556600', '#7777ee', '#88dd77', '#779955', '#6655aa', '#008866', '#aa7777', '#eeaabb',
+		'#ccaa88', '#995577', '#bb4444', '#8877aa', '#99bbff', '#00ddee', '#33aaaa', '#997755', '#cc88ee', '#aa6600',
+		'#0077cc', '#bb99bb', '#885533', '#99ccaa', '#dd5599', '#cc8899', '#bb3388', '#337788', '#0099bb', '#77bb44',
+		'#aa4400', '#ff99dd', '#996655', '#447766', '#aa8844', '#dd9933', '#6688cc', '#cc77bb', '#999966', '#aabb66'];
+	// Hue rotation (SPREAD from July 2026 to the fixed palettes): distinct HSL hues via
+	// golden-angle rotation, so the legend is never capped at the palette length;
+	// two colours become hard to tell apart from the 15th group on.
+	var hueRotationColors = function(from, num) {
 		var colors = [];
 		var golden = 137.508; // golden angle -> maximally spread, distinct hues
 		var hslToHex = function(h, s, l) {
@@ -996,7 +1020,7 @@ function D3BaseTree(element_id,metadata,height,width){
 			var toHex = function(v) { var n = Math.round((v + m) * 255); return ('0' + n.toString(16)).slice(-2); };
 			return '#' + toHex(r) + toHex(g) + toHex(b);
 		};
-		for (var i = 0; i < num; i++) {
+		for (var i = from; i < num; i++) {
 			var hue = (i * golden) % 360;
 			var sat = 65 + (i % 2) * 20;   // alternate 65% / 85% saturation
 			var light = 45 + (i % 3) * 12; // cycle 45% / 57% / 69% lightness
@@ -1004,8 +1028,24 @@ function D3BaseTree(element_id,metadata,height,width){
 		}
 		return colors;
 	};
+	// fixed colours first, then hue rotation when the maximum is raised beyond them
+	var fixedThenHueRotation = function(palette) {
+		return function(num) {
+			var colors = palette.slice(0, num);
+			return colors.concat(hueRotationColors(colors.length, num));
+		};
+	};
+	this.color_schemes.category = fixedThenHueRotation(this.category_palette);
+	this.color_schemes.category_soft = fixedThenHueRotation(this.category_soft_palette);
+	this.color_schemes.category_hue_rotation = function(num) {
+		return hueRotationColors(0, num);
+	};
+	// GrapeTree legacy: the fixed list of the original GrapeTree (d3 category20, 20b,
+	// 20c and the 268 colours of category2); groups beyond its 328 colours go to "Others"
+	this.color_schemes.category_grapetree = category20.concat(category20b, category20c, this.color_schemes.category2.slice(0, -60));
 	//this.legend_colours = ['default', this.color_schemes.default];
-	this.category_num = 30;
+	// default maximum of legend groups: as many as the distinguishable colours of the default palette in use
+	this.category_num = 40;
 	this.default_colour= "white";
 	this.category_colours={};
 	this.display_category=null;
@@ -1024,7 +1064,10 @@ function D3BaseTree(element_id,metadata,height,width){
 	//Zooming and translating
 	this.scale=1;
 	this.translate=[0,0];
-	
+	// true once the user zooms or pans the tree, false again when it is centered:
+	// layout changes center the tree only while the user has not moved it
+	this.user_moved = false;
+
 	// d3 v4+ zoom uses a single transform (x, y, k) instead of separate
 	// translate/scale accessors. this.scale / this.translate are kept in sync
 	// from the zoom event so the rest of the code can keep reading them.
@@ -1055,6 +1098,10 @@ function D3BaseTree(element_id,metadata,height,width){
 			self.canvas.attr('transform', "translate(" + t.x + "," + t.y + ") scale(" + t.k + ")");
 			self.scale = t.k;
 			self.translate = [t.x, t.y];
+			// a gesture (wheel, drag) has a source event, setScale / setTranslate do not
+			if (event.sourceEvent) {
+				self.user_moved = true;
+			}
 			self.updateScaleDiv();
 			// Keep the canvas layer aligned with the SVG overlay transform.
 			if (self.renderer) {
@@ -1382,7 +1429,8 @@ D3BaseTree.prototype._changeCategory=function(category){
 	if (! this.metadata_info[category].grouptype) this.metadata_info[category].grouptype = 'size';
 	if (! this.metadata_info[category].colorscheme) this.metadata_info[category].colorscheme = 'category';
 	if (! this.metadata_info[category].minnum) this.metadata_info[category].minnum = 0;
-	if (! this.metadata_info[category].category_num) this.metadata_info[category].category_num = 30;
+	// 40 groups keep distinct colours in the categorical palettes; the rest goes to "Others"
+	if (! this.metadata_info[category].category_num) this.metadata_info[category].category_num = 40;
 
 	var coltype = this.metadata_info[category].coltype;
 	var grouptype = this.metadata_info[category].grouptype;
@@ -1469,6 +1517,9 @@ D3BaseTree.prototype._changeCategory=function(category){
 	}
 	//this.category_colours["Others"] = this.default_colour;
 
+	// SPREAD: groups of the whole legend, kept to rebuild only the legend when it
+	// is filtered by the selection (gtiz_legend.redrawLegend)
+	this.legend_groups = cat_count_list;
 	this.updateLegend(category, cat_count_list);
 	this.setCategoryColors(category, cat_count_list);
 	for (var i in this.displayChangedListeners){
@@ -1624,8 +1675,13 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 	if (!this.display_category) {
 		return;
 	}
+	// SPREAD: legend filtered by the selected nodes, null for the whole legend
+	var filter = (typeof gtiz_legend !== 'undefined') ? gtiz_legend.getSelectionFilterRows(this, ordered_groups) : null;
+	if (typeof gtiz_legend !== 'undefined') {
+		gtiz_legend.setFilterIndicator(filter);
+	}
 	var others = 0;
-	var legend_data = ordered_groups.filter(function(group) {
+	var legend_data = filter ? filter.rows : ordered_groups.filter(function(group) {
 		if (group[2] == '') {
 			others += group[1];
 			return false;
@@ -1633,16 +1689,16 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		return true;
 	}).map(function(group) {
 		return { group: group[0] + '  ['+group[1]+']',
-				 group_colour: group[2], 
-				 real_group : group[0], 
+				 group_colour: group[2],
+				 real_group : group[0],
 		};
 	});
 
-	if (others) {
+	if (others && !filter) {
 		legend_data.push({
 			 group:"Others  [" + others + ']',
-			 group_colour:this.default_colour, 
-			 real_group : 'Others', 
+			 group_colour:this.default_colour,
+			 real_group : 'Others',
 		});
 	}
 
@@ -1655,18 +1711,6 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		legend_card_form.innerHTML = '';
 		legend_card_form.append(legend_list_box);
 	}
-	let legend_samples = [];
-	legend_data.forEach(element => {
-		let samples = parseInt(element.group.match(/\[(\d+)\]/)[1]);
-    legend_samples.push(samples);
-	});
-	// get min and max interval from samples_amount
-	let min_samples = Math.min(...legend_samples);
-	let max_samples = Math.max(...legend_samples);
-	let min_width = 6;
-	let max_width = 65;
-	let samples_interval = max_samples - min_samples;
-	let width_interval = max_width - min_width;
 	legend_data.forEach(element => {
 		let li = document.createElement('div');
 		li.setAttribute('class', 'list-row');
@@ -1703,24 +1747,14 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		});
 		value.append(circle);
 		let bar = document.createElement('span');
-		let samples = parseInt(element.group.match(/\[(\d+)\]/)[1]);
+		// a filtered row shows `selected/total`: its samples are given apart
+		let samples = element.samples !== undefined ? element.samples : parseInt(element.group.match(/\[(\d+)\]/)[1]);
 		bar.setAttribute('class', 'card-legend-item-bar');
 		bar.style.backgroundColor = element.group_colour;
-		if (samples > 0) {
-			if (samples == min_samples) {
-				let width = min_width;
-				bar.style.width = width + '%';
-			}
-			if (samples == max_samples) {
-				let width = max_width;
-				bar.style.width = width + '%';
-			}
-			if ((samples < max_samples) && (samples > min_samples)){
-				let width = ((samples * width_interval) / samples_interval) + min_width;
-				bar.style.width = width + '%';
-			}
-		} else {
-			bar.style.width = '0%';
+		// the width is set by gtiz_legend.updateHistogramBars() from these attributes
+		bar.setAttribute('data-samples-izsam', samples);
+		if (element.real_group === 'Others') {
+			bar.setAttribute('data-others-izsam', '');
 		}
 		bar.addEventListener('click', function(e) {
 			let obj = {
@@ -1747,6 +1781,8 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		gtiz_tooltip.add(text, tooltip_cfg);
 
 	});
+	// histogram bars, with the scale chosen in the legend menu (logarithmic by default)
+	gtiz_legend.updateHistogramBars(legend_list_box);
 
 	var legend_svg= d3.select(this.legend_div).append('svg').attr("id","legend-svg");
 	var legend = legend_svg.append("g").attr('class', 'legend');
@@ -1754,7 +1790,8 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 		return it.group;
 	});
 	legend_items = legend_items.enter().append('g').attr('class', 'legend-item').attr('transform', function(d, i){
-		return "translate(0," + ((i + 1) * 24 + 10) + ")";
+		// SPREAD: a filtered legend leaves room for its note under the title
+		return "translate(0," + ((i + 1) * 24 + 10 + (filter ? 16 : 0)) + ")";
 	}).attr('data-real-group-izsam',  function(it){
 		return it.real_group;
 	}).attr('data-group-colour-izsam',  function(it){
@@ -1800,6 +1837,12 @@ D3BaseTree.prototype.updateLegend = function(title, ordered_groups){
 	legend.selectAll('.legend-title').remove();
 	legend.append('text').attr('class', 'legend-title').attr('x', 12).attr('y', 20).attr('font-weight', 'bold').attr("font-family", (gtiz_utils.getAllCssVariables()["--font-family"] || "Arial"))
 	.text(this.metadata_info[title]['label']);
+	// SPREAD: the exported legend tells it is filtered by the selection, one line under the title
+	legend.selectAll('.legend-note').remove();
+	if (filter) {
+		legend.append('text').attr('class', 'legend-note').attr('x', 12).attr('y', 38).attr('font-size', 11).attr('fill', '#555555')
+		.attr("font-family", (gtiz_utils.getAllCssVariables()["--font-family"] || "Arial")).text(filter.title + ' · ' + filter.summary);
+	}
 	var legend_dim = legend_svg.node().getBBox();
 	legend_svg.attr('width', 240).attr('height', legend_dim.height + 10);
 	this.legend_div.style.width = '240px';
@@ -2094,6 +2137,21 @@ D3BaseTree.prototype.getSVG=function(){
  * @param {string} filename Download file name (e.g. "spread123.png")
  */
 D3BaseTree.prototype.exportImage = function(width, filename){
+	this.exportImageCanvas(width).then(function(out){
+		out.toBlob(function(blob){
+			gtiz_file_handler.saveBlobAsFile(blob, filename);
+		}, 'image/png');
+	});
+};
+
+/**
+ * The image of the PNG export (see exportImage) as a canvas, e.g. for the image
+ * of the view kept with a note.
+ *
+ * @param {number} width Output width of the tree in pixels (the legend is added beside it)
+ * @returns {Promise<HTMLCanvasElement>} The composed image
+ */
+D3BaseTree.prototype.exportImageCanvas = function(width){
 	var canvas = this.renderer.exportToCanvas(width);
 	var s = canvas.width / this.width;
 	// Scale bar (if visible) stays overlaid on the tree where it appears on screen.
@@ -2109,7 +2167,7 @@ D3BaseTree.prototype.exportImage = function(width, filename){
 	if (getComputedStyle(this.legend_div).display === 'block'){
 		legendSvg = document.getElementById('legend-svg');
 	}
-	gtiz_file_handler.saveTreeWithLegend(canvas, scaleOverlay, legendSvg, s, filename);
+	return gtiz_file_handler.composeTreeWithLegend(canvas, scaleOverlay, legendSvg, s);
 };
 
 /**

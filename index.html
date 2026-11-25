@@ -3,6 +3,8 @@
 
 <head>
 	<meta charset="utf-8">
+  <!-- light or dark mode before the page is drawn (js/theme.js) -->
+  <script src="js/theme.js"></script>
 	<title>SPREAD</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="shortcut icon" href="themes/default/img/logo.ico">
@@ -10,8 +12,11 @@
 	<link rel="stylesheet" href="css/skeleton.css" />
   <link rel="stylesheet" href="css/tabler.css" />
   <link rel="stylesheet" href="themes/default/css/vars.css" />
+  <!-- dark mode variables of the theme (dark_vars in app.json, set by gtiz_app.setTheme) -->
+  <link rel="stylesheet" href="themes/default/css/vars-dark.css" data-theme-dark-vars />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/assistant.css?v=70" />
 	<link rel="stylesheet" href="themes/default/css/header.css" />
   <link rel="stylesheet" href="themes/default/css/footer.css" />
 
@@ -57,6 +62,21 @@
             <i class="tabler tabler-player-track-next"></i>
           </div>
         </div>
+        <div class="tool tool-notes">
+          <div class="tool-trigger">
+            <i class="tabler tabler-notes"></i>
+          </div>
+        </div>
+        <div class="tool tool-theme">
+          <div class="tool-trigger">
+            <i class="tabler tabler-moon"></i>
+          </div>
+        </div><!-- light or dark mode trigger (gtiz_theme.toggle), shown when the theme has a dark mode -->
+        <div class="tool tool-fullscreen">
+          <div class="tool-trigger">
+            <i class="tabler tabler-maximize"></i>
+          </div>
+        </div><!-- full screen trigger (gtiz_layout.toggleFullScreen) -->
         <div class="tool tool-lang">
           <div class="tool-label"></div>
           <div class="tool-trigger">
@@ -94,6 +114,9 @@
             <i class="tabler tabler-circle-minus not-draggable"></i>
           </div>
           <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
             <div class="help-trigger">
               <i class="tabler tabler-help-circle not-draggable"></i>
             </div>
@@ -105,6 +128,26 @@
           <div class="card-form"></div>
           <div class="card-message"></div>
         </div><!-- card -->
+        <div class="card card-expandable card-settings card-node-shape draggable help" data-type="node-shape">
+          <div class="card-expand-trigger">
+            <i class="tabler tabler-circle-plus not-draggable"></i>
+            <i class="tabler tabler-circle-minus not-draggable"></i>
+          </div>
+          <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
+            <div class="help-trigger">
+              <i class="tabler tabler-help-circle not-draggable"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="tabler tabler-circle-x not-draggable"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="node_shape_and_border">Node shape</span></h3>
+          <div class="card-form"></div>
+          <div class="card-message"></div>
+        </div><!-- card -->
 
         <div class="card card-expandable card-settings card-node-size draggable help" data-type="node-size">
           <div class="card-expand-trigger">
@@ -112,6 +155,9 @@
             <i class="tabler tabler-circle-minus not-draggable"></i>
           </div>
           <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
             <div class="help-trigger">
               <i class="tabler tabler-help-circle not-draggable"></i>
             </div>
@@ -130,6 +176,9 @@
             <i class="tabler tabler-circle-minus not-draggable"></i>
           </div>
           <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
             <div class="help-trigger">
               <i class="tabler tabler-help-circle not-draggable"></i>
             </div>
@@ -148,6 +197,9 @@
             <i class="tabler tabler-circle-minus not-draggable"></i>
           </div>
           <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
             <div class="help-trigger">
               <i class="tabler tabler-help-circle not-draggable"></i>
             </div>
@@ -166,6 +218,9 @@
             <i class="tabler tabler-circle-minus not-draggable"></i>
           </div>
           <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
             <div class="help-trigger">
               <i class="tabler tabler-help-circle not-draggable"></i>
             </div>
@@ -184,6 +239,16 @@
             <div class="card-context-trigger card-context-menu-trigger" data-menu-component="tree" data-menu-type="zooms">
               <span data-i18n-key="available_zooms"></span> <i class="tabler tabler-zoom-in"></i>
             </div>
+            <div class="card-context-trigger tree-notes-trigger" role="button" tabindex="0" hidden>
+              <i class="tabler tabler-notes"></i>
+            </div>
+            <!-- undo and redo of the changes to the tree (js/history.js): the title says what they would undo or redo -->
+            <div class="card-context-trigger tree-history-trigger tree-history-undo is-disabled" role="button" tabindex="0" aria-disabled="true">
+              <i class="tabler tabler-arrow-back-up"></i>
+            </div>
+            <div class="card-context-trigger tree-history-trigger tree-history-redo is-disabled" role="button" tabindex="0" aria-disabled="true">
+              <i class="tabler tabler-arrow-forward-up"></i>
+            </div>
             <div class="card-context-trigger card-context-expand-trigger" data-component="tree">
               <i class="tabler tabler-maximize"></i>
             </div>
@@ -193,11 +258,12 @@
           </div>
           <div class="tree-title" id="headertag"></div>
           <div id="graph-div" class="drop-area"></div>
-          <div id="draggable-area">
-            <div class="drag-trigger" id="rotation-icon">
-              <i class="tabler tabler-rotate"></i>
-            </div>
+          <!-- keyboard and mouse shortcuts of the tree, shown with a click (gtiz_tree.initShortcuts); the
+               rotation is Alt+drag, Alt+arrows and the Rotation setting of the Rendering card -->
+          <div class="tree-shortcuts-trigger" role="button" tabindex="0" aria-expanded="false">
+            <i class="tabler tabler-keyboard"></i>
           </div>
+          <div class="tree-shortcuts" hidden></div>
           <div class="drop-box">
             <div class="drop-contents drop-area">
               <div class="drop-message">
@@ -251,29 +317,56 @@
         </div>
       </div>
       <div class="legend">
-        <div class="legend-container card card-component card-legend card-legend-list expanded">
+        <!-- legend card: header as the assistant one (accordion, handle to detach it, help), see gtiz_legend.initCard -->
+        <div class="legend-container card card-component card-legend card-legend-list card-expandable expanded draggable help" data-type="legend">
+          <div class="card-expand-trigger">
+            <i class="tabler tabler-circle-plus"></i>
+            <i class="tabler tabler-circle-minus"></i>
+          </div>
           <div class="card-context-tools">
+            <div class="card-drag-handle">
+              <i class="tabler tabler-grip-horizontal"></i>
+            </div>
+            <div class="help-trigger">
+              <i class="tabler tabler-help-circle"></i>
+            </div>
+            <div class="card-close-trigger reset-draggable">
+              <i class="tabler tabler-circle-x"></i>
+            </div>
+          </div>
+          <h3 class="card-title"><span data-i18n-key="legend">Legend</span></h3>
+          <!-- category select, with the video and menu triggers on its right -->
+          <div class="card-legend-tools">
+            <div class="select-box">
+              <select id="legend-title-menu-color-by"></select>
+            </div>
+            <!-- video player on/off: the icon follows the video mode (gtiz_layout.setVideo) -->
+            <div class="card-context-trigger card-legend-player-trigger" role="button" tabindex="0">
+              <i class="tabler tabler-video"></i>
+            </div>
             <div class="card-context-trigger card-context-menu-trigger" data-menu-component="legend" data-menu-type="legend">
               <i class="tabler tabler-dots-vertical"></i>
             </div>
           </div>
-          <div class="card-title">
-            <div class="select-box">
-              <select id="legend-title-menu-color-by"></select>
-            </div>
+          <!-- legend filtered by the selection: texts and close title set by gtiz_legend.setFilterIndicator -->
+          <div class="card-legend-filter hidden">
+            <span class="card-legend-filter-title"></span>
+            <span class="card-legend-filter-summary"></span>
+            <a class="card-legend-filter-close"><i class="tabler tabler-filter-off"></i></a>
           </div>
           <div class="card-form"></div>
           <div class="card-message">No category to display</div>
-        </div>
-        <div class="card card-player expanded">
-          <div class="card-form card-form-player">
-            <div class="slider-box slider-box-player">
-              <a class="play-trigger play">
-                <i class="tabler tabler-player-play"></i>
-              </a>
-              <input type="range" class="slider" min="0" max="100" value="0" step="1">
-              <div class="speed-trigger">
-                <select></select>
+          <!-- video player: it walks through the legend values, shown from the legend menu (gtiz_layout.setVideo) -->
+          <div class="card-legend-player">
+            <div class="card-form-player">
+              <div class="slider-box slider-box-player">
+                <a class="play-trigger play">
+                  <i class="tabler tabler-player-play"></i>
+                </a>
+                <input type="range" class="slider" min="0" max="100" value="0" step="1">
+                <div class="speed-trigger">
+                  <select></select>
+                </div>
               </div>
             </div>
           </div>
@@ -294,11 +387,11 @@
   <section class="search-engine">
     <div class="search-engine-contents">
       <div class="search-engine-close"><i class="tabler tabler-circle-x"></i></div>
+      <h3 class="card-title panel-title"><span data-i18n-key="search_functions">Search functions</span></h3>
       <div class="search-engine-form">
         <div class="search-engine-header">
           <div class="search-box">
-            <div class="form-label" data-i18n-key="search_a_function">Search a function</div>
-            <input id="search-functions" type="search" data-i18n-key="keywords" placeholder="Keywords..." autocomplete="off">
+            <input id="search-functions" type="search" data-i18n-key="search_a_function" placeholder="Search for a function" aria-label="Search for a function" autocomplete="off">
           </div>
         </div>
         <div class="search-engine-body"></div>
@@ -308,16 +401,44 @@
 
   <section class="macros help" data-type="macros">
     <div class="macros-contents">
+      <div class="macros-drag-handle card-drag-handle"><i class="tabler tabler-grip-horizontal"></i></div>
       <div class="macros-help-trigger help-trigger"><i class="tabler tabler-help-circle not-draggable"></i></div>
       <div class="macros-close"><i class="tabler tabler-circle-x"></i></div>
+      <h3 class="card-title panel-title"><span data-i18n-key="macros">Macros</span></h3>
       <div class="macros-form">
         <div class="macros-header">
           <div class="search-box">
-            <div class="form-label" data-i18n-key="search_a_macro">Search a macro</div>
-            <input id="search-macros" type="search" data-i18n-key="keywords" placeholder="Keywords..." autocomplete="off">
+            <input id="search-macros" type="search" data-i18n-key="search_a_macro" placeholder="Search for a macro" aria-label="Search for a macro" autocomplete="off">
           </div>
         </div>
         <div class="macros-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes help" data-type="notes">
+    <div class="notes-contents">
+      <div class="notes-drag-handle card-drag-handle"><i class="tabler tabler-grip-horizontal"></i></div>
+      <div class="notes-help-trigger help-trigger"><i class="tabler tabler-help-circle not-draggable"></i></div>
+      <div class="notes-close"><i class="tabler tabler-circle-x"></i></div>
+      <h3 class="card-title panel-title"><span data-i18n-key="notes">Notes</span></h3>
+      <div class="notes-form">
+        <div class="notes-header">
+          <div class="search-box">
+            <input id="search-notes" type="search" data-i18n-key="search_a_note" placeholder="Search the notes" aria-label="Search the notes" autocomplete="off">
+          </div>
+        </div>
+        <div class="notes-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="languages" data-type="languages">
+    <div class="languages-contents">
+      <div class="languages-close"><i class="tabler tabler-circle-x"></i></div>
+      <h3 class="card-title panel-title"><span data-i18n-key="change_language">Change language</span></h3>
+      <div class="languages-form">
+        <div class="languages-body"></div>
       </div>
     </div>
   </section>
@@ -332,7 +453,7 @@
         <div class="footer-info">
           <div class="info">
             <p><span data-i18n-key="cookies_notice">Questa applicazione non utilizza cookies.</span></p>
-            <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">2026-09-01</span></p>
+            <p><span data-i18n-key="last_updated_on">Last updated on</span> <span class="last-update-date">2026-11-25</span></p>
             <p class="copyright">&copy; <span class="copyright-year"></span> IZSAM 'G. Caporale'</p>
           </div>
         </div>
@@ -346,6 +467,7 @@
   <script src="js/leaflet/leaflet.js"></script>
   <script src="js/scrolly/scrolly.js"></script>
   <!-- tree enterobase -->
+  <script charset="utf-8" src="js/tree/node_styles.js"></script>
   <script charset="utf-8" src="js/tree/canvas_renderer.js"></script>
   <script charset="utf-8" src="js/tree/base_tree.js"></script>
   <script charset="utf-8" src="js/tree/d3_m_tree.js"></script>
@@ -358,6 +480,8 @@
   <script src="js/loader.js"></script>
   <script src="js/languages.js"></script>
   <script src="js/locales.js"></script>
+  <script src="js/zip.js"></script>
+  <script src="js/xlsx.js"></script>
   <script src="js/file-handler.js"></script>
   <script src="js/tree.js"></script>
   <script src="js/tree-extended.js"></script>
@@ -370,11 +494,18 @@
   <script src="js/help.js"></script>
   <script src="js/map.js"></script>
   <script src="js/drag.js"></script>
+  <script src="js/node-shape.js"></script>
   <script src="js/zooms.js"></script>
   <script src="js/macros.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/docx.js"></script>
+  <script src="js/notes.js"></script>
+  <script src="js/highlight.js"></script>
   <script src="js/search.js"></script>
   <script src="js/footer.js"></script>
   <script src="js/app.js"></script>
+
+  <script type="module" src="js/assistant.js?v=70"></script>
 
 </body>
 </html>

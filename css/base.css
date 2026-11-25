@@ -1,3 +1,11 @@
+/* backgrounds of the page and of the cards for a theme (or a vars.css kept in the
+   cache of the browser) that does not declare them yet: the white of before.
+   :where() has no specificity, so the :root of the theme always wins */
+:where(:root) {
+  --page: var(--white);
+  --surface: var(--white);
+}
+
 body {
   font-weight: 400;
   color: var(--text);
@@ -249,6 +257,58 @@ input[type="button"].button-accent-secondary:focus {
   color: var(--accent);
   background-color: transparent;
   border-color: var(--accent);
+}
+
+/* neutral alternative (cancel, discard): readable at rest, unlike the filled grey */
+.button.button-tertiary-outline,
+button.button-tertiary-outline,
+input[type="submit"].button-tertiary-outline,
+input[type="reset"].button-tertiary-outline,
+input[type="button"].button-tertiary-outline {
+  color: var(--secondary-darker);
+  background-color: transparent;
+  border-color: var(--secondary-dark);
+}
+
+.button.button-tertiary-outline:hover,
+button.button-tertiary-outline:hover,
+input[type="submit"].button-tertiary-outline:hover,
+input[type="reset"].button-tertiary-outline:hover,
+input[type="button"].button-tertiary-outline:hover,
+.button.button-tertiary-outline:focus,
+button.button-tertiary-outline:focus,
+input[type="submit"].button-tertiary-outline:focus,
+input[type="reset"].button-tertiary-outline:focus,
+input[type="button"].button-tertiary-outline:focus {
+  color: var(--text);
+  background-color: transparent;
+  border-color: var(--text);
+}
+
+/* destructive action (delete) */
+.button.button-danger,
+button.button-danger,
+input[type="submit"].button-danger,
+input[type="reset"].button-danger,
+input[type="button"].button-danger {
+  color: #fff;
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.button.button-danger:hover,
+button.button-danger:hover,
+input[type="submit"].button-danger:hover,
+input[type="reset"].button-danger:hover,
+input[type="button"].button-danger:hover,
+.button.button-danger:focus,
+button.button-danger:focus,
+input[type="submit"].button-danger:focus,
+input[type="reset"].button-danger:focus,
+input[type="button"].button-danger:focus {
+  color: #fff;
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
 }
 
 input[type="email"],
@@ -721,7 +781,7 @@ button.disabled.secondary:hover,
 button.disabled.secondary:active,
 button.disabled.secondary:focus {
   color: var(--main);
-  background-color: var(--white);
+  background-color: var(--surface);
   border: 0.1rem solid var(--main);
 }
 
@@ -732,7 +792,7 @@ button.disabled.accent.secondary:hover,
 button.disabled.accent.secondary:active,
 button.disabled.accent.secondary:focus {
   color: var(--accent);
-  background-color: var(--white);
+  background-color: var(--surface);
   border: 0.1rem solid var(--accent);
 }
 
@@ -883,6 +943,11 @@ button i {
   margin-left: 1vw;
   margin-right: 1vw;
   flex-grow: 1;
+}
+
+/* menu items hidden while they have no effect, e.g. the histogram scale in list view */
+.tools.hidden {
+  display: none;
 }
 
 .tools-wrapper.tools-wrapper-right .tools,
@@ -1744,7 +1809,7 @@ main {
   border-radius: 2.4rem;
   padding: 2.1rem 2.1rem;
   margin-bottom: 3.4rem;
-  background-color: var(--white);
+  background-color: var(--surface);
   -webkit-box-shadow: 0px 0px 34px 0px rgba(0,0,0,0.08);
   box-shadow: 0px 0px 34px 0px rgba(0,0,0,0.08);
 }
@@ -2179,7 +2244,7 @@ aside code,
   right: 0;
   bottom: 0;
   z-index: -1;
-  background-color: var(--white);
+  background-color: var(--page);
   opacity: 0;
   width: 0;
   -webkit-transition: opacity 0.6s ease 0.3s;
@@ -2275,7 +2340,7 @@ aside code,
   margin-left: auto;
   margin-bottom: 2.1rem;
   width: 24rem;
-  background-color: var(--white);
+  background-color: var(--surface);
   border-radius: 1.6rem;
   padding: 2.4rem;
   padding-top: 2.9rem;
@@ -2374,6 +2439,41 @@ aside code,
   display: block;
 }
 
+/* Off screen box where a copy of the legend svg is measured before its download
+   (gtiz_legend.downloadLegend): the legend itself may sit in a hidden box */
+.legend-export-measure {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  visibility: hidden;
+}
+
+/* Box of the general notifications: it shrinks when the cards are taller than the
+   window, so that Scrolly makes them scroll above the "close all" button */
+.notifier-list {
+  position: relative;
+  z-index: 1003;
+  flex: 0 1 auto;
+  min-height: 0;
+  padding-top: 2.1rem;
+}
+
+/* the margins of the cards stay inside the box, the scrolled height includes them */
+.notifier-cards {
+  display: flow-root;
+}
+
+/* "Close all" box, below the last general notification and aligned with the cards:
+   same outer width as `.notifier-contents` (24rem + 2 × 2.4rem padding) */
+.notifier-close-all {
+  position: relative;
+  z-index: 1003;
+  width: 28.8rem;
+  margin-right: 2.4rem;
+  margin-left: auto;
+  margin-bottom: 2.1rem;
+}
+
 .notifier-label {
   color: var(--secondary-dark);
   font-size: 1.2rem;
@@ -2413,7 +2513,7 @@ aside code,
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--white);
+  background-color: var(--page);
   opacity: 0;
   z-index: -1;
   visibility: hidden;
@@ -2449,7 +2549,7 @@ aside code,
   margin-top: 4.2rem;
   width: 80%;
   max-width: 42rem;
-  background-color: var(--white);
+  background-color: var(--surface);
   border-radius: 16px;
   padding: 24px;
   opacity: 0;
@@ -2526,6 +2626,19 @@ aside code,
   margin-bottom: 0.5rem;
 }
 
+/* group headings of the save modal: 2.1rem from the title (with the 1.3rem of
+   the modal body) and from the previous group, 1.3rem from their options */
+.modal-form .modal-label {
+  margin-top: 2.1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* padding, not margin: a margin would collapse into the one of the modal body */
+.modal-form .modal-label:first-child {
+  margin-top: 0;
+  padding-top: 0.8rem;
+}
+
 .modal-feedback {
   display: none;
 }
@@ -2568,6 +2681,166 @@ aside code,
 }
 
 .modal-alert .modal-contents input[type="button"] {
+  display: none;
+}
+
+/* SAVE MODAL: export view of the package with zooms (progress, final state).
+   Vertical spacing follows the scale used in the project: 0.8, 1.3, 2.1rem */
+
+/* added to the 1.3rem of the modal body, the view starts 2.1rem below the title */
+.modal-export {
+  padding-top: 0.8rem;
+}
+
+.modal-export-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* column of the loader, shown only while loading */
+.modal-export-loader {
+  flex: 0 0 3rem;
+  height: 3rem;
+}
+
+.modal-export-loader:empty {
+  display: none;
+}
+
+.modal-export-loader .lds-ring {
+  width: 3rem;
+  height: 3rem;
+}
+
+.modal-export-text {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+/* errors in red, as `.modal-feedback.warning` */
+.modal-export-text.modal-export-text-error {
+  color: var(--red);
+}
+
+.modal-export-note {
+  margin: 0.8rem 0 0 0;
+  font-size: 1.3rem;
+  color: var(--secondary-dark);
+}
+
+.modal-export-progress {
+  display: block;
+  width: 100%;
+  height: 0.6rem;
+  margin-top: 2.1rem;
+  border: none;
+  border-radius: 0.3rem;
+  background-color: var(--secondary-light);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  overflow: hidden;
+}
+
+.modal-export-progress::-webkit-progress-bar {
+  background-color: var(--secondary-light);
+  border-radius: 0.3rem;
+}
+
+.modal-export-progress::-webkit-progress-value {
+  background-color: var(--main);
+  border-radius: 0.3rem;
+  -webkit-transition: width 0.3s ease;
+  transition: width 0.3s ease;
+}
+
+.modal-export-progress::-moz-progress-bar {
+  background-color: var(--main);
+  border-radius: 0.3rem;
+}
+
+/* undetermined bar (zip creation): a moving highlight instead of a value */
+.modal-export-progress:not([value]) {
+  background-image: linear-gradient(90deg, var(--secondary-light) 25%, var(--main) 50%, var(--secondary-light) 75%);
+  background-size: 200% 100%;
+  animation: modal-export-undetermined 1.2s linear infinite;
+}
+
+.modal-export-progress:not([value])::-webkit-progress-bar {
+  background-color: transparent;
+}
+
+.modal-export-progress:not([value])::-moz-progress-bar {
+  background-color: transparent;
+}
+
+@keyframes modal-export-undetermined {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* zooms not included in the package: selectable list with a copy button */
+.modal-export-missing {
+  position: relative;
+  margin-top: 0.8rem;
+  padding: 0.8rem 3.4rem 0.8rem 1.3rem;
+  border: 0.1rem dashed var(--secondary-dark);
+  border-radius: 0.6rem;
+}
+
+.modal-export-missing-list {
+  max-height: 14rem;
+  overflow-y: auto;
+  font-size: 1.3rem;
+  line-height: 2.1rem;
+  color: var(--text);
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.modal-export-missing-reason {
+  color: var(--secondary-dark);
+}
+
+.modal-export-copy {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  color: var(--secondary-dark);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+/* hidden textarea used to copy text where the clipboard api is not available */
+.clipboard-helper {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  opacity: 0;
+}
+
+.modal-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2.1rem;
+}
+
+/* buttons of a confirmation modal, side by side (e.g. reset of the node shapes and borders) */
+.modal-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.3rem;
+}
+
+.modal-export-actions:empty {
   display: none;
 }
 

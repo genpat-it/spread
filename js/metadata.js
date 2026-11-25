@@ -7,17 +7,22 @@ gtiz_metadata.selected_column = '';
 gtiz_metadata.change_metadata_selected_only = 'all';
 gtiz_metadata.color_by_defined_category = 'leave';
 gtiz_metadata.modal_column_select_category;
+// fields of the grid in the order set by the user (empty: order of the metadata file)
+gtiz_metadata.columns_order = [];
 
 gtiz_metadata.metadata_node = document.querySelector(".metadata");
 gtiz_metadata.metadata_container = document.querySelector(".metadata-container");
 gtiz_metadata.grid_div = document.getElementById("metadata-grid");
 
 /**
- * Card header menu definition.
- * 
+ * Card header menu definition. Since 2026-11-23 the card shows its title
+ * instead of these buttons (see `buildUi`): the items stay for macros and the
+ * assistant, and the checkbox in the header of the grid selects all the rows.
+ *
  */
 gtiz_metadata.card_menu = [{
   type: 'abutton',
+  id: 'metadata-card-select-all',
   label: gtiz_locales.current.select_all,
   icon: 'tabler-circle-check',
   function: () => {
@@ -25,6 +30,7 @@ gtiz_metadata.card_menu = [{
   }
 }, {
   type: 'abutton',
+  id: 'metadata-card-clean-selection',
   label: gtiz_locales.current.clean_selection,
   icon: 'tabler-circle-minus',
   function: () => {
@@ -62,6 +68,8 @@ gtiz_metadata.context_menu = [{
   type: 'separator'
 }, {
   type: 'abutton',
+  id: 'metadata-add',
+  macro: false,
   hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.add_metadata;
@@ -72,6 +80,8 @@ gtiz_metadata.context_menu = [{
   }
 }, {
   type: 'abutton',
+  id: 'metadata-edit',
+  macro: false,
   hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.edit_metadata;
@@ -85,6 +95,8 @@ gtiz_metadata.context_menu = [{
   hide_in_read_only: true
 }, {
   type: 'abutton',
+  id: 'metadata-add-for-selection',
+  macro: false,
   hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.add_metadata_for_selection;
@@ -96,6 +108,8 @@ gtiz_metadata.context_menu = [{
   }
 }, {
   type: 'abutton',
+  id: 'metadata-edit-for-selection',
+  macro: false,
   hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.edit_metadata_for_selection;
@@ -111,6 +125,8 @@ gtiz_metadata.context_menu = [{
   hide_in_read_only: true
 }, {
   type: 'abutton',
+  id: 'metadata-delete',
+  macro: false,
   hide_in_read_only: true,
   label: () => {
     return gtiz_locales.current.delete_metadata;
@@ -154,6 +170,7 @@ gtiz_metadata.context_menu = [{
   }
 }, {
   type: 'abutton',
+  id: 'metadata-move-first',
   label: () => {
     return gtiz_locales.current.move_to_first_position;
   },
@@ -163,6 +180,7 @@ gtiz_metadata.context_menu = [{
   }
 }, {
   type: 'abutton',
+  id: 'metadata-set-figure-legend',
   label: () => {
     return gtiz_locales.current.set_as_figure_legend;
   },
@@ -174,6 +192,7 @@ gtiz_metadata.context_menu = [{
   type: 'separator'
 }, {
   type: 'abutton',
+  id: 'metadata-resize-columns',
   label: () => {
     return gtiz_locales.current.resize_columns;
   },
@@ -216,21 +235,23 @@ gtiz_metadata.context_menu = [{
     return gtiz_locales.current.download_table;
   },
   icon: 'tabler-download',
+  // .csv is turned off for the moment (2026-11-23): exportTable still supports
+  // it, put the option back to offer it again
   options: [{
-    label: '.csv',
-    value: 'csv'
-  }, {
     label: '.tsv',
     value: 'tsv'
+  }, {
+    label: '.xlsx',
+    value: 'xlsx'
   }],
   selected: () => {
-    return 'csv';
+    return 'tsv';
   },
   function: (e) => {
     let buttuon = e.currentTarget;
     let box = buttuon.parentElement;
     let select = box.querySelector('select');
-    let type = select ? select.value : 'csv';
+    let type = select ? select.value : 'tsv';
     gtiz_metadata.exportTable(type);
   }
 }];
@@ -1192,15 +1213,99 @@ gtiz_metadata.setColumnsAsLegend = function () {
 }
 
 /**
- * Move selected columns in first position. Moves a column to `toIndex`. The column is first removed, then added at the `toIndex` location, thus index locations will change to the right of the column after the removal.
+ * Move selected columns in first position, after the locked samples column. Moves a column to `toIndex`. The column is first removed, then added at the `toIndex` location, thus index locations will change to the right of the column after the removal.
  * 
  * https://www.ag-grid.com/javascript-data-grid/column-moving/
  * 
  */
 gtiz_metadata.moveColumn = function () {
   let column = gtiz_metadata.selected_column;
-  let position = 1;
+  // first free position, after the locked columns (checkbox and samples column)
+  let position = gtiz_metadata.options.columnApi.getAllGridColumns().filter(col => col.getColDef().lockPosition).length;
   gtiz_metadata.options.columnApi.moveColumn(column, position);
+  gtiz_metadata.storeColumnsOrder();
+}
+
+/**
+ * Store the current order of the grid columns, so that it survives the rebuilds
+ * of the grid (metadata changes), the complete tree saving and the zooms loaded
+ * with the current settings.
+ *
+ * @returns {undefined}
+ */
+gtiz_metadata.storeColumnsOrder = function () {
+  if (!gtiz_metadata.options.columnApi) {
+    return;
+  }
+  // display order, without the checkbox column (it has no field)
+  gtiz_metadata.columns_order = gtiz_metadata.options.columnApi.getAllGridColumns()
+    .map(column => column.getColDef().field)
+    .filter(field => field);
+}
+
+/**
+ * Sort fields by the order set by the user: the stored fields first, the others
+ * (e.g. a column added later) after them in their original order. The samples
+ * column (`ID`, or the first column of the metadata file) is always the first.
+ *
+ * @param {Array} fields Field names
+ * @returns {Array} Sorted field names
+ */
+gtiz_metadata.sortByColumnsOrder = function (fields) {
+  let ordered = gtiz_metadata.columns_order.filter(field => fields.includes(field));
+  let others = fields.filter(field => !ordered.includes(field));
+  let sorted = ordered.concat(others);
+  let samples = gtiz_file_handler.samples_column;
+  if (sorted.includes(samples)) {
+    sorted = [samples].concat(sorted.filter(field => field != samples));
+  }
+  return sorted;
+}
+
+/**
+ * Set the order of the grid columns and apply it to the current grid, e.g. to a
+ * zoom loaded with the current settings of the full tree.
+ *
+ * @param {Array} order Field names in the order to apply (empty or missing: order of the metadata file)
+ * @returns {undefined}
+ */
+gtiz_metadata.setColumnsOrder = function (order) {
+  gtiz_metadata.columns_order = Array.isArray(order) ? [...order] : [];
+  let api = gtiz_metadata.options.columnApi;
+  if (!api || gtiz_metadata.columns_order.length == 0) {
+    return;
+  }
+  let columns = api.getColumns();
+  if (!columns) {
+    return;
+  }
+  // the checkbox column (no field) stays first
+  let check = columns.filter(column => !column.getColDef().field).map(column => column.getColId());
+  let fields = columns.filter(column => column.getColDef().field).map(column => column.getColId());
+  let state = check.concat(gtiz_metadata.sortByColumnsOrder(fields)).map(id => {
+    return { colId: id };
+  });
+  api.applyColumnState({ state: state, applyOrder: true });
+}
+
+/**
+ * Grid columns with data, in the order of the metadata file.
+ *
+ * Used to rebuild the metadata from the grid: the order set by the user is a
+ * grid setting and must not change the order of the columns elsewhere (legend,
+ * colour by and label lists).
+ *
+ * @returns {Array} Ag-grid columns
+ */
+gtiz_metadata.getColumnsInSourceOrder = function () {
+  let info = Object.keys(gtiz_tree.tree.metadata_info);
+  let position = (column) => {
+    let index = info.indexOf(column.getColDef().field);
+    return index < 0 ? info.length : index;
+  };
+  return gtiz_metadata.options.columnApi.getColumns()
+    .filter(column => column.getColDef().field)
+    .sort((a, b) => position(a) - position(b));
 }
 
 /**
@@ -1264,19 +1369,41 @@ gtiz_metadata.getColorByOptions = function (filtered) {
  * Export table
  * https://www.ag-grid.com/javascript-data-grid/csv-export/
  * 
- * We use same function by changing separator value and file name.
- * 
- * @param {String} type `csv` || `tsv`
+ * We use same function by changing separator value and file name. The xlsx file
+ * is written from the same text as the tsv one (same rows, columns and order),
+ * so the two exports always hold the same data.
+ *
+ * @param {String} type `csv` || `tsv` || `xlsx`
+ * @returns {Promise<undefined>}
  */
-gtiz_metadata.exportTable = function (type) {
-  
+gtiz_metadata.exportTable = async function (type) {
+
   let separator = type === 'csv' ? ',' : '\t';
   let timestamp = Date.now();
-  let value = type === 'csv' ? 'csv' : 'tsv';
-  let name = "metadata" + timestamp + "." + value;
-  let columns = gtiz_metadata.options.columnApi.getColumns();
-  // we are removing first column dedicated to checkbox
-  columns.shift();
+  let value = ['csv', 'xlsx'].includes(type) ? type : 'tsv';
+  let name = "spread_metadata" + timestamp + "." + value;
+  // columns in the order shown by the grid, without the checkbox column (it has no field)
+  let columns = gtiz_metadata.options.columnApi.getAllGridColumns().filter(column => column.getColDef().field);
+  // the samples column stays first: without an `ID` column the import takes the first one as samples column
+  let samples = columns.filter(column => column.getColDef().field == gtiz_file_handler.samples_column);
+  columns = samples.concat(columns.filter(column => !samples.includes(column)));
+  if (type === 'xlsx') {
+    let text = gtiz_metadata.options.api.getDataAsCsv({
+      columnKeys: columns,
+      suppressQuotes: true,
+      columnSeparator: '\t'
+    });
+    let table = gtiz_xlsx.splitTsv(text);
+    try {
+      let blob = await gtiz_xlsx.build(table.header, table.rows, { title : name });
+      gtiz_file_handler.saveBlobAsFile(blob, name);
+    } catch (error) {
+      // only a table beyond the limits of Excel gets here
+      console.error(error);
+      gtiz_file_handler.packageNotice(gtiz_locales.current.notes_export_error, true);
+    }
+    return;
+  }
   gtiz_metadata.options.api.exportDataAsCsv({
     columnKeys: columns,
     suppressQuotes: true,
@@ -1379,28 +1506,22 @@ gtiz_metadata.findNodes = function (nodes) {
 }
 
 /**
- * Build the ui for the metadata card based on `gtiz_metadata.card_menu`. In this case we build the header buttons of the card.
- * 
+ * Build the header of the metadata card: its title, as the other cards
+ * (settings, assistant). The buttons of `gtiz_metadata.card_menu` are no longer
+ * shown.
+ *
+ * @returns {undefined}
  */
 gtiz_metadata.buildUi = function () {
   let form = gtiz_metadata.metadata_node.querySelector('.card-form');
   form.innerHTML = '';
-  let menu = gtiz_metadata.card_menu;
-  menu.forEach(item => {
-    if (item.type == 'abutton') {
-      let box = document.createElement('div');
-      box.setAttribute('class', 'button-box');
-      let a = document.createElement('a');
-      a.setAttribute('class', 'card-action');
-      let icon = item.icon != '' ? '<i class="tabler ' + item.icon + '"></i> ' : '';
-      a.innerHTML = icon + item.label;
-      a.addEventListener('click', (e) => {
-        item.function();
-      });
-      box.append(a);
-      form.append(box);
-    }
-  });
+  let title = document.createElement('h3');
+  title.setAttribute('class', 'card-title');
+  let text = document.createElement('span');
+  text.setAttribute('data-i18n-key', 'metadata');
+  text.textContent = gtiz_locales.current.metadata;
+  title.append(text);
+  form.append(title);
 }
 /**
  * Options definition for ag-grid library
@@ -1459,10 +1580,13 @@ gtiz_metadata.options = {
     let filtered = gtiz_metadata.doesExternalFilterPass(node);
     return filtered;
   },
+  // a column dragged to a new position: its order is kept when the grid is rebuilt
+  onDragStopped: () => {
+    gtiz_metadata.storeColumnsOrder();
+  },
   onCellValueChanged: (event) => {
-    let columns = gtiz_metadata.options.columnApi.getColumns();
-    // we are removing first column dedicated to checkbox
-    columns.shift();
+    // order of the metadata file, without the checkbox column
+    let columns = gtiz_metadata.getColumnsInSourceOrder();
     let tsv = gtiz_metadata.options.api.getDataAsCsv({
       columnKeys: columns,
       suppressQuotes: true,
@@ -1497,6 +1621,8 @@ gtiz_metadata.setGrid = function () {
   if (gtiz_file_handler.samples_column != 'ID') {
     fields = fields.filter(item => item != 'ID');
   }
+  // columns in the order set by the user, if any
+  fields = gtiz_metadata.sortByColumnsOrder(fields);
   let meta = gtiz_tree.tree.metadata;
   let columns = [];
   let check = {
@@ -1520,6 +1646,10 @@ gtiz_metadata.setGrid = function () {
         obj = {
           field: fields[key],
           headerName: fields[key]
+        }
+        // the samples column is locked as first column, after the checkbox one
+        if (fields[key] == gtiz_file_handler.samples_column) {
+          obj.lockPosition = 'left';
         }
       } else {
         obj = {
@@ -1551,8 +1681,36 @@ gtiz_metadata.setGrid = function () {
 }
 
 /**
+ * Reset the metadata table to its empty state.
+ *
+ * Called for every new tree: without it a tree loaded without metadata (e.g. a
+ * single .nwk) would show the grid of the previous dataset. When the new tree
+ * has metadata, `gtiz_metadata.init()` builds the grid again right after.
+ *
+ * @returns {undefined}
+ */
+gtiz_metadata.reset = function () {
+  if (gtiz_metadata.options.api) {
+    gtiz_metadata.options.api.destroy();
+  }
+  // a destroyed grid must not be used by the selection or layout listeners
+  gtiz_metadata.options.api = undefined;
+  gtiz_metadata.options.columnApi = undefined;
+  gtiz_metadata.initialized = false;
+  gtiz_metadata.selected_column = '';
+  gtiz_metadata.data_bkp = undefined;
+  // header buttons of the card (select all, clean selection)
+  let form = gtiz_metadata.metadata_node.querySelector('.card-form');
+  if (form) {
+    form.innerHTML = '';
+  }
+  // shows the "no metadata" message and hides the context menu of the card
+  gtiz_metadata.metadata_container.classList.add('metadata-not-initialized');
+}
+
+/**
  * Metadata table initialization.
- * 
+ *
  */
 gtiz_metadata.init = function () {
   gtiz_metadata.initialized = true;

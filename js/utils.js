@@ -39,6 +39,22 @@ gtiz_utils.isObjectNotEmpty = function(obj) {
 }
 
 /**
+ * Check if a menu item (context menus, file modal) has to be shown
+ *
+ * Items are visible by default; an optional `visible` property, boolean or
+ * function returning a boolean, hides them when false.
+ *
+ * @param {Object} item Menu item configuration
+ * @returns {Boolean} true when the item has to be shown
+ */
+gtiz_utils.isMenuItemVisible = function(item) {
+  if (typeof item.visible === 'function') {
+    return item.visible() !== false;
+  }
+  return item.visible !== false;
+}
+
+/**
  * Measure an element's inner content size (width/height in px), working even
  * when the element — or one of its ancestors — is hidden via `display:none`.
  *

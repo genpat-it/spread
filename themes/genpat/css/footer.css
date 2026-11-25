@@ -63,7 +63,9 @@ footer.show {
   padding: 4.2rem 3.4rem;
   padding-top: 4.9rem;
   border-radius: 2.4rem;
-  background-color: var(--dark);
+  /* --footer only in the dark variables (vars-dark.css): the colour of the cards,
+     the light --dark of the dark mode would leave the white text unreadable */
+  background-color: var(--footer, var(--dark));
   bottom: 1rem;
   right: 1rem;
   max-height: calc(84vh - 8.4rem);

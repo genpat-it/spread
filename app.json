@@ -9,6 +9,7 @@
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",
+    "dark_vars" : "css/vars-dark.css",
     "modules" : {
       "header" : {
         "css" : "css/header.css",
@@ -33,6 +34,7 @@
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",
+    "dark_vars" : "css/vars-dark.css",
     "modules" : {
       "header" : {
         "css" : "css/header.css",
@@ -57,6 +59,7 @@
     },
     "favicon" : "img/logo.ico",
     "vars" : "css/vars.css",
+    "dark_vars" : "css/vars-dark.css",
     "modules" : {
       "header" : {
         "css" : "css/header.css",
@@ -70,11 +73,46 @@
     "version" : "1.0.0"
   }],
   "read_only" : false,
+  "assistant" : {
+    "enabled" : true
+  },
   "countries"  : {
     "column" : "sampling country",
     "path" : "datasets/countries/countries.json",
     "latitude" : "latitude",
     "longitude" : "longitude"
+  },
+  "metadata_localization" : {
+    "enabled" : true,
+    "technical_columns" : {
+      "latitude" : {
+        "en" : "Latitude",
+        "fr" : "Latitude",
+        "it" : "Latitudine"
+      },
+      "longitude" : {
+        "en" : "Longitude",
+        "fr" : "Longitude",
+        "it" : "Longitudine"
+      },
+      "category" : {
+        "en" : "Category",
+        "fr" : "Catégorie",
+        "it" : "Categoria",
+        "values" : {
+          "sample of interest" : {
+            "en" : "sample of interest",
+            "fr" : "échantillon d'intérêt",
+            "it" : "campione di interesse"
+          }
+        }
+      },
+      "sampling country" : {
+        "en" : "Sampling country",
+        "fr" : "Pays de prélèvement",
+        "it" : "Paese di campionamento"
+      }
+    }
   },
   "copyright" : "&copy; {__YEAR__} IZSAM G. Caporale"
 }

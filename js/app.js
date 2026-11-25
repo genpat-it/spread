@@ -1,5 +1,16 @@
 let gtiz_app = {};
 
+/*
+*
+* Resolved with the configuration of app.json once it has been read (undefined
+* when it cannot be read): the modules that depend on it, as the assistant, wait
+* for it
+*
+*/
+gtiz_app.ready = new Promise(resolve => {
+  gtiz_app.resolveReady = resolve;
+});
+
 gtiz_app.loadFooter = function(path, target) {
   fetch(path)
     .then(response => response.text())
@@ -55,6 +66,7 @@ gtiz_app.setTheme = function(theme) {
   let header = modules ? modules.header : undefined;
   let footer = modules ? modules.footer : undefined;
   let vars = theme.vars;
+  let dark_vars = theme.dark_vars;
 
   if (title) {
     document.title = title;
@@ -68,8 +80,23 @@ gtiz_app.setTheme = function(theme) {
   }
 
   if (vars) {
-    let stylesheet = document.querySelector('link[rel="stylesheet"][href*="vars"]');
+    let stylesheet = document.querySelector('link[rel="stylesheet"][href*="vars"]:not([data-theme-dark-vars])');
     stylesheet.href = 'themes/' + name + '/' + vars;
+  }
+
+  // dark mode: only for a theme that declares its dark variables, otherwise
+  // always light and no button (see js/theme.js)
+  let dark_stylesheet = document.querySelector('link[data-theme-dark-vars]');
+  if (dark_stylesheet) {
+    if (dark_vars) {
+      dark_stylesheet.href = 'themes/' + name + '/' + dark_vars;
+      dark_stylesheet.disabled = false;
+    } else {
+      dark_stylesheet.disabled = true;
+    }
+  }
+  if (typeof gtiz_theme !== 'undefined') {
+    gtiz_theme.setAvailable(Boolean(dark_vars));
   }
   
   if (header) {
@@ -99,7 +126,9 @@ gtiz_app.setTheme = function(theme) {
 gtiz_app.init = function() {
   let path = 'app.json';
   
-  fetch(path)
+  // always checked with the server (a 304 when unchanged): a configuration
+  // changed after a deploy, e.g. the assistant turned on, applies at once
+  fetch(path, { cache: 'no-cache' })
     .then(response => response.text())
     .then(data => {
       let json = JSON.parse(data);
@@ -114,10 +143,13 @@ gtiz_app.init = function() {
         }
       }
       gtiz_app.cfg = JSON.parse(data);
+      gtiz_app.resolveReady(gtiz_app.cfg);
       gtiz_file_handler.init();
     })
     .catch(err => {
       console.error(err);
+      // the modules waiting for the configuration go on without it
+      gtiz_app.resolveReady(undefined);
     });
 };
 

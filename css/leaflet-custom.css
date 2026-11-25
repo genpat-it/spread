@@ -42,6 +42,25 @@
   cursor: pointer;
 }
 
+/* close trigger of the point popups with the Tabler circle-x icon
+   (gtiz_map.setPopupCloseIcon): size and colour of the close triggers of the
+   cards (1.4rem, --main), in the corner of the padding of the popup */
+.leaflet-container a.leaflet-popup-close-button {
+  top: 1.3rem;
+  right: 1.3rem;
+  width: auto;
+  height: auto;
+  padding: 0;
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--main);
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--dark);
+}
+
 .leaflet-popup-content {
   max-height: 165px;
   overflow-y: auto;
@@ -50,21 +69,18 @@
   padding-right: 18px;
 }
 
+/* the bar of the popup is the Scrolly one (gtiz_map.updatePopupScroll in
+   js/map.js), placed on the box of the popup: no bar of the browser */
+.leaflet-popup-content {
+  scrollbar-width: none;
+}
+
 .leaflet-popup-content::-webkit-scrollbar {
-  width: 5px;
+  display: none;
 }
 
-.leaflet-popup-content::-webkit-scrollbar-track {
-  background-color: transparent;
-  border-radius: 6.8rem;
-  margin-top: 1.1rem;
-  margin-bottom: 1.1rem;
-}
-
-.leaflet-popup-content::-webkit-scrollbar-thumb {
-  border-radius: 6.8rem;
-  background-image: linear-gradient(180deg, #00679c 0%, #005782 99%);
-  opacity: 0.8;
+.leaflet-popup-content-wrapper {
+  position: relative;
 }
 
 .label-select-tree {
@@ -128,7 +144,9 @@
 }
 
 .leaflet-popup-content .pu-sample-link.warning-filtered span {
-  background-image: url(../../static/img/pattern.svg);
+  /* hatched dot of the samples on the map that are not among the nodes of the
+     tree (e.g. hidden): the path is relative to this file, css/ */
+  background-image: url(../img/pattern.svg);
   background-position: center;
   background-repeat: repeat;
   background-size: 5px 5px;
