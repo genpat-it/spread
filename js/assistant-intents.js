@@ -117,6 +117,30 @@ export function norm(text) {
   return fold(text).replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
+// Common words of languages the assistant does not understand, none of them a
+// word of Italian, English or French. Used only to explain a failed request.
+const FOREIGN = {
+  es: ['el', 'los', 'las', 'muestra', 'muestrame', 'ensename', 'quiero', 'oculta', 'ocultar', 'colorea', 'arbol', 'tabla', 'cuantos', 'cuantas', 'donde', 'pero', 'esta', 'estan', 'todos', 'muestras', 'por favor', 'segun'],
+  de: ['der', 'die', 'das', 'und', 'zeige', 'zeig', 'zeigen', 'karte', 'baum', 'bitte', 'ich', 'nicht', 'mit', 'auf', 'ein', 'eine', 'alle', 'wie', 'viele', 'tabelle', 'farbe', 'oder', 'dem', 'ist', 'sind', 'nach', 'proben'],
+  pt: ['voce', 'nao', 'arvore', 'mostre', 'quero', 'esconda', 'os', 'tabela', 'cor', 'onde', 'todas', 'obrigado', 'amostras', 'mapa', 'por favor']
+};
+
+/**
+ * Language of a request written in a language the assistant does not read:
+ * at least two of its words belong only to that language.
+ * @param {string} text the request
+ * @returns {string|null} 'es', 'de' or 'pt', or null
+ */
+export function foreignLanguage(text) {
+  const folded = ` ${norm(text)} `;
+  let best = null;
+  for (const [lang, words] of Object.entries(FOREIGN)) {
+    const hits = words.filter((word) => folded.includes(` ${word} `)).length;
+    if (hits >= 2 && (!best || hits > best.hits)) best = { lang, hits };
+  }
+  return best ? best.lang : null;
+}
+
 function levenshtein(a, b) {
   if (a === b) return 0;
   if (!a.length) return b.length;
@@ -1268,7 +1292,7 @@ function parseWhere(ctx, text, folded) {
   if (!where && !howto) return null;
   let rest = text.slice((where || howto)[0].length);
   rest = stripFolded(rest.trim(), /^(?:(?:si |posso |devo |can i |do i |i can |je |on )?(?:trovo|trovano|trova|trovare|sono|e|stanno|sta|imposta|impostano|impostare|imposto|cambia|cambiare|cambio|modifica|modificare|regola|regolare|attiva|attivare|is|are|find|set|change|adjust|enable|turn on|se trouve|se trouvent|trouver|trouve|change|regle|modifie)\s+)*/i);
-  rest = stripFolded(rest.trim(), /^(?:(?:le|la|il|lo|i|gli|l'|the|les|un|una|a)\s*)?(?:impostazion[ei]|opzion[ei]|comand[oi]|controll[oi]|funzion[ei]|settings?|options?|controls?|commands?|functions?|reglages?|parametres?)?\s*(?:(?:per|di|del|della|dei|delle|for|to|of|pour|de|du|des)\b)?\s*(?:(?:le|la|il|lo|i|gli|l'|the|les)\s*)?/i).replace(/\?+\s*$/, '').trim();
+  rest = stripFolded(rest.trim(), /^(?:(?:le|la|il|lo|i|gli|the|les|un|una|a)\s+|l['’]\s*)?(?:impostazion[ei]|opzion[ei]|comand[oi]|controll[oi]|funzion[ei]|settings?|options?|controls?|commands?|functions?|reglages?|parametres?)?\s*(?:(?:per|di|del|della|dei|delle|for|to|of|pour|de|du|des)\b)?\s*(?:(?:le|la|il|lo|i|gli|the|les)\s+|l['’]\s*)?/i).replace(/\?+\s*$/, '').trim();
   if (!rest) return null;
   if (howto) {
     // "come faccio a colorare per regione?": just prepare the plan.
