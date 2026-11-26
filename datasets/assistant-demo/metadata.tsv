@@ -1,0 +1,9 @@
+ID	lineage	region	province	outcome	sampling_date	latitude	longitude	cluster
+IT-001	ST-10	Lazio	Roma	positive	2026-01-05	41.9028	12.4964	A
+IT-002	ST-10	Lazio	Roma	positive	2026-01-07	41.9028	12.4964	A
+IT-003	ST-12	Lombardia	Milano	negative	2026-01-12	45.4642	9.1900	B
+IT-004	ST-12	Lombardia	Milano	positive	2026-01-14	45.4642	9.1900	B
+IT-005	ST-15	Emilia-Romagna	Bologna	positive	2026-01-19	44.4949	11.3426	C
+IT-006	ST-15	Veneto	Padova	negative	2026-01-22	45.4064	11.8768	C
+IT-007	ST-18	Toscana	Firenze	positive	2026-01-27	43.7696	11.2558	D
+IT-008	ST-18	Toscana	Firenze	positive	2026-01-30	43.7696	11.2558	D

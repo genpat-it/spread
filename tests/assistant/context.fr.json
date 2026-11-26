@@ -1,0 +1,6101 @@
+{
+ "columns": [
+  "ID",
+  "lineage",
+  "region",
+  "province",
+  "outcome",
+  "sampling_date",
+  "latitude",
+  "longitude",
+  "cluster"
+ ],
+ "catalog": [
+  {
+   "id": "tree:0",
+   "key": "tree|tree-tooltip-toggle#show_tooltips",
+   "area": "tree",
+   "iid": "tree-tooltip-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "tooltip",
+    "tooltips",
+    "suggerimenti",
+    "info al passaggio",
+    "hover",
+    "popup",
+    "infobulles"
+   ],
+   "options": [
+    {
+     "value": "show_tooltips",
+     "terms": [
+      "show tooltips",
+      "Affichez les info-bulles",
+      "Show tooltips",
+      "Mostra suggerimenti"
+     ],
+     "label": "Affichez les info-bulles"
+    },
+    {
+     "value": "hide_tooltips",
+     "terms": [
+      "hide tooltips",
+      "Affichez les info-bulles",
+      "Show tooltips",
+      "Mostra suggerimenti"
+     ],
+     "label": "Affichez les info-bulles"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "tree:2",
+   "key": "tree|tree-menu-centre-tree",
+   "area": "tree",
+   "iid": "tree-menu-centre-tree",
+   "type": "abutton",
+   "label": "Centrez l'arborescence",
+   "terms": [
+    "Centrez l'arborescence",
+    "Centre tree",
+    "Centra albero",
+    "centra albero",
+    "ricentra",
+    "recenter",
+    "center tree",
+    "fit tree",
+    "inquadra albero",
+    "centrer"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:3",
+   "key": "tree|tree-menu-static-redraw",
+   "area": "tree",
+   "iid": "tree-menu-static-redraw",
+   "type": "abutton",
+   "label": "Rendu statique",
+   "terms": [
+    "Rendu statique",
+    "Static redraw",
+    "Ridisegno statico",
+    "ridisegna",
+    "redraw",
+    "aggiorna disegno",
+    "redessiner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:4",
+   "key": "tree|tree-menu-original-tree",
+   "area": "tree",
+   "iid": "tree-menu-original-tree",
+   "type": "abutton",
+   "label": "Arborescence originale",
+   "terms": [
+    "Arborescence originale",
+    "Original tree",
+    "Albero iniziale",
+    "albero originale",
+    "ripristina albero",
+    "reset tree",
+    "original layout",
+    "arbre original"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:6",
+   "key": "tree|tree-hypothetical-toggle#show_hypo",
+   "area": "tree",
+   "iid": "tree-hypothetical-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "nodi ipotetici",
+    "ipotetici",
+    "hypothetical nodes",
+    "hypothetical",
+    "hypo",
+    "noeuds hypothetiques",
+    "hypothetiques"
+   ],
+   "options": [
+    {
+     "value": "show_hypo",
+     "terms": [
+      "show hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    },
+    {
+     "value": "hide_hypo",
+     "terms": [
+      "hide hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "tree:8",
+   "key": "tree|tree-menu-select-all",
+   "area": "tree",
+   "iid": "tree-menu-select-all",
+   "type": "abutton",
+   "label": "Tout sélectionner",
+   "terms": [
+    "Tout sélectionner",
+    "Select all",
+    "Seleziona tutto",
+    "seleziona tutto",
+    "seleziona tutti",
+    "select all",
+    "tout selectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:9",
+   "key": "tree|tree-menu-deselect-all",
+   "area": "tree",
+   "iid": "tree-menu-deselect-all",
+   "type": "abutton",
+   "label": "Désélectionnez tous",
+   "terms": [
+    "Désélectionnez tous",
+    "Deselect all",
+    "Deseleziona tutti",
+    "deseleziona tutto",
+    "deselect all",
+    "clear selection",
+    "pulisci selezione",
+    "tout deselectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:11",
+   "key": "tree|tree-menu-collapse-selected",
+   "area": "tree",
+   "iid": "tree-menu-collapse-selected",
+   "type": "abutton",
+   "label": "Repliez les nœuds sélectionnés",
+   "terms": [
+    "Repliez les nœuds sélectionnés",
+    "Collapse selected nodes",
+    "Comprimi nodi selezionati",
+    "collassa selezionati",
+    "collapse selected",
+    "comprimi selezionati",
+    "replier selectionnes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:12",
+   "key": "tree|tree-menu-expand-selected",
+   "area": "tree",
+   "iid": "tree-menu-expand-selected",
+   "type": "abutton",
+   "label": "Développez les nœuds sélectionnés",
+   "terms": [
+    "Développez les nœuds sélectionnés",
+    "Expand selected nodes",
+    "Espandi nodi selezionati",
+    "espandi selezionati",
+    "expand selected",
+    "deplier selectionnes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:13",
+   "key": "tree|tree-menu-expand-all",
+   "area": "tree",
+   "iid": "tree-menu-expand-all",
+   "type": "abutton",
+   "label": "Développez tout",
+   "terms": [
+    "Développez tout",
+    "Expand all",
+    "Espandi tutti",
+    "espandi tutto",
+    "espandi tutti",
+    "expand all",
+    "tout deplier"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:15",
+   "key": "tree|tree-menu-hide-selected",
+   "area": "tree",
+   "iid": "tree-menu-hide-selected",
+   "type": "abutton",
+   "label": "Masquez les nœuds sélectionnés",
+   "terms": [
+    "Masquez les nœuds sélectionnés",
+    "Hide selected nodes",
+    "Nascondi nodi selezionati",
+    "nascondi selezionati",
+    "hide selected",
+    "masquer selectionnes",
+    "togli selezionati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:16",
+   "key": "tree|tree-menu-show-selected-subtrees",
+   "area": "tree",
+   "iid": "tree-menu-show-selected-subtrees",
+   "type": "abutton",
+   "label": "Affichez les sous-arborescences sélectionnées",
+   "terms": [
+    "Affichez les sous-arborescences sélectionnées",
+    "Show selected subtrees",
+    "Mostra i sottoalberi selezionati",
+    "mostra solo selezionati",
+    "solo selezionati",
+    "isola selezionati",
+    "only selected",
+    "show only selected",
+    "sottoalberi"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:17",
+   "key": "tree|tree-menu-show-whole-tree",
+   "area": "tree",
+   "iid": "tree-menu-show-whole-tree",
+   "type": "abutton",
+   "label": "Affichez l'arborescence intière",
+   "terms": [
+    "Affichez l'arborescence intière",
+    "Show whole tree",
+    "Mostra albero intero",
+    "mostra tutto albero",
+    "albero intero",
+    "albero completo",
+    "whole tree",
+    "full tree",
+    "mostra tutti i nodi",
+    "ripristina vista",
+    "arbre entier"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:19",
+   "key": "tree|tree-menu-add-note",
+   "area": "tree",
+   "iid": "tree-menu-add-note",
+   "type": "abutton",
+   "label": "Ajoutez une note aux nœuds sélectionnés",
+   "terms": [
+    "Ajoutez une note aux nœuds sélectionnés",
+    "Add a note to the selected nodes",
+    "Aggiungi una nota ai nodi selezionati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:20",
+   "key": "tree|tree-menu-note-marks#show",
+   "area": "tree",
+   "iid": "tree-menu-note-marks",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "toggle"
+   ],
+   "options": [
+    {
+     "value": "show",
+     "terms": [
+      "show",
+      "Notes sur l'arborescence",
+      "Notes on the tree",
+      "Note sull'albero",
+      "mostra",
+      "show"
+     ],
+     "label": "Notes sur l'arborescence"
+    },
+    {
+     "value": "hide",
+     "terms": [
+      "hide",
+      "Notes sur l'arborescence",
+      "Notes on the tree",
+      "Note sull'albero",
+      "nascondi",
+      "hide",
+      "masque",
+      "togli"
+     ],
+     "label": "Notes sur l'arborescence"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "tree:22",
+   "key": "tree|tree-menu-save-spread",
+   "area": "tree",
+   "iid": "tree-menu-save-spread",
+   "type": "abutton",
+   "label": "Enregistrez le SPREAD",
+   "terms": [
+    "Enregistrez le SPREAD",
+    "Save SPREAD",
+    "Salva SPREAD",
+    "salva",
+    "save",
+    "salva progetto",
+    "salva sessione",
+    "save session",
+    "esporta json",
+    "enregistrer"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:23",
+   "key": "tree|tree-menu-load-spread",
+   "area": "tree",
+   "iid": "tree-menu-load-spread",
+   "type": "abutton",
+   "label": "Chargez SPREAD",
+   "terms": [
+    "Chargez SPREAD",
+    "Load SPREAD",
+    "Carica SPREAD",
+    "carica",
+    "load",
+    "carica progetto",
+    "load session",
+    "charger"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tree:25",
+   "key": "tree|tree-menu-download-image",
+   "area": "tree",
+   "iid": "tree-menu-download-image",
+   "type": "abutton_optioned",
+   "label": "Download l'image",
+   "terms": [
+    "Download l'image",
+    "Download image",
+    "Scarica immagine",
+    "scarica immagine",
+    "download image",
+    "esporta immagine",
+    "salva immagine",
+    "export image",
+    "screenshot",
+    "figura",
+    "telecharger image"
+   ],
+   "options": [
+    {
+     "value": "png",
+     "terms": [
+      "png",
+      ".png",
+      "png",
+      "immagine raster"
+     ],
+     "label": ".png"
+    },
+    {
+     "value": "svg",
+     "terms": [
+      "svg",
+      ".svg",
+      "svg",
+      "vettoriale",
+      "vector"
+     ],
+     "label": ".svg"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true,
+   "defaultValue": "png"
+  },
+  {
+   "id": "metadata:0",
+   "key": "metadata|metadata-selected-only#show_selected",
+   "area": "metadata",
+   "iid": "metadata-selected-only",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "tabella solo selezionati",
+    "righe selezionate",
+    "only selected rows",
+    "selected rows",
+    "lignes selectionnees",
+    "filtra tabella",
+    "tabella solo selezionati",
+    "righe selezionate",
+    "only selected rows",
+    "selected rows",
+    "lignes selectionnees",
+    "filtra tabella"
+   ],
+   "options": [
+    {
+     "value": "show_selected",
+     "terms": [
+      "show selected",
+      "Seulement les sélectionnés",
+      "Selected only",
+      "Solo selezionati",
+      "solo selezionati",
+      "only selected",
+      "selected only",
+      "selezionate"
+     ],
+     "label": "Seulement les sélectionnés"
+    },
+    {
+     "value": "show_all",
+     "terms": [
+      "show all",
+      "Seulement les sélectionnés",
+      "Selected only",
+      "Solo selezionati",
+      "tutti",
+      "tutte",
+      "all",
+      "everything",
+      "toutes"
+     ],
+     "label": "Seulement les sélectionnés"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:2",
+   "key": "metadata|metadata-add",
+   "area": "metadata",
+   "iid": "metadata-add",
+   "type": "abutton",
+   "label": "Ajoutez des métadonnées",
+   "terms": [
+    "Ajoutez des métadonnées",
+    "Add metadata",
+    "Aggiungi metadati",
+    "finestra aggiungi metadati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:3",
+   "key": "metadata|metadata-edit",
+   "area": "metadata",
+   "iid": "metadata-edit",
+   "type": "abutton",
+   "label": "Modifiez les métadonnées",
+   "terms": [
+    "Modifiez les métadonnées",
+    "Edit metadata",
+    "Modifica metadati",
+    "finestra modifica metadati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:5",
+   "key": "metadata|metadata-add-for-selection",
+   "area": "metadata",
+   "iid": "metadata-add-for-selection",
+   "type": "abutton",
+   "label": "Ajoutez des métadonnées pour la sélection",
+   "terms": [
+    "Ajoutez des métadonnées pour la sélection",
+    "Add metadata for selection",
+    "Aggiungi metadati per selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:6",
+   "key": "metadata|metadata-edit-for-selection",
+   "area": "metadata",
+   "iid": "metadata-edit-for-selection",
+   "type": "abutton",
+   "label": "Modifiez les métadonnées pou la sélection",
+   "terms": [
+    "Modifiez les métadonnées pou la sélection",
+    "Edit metadata for selection",
+    "Modifica metadati per selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:8",
+   "key": "metadata|metadata-delete",
+   "area": "metadata",
+   "iid": "metadata-delete",
+   "type": "abutton",
+   "label": "Supprimez les métadonnées",
+   "terms": [
+    "Supprimez les métadonnées",
+    "Delete metadata",
+    "Elimina metadati",
+    "finestra elimina metadati"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:10",
+   "key": "metadata|metadata-menu-color-by",
+   "area": "metadata",
+   "iid": "metadata-menu-color-by",
+   "type": "select",
+   "label": "Sélectionnez une colonne",
+   "terms": [
+    "Sélectionnez une colonne",
+    "Select column",
+    "Seleziona colonna"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:11",
+   "key": "metadata|metadata-move-first",
+   "area": "metadata",
+   "iid": "metadata-move-first",
+   "type": "abutton",
+   "label": "Déplacez en première position",
+   "terms": [
+    "Déplacez en première position",
+    "Move to the first position",
+    "Sposta in prima posizione",
+    "sposta in prima posizione",
+    "prima colonna",
+    "move first"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:12",
+   "key": "metadata|metadata-set-figure-legend",
+   "area": "metadata",
+   "iid": "metadata-set-figure-legend",
+   "type": "abutton",
+   "label": "Définissez comme légende de la figure",
+   "terms": [
+    "Définissez comme légende de la figure",
+    "Set as figure legend",
+    "Imposta come legenda della figura",
+    "imposta come legenda",
+    "figure legend",
+    "legenda figura"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:14",
+   "key": "metadata|metadata-resize-columns",
+   "area": "metadata",
+   "iid": "metadata-resize-columns",
+   "type": "abutton",
+   "label": "Redimensionnez les colonnes",
+   "terms": [
+    "Redimensionnez les colonnes",
+    "Resize columns",
+    "Ridimensiona colonne",
+    "ridimensiona colonne",
+    "adatta colonne",
+    "resize columns",
+    "autosize"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata:16",
+   "key": "metadata|metadata-show-hypo#show_hypo",
+   "area": "metadata",
+   "iid": "metadata-show-hypo",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "nodi ipotetici tabella",
+    "ipotetici",
+    "hypothetical",
+    "hypo",
+    "hypothetiques",
+    "nodi ipotetici tabella",
+    "ipotetici",
+    "hypothetical",
+    "hypo",
+    "hypothetiques",
+    "nodi ipotetici",
+    "ipotetici",
+    "hypothetical nodes",
+    "hypothetical",
+    "hypo",
+    "noeuds hypothetiques",
+    "hypothetiques"
+   ],
+   "options": [
+    {
+     "value": "show_hypo",
+     "terms": [
+      "show hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    },
+    {
+     "value": "hide_hypo",
+     "terms": [
+      "hide hypo",
+      "Affichez les éléments hypothétiques",
+      "Show hypothetical",
+      "Mostra elementi ipotetici"
+     ],
+     "label": "Affichez les éléments hypothétiques"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "metadata:18",
+   "key": "metadata|metadata-export-button",
+   "area": "metadata",
+   "iid": "metadata-export-button",
+   "type": "abutton_optioned",
+   "label": "Download la table",
+   "terms": [
+    "Download la table",
+    "Download table",
+    "Download tabella",
+    "scarica tabella",
+    "download table",
+    "esporta tabella",
+    "export table",
+    "esporta metadati",
+    "scarica metadati",
+    "export metadata",
+    "download metadata",
+    "telecharger tableau",
+    "exporter tableau",
+    "exporter metadonnees",
+    "telecharger metadonnees",
+    "scarica tabella",
+    "download table",
+    "esporta tabella",
+    "export table",
+    "esporta metadati",
+    "scarica metadati",
+    "export metadata",
+    "download metadata",
+    "telecharger tableau",
+    "exporter tableau",
+    "exporter metadonnees",
+    "telecharger metadonnees"
+   ],
+   "options": [
+    {
+     "value": "tsv",
+     "terms": [
+      "tsv",
+      ".tsv",
+      "tsv",
+      "tabulazioni",
+      "tab"
+     ],
+     "label": ".tsv"
+    },
+    {
+     "value": "xlsx",
+     "terms": [
+      "xlsx",
+      ".xlsx",
+      "xlsx",
+      "excel",
+      "foglio di calcolo",
+      "foglio excel",
+      "spreadsheet"
+     ],
+     "label": ".xlsx"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true,
+   "defaultValue": "tsv"
+  },
+  {
+   "id": "metadata-card:0",
+   "key": "metadata-card|metadata-card-select-all",
+   "area": "metadata-card",
+   "iid": "metadata-card-select-all",
+   "type": "abutton",
+   "label": "Tout sélectionner",
+   "terms": [
+    "Tout sélectionner",
+    "Select all",
+    "Seleziona tutto",
+    "seleziona tutto",
+    "seleziona tutti",
+    "select all",
+    "tout selectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "metadata-card:1",
+   "key": "metadata-card|metadata-card-clean-selection",
+   "area": "metadata-card",
+   "iid": "metadata-card-clean-selection",
+   "type": "abutton",
+   "label": "Effacez la sélection",
+   "terms": [
+    "Effacez la sélection",
+    "Clean selection",
+    "Pulisci selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:0",
+   "key": "legend|legend-menu-selection-mode#qualitative",
+   "area": "legend",
+   "iid": "legend-menu-selection-mode",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "modalita selezione legenda",
+    "selection mode",
+    "mode de selection",
+    "modalita selezione legenda",
+    "selection mode",
+    "mode de selection"
+   ],
+   "options": [
+    {
+     "value": "qualitative",
+     "terms": [
+      "qualitative",
+      "Sélection des nœuds associés",
+      "Related nodes selection",
+      "Selezione nodi correlati",
+      "qualitativa",
+      "qualitativo",
+      "qualitative"
+     ],
+     "label": "Sélection des nœuds associés"
+    },
+    {
+     "value": "visual",
+     "terms": [
+      "visual",
+      "Sélection visuelle",
+      "Visual selection",
+      "Selezione visiva",
+      "visiva",
+      "visuale",
+      "visual",
+      "visuelle"
+     ],
+     "label": "Sélection visuelle"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:2",
+   "key": "legend|legend-menu-select-all",
+   "area": "legend",
+   "iid": "legend-menu-select-all",
+   "type": "abutton",
+   "label": "Sélectionnez tous les éléments",
+   "terms": [
+    "Sélectionnez tous les éléments",
+    "Select all items",
+    "Seleziona tutti gli elementi",
+    "seleziona tutti i gruppi",
+    "select all groups",
+    "seleziona tutti i gruppi",
+    "select all groups"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:3",
+   "key": "legend|legend-menu-invert-selection",
+   "area": "legend",
+   "iid": "legend-menu-invert-selection",
+   "type": "abutton",
+   "label": "Inversez la sélection",
+   "terms": [
+    "Inversez la sélection",
+    "Invert selection",
+    "Inverti selezione",
+    "inverti selezione",
+    "invert selection",
+    "inverser la selection",
+    "inverti selezione",
+    "invert selection",
+    "inverser la selection"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:4",
+   "key": "legend|legend-menu-clean-selection",
+   "area": "legend",
+   "iid": "legend-menu-clean-selection",
+   "type": "abutton",
+   "label": "Effacez la sélection",
+   "terms": [
+    "Effacez la sélection",
+    "Clean selection",
+    "Pulisci selezione",
+    "pulisci selezione legenda",
+    "clear legend selection",
+    "pulisci selezione legenda",
+    "clear legend selection"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:5",
+   "key": "legend|legend-menu-filter-by-selection",
+   "area": "legend",
+   "iid": "legend-menu-filter-by-selection",
+   "type": "abutton",
+   "label": "Filtrez par sélection",
+   "terms": [
+    "Filtrez par sélection",
+    "Filter by selection",
+    "Filtra per selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:7",
+   "key": "legend|legend-menu-color-by",
+   "area": "legend",
+   "iid": "legend-menu-color-by",
+   "type": "select",
+   "label": "Colorez par",
+   "terms": [
+    "Colorez par",
+    "Color by",
+    "Colora per",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:8",
+   "key": "legend|legend-menu-maximum-group-number",
+   "area": "legend",
+   "iid": "legend-menu-maximum-group-number",
+   "type": "number",
+   "label": "Nombre maximal de groupes",
+   "terms": [
+    "Nombre maximal de groupes",
+    "Maximum number of groups",
+    "Numero massimo di gruppi",
+    "numero massimo gruppi",
+    "massimo gruppi",
+    "max groups",
+    "maximum groups",
+    "nombre maximum de groupes",
+    "numero massimo gruppi",
+    "massimo gruppi",
+    "max groups",
+    "maximum groups",
+    "nombre maximum de groupes"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 100000,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:9",
+   "key": "legend|legend-menu-minimum-group-size",
+   "area": "legend",
+   "iid": "legend-menu-minimum-group-size",
+   "type": "number",
+   "label": "Taille minimale du groupe",
+   "terms": [
+    "Taille minimale du groupe",
+    "Mininimum group size",
+    "Grandezza minima gruppo",
+    "dimensione minima gruppo",
+    "minimum group size",
+    "min group size",
+    "taille minimale groupe",
+    "dimensione minima gruppo",
+    "minimum group size",
+    "min group size",
+    "taille minimale groupe"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 100000,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:11",
+   "key": "legend|legend-menu-data-category",
+   "area": "legend",
+   "iid": "legend-menu-data-category",
+   "type": "select",
+   "label": "Catégorie de données",
+   "terms": [
+    "Catégorie de données",
+    "Data category",
+    "Categoria dati",
+    "tipo dati",
+    "data type",
+    "categoria dati",
+    "type de donnees",
+    "tipo colonna",
+    "tipo dati",
+    "data type",
+    "categoria dati",
+    "type de donnees",
+    "tipo colonna"
+   ],
+   "options": [
+    {
+     "value": "character",
+     "terms": [
+      "character",
+      "Caractère",
+      "Character",
+      "Carattere",
+      "testo",
+      "categorico",
+      "categoriale",
+      "caratteri",
+      "character",
+      "text",
+      "categorical",
+      "texte",
+      "stringa"
+     ],
+     "label": "Caractère"
+    },
+    {
+     "value": "numeric",
+     "terms": [
+      "numeric",
+      "Numérique",
+      "Numeric",
+      "Numerico",
+      "numerico",
+      "numerici",
+      "numeric",
+      "number",
+      "numbers",
+      "numerique",
+      "numeri"
+     ],
+     "label": "Numérique"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:12",
+   "key": "legend|legend-menu-group-order",
+   "area": "legend",
+   "iid": "legend-menu-group-order",
+   "type": "select",
+   "label": "Ordre du groupe",
+   "terms": [
+    "Ordre du groupe",
+    "Group order",
+    "Ordine gruppo",
+    "ordine gruppi",
+    "ordina gruppi",
+    "group order",
+    "sort groups",
+    "ordre des groupes",
+    "ordina legenda",
+    "ordina",
+    "ordine gruppi",
+    "ordina gruppi",
+    "group order",
+    "sort groups",
+    "ordre des groupes",
+    "ordina legenda",
+    "ordina"
+   ],
+   "options": [
+    {
+     "value": "size-desc",
+     "terms": [
+      "size desc",
+      "Taille décroissante",
+      "Size descending",
+      "Grandezza discendente",
+      "dimensione decrescente",
+      "piu grandi prima",
+      "size descending",
+      "largest first",
+      "decrescente",
+      "descending",
+      "grandezza"
+     ],
+     "label": "Taille décroissante"
+    },
+    {
+     "value": "size-asc",
+     "terms": [
+      "size asc",
+      "Taille ascendente",
+      "Size ascending",
+      "Grandezza ascendente",
+      "dimensione crescente",
+      "piu piccoli prima",
+      "size ascending",
+      "smallest first",
+      "crescente",
+      "ascending"
+     ],
+     "label": "Taille ascendente"
+    },
+    {
+     "value": "alphabetic-asc",
+     "terms": [
+      "alphabetic asc",
+      "Nom ascendant",
+      "Name ascending",
+      "Nome ascendente",
+      "per nome",
+      "by name",
+      "alphabetically",
+      "par nom",
+      "alfabetico",
+      "alfabetica",
+      "alfabeticamente",
+      "alphabetical",
+      "alphabetic",
+      "alphabetique",
+      "az"
+     ],
+     "label": "Nom ascendant"
+    },
+    {
+     "value": "alphabetic-desc",
+     "terms": [
+      "alphabetic desc",
+      "Nom descendant",
+      "Name descending",
+      "Nome discendente",
+      "alfabetico inverso",
+      "alfabetica inversa",
+      "reverse alphabetical",
+      "za",
+      "inverso"
+     ],
+     "label": "Nom descendant"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:13",
+   "key": "legend|legend-menu-color-scheme",
+   "area": "legend",
+   "iid": "legend-menu-color-scheme",
+   "type": "select",
+   "label": "Schéma de couleurs",
+   "terms": [
+    "Schéma de couleurs",
+    "Color scheme",
+    "Schema colore",
+    "schema colori",
+    "palette",
+    "colour scheme",
+    "color scheme",
+    "tavolozza",
+    "schema de couleurs",
+    "colori",
+    "schema colori",
+    "palette",
+    "colour scheme",
+    "color scheme",
+    "tavolozza",
+    "schema de couleurs",
+    "colori"
+   ],
+   "options": [
+    {
+     "value": "category",
+     "terms": [
+      "category",
+      "Catégorie",
+      "Category",
+      "Categoria",
+      "categorico",
+      "categorie",
+      "category",
+      "categorical",
+      "categories"
+     ],
+     "label": "Catégorie"
+    },
+    {
+     "value": "category_soft",
+     "terms": [
+      "category soft",
+      "Catégories douces",
+      "Soft categories",
+      "Categorie tenui"
+     ],
+     "label": "Catégories douces"
+    },
+    {
+     "value": "category_grapetree",
+     "terms": [
+      "category grapetree",
+      "GrapeTree d'origine",
+      "GrapeTree legacy",
+      "GrapeTree originale"
+     ],
+     "label": "GrapeTree d'origine"
+    },
+    {
+     "value": "category_hue_rotation",
+     "terms": [
+      "category hue rotation",
+      "Rotation des teintes",
+      "Hue rotation",
+      "Rotazione delle tinte"
+     ],
+     "label": "Rotation des teintes"
+    },
+    {
+     "value": "gradient",
+     "terms": [
+      "gradient",
+      "Gradient chaud",
+      "Warm gradient",
+      "Gradiente caldo",
+      "gradiente",
+      "sfumatura",
+      "gradient",
+      "degrade"
+     ],
+     "label": "Gradient chaud"
+    },
+    {
+     "value": "gradient_cool",
+     "terms": [
+      "gradient cool",
+      "Gradient froid",
+      "Cold gradient",
+      "Gradiente freddo",
+      "freddo",
+      "fredda",
+      "cool",
+      "froid"
+     ],
+     "label": "Gradient froid"
+    },
+    {
+     "value": "gradient_rainbow",
+     "terms": [
+      "gradient rainbow",
+      "Arc-en-ciel",
+      "Rainbow",
+      "Arcobaleno",
+      "arcobaleno",
+      "rainbow",
+      "arc en ciel"
+     ],
+     "label": "Arc-en-ciel"
+    },
+    {
+     "value": "gradient_rainbow2",
+     "terms": [
+      "gradient rainbow2",
+      "Arc-en-ciel clair",
+      "Bright rainbow",
+      "Arcobaleno chiaro",
+      "arcobaleno 2",
+      "rainbow 2"
+     ],
+     "label": "Arc-en-ciel clair"
+    },
+    {
+     "value": "gradient_rainbow3",
+     "terms": [
+      "gradient rainbow3",
+      "Arc-en-ciel sombre",
+      "Dark rainbow",
+      "Arcobaleno scuro",
+      "arcobaleno 3",
+      "rainbow 3"
+     ],
+     "label": "Arc-en-ciel sombre"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:14",
+   "key": "legend|legend-menu-quick-gradient",
+   "area": "legend",
+   "iid": "legend-menu-quick-gradient",
+   "type": "abutton",
+   "label": "Gradient rapide",
+   "terms": [
+    "Gradient rapide",
+    "Quick gradient",
+    "Gradiente veloce",
+    "gradiente rapido",
+    "quick gradient",
+    "degrade rapide",
+    "gradiente rapido",
+    "quick gradient",
+    "degrade rapide"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "legend:16",
+   "key": "legend|legend-menu-view-mode",
+   "area": "legend",
+   "iid": "legend-menu-view-mode",
+   "type": "select",
+   "label": "Affichage de la légende",
+   "terms": [
+    "Affichage de la légende",
+    "Legend view",
+    "Visualizzazione legenda",
+    "vista legenda",
+    "legend view",
+    "visualizzazione legenda",
+    "affichage legende",
+    "vista legenda",
+    "legend view",
+    "visualizzazione legenda",
+    "affichage legende"
+   ],
+   "options": [
+    {
+     "value": "list",
+     "terms": [
+      "list",
+      "Vue à liste",
+      "List view",
+      "Visualizzazione a lista",
+      "lista",
+      "elenco",
+      "list",
+      "liste"
+     ],
+     "label": "Vue à liste"
+    },
+    {
+     "value": "histogram",
+     "terms": [
+      "histogram",
+      "Vue en histogramme",
+      "Histogram view",
+      "Visualizzazione a istogramma",
+      "istogramma",
+      "histogram",
+      "histogramme",
+      "barre",
+      "bar"
+     ],
+     "label": "Vue en histogramme"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:17",
+   "key": "legend|legend-menu-histogram-scale#log",
+   "area": "legend",
+   "iid": "legend-menu-histogram-scale",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "toggle"
+   ],
+   "options": [
+    {
+     "value": "log",
+     "terms": [
+      "log",
+      "Échelle logarithmique de l'histogramme",
+      "Histogram log scale",
+      "Scala logaritmica istogramma"
+     ],
+     "label": "Échelle logarithmique de l'histogramme"
+    },
+    {
+     "value": "linear",
+     "terms": [
+      "linear",
+      "Échelle logarithmique de l'histogramme",
+      "Histogram log scale",
+      "Scala logaritmica istogramma"
+     ],
+     "label": "Échelle logarithmique de l'histogramme"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:18",
+   "key": "legend|legend-menu-player#on",
+   "area": "legend",
+   "iid": "legend-menu-player",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "video",
+    "timeline",
+    "linea temporale",
+    "timelapse",
+    "filmato",
+    "player",
+    "video",
+    "timeline",
+    "linea temporale",
+    "timelapse",
+    "filmato",
+    "player"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Vidéo",
+      "Video",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Vidéo"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Vidéo",
+      "Video",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Vidéo"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "legend:20",
+   "key": "legend|legend-menu-download",
+   "area": "legend",
+   "iid": "legend-menu-download",
+   "type": "abutton_optioned",
+   "label": "Téléchargez l'image de la légende",
+   "terms": [
+    "Téléchargez l'image de la légende",
+    "Download legend image",
+    "Scarica immagine legenda"
+   ],
+   "options": [
+    {
+     "value": "png",
+     "terms": [
+      "png",
+      ".png",
+      "png",
+      "immagine raster"
+     ],
+     "label": ".png"
+    },
+    {
+     "value": "svg",
+     "terms": [
+      "svg",
+      ".svg",
+      "svg",
+      "vettoriale",
+      "vector"
+     ],
+     "label": ".svg"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true,
+   "defaultValue": "png"
+  },
+  {
+   "id": "map:0",
+   "key": "map|map-aggregation-toggle#geographical",
+   "area": "map",
+   "iid": "map-aggregation-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "aggregazione",
+    "aggrega",
+    "aggregation",
+    "aggregate",
+    "raggruppa marcatori",
+    "regroupement",
+    "aggregazione",
+    "aggrega",
+    "aggregation",
+    "aggregate",
+    "raggruppa marcatori",
+    "regroupement"
+   ],
+   "options": [
+    {
+     "value": "geographical",
+     "terms": [
+      "geographical",
+      "Agrégez par coordonnées",
+      "Join by coordinates",
+      "Aggrega per coordinate",
+      "geografica",
+      "geografico",
+      "geographical",
+      "geographic",
+      "coordinate",
+      "geographique"
+     ],
+     "label": "Agrégez par coordonnées"
+    },
+    {
+     "value": "metadata",
+     "terms": [
+      "metadata",
+      "Agrégez par métadonnées",
+      "Join by metadata",
+      "Aggrega per metadati",
+      "metadati",
+      "metadata",
+      "metadonnees"
+     ],
+     "label": "Agrégez par métadonnées"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:1",
+   "key": "map|map-delta-select",
+   "area": "map",
+   "iid": "map-delta-select",
+   "type": "select",
+   "label": "Définissez la valeur",
+   "terms": [
+    "Définissez la valeur",
+    "Set value",
+    "Imposta valore",
+    "delta",
+    "precisione",
+    "precision",
+    "decimali",
+    "decimals",
+    "cifre",
+    "aggregazione geografica",
+    "delta",
+    "precisione",
+    "precision",
+    "decimali",
+    "decimals",
+    "cifre",
+    "aggregazione geografica"
+   ],
+   "options": [
+    {
+     "value": 1,
+     "terms": [
+      "1",
+      "1"
+     ],
+     "label": "1"
+    },
+    {
+     "value": 2,
+     "terms": [
+      "2",
+      "2"
+     ],
+     "label": "2"
+    },
+    {
+     "value": 3,
+     "terms": [
+      "3",
+      "3"
+     ],
+     "label": "3"
+    },
+    {
+     "value": 4,
+     "terms": [
+      "4",
+      "4"
+     ],
+     "label": "4"
+    },
+    {
+     "value": 5,
+     "terms": [
+      "5",
+      "5"
+     ],
+     "label": "5"
+    },
+    {
+     "value": 6,
+     "terms": [
+      "6",
+      "6"
+     ],
+     "label": "6"
+    },
+    {
+     "value": 7,
+     "terms": [
+      "7",
+      "7"
+     ],
+     "label": "7"
+    },
+    {
+     "value": 8,
+     "terms": [
+      "8",
+      "8"
+     ],
+     "label": "8"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:2",
+   "key": "map|map-reset-delta",
+   "area": "map",
+   "iid": "map-reset-delta",
+   "type": "abutton",
+   "label": "Revenez aux paramètres par défaut",
+   "terms": [
+    "Revenez aux paramètres par défaut",
+    "Reset to default",
+    "Torna alle impostazioni di default",
+    "ripristina delta",
+    "reset delta",
+    "ripristina delta",
+    "reset delta"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:4",
+   "key": "map|map-point-min-radius",
+   "area": "map",
+   "iid": "map-point-min-radius",
+   "type": "number",
+   "label": "Rayon minimal du marqueur",
+   "terms": [
+    "Rayon minimal du marqueur",
+    "Min marker radius",
+    "Raggio minimo del marcatore",
+    "raggio minimo",
+    "min radius",
+    "minimum radius",
+    "rayon minimum",
+    "marcatori minimi",
+    "raggio minimo",
+    "min radius",
+    "minimum radius",
+    "rayon minimum",
+    "marcatori minimi"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:5",
+   "key": "map|map-point-max-radius",
+   "area": "map",
+   "iid": "map-point-max-radius",
+   "type": "number",
+   "label": "Rayon maximal du marqueur",
+   "terms": [
+    "Rayon maximal du marqueur",
+    "Max marker radius",
+    "Raggio massimo del marcatore",
+    "raggio massimo",
+    "max radius",
+    "maximum radius",
+    "rayon maximum",
+    "marcatori massimi",
+    "raggio massimo",
+    "max radius",
+    "maximum radius",
+    "rayon maximum",
+    "marcatori massimi"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map:6",
+   "key": "map|map-reset-max-min-radius",
+   "area": "map",
+   "iid": "map-reset-max-min-radius",
+   "type": "abutton",
+   "label": "Revenez aux paramètres par défaut",
+   "terms": [
+    "Revenez aux paramètres par défaut",
+    "Reset to default",
+    "Torna alle impostazioni di default",
+    "ripristina raggio",
+    "reset radius",
+    "ripristina raggio",
+    "reset radius"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:8",
+   "key": "map|map-select-all",
+   "area": "map",
+   "iid": "map-select-all",
+   "type": "abutton",
+   "label": "Tout sélectionner",
+   "terms": [
+    "Tout sélectionner",
+    "Select all",
+    "Seleziona tutto",
+    "seleziona tutto",
+    "seleziona tutti",
+    "select all",
+    "tout selectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:9",
+   "key": "map|map-deselect-all",
+   "area": "map",
+   "iid": "map-deselect-all",
+   "type": "abutton",
+   "label": "Désélectionnez tous",
+   "terms": [
+    "Désélectionnez tous",
+    "Deselect all",
+    "Deseleziona tutti",
+    "deseleziona tutto",
+    "deselect all",
+    "clear selection",
+    "pulisci selezione",
+    "tout deselectionner"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map:11",
+   "key": "map|map-marker-mode-toggle#piechart",
+   "area": "map",
+   "iid": "map-marker-mode-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "marcatori",
+    "marker",
+    "markers",
+    "modalita marcatori",
+    "marker mode",
+    "marqueurs",
+    "visualizzazione mappa",
+    "marcatori",
+    "marker",
+    "markers",
+    "modalita marcatori",
+    "marker mode",
+    "marqueurs",
+    "visualizzazione mappa"
+   ],
+   "options": [
+    {
+     "value": "piechart",
+     "terms": [
+      "piechart",
+      "Mode graphique en secteurs",
+      "Pie Chart mode",
+      "Modalità grafico a torta",
+      "torta",
+      "torte",
+      "grafico a torta",
+      "pie",
+      "pie chart",
+      "camembert",
+      "secteurs"
+     ],
+     "label": "Mode graphique en secteurs"
+    },
+    {
+     "value": "heatmap",
+     "terms": [
+      "heatmap",
+      "Mode heatmap",
+      "Heatmap mode",
+      "Modalità heatmap",
+      "heatmap",
+      "mappa di calore",
+      "calore",
+      "heat",
+      "densita",
+      "density",
+      "chaleur"
+     ],
+     "label": "Mode heatmap"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "map-view:zoom",
+   "key": "map-view|zoom",
+   "area": "map",
+   "iid": null,
+   "type": "number",
+   "label": "Map zoom factor / Fattore di zoom della mappa / Facteur de zoom de la carte",
+   "terms": [
+    "Map zoom factor / Fattore di zoom della mappa / Facteur de zoom de la carte"
+   ],
+   "options": [],
+   "min": 0.1,
+   "max": 10,
+   "valueRequired": true
+  },
+  {
+   "id": "map-view:level",
+   "key": "map-view|level",
+   "area": "map",
+   "iid": null,
+   "type": "number",
+   "label": "Map zoom level / Livello di zoom della mappa / Niveau de zoom de la carte",
+   "terms": [
+    "Map zoom level / Livello di zoom della mappa / Niveau de zoom de la carte"
+   ],
+   "options": [],
+   "min": -Infinity,
+   "max": 18,
+   "valueRequired": true
+  },
+  {
+   "id": "map-view:center",
+   "key": "map-view|center",
+   "area": "map",
+   "iid": null,
+   "type": "assistant_map_coordinates",
+   "label": "Center map at coordinates / Centra la mappa alle coordinate / Centrer la carte aux coordonnées",
+   "terms": [
+    "Center map at coordinates / Centra la mappa alle coordinate / Centrer la carte aux coordonnées"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "map-view:fit",
+   "key": "map-view|fit",
+   "area": "map",
+   "iid": null,
+   "type": "abutton",
+   "label": "Fit map to all markers / Inquadra tutti i marcatori / Afficher tous les marqueurs",
+   "terms": [
+    "Fit map to all markers / Inquadra tutti i marcatori / Afficher tous les marqueurs",
+    "inquadra",
+    "cadre",
+    "cadrer",
+    "recadre"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "video-player:play",
+   "key": "video-player|play",
+   "area": "video",
+   "iid": null,
+   "type": "abutton",
+   "label": "Play timeline / Riproduci video / Lire la vidéo",
+   "terms": [
+    "Play timeline / Riproduci video / Lire la vidéo"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "video-player:pause",
+   "key": "video-player|pause",
+   "area": "video",
+   "iid": null,
+   "type": "abutton",
+   "label": "Pause timeline / Metti in pausa il video / Mettre la vidéo en pause",
+   "terms": [
+    "Pause timeline / Metti in pausa il video / Mettre la vidéo en pause"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "video-player:speed",
+   "key": "video-player|speed",
+   "area": "video",
+   "iid": null,
+   "type": "select",
+   "label": "Timeline playback speed / Velocità del video / Vitesse de lecture",
+   "terms": [
+    "Timeline playback speed / Velocità del video / Vitesse de lecture"
+   ],
+   "options": [
+    {
+     "value": 0.5,
+     "terms": [
+      "0.5",
+      "0.5x"
+     ],
+     "label": "0.5x"
+    },
+    {
+     "value": 1,
+     "terms": [
+      "1",
+      "1x"
+     ],
+     "label": "1x"
+    },
+    {
+     "value": 1.5,
+     "terms": [
+      "1.5",
+      "1.5x"
+     ],
+     "label": "1.5x"
+    },
+    {
+     "value": 2,
+     "terms": [
+      "2",
+      "2x"
+     ],
+     "label": "2x"
+    },
+    {
+     "value": 5,
+     "terms": [
+      "5",
+      "5x"
+     ],
+     "label": "5x"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "video-player:seek",
+   "key": "video-player|seek",
+   "area": "video",
+   "iid": null,
+   "type": "number",
+   "label": "Timeline position (%) / Posizione del video (%) / Position de lecture (%)",
+   "terms": [
+    "Timeline position (%) / Posizione del video (%) / Position de lecture (%)"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 100,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:0",
+   "key": "zooms|zooms-menu-zoom-type",
+   "area": "zooms",
+   "iid": "zooms-menu-zoom-type",
+   "type": "select",
+   "label": "Sélectionnez le type de zoom",
+   "terms": [
+    "Sélectionnez le type de zoom",
+    "Select zoom type",
+    "Seleziona tipo di zoom",
+    "tipo zoom",
+    "zoom type",
+    "reportree",
+    "tipo zoom",
+    "zoom type",
+    "reportree"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:1",
+   "key": "zooms|zooms-menu-category",
+   "area": "zooms",
+   "iid": "zooms-menu-category",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:2",
+   "key": "zooms|zooms-menu-zoomed-tree",
+   "area": "zooms",
+   "iid": "zooms-menu-zoomed-tree",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:4",
+   "key": "zooms|zooms-menu-selection-alerts#show",
+   "area": "zooms",
+   "iid": "zooms-menu-selection-alerts",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "avvisi selezione",
+    "selection alerts",
+    "alert",
+    "avvisi",
+    "alertes",
+    "avvisi selezione",
+    "selection alerts",
+    "alert",
+    "avvisi",
+    "alertes"
+   ],
+   "options": [
+    {
+     "value": "show",
+     "terms": [
+      "show",
+      "Affichez les alertes de sélection",
+      "Show selection alerts",
+      "Mostra avvisi di selezione",
+      "mostra",
+      "show"
+     ],
+     "label": "Affichez les alertes de sélection"
+    },
+    {
+     "value": "hide",
+     "terms": [
+      "hide",
+      "Masquez les alertes de sélection",
+      "Hide selection alerts",
+      "Nascondi avvisi di selezione",
+      "nascondi",
+      "hide",
+      "masque",
+      "togli"
+     ],
+     "label": "Masquez les alertes de sélection"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:5",
+   "key": "zooms|zooms-menu-select-nodes",
+   "area": "zooms",
+   "iid": "zooms-menu-select-nodes",
+   "type": "abutton",
+   "label": "Sélectionnez les nœuds interessés",
+   "terms": [
+    "Sélectionnez les nœuds interessés",
+    "Select involved nodes",
+    "Seleziona nodi coinvolti",
+    "seleziona nodi del cluster",
+    "select cluster nodes",
+    "seleziona nodi del cluster",
+    "select cluster nodes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms:6",
+   "key": "zooms|zooms-menu-clean-selection",
+   "area": "zooms",
+   "iid": "zooms-menu-clean-selection",
+   "type": "abutton",
+   "label": "Effacez la sélection",
+   "terms": [
+    "Effacez la sélection",
+    "Clean selection",
+    "Pulisci selezione"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms:8",
+   "key": "zooms|zooms-menu-current-settings#apply",
+   "area": "zooms",
+   "iid": "zooms-menu-current-settings",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels",
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels"
+   ],
+   "options": [
+    {
+     "value": "apply",
+     "terms": [
+      "apply",
+      "Utilisez les paramètres actuels",
+      "Use current settings",
+      "Usa impostazioni correnti",
+      "applica",
+      "apply",
+      "mantieni",
+      "keep"
+     ],
+     "label": "Utilisez les paramètres actuels"
+    },
+    {
+     "value": "not-apply",
+     "terms": [
+      "not apply",
+      "Ne pas utiliser les paramètres actuels",
+      "Do not use current settings",
+      "Non usare impostazioni correnti",
+      "non applicare",
+      "ignora",
+      "ignore",
+      "default"
+     ],
+     "label": "Ne pas utiliser les paramètres actuels"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms:9",
+   "key": "zooms|zooms-menu-load-zoomed-tree",
+   "area": "zooms",
+   "iid": "zooms-menu-load-zoomed-tree",
+   "type": "abutton",
+   "label": "Chargez le cluster",
+   "terms": [
+    "Chargez le cluster",
+    "Load cluster",
+    "Carica cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms:10",
+   "key": "zooms|zooms-menu-open-zoomed-tree",
+   "area": "zooms",
+   "iid": "zooms-menu-open-zoomed-tree",
+   "type": "abutton",
+   "label": "Ouvrez dans un nouvel onglet",
+   "terms": [
+    "Ouvrez dans un nouvel onglet",
+    "Load in new tab",
+    "Apri in nuova scheda",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms-filtered:0",
+   "key": "zooms-filtered|zooms-filtered-menu-zoom-type",
+   "area": "zooms-filtered",
+   "iid": "zooms-filtered-menu-zoom-type",
+   "type": "select",
+   "label": "Sélectionnez le type de zoom",
+   "terms": [
+    "Sélectionnez le type de zoom",
+    "Select zoom type",
+    "Seleziona tipo di zoom"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:1",
+   "key": "zooms-filtered|zooms-filtered-menu-category",
+   "area": "zooms-filtered",
+   "iid": "zooms-filtered-menu-category",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:2",
+   "key": "zooms-filtered|zooms-filtered-menu-zoomed-tree",
+   "area": "zooms-filtered",
+   "iid": "zooms-filtered-menu-zoomed-tree",
+   "type": "select",
+   "label": "Sélectionnez",
+   "terms": [
+    "Sélectionnez",
+    "Select",
+    "Seleziona"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:4",
+   "key": "zooms-filtered|zooms-menu-current-settings#apply",
+   "area": "zooms-filtered",
+   "iid": "zooms-menu-current-settings",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels",
+    "impostazioni correnti",
+    "current settings",
+    "impostazioni attuali",
+    "reglages actuels"
+   ],
+   "options": [
+    {
+     "value": "apply",
+     "terms": [
+      "apply",
+      "Utilisez les paramètres actuels",
+      "Use current settings",
+      "Usa impostazioni correnti",
+      "applica",
+      "apply",
+      "mantieni",
+      "keep"
+     ],
+     "label": "Utilisez les paramètres actuels"
+    },
+    {
+     "value": "not-apply",
+     "terms": [
+      "not apply",
+      "Ne pas utiliser les paramètres actuels",
+      "Do not use current settings",
+      "Non usare impostazioni correnti",
+      "non applicare",
+      "ignora",
+      "ignore",
+      "default"
+     ],
+     "label": "Ne pas utiliser les paramètres actuels"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "zooms-filtered:5",
+   "key": "zooms-filtered|zooms-menu-load-zoomed-tree",
+   "area": "zooms-filtered",
+   "iid": "zooms-menu-load-zoomed-tree",
+   "type": "abutton",
+   "label": "Chargez le cluster",
+   "terms": [
+    "Chargez le cluster",
+    "Load cluster",
+    "Carica cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster",
+    "carica cluster",
+    "load cluster",
+    "apri cluster"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "zooms-filtered:6",
+   "key": "zooms-filtered|zooms-menu-open-zoomed-tree",
+   "area": "zooms-filtered",
+   "iid": "zooms-menu-open-zoomed-tree",
+   "type": "abutton",
+   "label": "Ouvrez dans un nouvel onglet",
+   "terms": [
+    "Ouvrez dans un nouvel onglet",
+    "Load in new tab",
+    "Apri in nuova scheda",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet",
+    "apri cluster in nuova scheda",
+    "new tab",
+    "nuova scheda",
+    "nouvel onglet"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "layout:0",
+   "key": "layout|settings",
+   "area": "layout",
+   "iid": null,
+   "type": "settings",
+   "label": "",
+   "terms": [
+    "impostazioni",
+    "settings",
+    "opzioni",
+    "parametri",
+    "parametres",
+    "reglages",
+    "pannello impostazioni"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Paramètres",
+      "Settings",
+      "Impostazioni",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Paramètres"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Paramètres",
+      "Settings",
+      "Impostazioni",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Paramètres"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:1",
+   "key": "layout|map",
+   "area": "layout",
+   "iid": null,
+   "type": "map",
+   "label": "",
+   "terms": [
+    "mappa",
+    "map",
+    "carte",
+    "gis",
+    "cartina"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Carte",
+      "Map",
+      "Mappa",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Carte"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Carte",
+      "Map",
+      "Mappa",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Carte"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:2",
+   "key": "layout|metadata",
+   "area": "layout",
+   "iid": null,
+   "type": "metadata",
+   "label": "",
+   "terms": [
+    "metadati",
+    "metadata",
+    "tabella",
+    "table",
+    "metadonnees",
+    "tableau",
+    "griglia"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Métadonnées",
+      "Metadata",
+      "Metadati",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Métadonnées"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Métadonnées",
+      "Metadata",
+      "Metadati",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Métadonnées"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:3",
+   "key": "layout|legend",
+   "area": "layout",
+   "iid": null,
+   "type": "legend",
+   "label": "",
+   "terms": [
+    "legenda",
+    "legend",
+    "legende"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Légende",
+      "Legend",
+      "Legenda",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Légende"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Légende",
+      "Legend",
+      "Legenda",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Légende"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "layout:4",
+   "key": "layout|assistant",
+   "area": "layout",
+   "iid": null,
+   "type": "assistant",
+   "label": "",
+   "terms": [
+    "assistant"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Assistant",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Assistant"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Assistant",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Assistant"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:0",
+   "key": "settings/node-style|tree-metadata-select",
+   "area": "settings/node-style",
+   "iid": "tree-metadata-select",
+   "type": "select",
+   "label": "Colorez par",
+   "terms": [
+    "Colorez par",
+    "Color by",
+    "Colora per",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par",
+    "colori per",
+    "colora per",
+    "color by",
+    "colour by",
+    "colorer par",
+    "colori per"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:2",
+   "key": "settings/node-style|tree-show-node-labels#shown",
+   "area": "settings/node-style",
+   "iid": "tree-show-node-labels",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "etichette nodi",
+    "etichette dei nodi",
+    "node labels",
+    "labels",
+    "etichette",
+    "nomi dei nodi",
+    "etiquettes des noeuds",
+    "etiquettes",
+    "etichette nodi",
+    "etichette dei nodi",
+    "node labels",
+    "labels",
+    "etichette",
+    "nomi dei nodi",
+    "etiquettes des noeuds",
+    "etiquettes"
+   ],
+   "options": [
+    {
+     "value": "shown",
+     "terms": [
+      "shown",
+      "Affichez les étiquettes",
+      "Show labels",
+      "Mostra etichette"
+     ],
+     "label": "Affichez les étiquettes"
+    },
+    {
+     "value": "hidden",
+     "terms": [
+      "hidden",
+      "Masquez les étiquettes",
+      "Hide labels",
+      "Nascondi etichette"
+     ],
+     "label": "Masquez les étiquettes"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:3",
+   "key": "settings/node-style|tree-node-label-text",
+   "area": "settings/node-style",
+   "iid": "tree-node-label-text",
+   "type": "select",
+   "label": "Étiquettes",
+   "terms": [
+    "Étiquettes",
+    "Labels",
+    "Etichette",
+    "testo etichette",
+    "label text",
+    "etichetta per",
+    "usa come etichetta",
+    "label by",
+    "etichette con",
+    "texte des etiquettes",
+    "testo etichette",
+    "label text",
+    "etichetta per",
+    "usa come etichetta",
+    "label by",
+    "etichette con",
+    "texte des etiquettes"
+   ],
+   "options": [
+    {
+     "value": "ID",
+     "terms": [
+      "ID",
+      "Id"
+     ],
+     "label": "Id"
+    },
+    {
+     "value": "cluster",
+     "terms": [
+      "cluster",
+      "Cluster"
+     ],
+     "label": "Cluster"
+    },
+    {
+     "value": "latitude",
+     "terms": [
+      "latitude",
+      "Latitude"
+     ],
+     "label": "Latitude"
+    },
+    {
+     "value": "lineage",
+     "terms": [
+      "lineage",
+      "Lineage"
+     ],
+     "label": "Lineage"
+    },
+    {
+     "value": "longitude",
+     "terms": [
+      "longitude",
+      "Longitude"
+     ],
+     "label": "Longitude"
+    },
+    {
+     "value": "outcome",
+     "terms": [
+      "outcome",
+      "Outcome"
+     ],
+     "label": "Outcome"
+    },
+    {
+     "value": "province",
+     "terms": [
+      "province",
+      "Province"
+     ],
+     "label": "Province"
+    },
+    {
+     "value": "region",
+     "terms": [
+      "region",
+      "Region"
+     ],
+     "label": "Region"
+    },
+    {
+     "value": "sampling_date",
+     "terms": [
+      "sampling date",
+      "Sampling_date"
+     ],
+     "label": "Sampling_date"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:5",
+   "key": "settings/node-style|tree-node-label-font-size",
+   "area": "settings/node-style",
+   "iid": "tree-node-label-font-size",
+   "type": "number",
+   "label": "Taille de police",
+   "terms": [
+    "Taille de police",
+    "Font size",
+    "Dimensione carattere",
+    "dimensione font etichette",
+    "font etichette nodi",
+    "grandezza testo etichette",
+    "dimensione testo nodi",
+    "node label font size",
+    "label size",
+    "taille police etiquettes"
+   ],
+   "options": [],
+   "min": 5,
+   "max": 55,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:6",
+   "key": "settings/node-style|tree-highlight-labels",
+   "area": "settings/node-style",
+   "iid": "tree-highlight-labels",
+   "type": "search",
+   "label": "Mettez en surbrillance les étiquettes",
+   "terms": [
+    "Mettez en surbrillance les étiquettes",
+    "Highlight labels",
+    "Evidenzia etichette",
+    "evidenzia etichetta",
+    "evidenzia",
+    "highlight",
+    "cerca",
+    "trova",
+    "search",
+    "find",
+    "surligner",
+    "chercher",
+    "evidenzia etichetta",
+    "evidenzia",
+    "highlight",
+    "cerca",
+    "trova",
+    "search",
+    "find",
+    "surligner",
+    "chercher"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-style:8",
+   "key": "settings/node-style|tree-show-individual-segments#shown",
+   "area": "settings/node-style",
+   "iid": "tree-show-individual-segments",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "segmenti individuali",
+    "individual segments",
+    "segmenti",
+    "spicchi",
+    "pie segments",
+    "segments",
+    "segmenti individuali",
+    "individual segments",
+    "segmenti",
+    "spicchi",
+    "pie segments",
+    "segments"
+   ],
+   "options": [
+    {
+     "value": "shown",
+     "terms": [
+      "shown",
+      "Segments individuels",
+      "Individual segments",
+      "Segmenti individuali"
+     ],
+     "label": "Segments individuels"
+    },
+    {
+     "value": "hidden",
+     "terms": [
+      "hidden",
+      "Segments individuels",
+      "Individual segments",
+      "Segmenti individuali"
+     ],
+     "label": "Segments individuels"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-size:1",
+   "key": "settings/node-size|tree-node-radius-size",
+   "area": "settings/node-size",
+   "iid": "tree-node-radius-size",
+   "type": "number",
+   "label": "Taille du rayon (%)",
+   "terms": [
+    "Taille du rayon (%)",
+    "Radius size (%)",
+    "Dimensione raggio (%)",
+    "nodi piu grandi",
+    "nodi piu piccoli",
+    "nodi grandi",
+    "nodi piccoli",
+    "bigger nodes",
+    "smaller nodes",
+    "larger nodes",
+    "dimensione nodi",
+    "grandezza nodi",
+    "raggio nodi",
+    "node size",
+    "node radius",
+    "nodes size",
+    "taille des noeuds",
+    "nodi"
+   ],
+   "options": [],
+   "min": 20,
+   "max": 500,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-size:3",
+   "key": "settings/node-size|tree-node-kurtosis",
+   "area": "settings/node-size",
+   "iid": "tree-node-kurtosis",
+   "type": "number",
+   "label": "Kurtose (%)",
+   "terms": [
+    "Kurtose (%)",
+    "Kurtosis (%)",
+    "Curtosi (%)",
+    "curtosi",
+    "kurtosis",
+    "kurtosi",
+    "kurtose"
+   ],
+   "options": [],
+   "min": 30,
+   "max": 150,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:0",
+   "key": "settings/branch-style|tree-show-branch-labels#shown",
+   "area": "settings/branch-style",
+   "iid": "tree-show-branch-labels",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "etichette rami",
+    "etichette dei rami",
+    "branch labels",
+    "distanze sui rami",
+    "etiquettes des branches",
+    "etichette rami",
+    "etichette dei rami",
+    "branch labels",
+    "distanze sui rami",
+    "etiquettes des branches"
+   ],
+   "options": [
+    {
+     "value": "shown",
+     "terms": [
+      "shown",
+      "Affichez les étiquettes",
+      "Show labels",
+      "Mostra etichette"
+     ],
+     "label": "Affichez les étiquettes"
+    },
+    {
+     "value": "hidden",
+     "terms": [
+      "hidden",
+      "Masquez les étiquettes",
+      "Hide labels",
+      "Nascondi etichette"
+     ],
+     "label": "Masquez les étiquettes"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:2",
+   "key": "settings/branch-style|tree-branch-label-font-size",
+   "area": "settings/branch-style",
+   "iid": "tree-branch-label-font-size",
+   "type": "number",
+   "label": "Taille de police",
+   "terms": [
+    "Taille de police",
+    "Font size",
+    "Dimensione carattere",
+    "font etichette rami",
+    "dimensione testo rami",
+    "branch label font size",
+    "branch font",
+    "taille police branches"
+   ],
+   "options": [],
+   "min": 5,
+   "max": 55,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:5",
+   "key": "settings/branch-style|tree-branch-scaling",
+   "area": "settings/branch-style",
+   "iid": "tree-branch-scaling",
+   "type": "number",
+   "label": "Ajustement à l'échelle (%)",
+   "terms": [
+    "Ajustement à l'échelle (%)",
+    "Scaling (%)",
+    "Adattamento in scala (%)",
+    "scala rami",
+    "scaling rami",
+    "lunghezza rami",
+    "branch scaling",
+    "branch length scale",
+    "allunga rami",
+    "echelle des branches",
+    "rami"
+   ],
+   "options": [],
+   "min": 5,
+   "max": 200,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:7",
+   "key": "settings/branch-style|tree-collapse-branches",
+   "area": "settings/branch-style",
+   "iid": "tree-collapse-branches",
+   "type": "number",
+   "label": "Repliez les branches",
+   "terms": [
+    "Repliez les branches",
+    "Collapse branches",
+    "Comprimi rami",
+    "collassa rami",
+    "collapse branches",
+    "collassa sotto",
+    "soglia collasso",
+    "raggruppa nodi entro",
+    "collapse threshold",
+    "replier les branches",
+    "collassa a distanza",
+    "collassa"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-style:9",
+   "key": "settings/branch-style|tree-branch-toggle-log-scale#active",
+   "area": "settings/branch-style",
+   "iid": "tree-branch-toggle-log-scale",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "scala logaritmica",
+    "logaritmica",
+    "log scale",
+    "logarithmic",
+    "log",
+    "echelle logarithmique",
+    "scala logaritmica",
+    "logaritmica",
+    "log scale",
+    "logarithmic",
+    "log",
+    "echelle logarithmique"
+   ],
+   "options": [
+    {
+     "value": "active",
+     "terms": [
+      "active",
+      "Échelle logarithmique",
+      "Log scale",
+      "Scala logaritmica"
+     ],
+     "label": "Échelle logarithmique"
+    },
+    {
+     "value": "not-active",
+     "terms": [
+      "not active",
+      "Échelle logarithmique",
+      "Log scale",
+      "Scala logaritmica"
+     ],
+     "label": "Échelle logarithmique"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-cutoffs:0",
+   "key": "settings/branch-cutoffs|tree-branch-length",
+   "area": "settings/branch-cutoffs",
+   "iid": "tree-branch-length",
+   "type": "number",
+   "label": "Coupez les branches plus longues que",
+   "terms": [
+    "Coupez les branches plus longues que",
+    "Cut off branches longer than",
+    "Taglia rami più lunghi di",
+    "taglia rami",
+    "rami piu lunghi di",
+    "cutoff",
+    "cut off",
+    "soglia rami lunghi",
+    "long branches",
+    "branches longues",
+    "rami lunghi",
+    "taglia rami",
+    "rami piu lunghi di",
+    "cutoff",
+    "cut off",
+    "soglia rami lunghi",
+    "long branches",
+    "branches longues",
+    "rami lunghi"
+   ],
+   "options": [],
+   "min": 0,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/branch-cutoffs:1",
+   "key": "settings/branch-cutoffs|tree-branch-length-method",
+   "area": "settings/branch-cutoffs",
+   "iid": "tree-branch-length-method",
+   "type": "radio",
+   "label": "",
+   "terms": [
+    "metodo rami lunghi",
+    "long branch method",
+    "rami lunghi",
+    "long branches",
+    "branches longues",
+    "metodo rami lunghi",
+    "long branch method",
+    "rami lunghi",
+    "long branches",
+    "branches longues"
+   ],
+   "options": [
+    {
+     "value": "display",
+     "terms": [
+      "display",
+      "Affichez",
+      "Display",
+      "Mostra",
+      "mostra",
+      "visualizza",
+      "display",
+      "affiche",
+      "lascia"
+     ],
+     "label": "Affichez"
+    },
+    {
+     "value": "hide",
+     "terms": [
+      "hide",
+      "Masquez",
+      "Hide",
+      "Nascondi",
+      "nascondi",
+      "hide",
+      "masque",
+      "togli"
+     ],
+     "label": "Masquez"
+    },
+    {
+     "value": "cap",
+     "terms": [
+      "cap",
+      "Raccourcissez",
+      "Shorten",
+      "Riduci",
+      "tronca",
+      "limita",
+      "cap",
+      "taglia",
+      "plafonne",
+      "accorcia"
+     ],
+     "label": "Raccourcissez"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:0",
+   "key": "settings/rendering|tree-rendering-toggle#static",
+   "area": "settings/rendering",
+   "iid": "tree-rendering-toggle",
+   "type": "toggle",
+   "label": "",
+   "terms": [
+    "rendering",
+    "disegno",
+    "modalita rendering",
+    "layout albero",
+    "rendu",
+    "disposizione",
+    "rendering",
+    "disegno",
+    "modalita rendering",
+    "layout albero",
+    "rendu",
+    "disposizione"
+   ],
+   "options": [
+    {
+     "value": "static",
+     "terms": [
+      "static",
+      "Statique",
+      "Static",
+      "Statico",
+      "statico",
+      "statica",
+      "static",
+      "statique",
+      "fermo"
+     ],
+     "label": "Statique"
+    },
+    {
+     "value": "dynamic",
+     "terms": [
+      "dynamic",
+      "Dynamique",
+      "Dynamic",
+      "Dinamico",
+      "dinamico",
+      "dinamica",
+      "dynamic",
+      "dynamique",
+      "force",
+      "animato"
+     ],
+     "label": "Dynamique"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:2",
+   "key": "settings/rendering|tree-rendering-dynamic-selected-only",
+   "area": "settings/rendering",
+   "iid": "tree-rendering-dynamic-selected-only",
+   "type": "radio",
+   "label": "",
+   "terms": [
+    "rendering dinamico solo selezionati",
+    "dynamic selected only",
+    "dinamico selezionati",
+    "rendering dinamico solo selezionati",
+    "dynamic selected only",
+    "dinamico selezionati"
+   ],
+   "options": [
+    {
+     "value": "selected_only",
+     "terms": [
+      "selected only",
+      "Seulement les sélectionnés",
+      "Selected only",
+      "Solo selezionati",
+      "solo selezionati",
+      "selected only",
+      "only selected",
+      "seulement selectionnes"
+     ],
+     "label": "Seulement les sélectionnés"
+    },
+    {
+     "value": "all",
+     "terms": [
+      "all",
+      "Tous",
+      "All",
+      "Tutti",
+      "tutti",
+      "tutto",
+      "all",
+      "tous"
+     ],
+     "label": "Tous"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:3",
+   "key": "settings/rendering|tree-rendering-static-real-branch-length",
+   "area": "settings/rendering",
+   "iid": "tree-rendering-static-real-branch-length",
+   "type": "radio",
+   "label": "",
+   "terms": [
+    "lunghezza reale rami",
+    "real branch length",
+    "lunghezze reali",
+    "longueur reelle",
+    "lunghezza reale rami",
+    "real branch length",
+    "lunghezze reali",
+    "longueur reelle"
+   ],
+   "options": [
+    {
+     "value": "unreal",
+     "terms": [
+      "unreal",
+      "Longueur de la branche non réelle",
+      "Unreal branch length",
+      "Lunghezza del ramo non reale",
+      "non reale",
+      "non reali",
+      "proporzionale",
+      "unreal",
+      "fittizia"
+     ],
+     "label": "Longueur de la branche non réelle"
+    },
+    {
+     "value": "real",
+     "terms": [
+      "real",
+      "Longueur de la branche réelle",
+      "Real branch length",
+      "Lunghezza del ramo reale",
+      "reale",
+      "reali",
+      "real",
+      "reelle"
+     ],
+     "label": "Longueur de la branche réelle"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/rendering:6",
+   "key": "settings/rendering|tree-rotation",
+   "area": "settings/rendering",
+   "iid": "tree-rotation",
+   "type": "number",
+   "label": "Rotation (°)",
+   "terms": [
+    "Rotation (°)",
+    "Rotazione (°)"
+   ],
+   "options": [],
+   "min": 0,
+   "max": 359,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-shape:geometry",
+   "key": "settings/node-shape|node-shape-geometry",
+   "area": "settings/node-shape",
+   "iid": "node-shape-geometry",
+   "type": "select",
+   "label": "Géométrie",
+   "terms": [
+    "Géométrie",
+    "Geometry",
+    "Geometria",
+    "forma",
+    "forme",
+    "forma nodi",
+    "forma dei nodi",
+    "cambia forma",
+    "nodi selezionati",
+    "rendi",
+    "rendili",
+    "trasforma",
+    "trasformali",
+    "node shape",
+    "shape",
+    "shapes",
+    "change shape",
+    "selected nodes",
+    "forme des noeuds",
+    "changer la forme",
+    "noeuds selectionnes",
+    "transforme",
+    "geometria",
+    "geometry",
+    "forma",
+    "forme",
+    "forma nodi",
+    "forma dei nodi",
+    "cambia forma",
+    "nodi selezionati",
+    "rendi",
+    "rendili",
+    "trasforma",
+    "trasformali",
+    "node shape",
+    "shape",
+    "shapes",
+    "change shape",
+    "selected nodes",
+    "forme des noeuds",
+    "changer la forme",
+    "noeuds selectionnes",
+    "transforme",
+    "geometria",
+    "geometry"
+   ],
+   "options": [
+    {
+     "value": "circle",
+     "terms": [
+      "circle",
+      "Cercle",
+      "Circle",
+      "Cerchio",
+      "cerchi"
+     ],
+     "label": "Cercle"
+    },
+    {
+     "value": "square",
+     "terms": [
+      "square",
+      "Carré",
+      "Square",
+      "Quadrato",
+      "quadrati",
+      "squares",
+      "carres"
+     ],
+     "label": "Carré"
+    },
+    {
+     "value": "triangle",
+     "terms": [
+      "triangle",
+      "Triangle",
+      "Triangolo",
+      "triangoli",
+      "triangles"
+     ],
+     "label": "Triangle"
+    },
+    {
+     "value": "hexagon",
+     "terms": [
+      "hexagon",
+      "Hexagone",
+      "Hexagon",
+      "Esagono",
+      "esagoni",
+      "hexagons",
+      "hexagones"
+     ],
+     "label": "Hexagone"
+    },
+    {
+     "value": "octagon",
+     "terms": [
+      "octagon",
+      "Octogone",
+      "Octagon",
+      "Ottagono",
+      "ottagoni",
+      "octagons",
+      "octogones"
+     ],
+     "label": "Octogone"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-shape:border",
+   "key": "settings/node-shape|node-shape-border",
+   "area": "settings/node-shape",
+   "iid": "node-shape-border",
+   "type": "select",
+   "label": "Bordure",
+   "terms": [
+    "Bordure",
+    "Border",
+    "Bordo",
+    "bordo",
+    "bordi",
+    "bordo nodi",
+    "bordo dei nodi",
+    "cambia bordo",
+    "contorno",
+    "contorno nodi",
+    "nodi selezionati",
+    "rendi",
+    "rendili",
+    "node border",
+    "border",
+    "borders",
+    "change border",
+    "outline",
+    "selected nodes",
+    "bordure",
+    "bordures",
+    "changer la bordure",
+    "contour",
+    "noeuds selectionnes",
+    "bordo",
+    "bordi",
+    "bordo nodi",
+    "bordo dei nodi",
+    "cambia bordo",
+    "contorno",
+    "contorno nodi",
+    "nodi selezionati",
+    "rendi",
+    "rendili",
+    "node border",
+    "border",
+    "borders",
+    "change border",
+    "outline",
+    "selected nodes",
+    "bordure",
+    "bordures",
+    "changer la bordure",
+    "contour",
+    "noeuds selectionnes"
+   ],
+   "options": [
+    {
+     "value": "normal",
+     "terms": [
+      "normal",
+      "Normale",
+      "Normal",
+      "semplice",
+      "continuo",
+      "plain",
+      "solid"
+     ],
+     "label": "Normale"
+    },
+    {
+     "value": "double",
+     "terms": [
+      "double",
+      "Double",
+      "Doppio"
+     ],
+     "label": "Double"
+    },
+    {
+     "value": "dashed",
+     "terms": [
+      "dashed",
+      "Tirets",
+      "Dashed",
+      "Tratteggiato",
+      "tratteggiati",
+      "trattini",
+      "dashes",
+      "tirets"
+     ],
+     "label": "Tirets"
+    },
+    {
+     "value": "dotted",
+     "terms": [
+      "dotted",
+      "Pointillé",
+      "Dotted",
+      "Punteggiato",
+      "puntini",
+      "pointilles"
+     ],
+     "label": "Pointillé"
+    },
+    {
+     "value": "crown",
+     "terms": [
+      "crown",
+      "Couronne",
+      "Crown",
+      "Corona",
+      "corone",
+      "crowns",
+      "couronnes"
+     ],
+     "label": "Couronne"
+    },
+    {
+     "value": "gear",
+     "terms": [
+      "gear",
+      "Engrenage",
+      "Gear",
+      "Rotella",
+      "ingranaggio",
+      "ruota dentata",
+      "cog",
+      "cogwheel",
+      "engrenages"
+     ],
+     "label": "Engrenage"
+    },
+    {
+     "value": "gear_round",
+     "terms": [
+      "gear round",
+      "Engrenage arrondi",
+      "Rounded gear",
+      "Rotella arrotondata",
+      "ingranaggio arrotondato",
+      "rounded cog"
+     ],
+     "label": "Engrenage arrondi"
+    },
+    {
+     "value": "spikes",
+     "terms": [
+      "spikes",
+      "Épines",
+      "Spikes",
+      "Spine",
+      "spina",
+      "punte",
+      "aculei",
+      "spike",
+      "epine"
+     ],
+     "label": "Épines"
+    },
+    {
+     "value": "wavy",
+     "terms": [
+      "wavy",
+      "Couronne ondulée",
+      "Wavy crown",
+      "Corona ondulata",
+      "ondulato",
+      "ondulata",
+      "onde",
+      "waves",
+      "wavy",
+      "vagues"
+     ],
+     "label": "Couronne ondulée"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-shape:select",
+   "key": "settings/node-shape|node-shape-select",
+   "area": "settings/node-shape",
+   "iid": "node-shape-select",
+   "type": "select",
+   "label": "Sélectionner par style",
+   "terms": [
+    "Sélectionner par style",
+    "seleziona",
+    "seleziona i nodi",
+    "seleziona per stile",
+    "select",
+    "select the nodes",
+    "select by style",
+    "selectionner",
+    "selectionne",
+    "selectionner les noeuds",
+    "selectionner par style",
+    "seleziona",
+    "seleziona i nodi",
+    "seleziona per stile",
+    "select",
+    "select the nodes",
+    "select by style",
+    "selectionner",
+    "selectionne",
+    "selectionner les noeuds",
+    "selectionner par style"
+   ],
+   "options": [
+    {
+     "value": "circle",
+     "terms": [
+      "circle",
+      "Cercle",
+      "Circle",
+      "Cerchio",
+      "cerchi"
+     ],
+     "label": "Cercle"
+    },
+    {
+     "value": "square",
+     "terms": [
+      "square",
+      "Carré",
+      "Square",
+      "Quadrato",
+      "quadrati",
+      "squares",
+      "carres"
+     ],
+     "label": "Carré"
+    },
+    {
+     "value": "triangle",
+     "terms": [
+      "triangle",
+      "Triangle",
+      "Triangolo",
+      "triangoli",
+      "triangles"
+     ],
+     "label": "Triangle"
+    },
+    {
+     "value": "hexagon",
+     "terms": [
+      "hexagon",
+      "Hexagone",
+      "Hexagon",
+      "Esagono",
+      "esagoni",
+      "hexagons",
+      "hexagones"
+     ],
+     "label": "Hexagone"
+    },
+    {
+     "value": "octagon",
+     "terms": [
+      "octagon",
+      "Octogone",
+      "Octagon",
+      "Ottagono",
+      "ottagoni",
+      "octagons",
+      "octogones"
+     ],
+     "label": "Octogone"
+    },
+    {
+     "value": "normal",
+     "terms": [
+      "normal",
+      "Normale",
+      "Normal",
+      "semplice",
+      "continuo",
+      "plain",
+      "solid"
+     ],
+     "label": "Normale"
+    },
+    {
+     "value": "double",
+     "terms": [
+      "double",
+      "Double",
+      "Doppio"
+     ],
+     "label": "Double"
+    },
+    {
+     "value": "dashed",
+     "terms": [
+      "dashed",
+      "Tirets",
+      "Dashed",
+      "Tratteggiato",
+      "tratteggiati",
+      "trattini",
+      "dashes",
+      "tirets"
+     ],
+     "label": "Tirets"
+    },
+    {
+     "value": "dotted",
+     "terms": [
+      "dotted",
+      "Pointillé",
+      "Dotted",
+      "Punteggiato",
+      "puntini",
+      "pointilles"
+     ],
+     "label": "Pointillé"
+    },
+    {
+     "value": "crown",
+     "terms": [
+      "crown",
+      "Couronne",
+      "Crown",
+      "Corona",
+      "corone",
+      "crowns",
+      "couronnes"
+     ],
+     "label": "Couronne"
+    },
+    {
+     "value": "gear",
+     "terms": [
+      "gear",
+      "Engrenage",
+      "Gear",
+      "Rotella",
+      "ingranaggio",
+      "ruota dentata",
+      "cog",
+      "cogwheel",
+      "engrenages"
+     ],
+     "label": "Engrenage"
+    },
+    {
+     "value": "gear_round",
+     "terms": [
+      "gear round",
+      "Engrenage arrondi",
+      "Rounded gear",
+      "Rotella arrotondata",
+      "ingranaggio arrotondato",
+      "rounded cog"
+     ],
+     "label": "Engrenage arrondi"
+    },
+    {
+     "value": "spikes",
+     "terms": [
+      "spikes",
+      "Épines",
+      "Spikes",
+      "Spine",
+      "spina",
+      "punte",
+      "aculei",
+      "spike",
+      "epine"
+     ],
+     "label": "Épines"
+    },
+    {
+     "value": "wavy",
+     "terms": [
+      "wavy",
+      "Couronne ondulée",
+      "Wavy crown",
+      "Corona ondulata",
+      "ondulato",
+      "ondulata",
+      "onde",
+      "waves",
+      "wavy",
+      "vagues"
+     ],
+     "label": "Couronne ondulée"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "settings/node-shape:reset",
+   "key": "settings/node-shape|node-shape-reset",
+   "area": "settings/node-shape",
+   "iid": "node-shape-reset",
+   "type": "abutton",
+   "label": "Rétablissez les formes et les bordures",
+   "terms": [
+    "Rétablissez les formes et les bordures",
+    "Reset shapes and borders",
+    "Ripristina forme e bordi",
+    "ripristina forme",
+    "ripristina bordi",
+    "ripristina forme e bordi",
+    "reset shapes",
+    "reset borders",
+    "reset shapes and borders",
+    "retablir les formes",
+    "retablir les bordures",
+    "ripristina forme",
+    "ripristina bordi",
+    "ripristina forme e bordi",
+    "reset shapes",
+    "reset borders",
+    "reset shapes and borders",
+    "retablir les formes",
+    "retablir les bordures"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "topbar:full-screen",
+   "key": "topbar|tool-fullscreen#on",
+   "area": "topbar",
+   "iid": "tool-fullscreen",
+   "type": "toggle",
+   "label": "Plein écran",
+   "terms": [
+    "Plein écran",
+    "Full screen",
+    "Schermo intero",
+    "schermo intero",
+    "tutto schermo",
+    "full screen",
+    "fullscreen",
+    "plein ecran",
+    "schermo intero",
+    "tutto schermo",
+    "full screen",
+    "fullscreen",
+    "plein ecran"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Plein écran",
+      "Full screen",
+      "Schermo intero",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Plein écran"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Plein écran",
+      "Full screen",
+      "Schermo intero",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Plein écran"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "topbar:search",
+   "key": "topbar|tool-search#on",
+   "area": "topbar",
+   "iid": "tool-search",
+   "type": "toggle",
+   "label": "Recherche de fonctions",
+   "terms": [
+    "Recherche de fonctions",
+    "Search functions",
+    "Cerca funzioni",
+    "cerca funzioni",
+    "cerca una funzione",
+    "ricerca funzioni",
+    "search functions",
+    "search a function",
+    "find a function",
+    "recherche de fonctions",
+    "chercher une fonction",
+    "cerca funzioni",
+    "cerca una funzione",
+    "ricerca funzioni",
+    "search functions",
+    "search a function",
+    "find a function",
+    "recherche de fonctions",
+    "chercher une fonction"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Recherche de fonctions",
+      "Search functions",
+      "Cerca funzioni",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Recherche de fonctions"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Recherche de fonctions",
+      "Search functions",
+      "Cerca funzioni",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Recherche de fonctions"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "topbar:macros",
+   "key": "topbar|tool-macros#on",
+   "area": "topbar",
+   "iid": "tool-macros",
+   "type": "toggle",
+   "label": "Macros",
+   "terms": [
+    "Macros",
+    "Macro",
+    "macro",
+    "pannello macro",
+    "pannello delle macro",
+    "macros",
+    "macros panel",
+    "panneau des macros",
+    "macro",
+    "pannello macro",
+    "pannello delle macro",
+    "macros",
+    "macros panel",
+    "panneau des macros"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Macros",
+      "Macro",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Macros"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Macros",
+      "Macro",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Macros"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "topbar:notes",
+   "key": "topbar|tool-notes#on",
+   "area": "topbar",
+   "iid": "tool-notes",
+   "type": "toggle",
+   "label": "Notes",
+   "terms": [
+    "Notes",
+    "Note",
+    "note",
+    "pannello note",
+    "pannello delle note",
+    "annotazioni",
+    "notes",
+    "notes panel",
+    "annotations",
+    "panneau des notes",
+    "note",
+    "pannello note",
+    "pannello delle note",
+    "annotazioni",
+    "notes",
+    "notes panel",
+    "annotations",
+    "panneau des notes"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Notes",
+      "Note",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Notes"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Notes",
+      "Note",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Notes"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "topbar:language",
+   "key": "topbar|tool-lang#on",
+   "area": "topbar",
+   "iid": "tool-lang",
+   "type": "toggle",
+   "label": "Changez de langue",
+   "terms": [
+    "Changez de langue",
+    "Change language",
+    "Cambia lingua",
+    "lingua",
+    "pannello lingua",
+    "cambia lingua",
+    "language",
+    "language panel",
+    "langue",
+    "changer de langue",
+    "lingua",
+    "pannello lingua",
+    "cambia lingua",
+    "language",
+    "language panel",
+    "langue",
+    "changer de langue"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Changez de langue",
+      "Change language",
+      "Cambia lingua",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Changez de langue"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Changez de langue",
+      "Change language",
+      "Cambia lingua",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Changez de langue"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "topbar:info",
+   "key": "topbar|tool-info#on",
+   "area": "topbar",
+   "iid": "tool-info",
+   "type": "toggle",
+   "label": "Aide",
+   "terms": [
+    "Aide",
+    "Help",
+    "Aiuto",
+    "informazioni",
+    "info",
+    "crediti",
+    "contatti",
+    "information",
+    "credits",
+    "contacts",
+    "informations",
+    "informazioni",
+    "info",
+    "crediti",
+    "contatti",
+    "information",
+    "credits",
+    "contacts",
+    "informations"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Aide",
+      "Help",
+      "Aiuto",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Aide"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Aide",
+      "Help",
+      "Aiuto",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Aide"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "topbar:macro-record",
+   "key": "topbar|tool-macro-record",
+   "area": "topbar",
+   "iid": "tool-macro-record",
+   "type": "abutton",
+   "label": "Enregistrez une macro",
+   "terms": [
+    "Enregistrez une macro",
+    "Record a macro",
+    "Registra una macro",
+    "registra macro",
+    "registra una macro",
+    "registratore",
+    "registrazione",
+    "avvia registrazione",
+    "inizia registrazione",
+    "rec",
+    "record macro",
+    "record a macro",
+    "recorder",
+    "start recording",
+    "enregistrer une macro",
+    "enregistreur",
+    "demarrer l enregistrement",
+    "registra macro",
+    "registra una macro",
+    "registratore",
+    "registrazione",
+    "avvia registrazione",
+    "inizia registrazione",
+    "rec",
+    "record macro",
+    "record a macro",
+    "recorder",
+    "start recording",
+    "enregistrer une macro",
+    "enregistreur",
+    "demarrer l enregistrement"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "topbar:theme",
+   "key": "topbar|tool-theme#on",
+   "area": "topbar",
+   "iid": "tool-theme",
+   "type": "toggle",
+   "label": "Mode sombre",
+   "terms": [
+    "Mode sombre",
+    "Dark mode",
+    "Modalità scura",
+    "tema scuro",
+    "modalita scura",
+    "sfondo scuro",
+    "dark mode",
+    "dark theme",
+    "night mode",
+    "mode sombre",
+    "theme sombre",
+    "tema scuro",
+    "modalita scura",
+    "sfondo scuro",
+    "dark mode",
+    "dark theme",
+    "night mode",
+    "mode sombre",
+    "theme sombre"
+   ],
+   "options": [
+    {
+     "value": "on",
+     "terms": [
+      "on",
+      "Mode sombre",
+      "Dark mode",
+      "Modalità scura",
+      "apri",
+      "mostra",
+      "open",
+      "show"
+     ],
+     "label": "Mode sombre"
+    },
+    {
+     "value": "off",
+     "terms": [
+      "off",
+      "Mode sombre",
+      "Dark mode",
+      "Modalità scura",
+      "chiudi",
+      "nascondi",
+      "close",
+      "hide",
+      "esci",
+      "exit",
+      "quitte"
+     ],
+     "label": "Mode sombre"
+    }
+   ],
+   "min": null,
+   "max": null,
+   "valueRequired": true
+  },
+  {
+   "id": "tools:macros-transfer",
+   "key": "tools|tool-macros-transfer",
+   "area": "tools",
+   "iid": "tool-macros-transfer",
+   "type": "abutton",
+   "label": "Importer ou exporter les macros",
+   "terms": [
+    "Importer ou exporter les macros",
+    "Importa o esporta le macro",
+    "Import or export the macros",
+    "Importer ou exporter les macros",
+    "importa macro",
+    "esporta macro",
+    "importa le macro",
+    "esporta le macro",
+    "import macros",
+    "export macros",
+    "importer les macros",
+    "exporter les macros",
+    "importa macro",
+    "esporta macro",
+    "importa le macro",
+    "esporta le macro",
+    "import macros",
+    "export macros",
+    "importer les macros",
+    "exporter les macros"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "tools:notes-transfer",
+   "key": "tools|tool-notes-transfer",
+   "area": "tools",
+   "iid": "tool-notes-transfer",
+   "type": "abutton",
+   "label": "Importer ou exporter les notes",
+   "terms": [
+    "Importer ou exporter les notes",
+    "Importa o esporta le note",
+    "Import or export the notes",
+    "Importer ou exporter les notes",
+    "importa note",
+    "importa le note",
+    "import notes",
+    "import the notes",
+    "importer les notes",
+    "importa note",
+    "importa le note",
+    "import notes",
+    "import the notes",
+    "importer les notes"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "file:save-json",
+   "key": "file|file-handler-save-json",
+   "area": "file",
+   "iid": "file-handler-save-json",
+   "type": "abutton",
+   "label": "Enregistrez la session SPREAD (.json)",
+   "terms": [
+    "Enregistrez la session SPREAD (.json)",
+    "Salva sessione SPREAD",
+    "Save SPREAD session",
+    "Enregistrez la session SPREAD",
+    "sessione json",
+    "salva json",
+    "session json",
+    "sessione json",
+    "salva json",
+    "session json"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "file:export-nwk",
+   "key": "file|file-handler-export-nwk",
+   "area": "file",
+   "iid": "file-handler-export-nwk",
+   "type": "abutton",
+   "label": "Exportez Newick (.nwk)",
+   "terms": [
+    "Exportez Newick (.nwk)",
+    "Esporta Newick",
+    "Export Newick",
+    "Exportez Newick",
+    "newick",
+    "nwk",
+    "newick",
+    "nwk"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "file:export-metadata",
+   "key": "file|file-handler-export-metadata",
+   "area": "file",
+   "iid": "file-handler-export-metadata",
+   "type": "abutton",
+   "label": "Exportez les métadonnées (.tsv)",
+   "terms": [
+    "Exportez les métadonnées (.tsv)",
+    "metadati tsv",
+    "metadata tsv",
+    "metadonnees tsv",
+    "metadati tsv",
+    "metadata tsv",
+    "metadonnees tsv"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "file:export-metadata-xlsx",
+   "key": "file|file-handler-export-metadata-xlsx",
+   "area": "file",
+   "iid": "file-handler-export-metadata-xlsx",
+   "type": "abutton",
+   "label": "Exportez les métadonnées (.xlsx)",
+   "terms": [
+    "Exportez les métadonnées (.xlsx)",
+    "excel",
+    "xlsx",
+    "metadati in excel",
+    "metadata in excel",
+    "metadonnees en excel",
+    "excel",
+    "xlsx",
+    "metadati in excel",
+    "metadata in excel",
+    "metadonnees en excel"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "file:export-geojson",
+   "key": "file|file-handler-export-geojson",
+   "area": "file",
+   "iid": "file-handler-export-geojson",
+   "type": "abutton",
+   "label": "Exportez GeoJSON (.geojson)",
+   "terms": [
+    "Exportez GeoJSON (.geojson)",
+    "Esporta GeoJSON",
+    "Export GeoJSON",
+    "Exportez GeoJSON",
+    "geojson",
+    "geo json",
+    "esporta coordinate",
+    "export coordinates",
+    "exporter les coordonnees",
+    "geojson",
+    "geo json",
+    "esporta coordinate",
+    "export coordinates",
+    "exporter les coordonnees"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "macro:builtin-0",
+   "key": "macro|Échelle logarithmique en base 10",
+   "area": "macro",
+   "iid": null,
+   "type": "macro",
+   "label": "Échelle logarithmique en base 10",
+   "terms": [
+    "Échelle logarithmique en base 10"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  },
+  {
+   "id": "macro:builtin-1",
+   "key": "macro|Préréglage espace-temps",
+   "area": "macro",
+   "iid": null,
+   "type": "macro",
+   "label": "Préréglage espace-temps",
+   "terms": [
+    "Préréglage espace-temps"
+   ],
+   "options": [],
+   "min": null,
+   "max": null,
+   "valueRequired": false
+  }
+ ],
+ "rows": [
+  {
+   "ID": "IT-001",
+   "lineage": "ST-10",
+   "region": "Lazio",
+   "province": "Roma",
+   "outcome": "positive",
+   "sampling_date": "2026-01-05",
+   "latitude": "41.9028",
+   "longitude": "12.4964",
+   "cluster": "A",
+   "__Node": "IT-001"
+  },
+  {
+   "ID": "IT-002",
+   "lineage": "ST-10",
+   "region": "Lazio",
+   "province": "Roma",
+   "outcome": "positive",
+   "sampling_date": "2026-01-07",
+   "latitude": "41.9028",
+   "longitude": "12.4964",
+   "cluster": "A",
+   "__Node": "IT-002"
+  },
+  {
+   "ID": "IT-003",
+   "lineage": "ST-12",
+   "region": "Lombardia",
+   "province": "Milano",
+   "outcome": "negative",
+   "sampling_date": "2026-01-12",
+   "latitude": "45.4642",
+   "longitude": "9.1900",
+   "cluster": "B",
+   "__Node": "IT-003"
+  },
+  {
+   "ID": "IT-004",
+   "lineage": "ST-12",
+   "region": "Lombardia",
+   "province": "Milano",
+   "outcome": "positive",
+   "sampling_date": "2026-01-14",
+   "latitude": "45.4642",
+   "longitude": "9.1900",
+   "cluster": "B",
+   "__Node": "IT-004"
+  },
+  {
+   "ID": "IT-005",
+   "lineage": "ST-15",
+   "region": "Emilia-Romagna",
+   "province": "Bologna",
+   "outcome": "positive",
+   "sampling_date": "2026-01-19",
+   "latitude": "44.4949",
+   "longitude": "11.3426",
+   "cluster": "C",
+   "__Node": "IT-005"
+  },
+  {
+   "ID": "IT-006",
+   "lineage": "ST-15",
+   "region": "Veneto",
+   "province": "Padova",
+   "outcome": "negative",
+   "sampling_date": "2026-01-22",
+   "latitude": "45.4064",
+   "longitude": "11.8768",
+   "cluster": "C",
+   "__Node": "IT-006"
+  },
+  {
+   "ID": "IT-007",
+   "lineage": "ST-18",
+   "region": "Toscana",
+   "province": "Firenze",
+   "outcome": "positive",
+   "sampling_date": "2026-01-27",
+   "latitude": "43.7696",
+   "longitude": "11.2558",
+   "cluster": "D",
+   "__Node": "IT-007"
+  },
+  {
+   "ID": "IT-008",
+   "lineage": "ST-18",
+   "region": "Toscana",
+   "province": "Firenze",
+   "outcome": "positive",
+   "sampling_date": "2026-01-30",
+   "latitude": "43.7696",
+   "longitude": "11.2558",
+   "cluster": "D",
+   "__Node": "IT-008"
+  }
+ ],
+ "displayCategory": "lineage",
+ "protectedColumns": [
+  "ID",
+  "CMP",
+  "nothing",
+  "__Node",
+  "ID"
+ ],
+ "locations": {
+  "tree:0": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez les info-bulles"
+   ],
+   "help": ""
+  },
+  "tree:2": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Centrez l'arborescence"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:3": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Rendu statique"
+   ],
+   "help": "Redessin Statique: met à jour l'arborescence et la redessine avec le layout actuel."
+  },
+  "tree:4": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Arborescence originale"
+   ],
+   "help": "Arborescence Originale: recharge la page et rétablit l'arbre dans l'état et le layout qu'il avait lors de son chargement initial. Il vous demandera une confirmation avant de quitter la page. Attention : cette fonction entraînera la perte de toutes les modifications apportées à l'arborescence."
+  },
+  "tree:6": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez les éléments hypothétiques"
+   ],
+   "help": ""
+  },
+  "tree:8": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Tout sélectionner"
+   ],
+   "help": ""
+  },
+  "tree:9": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Désélectionnez tous"
+   ],
+   "help": ""
+  },
+  "tree:11": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Repliez les nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:12": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Développez les nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:13": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Développez tout"
+   ],
+   "help": ""
+  },
+  "tree:15": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Masquez les nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:16": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez les sous-arborescences sélectionnées"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:17": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Affichez l'arborescence intière"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:19": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Ajoutez une note aux nœuds sélectionnés"
+   ],
+   "help": ""
+  },
+  "tree:20": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Notes sur l'arborescence"
+   ],
+   "help": "Centrez l'Arborescence: ajuste les paramètres d'affichage de façon à ce que le centre de l'arborescence soit au centre de la zone de travail."
+  },
+  "tree:22": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:23": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Chargez SPREAD"
+   ],
+   "help": ""
+  },
+  "tree:25": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Download l'image"
+   ],
+   "help": ""
+  },
+  "metadata:0": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Seulement les sélectionnés"
+   ],
+   "help": ""
+  },
+  "metadata:2": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Ajoutez des métadonnées"
+   ],
+   "help": ""
+  },
+  "metadata:3": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Modifiez les métadonnées"
+   ],
+   "help": ""
+  },
+  "metadata:5": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Ajoutez des métadonnées pour la sélection"
+   ],
+   "help": ""
+  },
+  "metadata:6": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Modifiez les métadonnées pou la sélection"
+   ],
+   "help": ""
+  },
+  "metadata:8": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Supprimez les métadonnées"
+   ],
+   "help": ""
+  },
+  "metadata:10": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Sélectionnez une colonne"
+   ],
+   "help": ""
+  },
+  "metadata:11": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Déplacez en première position"
+   ],
+   "help": ""
+  },
+  "metadata:12": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Définissez comme légende de la figure"
+   ],
+   "help": ""
+  },
+  "metadata:14": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Redimensionnez les colonnes"
+   ],
+   "help": ""
+  },
+  "metadata:16": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Affichez les éléments hypothétiques"
+   ],
+   "help": ""
+  },
+  "metadata:18": {
+   "path": [
+    "Métadonnées",
+    "menu ⋮",
+    "Download la table"
+   ],
+   "help": ""
+  },
+  "metadata-card:0": {
+   "path": [
+    "Métadonnées",
+    "en-tête de la carte",
+    "Tout sélectionner"
+   ],
+   "help": ""
+  },
+  "metadata-card:1": {
+   "path": [
+    "Métadonnées",
+    "en-tête de la carte",
+    "Effacez la sélection"
+   ],
+   "help": ""
+  },
+  "legend:0": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Sélection des nœuds associés / Sélection visuelle"
+   ],
+   "help": ""
+  },
+  "legend:2": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Sélectionnez tous les éléments"
+   ],
+   "help": ""
+  },
+  "legend:3": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Inversez la sélection"
+   ],
+   "help": ""
+  },
+  "legend:4": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Effacez la sélection"
+   ],
+   "help": ""
+  },
+  "legend:5": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Filtrez par sélection"
+   ],
+   "help": ""
+  },
+  "legend:7": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Colorez par"
+   ],
+   "help": ""
+  },
+  "legend:8": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Nombre maximal de groupes"
+   ],
+   "help": ""
+  },
+  "legend:9": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Taille minimale du groupe"
+   ],
+   "help": ""
+  },
+  "legend:11": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Catégorie de données"
+   ],
+   "help": ""
+  },
+  "legend:12": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Ordre du groupe"
+   ],
+   "help": ""
+  },
+  "legend:13": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Schéma de couleurs"
+   ],
+   "help": ""
+  },
+  "legend:14": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Gradient rapide"
+   ],
+   "help": ""
+  },
+  "legend:16": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Affichage de la légende"
+   ],
+   "help": ""
+  },
+  "legend:17": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Échelle logarithmique de l'histogramme"
+   ],
+   "help": ""
+  },
+  "legend:18": {
+   "path": [
+    "Légende",
+    "en-tête de la carte",
+    "Vidéo"
+   ],
+   "help": ""
+  },
+  "legend:20": {
+   "path": [
+    "Légende",
+    "menu ⋮",
+    "Téléchargez l'image de la légende"
+   ],
+   "help": ""
+  },
+  "map:0": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Agrégez par coordonnées / Agrégez par métadonnées"
+   ],
+   "help": "Agrégez par coordonnées/par métadonnées: Le commutateur vous permet d'agréger les points sur la carte en fonction de la proximité géographique des coordonnées fournies ou des valeurs des métadonnées importées. Dans le premier cas, vous pouvez définir une valeur numérique pour le delta , qui détermine le degré d'agrégation."
+  },
+  "map:1": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Définissez la valeur"
+   ],
+   "help": ""
+  },
+  "map:2": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Revenez aux paramètres par défaut"
+   ],
+   "help": "Agrégez par coordonnées/par métadonnées: Le commutateur vous permet d'agréger les points sur la carte en fonction de la proximité géographique des coordonnées fournies ou des valeurs des métadonnées importées. Dans le premier cas, vous pouvez définir une valeur numérique pour le delta , qui détermine le degré d'agrégation."
+  },
+  "map:4": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Rayon minimal du marqueur"
+   ],
+   "help": "Minimum/Rayon Minimal/Maximal du marqueur: ces deux champs vour permettent d'ajuster la taille des points sur la carte en définissant un rayon minimal et un rayon maximal. La taille initiale est relative au nombre de nœuds situés sur les mêmes coordonnées géographiques."
+  },
+  "map:5": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Rayon maximal du marqueur"
+   ],
+   "help": "Minimum/Rayon Minimal/Maximal du marqueur: ces deux champs vour permettent d'ajuster la taille des points sur la carte en définissant un rayon minimal et un rayon maximal. La taille initiale est relative au nombre de nœuds situés sur les mêmes coordonnées géographiques."
+  },
+  "map:6": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Revenez aux paramètres par défaut"
+   ],
+   "help": "Agrégez par coordonnées/par métadonnées: Le commutateur vous permet d'agréger les points sur la carte en fonction de la proximité géographique des coordonnées fournies ou des valeurs des métadonnées importées. Dans le premier cas, vous pouvez définir une valeur numérique pour le delta , qui détermine le degré d'agrégation."
+  },
+  "map:8": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Tout sélectionner"
+   ],
+   "help": ""
+  },
+  "map:9": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Désélectionnez tous"
+   ],
+   "help": ""
+  },
+  "map:11": {
+   "path": [
+    "Carte",
+    "menu ⋮",
+    "Mode graphique en secteurs / Mode heatmap"
+   ],
+   "help": "Mode Diagramme en Secteurs/Mode Carte Thermique: Le commutateur vous permet de modifier les modes d'affichage des points sur la carte. Avec la première option (sélectionnée par défaut) les points seront affichés sous forme de diagramme en secteurs selon les catégories des nœuds de l'arborescence, tandis qu'avec la seconde, en effet de flou est appliqué aux nœuds."
+  },
+  "map-view:zoom": {
+   "path": [
+    "Carte",
+    "Facteur de zoom de la carte"
+   ],
+   "help": ""
+  },
+  "map-view:level": {
+   "path": [
+    "Carte",
+    "Niveau de zoom de la carte"
+   ],
+   "help": ""
+  },
+  "map-view:center": {
+   "path": [
+    "Carte",
+    "Centrer la carte aux coordonnées"
+   ],
+   "help": ""
+  },
+  "map-view:fit": {
+   "path": [
+    "Carte",
+    "Afficher tous les marqueurs"
+   ],
+   "help": ""
+  },
+  "video-player:play": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Lire la vidéo"
+   ],
+   "help": ""
+  },
+  "video-player:pause": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Mettre la vidéo en pause"
+   ],
+   "help": ""
+  },
+  "video-player:speed": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Vitesse de lecture"
+   ],
+   "help": ""
+  },
+  "video-player:seek": {
+   "path": [
+    "Vidéo",
+    "lecteur",
+    "Position de lecture (%)"
+   ],
+   "help": ""
+  },
+  "zooms:0": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez le type de zoom"
+   ],
+   "help": ""
+  },
+  "zooms:1": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms:2": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms:4": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Affichez les alertes de sélection / Masquez les alertes de sélection"
+   ],
+   "help": ""
+  },
+  "zooms:5": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez les nœuds interessés"
+   ],
+   "help": ""
+  },
+  "zooms:6": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Effacez la sélection"
+   ],
+   "help": ""
+  },
+  "zooms:8": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Utilisez les paramètres actuels / Ne pas utiliser les paramètres actuels"
+   ],
+   "help": ""
+  },
+  "zooms:9": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Chargez le cluster"
+   ],
+   "help": ""
+  },
+  "zooms:10": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Ouvrez dans un nouvel onglet"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:0": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez le type de zoom"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:1": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:2": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Sélectionnez"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:4": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Utilisez les paramètres actuels / Ne pas utiliser les paramètres actuels"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:5": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Chargez le cluster"
+   ],
+   "help": ""
+  },
+  "zooms-filtered:6": {
+   "path": [
+    "Zooms ReporTree",
+    "menu ⋮",
+    "Ouvrez dans un nouvel onglet"
+   ],
+   "help": ""
+  },
+  "layout:0": {
+   "path": [
+    "barre du haut",
+    "Paramètres"
+   ],
+   "help": ""
+  },
+  "layout:1": {
+   "path": [
+    "barre du haut",
+    "Carte"
+   ],
+   "help": ""
+  },
+  "layout:2": {
+   "path": [
+    "barre du haut",
+    "Métadonnées"
+   ],
+   "help": ""
+  },
+  "layout:3": {
+   "path": [
+    "barre du haut",
+    "Légende"
+   ],
+   "help": ""
+  },
+  "layout:4": {
+   "path": [
+    "barre du haut",
+    "Assistant"
+   ],
+   "help": ""
+  },
+  "settings/node-style:0": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Colorez par"
+   ],
+   "help": "Coloriez par: depuis le menu déroulant de cette section, il est possible de sélectionner la couleur de remplissage des nœuds en fonction des métadonnées."
+  },
+  "settings/node-style:2": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Affichez les étiquettes / Masquez les étiquettes"
+   ],
+   "help": "Affichez les étiquettes: l'option permet de choisir d'afficher ou non les étiquettes des nœuds. Il est également possible de choisir le type d'étiquette à afficher depuis le menu déroulant ci-dessous."
+  },
+  "settings/node-style:3": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Étiquettes"
+   ],
+   "help": "Affichez les étiquettes: l'option permet de choisir d'afficher ou non les étiquettes des nœuds. Il est également possible de choisir le type d'étiquette à afficher depuis le menu déroulant ci-dessous."
+  },
+  "settings/node-style:5": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Taille de police"
+   ],
+   "help": "Taille de police: la taille de police pour les étiquettes peut être choisie soit en faisant glisser le curseur approprié, soit en spécifiant une valeur dans le champ en dessous."
+  },
+  "settings/node-style:6": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Mettez en surbrillance les étiquettes"
+   ],
+   "help": "Mettez en surbrillance l'étiquette: utilisez le champ de texte pour fournir un terme de recherche pour mettre en surbrillance les nœuds correspondants aux étiquettes. Les Expressions Régulières sont prises en charge."
+  },
+  "settings/node-style:8": {
+   "path": [
+    "Paramètres",
+    "Style des nœuds",
+    "Segments individuels"
+   ],
+   "help": "Segments individuels: utilisez cette option pour transformer chaque nœud en un graphique circulaire affichiant la répartition des éléments qu'il contient. Cette répartition est basée sur la catégorie utilisée pour les paramètres de Coloriez par"
+  },
+  "settings/node-size:1": {
+   "path": [
+    "Paramètres",
+    "Taille des nœuds",
+    "Taille du rayon (%)"
+   ],
+   "help": "Taille des Nœuds (%): la taille totale des nœuds peut être augmentée ou diminuée en faisant glisser le curseur approprié ou en spécifiant les dimensions dans le champ prévu."
+  },
+  "settings/node-size:3": {
+   "path": [
+    "Paramètres",
+    "Taille des nœuds",
+    "Kurtose (%)"
+   ],
+   "help": "Kurtose (%): la surface des nœuds est corrélée par défaut au nombre d'éléments qu'ils contiennent. En utilisant le curseur ou le champ prévu dans cette section, la taille des nœuds peut être augmentée ou diminuée sur la base de la kurtose de la distribution des nœuds. À mesure que la valeur de la kurtose augmente, le pourcentage par lequel la taille du nœud grandit, pour chaque élément en son sein, augmente également; par conséquent, les nœuds contenant un plus grand nombre d'éléments auront une plus grande surface et ressortiront davantage."
+  },
+  "settings/branch-style:0": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Affichez les étiquettes / Masquez les étiquettes"
+   ],
+   "help": "Affichez les étiquettes: cette option vous permet de choisir d'afficher ou de masquer les étiquettes des branches."
+  },
+  "settings/branch-style:2": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Taille de police"
+   ],
+   "help": "Taille de police: cette option vous permettra de choisir la taille de police pour les étiquettes, en utilisant le curseur ou le champ prévu."
+  },
+  "settings/branch-style:5": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Ajustement à l'échelle (%)"
+   ],
+   "help": "Ajustement à l'échelle (%): cette option vous permettra d'augmenter ou diminuer la longueur totale des branches, en utilisant le curseur ou en spécifiant une valeur dans le champ au-dessous."
+  },
+  "settings/branch-style:7": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Repliez les branches"
+   ],
+   "help": "Repliez les Branches: utilisez le curseur ou saisissez une valeur dans le champ prévu pour replier toutes les branches plus courtes que la longueur spécifiée. Les nœuds tombant dans cet intervalle seront fusionnés. Les valeurs de longueur des branches sont mises à l'échelle selon les longueurs définies dans les données de l'arborescence originale."
+  },
+  "settings/branch-style:9": {
+   "path": [
+    "Paramètres",
+    "Style des branches",
+    "Échelle logarithmique"
+   ],
+   "help": "Échelle logarithmique: en sélectionnant cette option, les longueurs de toutes les branches seront ajustées selon une échelle logarithmique."
+  },
+  "settings/branch-cutoffs:0": {
+   "path": [
+    "Paramètres",
+    "Clôtures de la branche",
+    "Coupez les branches plus longues que"
+   ],
+   "help": ""
+  },
+  "settings/branch-cutoffs:1": {
+   "path": [
+    "Paramètres",
+    "Clôtures de la branche",
+    "Affichez / Masquez / Raccourcissez"
+   ],
+   "help": "Affichez: cette option affiche les branches plus longues que la valeur spécifiée comme normales (par défaut)."
+  },
+  "settings/rendering:0": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Statique / Dynamique"
+   ],
+   "help": "Statique: le layout de l'arborescence est calculé lors de la génération du graphe et reste statique (mais interactif); la longueur relative des branches et leur échelle (dérivées des données originales de l'arborescence) seront toujours conservées tant que l'option Longueur de la branche réelle reste sélectionnée."
+  },
+  "settings/rendering:2": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Seulement les sélectionnés / Tous"
+   ],
+   "help": ""
+  },
+  "settings/rendering:3": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Longueur de la branche non réelle / Longueur de la branche réelle"
+   ],
+   "help": ""
+  },
+  "settings/rendering:6": {
+   "path": [
+    "Paramètres",
+    "Rendu",
+    "Rotation (°)"
+   ],
+   "help": ""
+  },
+  "settings/node-shape:geometry": {
+   "path": [
+    "Paramètres",
+    "Forme des nœuds",
+    "Géométrie"
+   ],
+   "help": "Géométrie : cercle, carré, triangle, hexagone ou octogone. Chaque forme garde l'aire du cercle, donc la taille du nœud continue de représenter le nombre d'éléments."
+  },
+  "settings/node-shape:border": {
+   "path": [
+    "Paramètres",
+    "Forme des nœuds",
+    "Bordure"
+   ],
+   "help": "Bordure : normale, double, tirets, pointillé, ou une décoration autour du nœud : couronne, engrenage, engrenage arrondi, épines, couronne ondulée."
+  },
+  "settings/node-shape:select": {
+   "path": [
+    "Paramètres",
+    "Forme des nœuds",
+    "Sélectionner par style"
+   ],
+   "help": "Sélection par style : le bouton rond en haut à droite de chaque cellule sélectionne les nœuds ayant cette forme ou cette bordure ; cliquez de nouveau pour les désélectionner."
+  },
+  "settings/node-shape:reset": {
+   "path": [
+    "Paramètres",
+    "Forme des nœuds",
+    "Rétablissez les formes et les bordures"
+   ],
+   "help": "Rétablissez les formes et les bordures : ramène tous les nœuds au cercle et à la bordure normale, après une confirmation."
+  },
+  "topbar:full-screen": {
+   "path": [
+    "barre du haut",
+    "Plein écran"
+   ],
+   "help": ""
+  },
+  "topbar:search": {
+   "path": [
+    "barre du haut",
+    "Recherche de fonctions"
+   ],
+   "help": ""
+  },
+  "topbar:macros": {
+   "path": [
+    "barre du haut",
+    "Macros"
+   ],
+   "help": ""
+  },
+  "topbar:notes": {
+   "path": [
+    "barre du haut",
+    "Notes"
+   ],
+   "help": ""
+  },
+  "topbar:language": {
+   "path": [
+    "barre du haut",
+    "Changez de langue"
+   ],
+   "help": ""
+  },
+  "topbar:info": {
+   "path": [
+    "barre du haut",
+    "Aide"
+   ],
+   "help": ""
+  },
+  "topbar:macro-record": {
+   "path": [
+    "barre du haut",
+    "Enregistrez une macro"
+   ],
+   "help": ""
+  },
+  "topbar:theme": {
+   "path": [
+    "barre du haut",
+    "Mode sombre"
+   ],
+   "help": ""
+  },
+  "tools:macros-transfer": {
+   "path": [
+    "barre du haut",
+    "Macros (▷▷)",
+    "Importer ou exporter les macros"
+   ],
+   "help": ""
+  },
+  "tools:notes-transfer": {
+   "path": [
+    "barre du haut",
+    "Notes (bloc-notes)",
+    "Importer ou exporter les notes"
+   ],
+   "help": ""
+  },
+  "file:save-json": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD",
+    "Enregistrez la session SPREAD (.json)"
+   ],
+   "help": ""
+  },
+  "file:export-nwk": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD",
+    "Exportez Newick (.nwk)"
+   ],
+   "help": ""
+  },
+  "file:export-metadata": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD",
+    "Exportez les métadonnées (.tsv)"
+   ],
+   "help": ""
+  },
+  "file:export-metadata-xlsx": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD",
+    "Exportez les métadonnées (.xlsx)"
+   ],
+   "help": ""
+  },
+  "file:export-geojson": {
+   "path": [
+    "Arbre",
+    "menu ⋮",
+    "Enregistrez le SPREAD",
+    "Exportez GeoJSON (.geojson)"
+   ],
+   "help": ""
+  },
+  "macro:builtin-0": {
+   "path": [
+    "barre du haut",
+    "Macros (▷▷)",
+    "Échelle logarithmique en base 10"
+   ],
+   "help": ""
+  },
+  "macro:builtin-1": {
+   "path": [
+    "barre du haut",
+    "Macros (▷▷)",
+    "Préréglage espace-temps"
+   ],
+   "help": ""
+  }
+ }
+}

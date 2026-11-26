@@ -1,0 +1,487 @@
+{
+ "tree|tree-tooltip-toggle#show_tooltips": [
+  "show or hide the small info box that appears when the mouse is over a node",
+  "mostra o nasconde il riquadro informativo quando passo il mouse su un nodo",
+  "affiche ou masque la bulle d'information au survol d'un nœud"
+ ],
+ "tree|tree-menu-centre-tree": [
+  "move the tree back to the middle of the drawing area",
+  "riporta l'albero al centro dell'area di disegno",
+  "remet l'arbre au centre de la zone de dessin"
+ ],
+ "tree|tree-menu-static-redraw": [
+  "stop the moving layout and draw the tree in a fixed position",
+  "ferma il movimento del disegno e disegna l'albero fermo",
+  "arrête le mouvement et dessine l'arbre fixe"
+ ],
+ "tree|tree-menu-original-tree": [
+  "go back to the tree as it was first loaded, undoing changes",
+  "torna all'albero com'era appena caricato, annullando le modifiche",
+  "revient à l'arbre tel qu'il a été chargé, en annulant les changements"
+ ],
+ "tree|tree-hypothetical-toggle#show_hypo": [
+  "show or hide the inferred hypothetical internal nodes",
+  "mostra o nasconde i nodi interni ipotetici",
+  "affiche ou masque les nœuds internes hypothétiques"
+ ],
+ "tree|tree-menu-select-all": [
+  "select every sample in the tree",
+  "seleziona tutti i campioni dell'albero",
+  "sélectionne tous les échantillons de l'arbre"
+ ],
+ "tree|tree-menu-deselect-all": [
+  "remove the selection from all samples in the tree",
+  "toglie la selezione da tutti i campioni dell'albero",
+  "retire la sélection de tous les échantillons de l'arbre"
+ ],
+ "tree|tree-menu-collapse-selected": [
+  "fold the selected nodes into a single node",
+  "raggruppa i nodi selezionati in un solo nodo chiudendoli",
+  "replie les nœuds sélectionnés en un seul nœud"
+ ],
+ "tree|tree-menu-expand-selected": [
+  "unfold the selected collapsed nodes",
+  "riapre i nodi selezionati che erano chiusi",
+  "déplie les nœuds sélectionnés qui étaient repliés"
+ ],
+ "tree|tree-menu-expand-all": [
+  "open again every collapsed node and branch of the tree",
+  "riapre tutti i nodi e rami chiusi dell'albero",
+  "rouvre tous les nœuds et branches repliés de l'arbre"
+ ],
+ "tree|tree-menu-hide-selected": [
+  "remove the selected samples from the tree drawing",
+  "toglie dal disegno dell'albero i campioni selezionati",
+  "retire du dessin de l'arbre les échantillons sélectionnés"
+ ],
+ "tree|tree-menu-show-selected-subtrees": [
+  "keep only the parts of the tree containing the selected samples",
+  "tiene solo le parti dell'albero con i campioni selezionati",
+  "garde seulement les parties de l'arbre avec les échantillons sélectionnés"
+ ],
+ "tree|tree-menu-show-whole-tree": [
+  "bring back the full tree with every sample after hiding some",
+  "rimostra l'albero completo con tutti i campioni",
+  "réaffiche l'arbre complet avec tous les échantillons"
+ ],
+ "tree|tree-menu-save-spread": [
+  "save the whole work session to a file to reopen it later",
+  "salva tutta la sessione di lavoro in un file da riaprire dopo",
+  "enregistre toute la session de travail dans un fichier à rouvrir plus tard"
+ ],
+ "tree|tree-menu-load-spread": [
+  "open a previously saved session file",
+  "apre un file di sessione salvato in precedenza",
+  "ouvre un fichier de session enregistré auparavant"
+ ],
+ "tree|tree-menu-download-image": [
+  "export a picture of the tree as png or svg",
+  "esporta un'immagine dell'albero in png o svg",
+  "exporte une image de l'arbre en png ou svg"
+ ],
+ "metadata|metadata-selected-only#show_selected": [
+  "in the table show only the rows of the selected samples",
+  "nella tabella mostra solo le righe dei campioni selezionati",
+  "dans le tableau affiche seulement les lignes des échantillons sélectionnés"
+ ],
+ "metadata|metadata-add": [
+  "open the window to add new metadata to the samples",
+  "apre la finestra per aggiungere nuovi metadati ai campioni",
+  "ouvre la fenêtre pour ajouter des métadonnées aux échantillons"
+ ],
+ "metadata|metadata-edit": [
+  "open the window to change metadata values",
+  "apre la finestra per modificare i valori dei metadati",
+  "ouvre la fenêtre pour modifier les valeurs des métadonnées"
+ ],
+ "metadata|metadata-add-for-selection": [
+  "add metadata only to the selected samples",
+  "aggiunge metadati solo ai campioni selezionati",
+  "ajoute des métadonnées seulement aux échantillons sélectionnés"
+ ],
+ "metadata|metadata-edit-for-selection": [
+  "change metadata only for the selected samples",
+  "modifica i metadati solo dei campioni selezionati",
+  "modifie les métadonnées seulement des échantillons sélectionnés"
+ ],
+ "metadata|metadata-delete": [
+  "open the window to delete metadata",
+  "apre la finestra per cancellare metadati",
+  "ouvre la fenêtre pour supprimer des métadonnées"
+ ],
+ "metadata|metadata-menu-color-by": [
+  "choose a column of the metadata table",
+  "sceglie una colonna della tabella dei metadati",
+  "choisit une colonne du tableau des métadonnées"
+ ],
+ "metadata|metadata-move-first": [
+  "move the chosen column to the first place in the table",
+  "sposta la colonna scelta al primo posto nella tabella",
+  "déplace la colonne choisie en première place dans le tableau"
+ ],
+ "metadata|metadata-set-figure-legend": [
+  "use the chosen column as the legend of the figure",
+  "usa la colonna scelta come legenda della figura",
+  "utilise la colonne choisie comme légende de la figure"
+ ],
+ "metadata|metadata-resize-columns": [
+  "adjust the width of the table columns to fit their content",
+  "adatta la larghezza delle colonne della tabella al contenuto",
+  "ajuste la largeur des colonnes du tableau à leur contenu"
+ ],
+ "metadata|metadata-show-hypo#show_hypo": [
+  "show or hide hypothetical nodes as rows of the table",
+  "mostra o nasconde i nodi ipotetici come righe della tabella",
+  "affiche ou masque les nœuds hypothétiques comme lignes du tableau"
+ ],
+ "metadata|metadata-export-button": [
+  "export the metadata table as a csv or tsv spreadsheet file",
+  "esporta la tabella dei metadati come file csv o tsv da foglio di calcolo",
+  "exporte le tableau des métadonnées en fichier csv ou tsv pour tableur"
+ ],
+ "metadata-card|metadata-card-select-all": [
+  "select every row of the metadata table",
+  "seleziona tutte le righe della tabella dei metadati",
+  "sélectionne toutes les lignes du tableau des métadonnées"
+ ],
+ "metadata-card|metadata-card-clean-selection": [
+  "clear the selected rows of the metadata table",
+  "pulisce le righe selezionate della tabella dei metadati",
+  "efface les lignes sélectionnées du tableau des métadonnées"
+ ],
+ "legend|legend-menu-selection-mode#qualitative": [
+  "choose how clicking legend items selects nodes",
+  "sceglie come cliccare le voci della legenda seleziona i nodi",
+  "choisit comment cliquer sur la légende sélectionne les nœuds"
+ ],
+ "legend|legend-menu-select-all": [
+  "select all the groups listed in the legend",
+  "seleziona tutti i gruppi elencati nella legenda",
+  "sélectionne tous les groupes de la légende"
+ ],
+ "legend|legend-menu-invert-selection": [
+  "swap selected and unselected legend groups",
+  "scambia i gruppi selezionati e non selezionati della legenda",
+  "échange les groupes sélectionnés et non sélectionnés de la légende"
+ ],
+ "legend|legend-menu-clean-selection": [
+  "clear the selection of legend groups",
+  "toglie la selezione dei gruppi della legenda",
+  "efface la sélection des groupes de la légende"
+ ],
+ "legend|legend-menu-filter-by-selection": [
+  "list in the legend only the groups of the selected nodes",
+  "mostra nella legenda solo i gruppi dei nodi selezionati",
+  "montre dans la légende seulement les groupes des nœuds sélectionnés"
+ ],
+ "legend|legend-menu-color-by": [
+  "choose which metadata column gives the node colours",
+  "sceglie quale colonna dei metadati decide i colori dei nodi",
+  "choisit quelle colonne des métadonnées donne les couleurs des nœuds"
+ ],
+ "legend|legend-menu-maximum-group-number": [
+  "maximum number of colour groups in the legend, the rest go into Others",
+  "numero massimo di gruppi di colore nella legenda, il resto va in Altri",
+  "nombre maximal de groupes de couleur dans la légende, le reste va dans Autres"
+ ],
+ "legend|legend-menu-minimum-group-size": [
+  "smallest group size to get its own colour",
+  "dimensione minima di un gruppo per avere un colore proprio",
+  "taille minimale d'un groupe pour avoir sa propre couleur"
+ ],
+ "legend|legend-menu-data-category": [
+  "treat the colour column as text categories or as numbers",
+  "tratta la colonna dei colori come categorie di testo o come numeri",
+  "traite la colonne des couleurs comme catégories de texte ou comme nombres"
+ ],
+ "legend|legend-menu-group-order": [
+  "order of the groups in the legend: by size or alphabetical",
+  "ordine dei gruppi nella legenda: per numerosità o alfabetico",
+  "ordre des groupes dans la légende: par taille ou alphabétique"
+ ],
+ "legend|legend-menu-color-scheme": [
+  "choose the colour palette used for the groups",
+  "sceglie la tavolozza di colori usata per i gruppi",
+  "choisit la palette de couleurs utilisée pour les groupes"
+ ],
+ "legend|legend-menu-quick-gradient": [
+  "colour the groups with a continuous shaded gradient from one colour to another",
+  "colora i gruppi con una sfumatura continua da un colore all'altro",
+  "colore les groupes avec un dégradé continu d'une couleur à l'autre"
+ ],
+ "legend|legend-menu-view-mode": [
+  "show the legend as a list or as a bar chart histogram",
+  "mostra la legenda come elenco o come grafico a barre",
+  "affiche la légende en liste ou en diagramme en barres"
+ ],
+ "legend|legend-menu-histogram-scale#log": [
+  "use a logarithmic scale for the legend bar chart",
+  "usa una scala logaritmica per il grafico a barre della legenda",
+  "utilise une échelle logarithmique pour le diagramme en barres de la légende"
+ ],
+ "legend|legend-menu-download": [
+  "export a picture of the legend as png or svg",
+  "esporta un'immagine della legenda in png o svg",
+  "exporte une image de la légende en png ou svg"
+ ],
+ "map|map-aggregation-toggle#geographical": [
+  "group the samples on the map by coordinates or by a metadata column",
+  "raggruppa i campioni sulla mappa per coordinate o per colonna dei metadati",
+  "regroupe les échantillons sur la carte par coordonnées ou par colonne"
+ ],
+ "map|map-delta-select": [
+  "how close points must be on the map to be merged together",
+  "quanto vicini devono essere i punti sulla mappa per essere uniti",
+  "à quelle distance les points de la carte sont fusionnés"
+ ],
+ "map|map-reset-delta": [
+  "reset the map grouping distance to its default",
+  "riporta la distanza di raggruppamento della mappa al valore predefinito",
+  "remet la distance de regroupement de la carte par défaut"
+ ],
+ "map|map-point-min-radius": [
+  "smallest size of the circles drawn on the map",
+  "dimensione minima dei cerchi disegnati sulla mappa",
+  "taille minimale des cercles dessinés sur la carte"
+ ],
+ "map|map-point-max-radius": [
+  "largest size of the circles drawn on the map",
+  "dimensione massima dei cerchi disegnati sulla mappa",
+  "taille maximale des cercles dessinés sur la carte"
+ ],
+ "map|map-reset-max-min-radius": [
+  "reset the size of the map circles to default",
+  "riporta la dimensione dei cerchi della mappa al predefinito",
+  "remet la taille des cercles de la carte par défaut"
+ ],
+ "map|map-select-all": [
+  "select all the samples shown on the map",
+  "seleziona tutti i campioni sulla mappa",
+  "sélectionne tous les échantillons de la carte"
+ ],
+ "map|map-deselect-all": [
+  "remove the selection of samples on the map",
+  "toglie la selezione dei campioni sulla mappa",
+  "retire la sélection des échantillons de la carte"
+ ],
+ "map|map-marker-mode-toggle#piechart": [
+  "draw map points as pie charts or as a heat map of case density",
+  "disegna i punti della mappa come torte o come mappa di calore della densità",
+  "dessine les points de la carte en camemberts ou en carte de chaleur de densité"
+ ],
+ "map-view|zoom": [
+  "zoom the map in or out by a factor",
+  "ingrandisce o rimpicciolisce la mappa di un fattore",
+  "zoome ou dézoome la carte d'un facteur"
+ ],
+ "map-view|level": [
+  "set the zoom level of the map",
+  "imposta il livello di zoom della mappa",
+  "règle le niveau de zoom de la carte"
+ ],
+ "map-view|center": [
+  "move the map to given latitude and longitude",
+  "sposta la mappa su una latitudine e longitudine",
+  "déplace la carte sur une latitude et longitude"
+ ],
+ "map-view|fit": [
+  "frame the map so that all the points are visible",
+  "inquadra la mappa in modo che si vedano tutti i punti",
+  "cadre la carte pour que tous les points soient visibles"
+ ],
+ "video-player|play": [
+  "play the animation of the samples over time",
+  "avvia l'animazione dei campioni nel tempo",
+  "lance l'animation des échantillons dans le temps"
+ ],
+ "video-player|pause": [
+  "pause the time animation",
+  "mette in pausa l'animazione nel tempo",
+  "met en pause l'animation dans le temps"
+ ],
+ "video-player|speed": [
+  "how fast the time animation plays",
+  "quanto veloce va l'animazione nel tempo",
+  "vitesse de l'animation dans le temps"
+ ],
+ "video-player|seek": [
+  "jump to a point of the time animation",
+  "salta a un punto dell'animazione nel tempo",
+  "va à un point de l'animation dans le temps"
+ ],
+ "zooms|zooms-menu-zoom-type": [
+  "choose the kind of cluster zoom",
+  "sceglie il tipo di zoom sui cluster",
+  "choisit le type de zoom sur les clusters"
+ ],
+ "zooms|zooms-menu-selection-alerts#show": [
+  "show or hide warnings about clusters in the selection",
+  "mostra o nasconde gli avvisi sui cluster della selezione",
+  "affiche ou masque les alertes sur les clusters de la sélection"
+ ],
+ "zooms|zooms-menu-select-nodes": [
+  "select the nodes that belong to the chosen cluster",
+  "seleziona i nodi che fanno parte del cluster scelto",
+  "sélectionne les nœuds du cluster choisi"
+ ],
+ "zooms|zooms-menu-load-zoomed-tree": [
+  "open the chosen cluster in this window",
+  "apre il cluster scelto in questa finestra",
+  "ouvre le cluster choisi dans cette fenêtre"
+ ],
+ "zooms|zooms-menu-open-zoomed-tree": [
+  "open the chosen cluster in a new browser tab",
+  "apre il cluster scelto in una nuova scheda del browser",
+  "ouvre le cluster choisi dans un nouvel onglet"
+ ],
+ "layout|settings": [
+  "show or hide the settings panel with the options",
+  "mostra o nasconde il pannello delle impostazioni e opzioni",
+  "affiche ou masque le panneau des réglages et options"
+ ],
+ "layout|map": [
+  "show or hide the geographic map of where samples were collected",
+  "mostra o nasconde la mappa geografica di dove sono stati raccolti i campioni",
+  "affiche ou masque la carte géographique des lieux de prélèvement"
+ ],
+ "layout|metadata": [
+  "show or hide the metadata table with the sample data",
+  "mostra o nasconde la tabella dei metadati con i dati dei campioni",
+  "affiche ou masque le tableau des métadonnées des échantillons"
+ ],
+ "layout|legend": [
+  "show or hide the legend box explaining the colours",
+  "mostra o nasconde il riquadro della legenda che spiega i colori",
+  "affiche ou masque le cadre de la légende qui explique les couleurs"
+ ],
+ "legend|legend-menu-player#on": [
+  "show or hide the timeline video player in the legend card",
+  "mostra o nasconde il lettore video della linea temporale nella card della legenda",
+  "affiche ou masque le lecteur vidéo de la chronologie dans la carte de la légende"
+ ],
+ "topbar|tool-fullscreen#on": [
+  "use the whole screen for SPREAD",
+  "usa tutto lo schermo per SPREAD",
+  "utilise tout l'écran pour SPREAD"
+ ],
+ "settings/node-style|tree-metadata-select": [
+  "choose which metadata column gives the node colours",
+  "sceglie quale colonna dei metadati decide i colori dei nodi",
+  "choisit quelle colonne donne les couleurs des nœuds"
+ ],
+ "settings/node-style|tree-show-node-labels#shown": [
+  "show or hide the text labels next to the nodes",
+  "mostra o nasconde le scritte accanto ai nodi",
+  "affiche ou masque le texte à côté des nœuds"
+ ],
+ "settings/node-style|tree-node-label-text": [
+  "choose which column is written as node label",
+  "sceglie quale colonna scrivere come etichetta dei nodi",
+  "choisit quelle colonne écrire comme étiquette des nœuds"
+ ],
+ "settings/node-style|tree-node-label-font-size": [
+  "text size of the node labels",
+  "grandezza del testo delle etichette dei nodi",
+  "taille du texte des étiquettes des nœuds"
+ ],
+ "settings/node-style|tree-highlight-labels": [
+  "highlight the labels of some nodes",
+  "evidenzia le etichette di alcuni nodi",
+  "met en évidence les étiquettes de certains nœuds"
+ ],
+ "settings/node-style|tree-show-individual-segments#shown": [
+  "draw nodes as pie slices, one per sample",
+  "disegna i nodi a spicchi, uno per campione",
+  "dessine les nœuds en parts, une par échantillon"
+ ],
+ "settings/node-size|tree-node-radius-size": [
+  "size of the node circles in the tree",
+  "grandezza dei cerchi dei nodi nell'albero",
+  "taille des cercles des nœuds dans l'arbre"
+ ],
+ "settings/node-size|tree-node-kurtosis": [
+  "how much node size grows with the number of samples",
+  "quanto cresce la dimensione dei nodi con il numero di campioni",
+  "combien la taille des nœuds grandit avec le nombre d'échantillons"
+ ],
+ "settings/branch-style|tree-show-branch-labels#shown": [
+  "show or hide the distance numbers written on the branches",
+  "mostra o nasconde i numeri delle distanze scritti sui rami",
+  "affiche ou masque les distances écrites sur les branches"
+ ],
+ "settings/branch-style|tree-branch-label-font-size": [
+  "text size of the branch labels",
+  "grandezza del testo delle etichette dei rami",
+  "taille du texte des étiquettes des branches"
+ ],
+ "settings/branch-style|tree-branch-scaling": [
+  "stretch or shrink the length of all branches",
+  "allunga o accorcia la lunghezza di tutti i rami",
+  "allonge ou raccourcit toutes les branches"
+ ],
+ "settings/branch-style|tree-collapse-branches": [
+  "collapse branches shorter than a distance",
+  "raggruppa i rami più corti di una distanza",
+  "replie les branches plus courtes qu'une distance"
+ ],
+ "settings/branch-style|tree-branch-toggle-log-scale#active": [
+  "draw branch lengths on a logarithmic scale",
+  "disegna le lunghezze dei rami in scala logaritmica",
+  "dessine les longueurs des branches en échelle logarithmique"
+ ],
+ "settings/branch-cutoffs|tree-branch-length": [
+  "cut branches longer than a limit",
+  "taglia i rami più lunghi di un limite",
+  "coupe les branches plus longues qu'une limite"
+ ],
+ "settings/branch-cutoffs|tree-branch-length-method": [
+  "how to draw the cut long branches: show, hide or cap",
+  "come disegnare i rami lunghi tagliati: mostra, nascondi o limita",
+  "comment dessiner les branches coupées: afficher, masquer ou limiter"
+ ],
+ "settings/rendering|tree-rendering-toggle#static": [
+  "draw the tree static or with moving dynamic layout",
+  "disegna l'albero fermo o con disposizione dinamica in movimento",
+  "dessine l'arbre fixe ou en disposition dynamique"
+ ],
+ "settings/rendering|tree-rendering-dynamic-selected-only": [
+  "dynamic layout only for the selected nodes or for all",
+  "disposizione dinamica solo per i nodi selezionati o per tutti",
+  "disposition dynamique seulement pour les nœuds sélectionnés ou pour tous"
+ ],
+ "settings/rendering|tree-rendering-static-real-branch-length": [
+  "draw branches with their real length or equal length",
+  "disegna i rami con la lunghezza reale o tutti uguali",
+  "dessine les branches avec leur longueur réelle ou égale"
+ ],
+ "settings/node-shape|node-shape-geometry": [
+  "change the shape of the selected nodes: circle, square, triangle, hexagon or octagon",
+  "cambia la forma dei nodi selezionati: cerchio, quadrato, triangolo, esagono o ottagono",
+  "change la forme des nœuds sélectionnés : cercle, carré, triangle, hexagone ou octogone"
+ ],
+ "settings/node-shape|node-shape-border": [
+  "change the border drawn around the selected nodes, plain, double, dashed, dotted or decorated",
+  "cambia il bordo disegnato attorno ai nodi selezionati, semplice, doppio, tratteggiato, punteggiato o decorato",
+  "change la bordure dessinée autour des nœuds sélectionnés, simple, double, tirets, pointillée ou décorée"
+ ],
+ "settings/node-shape|node-shape-select": [
+  "select all the nodes that have a given shape or border",
+  "seleziona tutti i nodi che hanno una certa forma o un certo bordo",
+  "sélectionne tous les nœuds qui ont une forme ou une bordure donnée"
+ ],
+ "settings/node-shape|node-shape-reset": [
+  "bring every node back to a circle with a normal border",
+  "riporta tutti i nodi a cerchio con bordo normale",
+  "remet tous les nœuds en cercle avec une bordure normale"
+ ],
+ "tree|tree-menu-add-note": [
+  "write a note or comment about the selected samples, kept with the session",
+  "scrive una nota o un commento sui campioni selezionati, salvato con la sessione",
+  "écrit une note ou un commentaire sur les échantillons sélectionnés, conservé avec la session"
+ ],
+ "tree|tree-menu-note-marks#show": [
+  "show or hide the small marks on the nodes that have notes",
+  "mostra o nasconde i piccoli segni sui nodi che hanno delle note",
+  "affiche ou masque les petits repères sur les nœuds qui ont des notes"
+ ]
+}

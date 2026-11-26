@@ -1,0 +1,61 @@
+ID	serovar	ST	cluster	source	matrix	region	province	sampling_date	outcome	latitude	longitude
+SA-001	Typhimurium	ST19	A	animal	poultry	Abruzzo	L'Aquila	2025-12-25	suspected	42.3045	13.4708
+SA-002	Typhimurium	ST19	A	environment	surface swab	Abruzzo	L'Aquila	2025-08-12	confirmed	42.3138	13.3275
+SA-003	Typhimurium	ST19	A	food	pork sausage	Abruzzo	L'Aquila	2026-01-20	confirmed	42.3510	13.3674
+SA-004	Typhimurium	ST19	A	human	stool	Abruzzo	Teramo	2026-01-08	confirmed	42.6554	13.7731
+SA-005	Typhimurium	ST19	A	human	stool	Abruzzo	Pescara	2025-12-26	confirmed	42.4041	14.2217
+SA-006	Typhimurium	ST19	A	food	pork sausage	Abruzzo	L'Aquila	2026-02-14	confirmed	42.4056	13.3552
+SA-007	Typhimurium	ST19	A	environment	surface swab	Abruzzo	L'Aquila	2025-10-25	confirmed	42.3261	13.3233
+SA-008	Typhimurium	ST19	A	food	chicken meat	Emilia-Romagna	Bologna	2025-07-21	confirmed	44.4232	11.3960
+SA-009	Typhimurium	ST19	A	environment	surface swab	Abruzzo	L'Aquila	2025-05-03	suspected	42.3089	13.4536
+SA-010	Typhimurium	ST19	A	animal	pig	Abruzzo	Pescara	2025-07-08	confirmed	42.4612	14.2617
+SA-011	Typhimurium	ST19	A	environment	surface swab	Abruzzo	Teramo	2025-08-05	suspected	42.6649	13.6968
+SA-012	Typhimurium	ST19	A	animal	poultry	Abruzzo	Teramo	2025-10-14	suspected	42.6593	13.7026
+SA-013	Typhimurium	ST19	A	environment	surface swab	Abruzzo	Pescara	2025-12-23	confirmed	42.4314	14.2332
+SA-014	Typhimurium	ST19	A	animal	poultry	Abruzzo	L'Aquila	2026-04-25	confirmed	42.4091	13.3724
+SA-015	Typhimurium	ST19	A	food	pork sausage	Piemonte	Torino	2026-01-02	confirmed	45.0399	7.6531
+SA-016	Typhimurium	ST19	A	environment	surface swab	Abruzzo	Teramo	2026-01-06	suspected	42.6514	13.7804
+SA-017	Typhimurium monophasic	ST34	B	animal	poultry	Campania	Napoli	2026-01-05	suspected	40.8478	14.2428
+SA-018	Typhimurium monophasic	ST34	B	human	stool	Abruzzo	Chieti	2026-02-15	confirmed	42.3630	14.1772
+SA-019	Typhimurium monophasic	ST34	B	animal	poultry	Campania	Napoli	2025-10-11	confirmed	40.8060	14.3242
+SA-020	Typhimurium monophasic	ST34	B	human	stool	Lazio	Roma	2025-12-11	suspected	41.9270	12.5222
+SA-021	Typhimurium monophasic	ST34	B	animal	poultry	Puglia	Bari	2026-01-23	suspected	41.0413	16.8688
+SA-022	Typhimurium monophasic	ST34	B	environment	surface swab	Lazio	Roma	2025-12-28	suspected	41.9450	12.5623
+SA-023	Typhimurium monophasic	ST34	B	food	chicken meat	Toscana	Firenze	2026-01-27	confirmed	43.6991	11.1819
+SA-024	Typhimurium monophasic	ST34	B	environment	surface swab	Lazio	Roma	2025-08-12	confirmed	41.9448	12.5215
+SA-025	Typhimurium monophasic	ST34	B	animal	pig	Campania	Napoli	2025-08-05	confirmed	40.8108	14.2594
+SA-026	Typhimurium monophasic	ST34	B	animal	pig	Lazio	Roma	2026-01-28	confirmed	41.8637	12.5059
+SA-027	Typhimurium monophasic	ST34	B	environment	surface swab	Lazio	Roma	2025-11-21	confirmed	41.9015	12.4491
+SA-028	Typhimurium monophasic	ST34	B	food	pork sausage	Campania	Napoli	2025-07-05	suspected	40.7914	14.2668
+SA-029	Typhimurium monophasic	ST34	B	animal	pig	Abruzzo	Chieti	2025-08-05	confirmed	42.3619	14.1921
+SA-030	Typhimurium monophasic	ST34	B	environment	surface swab	Abruzzo	Chieti	2026-02-10	confirmed	42.2744	14.1702
+SA-031	Enteritidis	ST11	C	environment	surface swab	Emilia-Romagna	Bologna	2025-09-06	confirmed	44.4616	11.3886
+SA-032	Enteritidis	ST11	C	environment	surface swab	Abruzzo	Chieti	2025-10-13	confirmed	42.4309	14.1972
+SA-033	Enteritidis	ST11	C	food	pork sausage	Emilia-Romagna	Bologna	2025-06-03	confirmed	44.5384	11.3595
+SA-034	Enteritidis	ST11	C	animal	pig	Piemonte	Torino	2025-07-12	confirmed	45.1241	7.7086
+SA-035	Enteritidis	ST11	C	animal	poultry	Puglia	Bari	2026-03-24	confirmed	41.1282	16.9305
+SA-036	Enteritidis	ST11	C	food	pork sausage	Piemonte	Torino	2026-03-15	confirmed	45.1161	7.6407
+SA-037	Enteritidis	ST11	C	food	chicken meat	Abruzzo	L'Aquila	2026-03-20	confirmed	42.3316	13.4675
+SA-038	Enteritidis	ST11	C	animal	poultry	Piemonte	Torino	2025-09-24	confirmed	45.0830	7.7455
+SA-039	Enteritidis	ST11	C	animal	poultry	Puglia	Bari	2025-12-09	confirmed	41.1560	16.9346
+SA-040	Enteritidis	ST11	C	food	pork sausage	Emilia-Romagna	Bologna	2025-11-16	suspected	44.4759	11.2905
+SA-041	Enteritidis	ST11	C	animal	pig	Lombardia	Milano	2025-10-03	confirmed	45.5025	9.1660
+SA-042	Enteritidis	ST11	C	animal	poultry	Lombardia	Milano	2026-03-12	confirmed	45.5412	9.2644
+SA-043	Infantis	ST32	D	food	pork sausage	Emilia-Romagna	Bologna	2026-01-21	confirmed	44.5364	11.4073
+SA-044	Infantis	ST32	D	human	stool	Lazio	Roma	2025-09-15	suspected	41.8551	12.4451
+SA-045	Infantis	ST32	D	food	chicken meat	Marche	Ancona	2026-01-12	suspected	43.6383	13.5864
+SA-046	Infantis	ST32	D	food	chicken meat	Marche	Ancona	2025-06-10	confirmed	43.5890	13.5246
+SA-047	Infantis	ST32	D	food	chicken meat	Marche	Ancona	2025-08-28	confirmed	43.6578	13.5013
+SA-048	Infantis	ST32	D	food	pork sausage	Toscana	Firenze	2025-09-14	confirmed	43.7271	11.2767
+SA-049	Infantis	ST32	D	food	pork sausage	Abruzzo	Chieti	2025-05-25	confirmed	42.3438	14.2453
+SA-050	Infantis	ST32	D	human	stool	Emilia-Romagna	Bologna	2025-11-03	suspected	44.5555	11.2785
+SA-051	Infantis	ST32	D	human	stool	Marche	Ancona	2025-07-17	confirmed	43.5518	13.5488
+SA-052	Infantis	ST32	D	human	stool	Marche	Ancona	2025-11-02	suspected	43.5978	13.5253
+SA-053	Typhimurium	ST19	E	food	chicken meat	Marche	Ancona	2026-02-06	confirmed	43.5636	13.5496
+SA-054	Typhimurium	ST19	E	animal	poultry	Abruzzo	Chieti	2025-12-15	confirmed	42.3088	14.2102
+SA-055	Typhimurium	ST19	E	animal	pig	Marche	Ancona	2025-05-15	confirmed	43.5987	13.5325
+SA-056	Typhimurium	ST19	E	food	pork sausage	Abruzzo	Teramo	2025-11-16	suspected	42.6992	13.6718
+SA-057	Typhimurium	ST19	E	food	chicken meat	Abruzzo	Chieti	2026-03-08	suspected	42.3690	14.1488
+SA-058	Typhimurium	ST19	E	food	chicken meat	Abruzzo	Chieti	2026-04-11	confirmed	42.3478	14.1399
+SA-059	Typhimurium	ST19	E	animal	pig	Emilia-Romagna	Bologna	2025-10-23	suspected	44.4918	11.2863
+SA-060	Typhimurium	ST19	E	food	chicken meat	Abruzzo	Chieti	2025-11-27	confirmed	42.2983	14.1288

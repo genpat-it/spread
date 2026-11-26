@@ -170,6 +170,18 @@ footer .info p {
   font-size: 1.3rem;
 }
 
+/* discreet invitation to star the repository and cite the paper */
+footer .info p.footer-star a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+footer .info p.footer-star .tabler {
+  font-size: 1.1em;
+  vertical-align: -0.1em;
+}
+
 footer .info p.copyright {
   opacity: 0.6;
   margin-top: 0.5rem;

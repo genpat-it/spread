@@ -117,6 +117,30 @@ export function norm(text) {
   return fold(text).replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
+// Common words of languages the assistant does not understand, none of them a
+// word of Italian, English or French. Used only to explain a failed request.
+const FOREIGN = {
+  es: ['el', 'los', 'las', 'muestra', 'muestrame', 'ensename', 'quiero', 'oculta', 'ocultar', 'colorea', 'arbol', 'tabla', 'cuantos', 'cuantas', 'donde', 'pero', 'esta', 'estan', 'todos', 'muestras', 'por favor', 'segun'],
+  de: ['der', 'die', 'das', 'und', 'zeige', 'zeig', 'zeigen', 'karte', 'baum', 'bitte', 'ich', 'nicht', 'mit', 'auf', 'ein', 'eine', 'alle', 'wie', 'viele', 'tabelle', 'farbe', 'oder', 'dem', 'ist', 'sind', 'nach', 'proben'],
+  pt: ['voce', 'nao', 'arvore', 'mostre', 'quero', 'esconda', 'os', 'tabela', 'cor', 'onde', 'todas', 'obrigado', 'amostras', 'mapa', 'por favor']
+};
+
+/**
+ * Language of a request written in a language the assistant does not read:
+ * at least two of its words belong only to that language.
+ * @param {string} text the request
+ * @returns {string|null} 'es', 'de' or 'pt', or null
+ */
+export function foreignLanguage(text) {
+  const folded = ` ${norm(text)} `;
+  let best = null;
+  for (const [lang, words] of Object.entries(FOREIGN)) {
+    const hits = words.filter((word) => folded.includes(` ${word} `)).length;
+    if (hits >= 2 && (!best || hits > best.hits)) best = { lang, hits };
+  }
+  return best ? best.lang : null;
+}
+
 function levenshtein(a, b) {
   if (a === b) return 0;
   if (!a.length) return b.length;

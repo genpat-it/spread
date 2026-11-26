@@ -50,9 +50,10 @@ The idea was to extend the original project in order to conducts spatio-temporal
 
 ## Use SPREAD
 
-You can download the project and easly running it locally, but we provide also a ready to use version freely available following link below:
+You can download the project and easly running it locally, but we provide also a ready to use version freely available following the links below:
 
-* [https://cohesive.izs.it/spread/](https://cohesive.izs.it/spread/)
+* [Demo](https://genpat-it.github.io/spread/): opens with a small synthetic dataset (Salmonella tree, metadata and map), to try SPREAD and its assistant at once
+* [Blank](https://genpat-it.github.io/spread/?blank): opens SPREAD without data, to load your own files (Newick tree, metadata TSV, SPREAD session)
 
 Please note, you can load sensitive data, your dataset is visualised client-side in the browser. No data is transmitted, and no tracking cookies are used. The only data downloaded from the internet are the visualisation (JavaScript) code, fonts and map tiles.
 

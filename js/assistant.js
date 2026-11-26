@@ -1,7 +1,7 @@
 /* global gtiz_tree, gtiz_metadata, gtiz_legend, gtiz_map, gtiz_settings, gtiz_video, gtiz_layout, gtiz_zooms, gtiz_macros */
 
-import { interpret, splitClauses, matchRows, valueFor, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=70';
-import { buildIndex, matchExamples, proposal, isWeak } from './assistant-examples.js?v=70';
+import { interpret, splitClauses, matchRows, valueFor, foreignLanguage, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=71';
+import { buildIndex, matchExamples, proposal, isWeak } from './assistant-examples.js?v=71';
 
 // This bridge derives its catalog from SPREAD's actual menu configuration and
 // resolves requests with the deterministic parser in assistant-intents.js.
@@ -488,6 +488,9 @@ function refreshRegistry() {
   registerNodeShape();
   registerFullScreen();
   registerTopbarPanels();
+  registerTheme();
+  registerTransferAreas();
+  registerFileOptions();
   registerMacros();
 }
 
@@ -574,6 +577,77 @@ function registerTopbarPanels() {
   }
 }
 
+// Dark mode of the top bar (js/theme.js), only for themes that have one:
+// on is dark, off is light, as the button of the top bar.
+function registerTheme() {
+  if (typeof gtiz_theme === 'undefined' || typeof gtiz_theme.toggle !== 'function' || !gtiz_theme.available) return;
+  const label = () => gtiz_locales.current.dark_mode;
+  const id = 'topbar:theme';
+  actionRegistry.set(id, {
+    id,
+    area: 'topbar',
+    item: {
+      id: 'tool-theme',
+      type: 'toggle',
+      label,
+      options: [{ value: 'on', label }, { value: 'off', label }],
+      selected: () => (gtiz_theme.isDark() ? 'on' : 'off'),
+      function: (value) => { if ((value === 'on') !== gtiz_theme.isDark()) gtiz_theme.toggle(); }
+    }
+  });
+}
+
+// The import and export areas of the macros and notes panels: the panel opens
+// with its area, as from the button of its search row.
+function registerTransferAreas() {
+  const T3 = (it, en, fr) => Object.assign(T(it, en, fr), { all: [it, en, fr] });
+  const controls = [];
+  if (typeof gtiz_macros !== 'undefined' && typeof gtiz_macros.toggleTransferArea === 'function') {
+    controls.push(['macros', { id: 'tool-macros-transfer', label: T3('Importa o esporta le macro', 'Import or export the macros', 'Importer ou exporter les macros'), function: () => { if (!document.body.classList.contains('show-macros')) gtiz_macros.showMacros(); gtiz_macros.toggleTransferArea(true); } }]);
+  }
+  if (typeof gtiz_notes !== 'undefined' && typeof gtiz_notes.toggleTransferArea === 'function') {
+    controls.push(['notes', { id: 'tool-notes-transfer', label: T3('Importa o esporta le note', 'Import or export the notes', 'Importer ou exporter les notes'), function: () => { gtiz_notes.showNotes(); gtiz_notes.toggleTransferArea(true); } }]);
+  }
+  for (const [tool, item] of controls) {
+    const id = `tools:${item.id.replace(/^tool-/, '')}`;
+    actionRegistry.set(id, { id, area: 'tools', tool, item: { type: 'abutton', macro: false, ...item } });
+  }
+}
+
+// Not the metadata exports: “esporta i metadati” is the download of the table
+// (metadata menu), as in the tests of the paraphrases.
+const FILE_LABEL_KEYS = {
+  'file-handler-save-json': 'save_as_complete_json',
+  'file-handler-save-package-with-zooms': 'save_as_complete_package_with_zooms',
+  'file-handler-export-nwk': 'export_newick',
+  'file-handler-export-geojson': 'export_geoJson',
+  'file-handler-export-notes-md': 'notes_export_md',
+  'file-handler-export-notes-docx': 'notes_export_docx'
+};
+
+// Saves and exports of the save modal (session, Newick, metadata, GeoJSON,
+// notes): the modal opens first, as from the menu, so its feedback is shown.
+function registerFileOptions() {
+  if (typeof gtiz_file_handler === 'undefined' || !Array.isArray(gtiz_file_handler.save_options) || typeof gtiz_tree?.openFileHandlerModal !== 'function' || !gtiz_tree.tree) return;
+  if (gtiz_app.cfg.read_only) return;
+  gtiz_file_handler.save_options.forEach((option) => {
+    if (option?.type !== 'abutton' || !option.id || typeof option.function !== 'function') return;
+    if (typeof gtiz_utils !== 'undefined' && !gtiz_utils.isMenuItemVisible(option)) return;
+    const id = `file:${option.id.replace(/^file-handler-/, '')}`;
+    // the label of the modal is in the loaded language only: its key gives all three
+    const key = FILE_LABEL_KEYS[option.id];
+    const all = key && typeof gtiz_languages !== 'undefined' ? ['it', 'en', 'fr'].map((code) => gtiz_languages[code]?.[key]).filter(Boolean).map(stripTags) : [];
+    const item = {
+      type: 'abutton',
+      id: option.id,
+      macro: false,
+      label: Object.assign(() => (typeof option.label === 'function' ? option.label() : option.label), { all }),
+      function: () => { gtiz_tree.openFileHandlerModal('save'); option.function(); }
+    };
+    actionRegistry.set(id, { id, area: 'file', item });
+  });
+}
+
 // Extra words people use for SPREAD options, in Italian, English and French.
 // Keys are menu item ids, `opt:<first option value>` for id-less toggles,
 // `layout:<panel>` for layout toggles, or the English label of a button.
@@ -597,7 +671,18 @@ const SYNONYMS = {
   'layout:map': ['mappa', 'map', 'carte', 'gis', 'cartina'],
   'layout:metadata': ['metadati', 'metadata', 'tabella', 'table', 'metadonnees', 'tableau', 'griglia'],
   'layout:legend': ['legenda', 'legend', 'legende'],
+  'tool-theme': ['tema scuro', 'modalita scura', 'sfondo scuro', 'dark mode', 'dark theme', 'night mode', 'mode sombre', 'theme sombre'],
   'tool-fullscreen': ['schermo intero', 'tutto schermo', 'full screen', 'fullscreen', 'plein ecran'],
+  'tool-macros-transfer': ['importa macro', 'esporta macro', 'importa le macro', 'esporta le macro', 'import macros', 'export macros', 'importer les macros', 'exporter les macros'],
+  'tool-notes-transfer': ['importa note', 'importa le note', 'import notes', 'import the notes', 'importer les notes'],
+  'file-handler-save-json': ['sessione json', 'salva json', 'session json'],
+  'file-handler-save-package-with-zooms': ['sessione con zoom', 'salva con gli zoom', 'pacchetto zip', 'zip con zoom', 'session with zooms', 'zip with zooms', 'package with zooms', 'session avec zooms', 'zip avec zooms'],
+  'file-handler-export-nwk': ['newick', 'nwk'],
+  'file-handler-export-metadata': ['metadati tsv', 'metadata tsv', 'metadonnees tsv'],
+  'file-handler-export-metadata-xlsx': ['excel', 'xlsx', 'metadati in excel', 'metadata in excel', 'metadonnees en excel'],
+  'file-handler-export-geojson': ['geojson', 'geo json', 'esporta coordinate', 'export coordinates', 'exporter les coordonnees'],
+  'file-handler-export-notes-md': ['note markdown', 'note in markdown', 'esporta le note in md', 'notes markdown', 'notes as markdown', 'export notes md', 'notes en markdown'],
+  'file-handler-export-notes-docx': ['note in word', 'report delle note', 'note docx', 'rapporto note', 'notes word', 'notes report', 'notes docx', 'notes as word', 'rapport des notes', 'notes en word'],
   // panels of the top bar and the recorder of the macros (registerTopbarPanels)
   'tool-search': ['cerca funzioni', 'cerca una funzione', 'ricerca funzioni', 'search functions', 'search a function', 'find a function', 'recherche de fonctions', 'chercher une fonction'],
   'tool-macros': ['macro', 'pannello macro', 'pannello delle macro', 'macros', 'macros panel', 'panneau des macros'],
@@ -775,7 +860,7 @@ function catalogEntry(entry) {
   const labelItem = entry.labelItem || item;
   const hasLabel = Boolean(typeof labelItem.label === 'function' ? (() => { try { return labelItem.label(); } catch (_) { return ''; } })() : labelItem.label);
   const { all, english } = hasLabel ? translations(labelOf(labelItem)) : { all: [], english: '' };
-  const terms = [...all];
+  const terms = [...all, ...(labelItem.label?.all || [])];
   const keys = [item.id, labelItem.id, english, options.length ? `opt:${options[0].value}` : '', area === 'layout' ? `layout:${item.type}` : ''];
   keys.forEach((key) => { if (key && SYNONYMS[key]) terms.push(...SYNONYMS[key]); });
   const optionEntries = options.map((option) => ({
@@ -994,6 +1079,8 @@ function locationOf(id) {
     };
   }
   if (area === 'topbar') return { path: [t.topbar, name], reveal: async () => document.querySelector(`.${item.id}`) };
+  if (area === 'tools') return { path: [t.topbar, t[entry.tool], name], reveal: async () => document.querySelector(`.tool-${entry.tool}`) };
+  if (area === 'file') return { path: [t.tree, t.menu, stripTags(gtiz_locales.current.save_spread || ''), name], reveal: async () => { gtiz_tree.openFileHandlerModal('save'); await sleep(300); return findByText(document.querySelector('.modal'), name) || document.querySelector('.modal'); } };
   // the video player: a hidden item of the legend menu, switched by the round
   // trigger in the header of the legend card
   if (item.id === 'legend-menu-player') return { path: [t.legend, t.header, name], reveal: async () => { await openPanel('legend'); return document.querySelector('.card-legend-player-trigger'); } };
@@ -2153,12 +2240,12 @@ async function runClauses(panel, clauses) {
     }
     if (result?.note) continue;
     if (result?.error) {
-      search.unresolved.push({ request, reply: result.error });
+      search.unresolved.push({ request, reply: foreignLanguage(request) ? say('languages') : result.error });
       continue;
     }
     logUnresolved(request, 'no-match');
     // the header says it was not understood: the text only suggests how to ask
-    search.unresolved.push({ request, reply: null });
+    search.unresolved.push({ request, reply: foreignLanguage(request) ? say('languages') : null });
   }
   // the last message not understood ends with three examples, pertinent to the
   // requests not understood (column, value or operation) or in rotation
