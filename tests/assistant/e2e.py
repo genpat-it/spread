@@ -25,6 +25,13 @@ def ask(pg, message):
     messages = pg.evaluate("[...document.querySelectorAll('.spread-assistant__message--assistant')].map(n => n.textContent)")
     return plan, messages[count:]
 
+AUTO = '.spread-assistant__auto .toggle-box'
+
+def set_auto(pg, on):
+    # the Apply immediately switch: a toggle box with data-selection on/off
+    if (pg.get_attribute(AUTO, 'data-selection') == 'on') != on:
+        pg.evaluate('(selector) => document.querySelector(selector).click()', AUTO)
+
 CASES = [
     ('it', 'aggiungi una colonna nei metadati di nome Pippo',
      lambda rows, pg: all('Pippo' in r and r['Pippo'] == '' for r in rows)),
@@ -58,13 +65,14 @@ CASES = [
     ('it', 'seleziona i campioni con data dopo il 2026-01-20 e collassali', lambda rows, pg: True),
     ('it', 'mostra le etichette dei nodi e imposta la dimensione dei nodi a 200', lambda rows, pg: True),
     ('it', 'dammi i metadati che verificano regione è Lombardia e outcome è positive',
-     lambda rows, pg: sorted(pg.evaluate('gtiz_tree.tree.getAllSelectedNodesIDs()')) == ['IT-004'] and pg.evaluate('gtiz_metadata.show_nodes') == 'show_selected' and pg.evaluate('gtiz_metadata.options.api.getDisplayedRowCount()') == 1 and any('1 campioni' in r for r in REPLIES[0])),
+     lambda rows, pg: sorted(pg.evaluate('gtiz_tree.tree.getAllSelectedNodesIDs()')) == ['IT-004'] and pg.evaluate('gtiz_metadata.show_nodes') == 'show_selected' and pg.evaluate('gtiz_metadata.options.api.getDisplayedRowCount()') == 1 and any('1 campione' in r for r in REPLIES[0])),
     ('it', 'quanti campioni ci sono in Toscana', lambda rows, pg: any(r.startswith('2 campioni') for r in REPLIES[0]) and not PLAN[0]),
     ('it', 'quali campioni hanno outcome negative', lambda rows, pg: any('IT-001' in r and 'IT-006' in r for r in REPLIES[0])),
     ('it', 'togli il filtro', lambda rows, pg: pg.evaluate('gtiz_metadata.show_nodes') == 'show_all'),
     ('it', 'colora per province', lambda rows, pg: pg.evaluate('gtiz_tree.tree.display_category') == 'province'),
     ('it', 'zooma 2x', lambda rows, pg: True),
-    ('it', 'registra gli ultimi 2 passaggi come macro prova', lambda rows, pg: any('salvata con 2' in r for r in REPLIES[0]) and pg.evaluate('SPREAD_ASSISTANT.macros().length') == 1),
+    # the zoom is not an option of the interface: the macro keeps only the colour, and says so
+    ('it', 'registra gli ultimi 2 passaggi come macro prova', lambda rows, pg: any('salvata con 1' in r for r in REPLIES[0]) and any('Zoom' in r for r in REPLIES[0]) and pg.evaluate('SPREAD_ASSISTANT.macros().length') == 1),
     ('it', 'colora per cluster', lambda rows, pg: pg.evaluate('gtiz_tree.tree.display_category') == 'cluster'),
     ('it', 'esegui la macro prova', lambda rows, pg: pg.evaluate('gtiz_tree.tree.display_category') == 'province'),
     ('it', 'dammi la lista delle macro', lambda rows, pg: any('prova' in r and 'Scala logaritmica' in r for r in REPLIES[0])),
@@ -92,7 +100,7 @@ CASES = [
     ('it', '#history', None),
     ('it', '#clear', None),
     ('it', 'ordina la legenda temporalmente e metti gradiente', lambda rows, pg: pg.evaluate('gtiz_tree.tree.display_category') == 'sampling_date' and pg.evaluate("[...document.querySelectorAll('.legend .legend-item, .legend li')].length >= 0") and 'alphabetic-asc' in PLAN[0] + pg.evaluate('JSON.stringify(SPREAD_ASSISTANT.history().slice(-3))') and 'gradient' in pg.evaluate('JSON.stringify(SPREAD_ASSISTANT.history().slice(-3))')),
-    ('it', 'dove trovo le impostazioni per la dimensione dei nodi?', lambda rows, pg: any('Impostazioni › Dimensione nodi' in r for r in REPLIES[0]) and pg.wait_for_selector('.spread-assistant-spotlight', state='attached', timeout=4000) is not None),
+    ('it', 'dove trovo le impostazioni per la dimensione dei nodi?', lambda rows, pg: any('Impostazioni › Dimensione nodi' in r for r in REPLIES[0]) and pg.wait_for_selector('.highlight-hole', state='attached', timeout=4000) is not None),
     ('it', 'seleziona i campioni di Toscana e selezionali nella mappa', lambda rows, pg: pg.evaluate("document.querySelector('.quick-actions .toggle-box[data-view=map]').dataset.selection") == 'on'),
     ('it', 'apri la mappa e mostrala come heatmap', lambda rows, pg: 'heatmap' in PLAN[0].lower() and 'legenda' not in PLAN[0].lower()),
     ('en', 'show only the selected rows in the table', lambda rows, pg: 'show_selected' in PLAN[0] or 'selezionati' in PLAN[0].lower()),
@@ -116,7 +124,7 @@ def main():
             b, pg, errs = open_page(p, 'it')
             for lang, message, check in CASES:
                 if message == '#auto':
-                    pg.check('[data-assistant-auto]'); continue
+                    set_auto(pg, True); continue
                 if message == '#history':
                     pg.fill('.spread-assistant__form textarea', 'bozza')
                     pg.focus('.spread-assistant__form textarea'); pg.keyboard.press('ArrowUp'); last = pg.input_value('.spread-assistant__form textarea')
@@ -148,7 +156,7 @@ def main():
                         ok = check([], pg) and pg.evaluate("document.querySelector('.spread-assistant__plan').hidden")
                     failures += not ok; print('PASS' if ok else 'FAIL', '|', message, '|', PLAN[0] if message.startswith('#suggest:') else ' / '.join(REPLIES[0])[:160]); continue
                 if message == '#manual':
-                    pg.evaluate("(() => { const box = document.querySelector('[data-assistant-auto]'); if (box.checked) box.click(); })()"); continue
+                    set_auto(pg, False); continue
                 if message == '#cancel':
                     if pg.evaluate("!document.querySelector('.spread-assistant__plan').hidden"): pg.click('[data-assistant-cancel]')
                     continue
@@ -161,7 +169,8 @@ def main():
                 PLAN[0] = plan
                 rows = pg.evaluate(ROWS)
                 REPLIES[0] = replies
-                applied = (not plan or any(r.startswith('Fatto') or r.startswith('Done') for r in replies)) and not any('Non ho applicato' in r or 'not applied' in r.lower() for r in replies)
+                # a plan applied ends with a success message headed Fatto (Done)
+                applied = (not plan or any(r.strip().startswith(('Fatto', 'Done')) for r in replies)) and not any('Non ho applicato' in r or 'not applied' in r.lower() for r in replies)
                 try: ok = applied and check(rows, pg)
                 except Exception as e: ok = False; replies.append(f'check error: {e}')
                 failures += not ok
