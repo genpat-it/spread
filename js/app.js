@@ -123,6 +123,39 @@ gtiz_app.setTheme = function(theme) {
 
 };
 
+/**
+ * Open the demo dataset of `demo` in app.json, e.g. on the GitHub Pages of SPREAD:
+ * on one of its `hosts` (`*.github.io` matches any subdomain), or anywhere with
+ * `?demo` in the url; never when the url already names data or has `?blank`
+ *
+ * @param {Object} cfg Configuration of app.json
+ * @returns {Boolean} True when the page is reloaded with the demo dataset
+ */
+gtiz_app.openDemo = function(cfg) {
+  let demo = cfg && cfg.demo;
+  if (!demo || !demo.tree) {
+    return false;
+  }
+  let params = new URLSearchParams(window.location.search);
+  let host = window.location.hostname;
+  let on_host = (demo.hosts || []).some(pattern => pattern === host || (pattern.startsWith('*.') && host.endsWith(pattern.slice(1))));
+  if (!on_host && !params.has('demo')) {
+    return false;
+  }
+  if (params.has('blank') || ['tree', 'metadata', 'geo', 'zooms'].some(key => params.has(key))) {
+    return false;
+  }
+  params.delete('demo');
+  ['tree', 'metadata', 'longitude', 'latitude'].forEach(key => {
+    if (demo[key]) {
+      params.set(key, demo[key]);
+    }
+  });
+  // paths stay readable in the address bar
+  window.location.replace(window.location.pathname + '?' + params.toString().replace(/%2F/g, '/') + window.location.hash);
+  return true;
+};
+
 gtiz_app.init = function() {
   let path = 'app.json';
   
@@ -143,6 +176,10 @@ gtiz_app.init = function() {
         }
       }
       gtiz_app.cfg = JSON.parse(data);
+      // a visit of the demo site without data opens the demo dataset (the page reloads)
+      if (gtiz_app.openDemo(gtiz_app.cfg)) {
+        return;
+      }
       gtiz_app.resolveReady(gtiz_app.cfg);
       gtiz_file_handler.init();
     })

@@ -535,6 +535,18 @@ It is also possible to set SPREAD to **read-only** mode by changing the `read_on
 
 Themes can also define the colours of the dark mode, see [Dark mode](#dark-mode).
 
+A demo dataset can be opened when SPREAD is visited without data, as on its GitHub Pages: the `demo` block of `app.json` names the files and the hosts where it applies (`*.github.io` matches any subdomain). Anywhere else, add `?demo` to the url to open it; `?blank` always opens SPREAD without data.
+
+```json
+"demo" : {
+  "hosts" : ["*.github.io"],
+  "tree" : "datasets/assistant-showcase/tree.nwk",
+  "metadata" : "datasets/assistant-showcase/metadata.tsv",
+  "longitude" : "longitude",
+  "latitude" : "latitude"
+}
+```
+
 Please find more information on [wiki](https://github.com/genpat-it/spread/wiki/Customizing-SPREAD)
 
 ## Server
