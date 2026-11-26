@@ -3,9 +3,10 @@
 Phylogenetic tree, map, timeline and metadata of an outbreak in one page, with an assistant you can ask in plain words.
 
 <p align="center">
-  <a href="https://genpat-it.github.io/spread/"><img src="https://img.shields.io/badge/%E2%96%B6%20Try%20the%20live%20demo-0b5cad?style=for-the-badge" alt="Try the live demo"></a>
-  &nbsp;
-  <a href="https://genpat-it.github.io/spread/?blank"><img src="https://img.shields.io/badge/Open%20with%20your%20data-e8eef7?style=for-the-badge" alt="Open with your data"></a>
+  <a href="https://genpat-it.github.io/spread/"><img src="img/readme-try.png" height="47" alt="Try the live demo"></a>
+  <a href="https://genpat-it.github.io/spread/?blank"><img src="img/readme-open.png" height="47" alt="Open with your data"></a>
+  <a href="https://github.com/genpat-it/spread"><img src="img/readme-star.png" height="47" alt="Star on GitHub"></a>
+  <a href="https://doi.org/10.12834/VetIt.3476.23846.1"><img src="img/readme-cite.png" height="47" alt="Cite the paper"></a>
 </p>
 
 <p align="center">
