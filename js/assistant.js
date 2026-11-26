@@ -1,7 +1,7 @@
 /* global gtiz_tree, gtiz_metadata, gtiz_legend, gtiz_map, gtiz_settings, gtiz_video, gtiz_layout, gtiz_zooms, gtiz_macros */
 
-import { interpret, splitClauses, matchRows, valueFor, foreignLanguage, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=72';
-import { buildIndex, matchExamples, proposal, isWeak } from './assistant-examples.js?v=72';
+import { interpret, splitClauses, matchRows, valueFor, foreignLanguage, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=74';
+import { buildIndex, matchExamples, proposal, isWeak } from './assistant-examples.js?v=74';
 
 // This bridge derives its catalog from SPREAD's actual menu configuration and
 // resolves requests with the deterministic parser in assistant-intents.js.
@@ -2377,9 +2377,9 @@ function exampleColumns() {
 // code (not in js/i18n) because the assistant must understand them as written.
 // `op` groups them by operation, to show different ones and the pertinent ones.
 const EXAMPLE_TEMPLATES = {
-  it: { colour: (c) => `colora l'albero per ${c}`, filter: (a, x, b, y) => `dammi i metadati dove ${a} è ${x} e ${b} è ${y}`, hide: (c, x) => `seleziona i campioni con ${c} ${x} e nascondili`, after: (c, d) => `seleziona i campioni con ${c} dopo il ${d} e collassali`, sort: (c) => `ordina la tabella per ${c} decrescente`, count: (c, x) => `quanti campioni hanno ${c} ${x}?`, groups: (c) => `quanti campioni per ${c}?` },
-  en: { colour: (c) => `colour the tree by ${c}`, filter: (a, x, b, y) => `show me the metadata where ${a} is ${x} and ${b} is ${y}`, hide: (c, x) => `select samples with ${c} ${x} and hide them`, after: (c, d) => `select samples with ${c} after ${d} and collapse them`, sort: (c) => `sort the table by ${c} descending`, count: (c, x) => `how many samples have ${c} ${x}?`, groups: (c) => `how many samples per ${c}?` },
-  fr: { colour: (c) => `colorer l'arbre par ${c}`, filter: (a, x, b, y) => `montre les métadonnées où ${a} est ${x} et ${b} est ${y}`, hide: (c, x) => `sélectionne les échantillons avec ${c} ${x} et masque-les`, after: (c, d) => `sélectionne les échantillons avec ${c} après ${d}`, sort: (c) => `trie le tableau par ${c} décroissant`, count: (c, x) => `combien d'échantillons ont ${c} ${x} ?`, groups: (c) => `combien d'échantillons par ${c} ?` }
+  it: { colour: (c) => `colora l'albero per ${c}`, filter: (a, x, b, y) => `dammi i metadati dove ${a} è ${x} e ${b} è ${y}`, hide: (c, x) => `seleziona i campioni con ${c} ${x} e nascondili`, after: (c, d) => `seleziona i campioni con ${c} dopo il ${d} e collassali`, sort: (c) => `ordina la tabella per ${c} decrescente`, count: (c, x) => `quanti campioni hanno ${c} ${x}?`, groups: (c) => `quanti campioni per ${c}?`, where: ["dove trovo l'opzione logaritmica?", 'dove trovo la dimensione dei nodi?', 'dove trovo le etichette dei nodi?'] },
+  en: { colour: (c) => `colour the tree by ${c}`, filter: (a, x, b, y) => `show me the metadata where ${a} is ${x} and ${b} is ${y}`, hide: (c, x) => `select samples with ${c} ${x} and hide them`, after: (c, d) => `select samples with ${c} after ${d} and collapse them`, sort: (c) => `sort the table by ${c} descending`, count: (c, x) => `how many samples have ${c} ${x}?`, groups: (c) => `how many samples per ${c}?`, where: ['where is the logarithmic scale option?', 'where do I change the node size?', 'where are the node labels?'] },
+  fr: { colour: (c) => `colorer l'arbre par ${c}`, filter: (a, x, b, y) => `montre les métadonnées où ${a} est ${x} et ${b} est ${y}`, hide: (c, x) => `sélectionne les échantillons avec ${c} ${x} et masque-les`, after: (c, d) => `sélectionne les échantillons avec ${c} après ${d}`, sort: (c) => `trie le tableau par ${c} décroissant`, count: (c, x) => `combien d'échantillons ont ${c} ${x} ?`, groups: (c) => `combien d'échantillons par ${c} ?`, where: ['où se trouve l’option logarithmique ?', 'où se trouve la taille des nœuds ?', 'où sont les étiquettes des nœuds ?'] }
 };
 // Words of a request that point to an operation (normalized, all languages)
 const EXAMPLE_OPS = {
@@ -2434,6 +2434,8 @@ function examplePool() {
     add(words.after(date.column, sortedDates[Math.floor(sortedDates.length / 2)].slice(0, 10)), 'select', [date.column]);
     add(words.sort(date.column), 'sort', [date.column]);
   }
+  // questions on where an option is: they show that the assistant can also guide
+  (words.where || []).forEach((text) => add(text, 'where', []));
   // only the requests the assistant understands, as written: every clause gives
   // actions, a query or a statistic. The context (registry and catalog, the
   // costly part) is built once for all of them, not once per request as planFor
@@ -2441,7 +2443,7 @@ function examplePool() {
   const understood = (text) => splitClauses(text).every((clause) => {
     try {
       const result = interpret(clause, ctx, (request) => directActions(request, false));
-      return Boolean(result && !result.error && (result.actions?.length || result.query || result.stats));
+      return Boolean(result && !result.error && (result.actions?.length || result.query || result.stats || result.locate));
     } catch (_) { return false; }
   });
   const pool = candidates.filter((candidate) => understood(candidate.text));
@@ -2469,6 +2471,7 @@ function pickExamples(request = '') {
   const ops = new Set(Object.entries(EXAMPLE_OPS).filter(([, terms]) => terms.some(has)).map(([op]) => op));
   const score = (example) => 3 * example.columns.filter(has).length + 3 * example.values.filter(has).length + (ops.has(example.op) ? 2 : 0);
   const ranked = pool
+    .filter((example) => example.op !== 'where' || request.trim())
     .map((example) => ({ example, score: score(example), fresh: recentExamples.has(example.text) ? 0 : 1, random: Math.random() }))
     .sort((a, b) => b.score - a.score || b.fresh - a.fresh || a.random - b.random);
   // the pertinent ones first, even of the same operation (e.g. three sorts for
@@ -2480,6 +2483,12 @@ function pickExamples(request = '') {
     chosen.push(example);
     used.add(example.op);
   }));
+  // the examples of the start always end with a question on where an option is:
+  // the first one the assistant understands (“dove trovo l'opzione logaritmica?”)
+  if (!request.trim() && !chosen.some((example) => example.op === 'where')) {
+    const pick = pool.find((example) => example.op === 'where');
+    if (pick) chosen.splice(Math.min(chosen.length, 2), 1, pick);
+  }
   recentExamples = new Set(chosen.map((example) => example.text));
   return chosen.map((example) => example.text);
 }
@@ -2804,6 +2813,17 @@ function mount() {
   paragraph.append(element('i', 'tabler tabler-info-circle'), ' ');
   // the parts between ** are in bold
   say('note').split('**').forEach((part, index) => paragraph.append(index % 2 ? element('strong', '', part) : part));
+  // “want to know more?” opens the help of the card, as its question mark
+  const more = say('more_info');
+  if (more !== 'more_info') {
+    const link = element('a', 'spread-assistant__more', more);
+    link.href = '#';
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      (panel.closest('.card')?.querySelector('.help-trigger') || document.querySelector('.card-assistant .help-trigger'))?.click();
+    });
+    paragraph.append(' ', link);
+  }
   note.append(paragraph);
   body.append(row, messages, update, form, note);
   panel.append(expand, tools, title, body);

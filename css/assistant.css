@@ -486,3 +486,11 @@
 .dashboard-grapetree .card-assistant .spread-assistant__note strong {
   font-weight: 600;
 }
+
+/* “want to know more?” at the end of the note: opens the help of the card */
+.dashboard-grapetree .card-assistant .spread-assistant__note a.spread-assistant__more {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+}

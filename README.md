@@ -1,5 +1,25 @@
 # SPREAD, Spatiotemporal Pathogen Relationships and Epidemiological Analysis Dashboard
 
+Phylogenetic tree, map, timeline and metadata of an outbreak in one page, with an assistant you can ask in plain words.
+
+<p align="center">
+  <a href="https://genpat-it.github.io/spread/"><img src="https://img.shields.io/badge/%E2%96%B6%20Try%20the%20live%20demo-0b5cad?style=for-the-badge" alt="Try the live demo"></a>
+  &nbsp;
+  <a href="https://genpat-it.github.io/spread/?blank"><img src="https://img.shields.io/badge/Open%20with%20your%20data-e8eef7?style=for-the-badge" alt="Open with your data"></a>
+</p>
+
+<p align="center">
+  <a href="https://genpat-it.github.io/spread/"><img src="img/readme-demo.png" width="900" alt="SPREAD demo: the tree coloured by serovar, the map and the assistant answering how many samples per source"></a>
+</p>
+
+Open the demo and type in the **Assistant** card, in English, Italian or French:
+
+* `colour the tree by serovar and open the map`
+* `how many samples per source?`
+* `where is the logarithmic scale?`
+
+It all runs in your browser: no installation, and your data never leave the page.
+
 Previously known as GrapeTree Extended.
 
 ## Table of Contents
