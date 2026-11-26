@@ -3,14 +3,14 @@
 Phylogenetic tree, map, timeline and metadata of an outbreak in one page, with an assistant you can ask in plain words.
 
 <p align="center">
-  <a href="https://genpat-it.github.io/spread/"><img src="img/readme-try.png" height="47" alt="Try the live demo"></a>
-  <a href="https://genpat-it.github.io/spread/?blank"><img src="img/readme-open.png" height="47" alt="Open with your data"></a>
-  <a href="https://github.com/genpat-it/spread"><img src="img/readme-star.png" height="47" alt="Star on GitHub"></a>
-  <a href="https://doi.org/10.12834/VetIt.3476.23846.1"><img src="img/readme-cite.png" height="47" alt="Cite the paper"></a>
+  <a href="https://genpat-it.github.io/spread/?demo"><img src="img/readme-try.png" height="40" alt="Try the live demo"></a>
+  <a href="https://genpat-it.github.io/spread/"><img src="img/readme-open.png" height="40" alt="Open with your data"></a>
+  <a href="https://github.com/genpat-it/spread"><img src="img/readme-star.png" height="40" alt="Star on GitHub"></a>
+  <a href="https://doi.org/10.12834/VetIt.3476.23846.1"><img src="img/readme-cite.png" height="40" alt="Cite the paper"></a>
 </p>
 
 <p align="center">
-  <a href="https://genpat-it.github.io/spread/"><img src="img/readme-demo.png" width="900" alt="SPREAD demo: the tree coloured by serovar, the map and the assistant answering how many samples per source"></a>
+  <a href="https://genpat-it.github.io/spread/?demo"><img src="img/readme-demo.png" width="900" alt="SPREAD demo: the tree coloured by serovar, the map and the assistant answering how many samples per source"></a>
 </p>
 
 Open the demo and type in the **Assistant** card, in English, Italian or French:
@@ -73,8 +73,8 @@ The idea was to extend the original project in order to conducts spatio-temporal
 
 You can download the project and easly running it locally, but we provide also a ready to use version freely available following the links below:
 
-* [Demo](https://genpat-it.github.io/spread/): opens with a small synthetic dataset (Salmonella tree, metadata and map), to try SPREAD and its assistant at once
-* [Blank](https://genpat-it.github.io/spread/?blank): opens SPREAD without data, to load your own files (Newick tree, metadata TSV, SPREAD session)
+* [Demo](https://genpat-it.github.io/spread/?demo): opens with a small synthetic dataset (Salmonella tree, metadata and map), to try SPREAD and its assistant at once
+* [Blank](https://genpat-it.github.io/spread/): opens SPREAD without data, to load your own files (Newick tree, metadata TSV, SPREAD session)
 
 Please note, you can load sensitive data, your dataset is visualised client-side in the browser. No data is transmitted, and no tracking cookies are used. The only data downloaded from the internet are the visualisation (JavaScript) code, fonts and map tiles.
 
@@ -535,11 +535,10 @@ It is also possible to set SPREAD to **read-only** mode by changing the `read_on
 
 Themes can also define the colours of the dark mode, see [Dark mode](#dark-mode).
 
-A demo dataset can be opened when SPREAD is visited without data, as on its GitHub Pages: the `demo` block of `app.json` names the files and the hosts where it applies (`*.github.io` matches any subdomain). Anywhere else, add `?demo` to the url to open it; `?blank` always opens SPREAD without data.
+The `demo` block of `app.json` names a demo dataset, opened by adding `?demo` to the url (the "Try the live demo" link of this page). `hosts` optionally lists the hosts where a visit without data opens the demo by itself (`*.github.io` matches any subdomain); `?blank` always opens SPREAD without data.
 
 ```json
 "demo" : {
-  "hosts" : ["*.github.io"],
   "tree" : "datasets/assistant-showcase/tree.nwk",
   "metadata" : "datasets/assistant-showcase/metadata.tsv",
   "longitude" : "longitude",

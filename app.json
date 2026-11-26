@@ -77,7 +77,6 @@
     "enabled" : true
   },
   "demo" : {
-    "hosts" : ["*.github.io"],
     "tree" : "datasets/assistant-showcase/tree.nwk",
     "metadata" : "datasets/assistant-showcase/metadata.tsv",
     "longitude" : "longitude",
