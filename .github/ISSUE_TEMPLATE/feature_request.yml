@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest an idea to improve SPREAD
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What would you like to do?
+      description: The analysis or the task you have in mind, and why the current version does not cover it.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could it work?
+      description: Optional, any idea on how it could look in the interface.

@@ -1,0 +1,30 @@
+name: Assistant did not understand a request
+description: The local assistant did not understand, or misunderstood, a request
+title: "Assistant: request not understood"
+labels: [assistant]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks, these reports are how the assistant learns new ways of asking. **Please write the request without real sample codes, names, places or other sensitive data**: replace them with placeholders such as `SAMPLE-1` or `REGION-A`.
+  - type: textarea
+    id: request
+    attributes:
+      label: What I wrote to the assistant
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What I expected it to do
+    validations:
+      required: true
+  - type: textarea
+    id: answer
+    attributes:
+      label: What it answered or did
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language of the interface
+      options: [English, Italiano, Français]

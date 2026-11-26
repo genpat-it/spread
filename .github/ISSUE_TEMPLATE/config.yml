@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/genpat-it/spread/wiki
+    about: How to load data, use the views, customize and deploy SPREAD.
+  - name: Try SPREAD online
+    url: https://genpat-it.github.io/spread/
+    about: The live demo, to check whether a problem also happens there.
