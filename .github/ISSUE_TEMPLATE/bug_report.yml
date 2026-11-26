@@ -1,0 +1,32 @@
+name: Bug report
+description: Something in SPREAD does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem. **Please do not paste real sample codes, names, places or other sensitive data**: describe the data instead, or use the demo dataset.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the demo (https://genpat-it.github.io/spread/)
+        2. …
+  - type: input
+    id: version
+    attributes:
+      label: SPREAD version
+      description: The release (e.g. 2.1.0), the Docker tag or "GitHub Pages"
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and operating system
+      placeholder: e.g. Firefox 133 on Windows 11
