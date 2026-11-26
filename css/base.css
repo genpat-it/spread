@@ -2882,3 +2882,58 @@ aside code,
     transform: rotate(360deg);
   }
 }
+
+/* FOOTER STAR */
+
+/* discreet invitation to star the repository and cite the paper, the same for
+   every theme (markup in index.html): the theme footer.css, loaded after this
+   file, can override it with the same selectors */
+/* vertical gaps aligned with the ones between the .useful sections */
+footer .footer-star {
+  margin-top: 2.4rem;
+  margin-bottom: 0;
+}
+
+footer .footer-star + .info {
+  margin-top: 2.8rem;
+}
+
+footer .footer-star-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  transform: translateX(-0.2rem);
+}
+
+footer .footer-star-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--white);
+  font-size: 1.4rem;
+  line-height: 1.4;
+  text-decoration: none;
+  -webkit-transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+footer .footer-star-button:hover,
+footer .footer-star-button:focus-visible {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.8);
+  color: var(--white);
+  text-decoration: none;
+}
+
+footer .footer-star-button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+footer .footer-star-button .tabler {
+  font-size: 1.1em;
+}
