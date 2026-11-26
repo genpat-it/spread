@@ -1292,7 +1292,7 @@ function parseWhere(ctx, text, folded) {
   if (!where && !howto) return null;
   let rest = text.slice((where || howto)[0].length);
   rest = stripFolded(rest.trim(), /^(?:(?:si |posso |devo |can i |do i |i can |je |on )?(?:trovo|trovano|trova|trovare|sono|e|stanno|sta|imposta|impostano|impostare|imposto|cambia|cambiare|cambio|modifica|modificare|regola|regolare|attiva|attivare|is|are|find|set|change|adjust|enable|turn on|se trouve|se trouvent|trouver|trouve|change|regle|modifie)\s+)*/i);
-  rest = stripFolded(rest.trim(), /^(?:(?:le|la|il|lo|i|gli|l'|the|les|un|una|a)\s*)?(?:impostazion[ei]|opzion[ei]|comand[oi]|controll[oi]|funzion[ei]|settings?|options?|controls?|commands?|functions?|reglages?|parametres?)?\s*(?:(?:per|di|del|della|dei|delle|for|to|of|pour|de|du|des)\b)?\s*(?:(?:le|la|il|lo|i|gli|l'|the|les)\s*)?/i).replace(/\?+\s*$/, '').trim();
+  rest = stripFolded(rest.trim(), /^(?:(?:le|la|il|lo|i|gli|the|les|un|una|a)\s+|l['’]\s*)?(?:impostazion[ei]|opzion[ei]|comand[oi]|controll[oi]|funzion[ei]|settings?|options?|controls?|commands?|functions?|reglages?|parametres?)?\s*(?:(?:per|di|del|della|dei|delle|for|to|of|pour|de|du|des)\b)?\s*(?:(?:le|la|il|lo|i|gli|the|les)\s+|l['’]\s*)?/i).replace(/\?+\s*$/, '').trim();
   if (!rest) return null;
   if (howto) {
     // "come faccio a colorare per regione?": just prepare the plan.

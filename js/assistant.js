@@ -1,7 +1,7 @@
 /* global gtiz_tree, gtiz_metadata, gtiz_legend, gtiz_map, gtiz_settings, gtiz_video, gtiz_layout, gtiz_zooms, gtiz_macros */
 
-import { interpret, splitClauses, matchRows, valueFor, foreignLanguage, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=71';
-import { buildIndex, matchExamples, proposal, isWeak } from './assistant-examples.js?v=71';
+import { interpret, splitClauses, matchRows, valueFor, foreignLanguage, norm as normIntent, similar as similarIntent } from './assistant-intents.js?v=72';
+import { buildIndex, matchExamples, proposal, isWeak } from './assistant-examples.js?v=72';
 
 // This bridge derives its catalog from SPREAD's actual menu configuration and
 // resolves requests with the deterministic parser in assistant-intents.js.
