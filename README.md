@@ -10,7 +10,7 @@ Phylogenetic tree, map, timeline and metadata of an outbreak in one page, with a
 </p>
 
 <p align="center">
-  <a href="https://genpat-it.github.io/spread/?demo"><img src="img/readme-demo.png" width="900" alt="SPREAD demo: the tree coloured by serovar, the map, the metadata table, the legend and the assistant answering how many samples per source"></a>
+  <a href="https://genpat-it.github.io/spread/?demo"><img src="img/readme-screenshot.png" width="900" alt="SPREAD demo: the tree coloured by serovar, the map, the metadata table, the legend and the assistant answering how many samples per source"></a>
 </p>
 
 Open the demo and type in the **Assistant** card, in English, Italian or French:
